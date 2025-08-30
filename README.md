@@ -34,3 +34,40 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+agv-protocol-app/
+├── app/
+│   ├── page.tsx                    # Minting page
+│   ├── dashboard/
+│   │   ├── page.tsx               # Dashboard with leaderboard and charts
+│   ├── profile/
+│   │   ├── [wallet]/
+│   │       ├── page.tsx           # Profile page
+│   ├── api/
+│   │   ├── kol/
+│   │   │   ├── route.ts           # KOL CRUD API
+│   │   ├── merkle/
+│   │   │   ├── route.ts           # Merkle proof API
+│   │   ├── hawkins/
+│   │       ├── route.ts           # Hawkins score API
+│   ├── layout.tsx                 # Root layout with ThemeProvider
+├── components/
+│   ├── ui/
+│   │   ├── button.tsx             # shadcn Button
+│   │   ├── select.tsx             # shadcn Select
+│   │   ├── dialog.tsx             # shadcn Dialog
+│   │   ├── table.tsx              # shadcn Table
+│   │   ├── form.tsx               # shadcn Form
+│   │   ├── input.tsx              # shadcn Input
+│   │   ├── index.tsx              # UI exports
+├── lib/
+│   ├── contracts.ts               # Chain and contract configs
+│   ├── pricing.ts                 # NFT pricing and details
+│   ├── firebase.ts                # Firebase setup
+│   ├── utils.ts                   # Tailwind utilities
+├── styles/
+│   ├── globals.css                # Theme and Tailwind styles
+├── next.config.js                 # Next.js config
+├── package.json                   # Dependencies
+├── tsconfig.json                  # TypeScript config

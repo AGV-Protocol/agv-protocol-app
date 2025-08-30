@@ -1,103 +1,229 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import { Binance, Polygon, Arbitrum } from '@thirdweb-dev/chains';
+import { Button, Card, CardHeader, CardTitle, CardContent, CardFooter, Dialog, DialogContent, DialogTitle, Alert, AlertDescription } from '@/components/ui';
+import { CHAINS, USDT_ADDRESSES, NFT_CONTRACTS, CLIENT_ID } from '@/lib/contracts';
+import { PASS_PRICES, PASS_DETAILS } from '@/lib/pricing';
+import Link from 'next/link';
+import { useTheme } from 'next-themes';
+import { useAddress, useSDK, useContract, ConnectWallet } from '@thirdweb-dev/react';
+import { Moon, Sun } from 'lucide-react';
+
+// Define supported chain IDs and NFT types for type safety
+type ChainId = '56' | '137' | '42161';
+type NftType = keyof typeof PASS_PRICES;
+
+const ThirdwebProvider = dynamic(
+  () => import('@thirdweb-dev/react').then((mod) => mod.ThirdwebProvider),
+  { ssr: false }
+);
+
+function MintingContent() {
+  const address = useAddress();
+  const sdk = useSDK();
+  const [chainId, setChainId] = useState<ChainId>('56'); // Default to BNB
+  const [nftType, setNftType] = useState<NftType>('seed');
+  const [quantity, setQuantity] = useState('1');
+  const [status, setStatus] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMinting, setIsMinting] = useState(false);
+  const { setTheme, theme } = useTheme();
+
+  const chain = CHAINS[chainId];
+  const nftContractAddr = NFT_CONTRACTS[nftType][chainId];
+  const usdtContractAddr = USDT_ADDRESSES[chainId];
+  const { contract: nftContract } = useContract(nftContractAddr, 'nft-collection');
+  const { contract: usdtContract } = useContract(usdtContractAddr, 'token');
+
+  // Calculate total price
+  const unitPrice = PASS_PRICES[nftType].usd;
+  const totalPrice = unitPrice * Number(quantity);
+
+  useEffect(() => {
+    console.log('Address:', address);
+    console.log('SDK:', sdk);
+    if (!address && status !== 'Connect wallet first to mint') {
+      setStatus('');
+    }
+    // Reset nftType to a valid option when chain changes
+    const availableNfts = (['seed', 'tree', 'solar', 'compute'] as NftType[]).filter(isNftAvailable);
+    if (!availableNfts.includes(nftType)) {
+      setNftType(availableNfts[0] as NftType || 'seed');
+    }
+  }, [address, sdk, status, chainId]);
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Math.max(1, Math.min(5, Number(e.target.value) || 1));
+    setQuantity(value.toString());
+  };
+
+  const incrementQuantity = () => {
+    const value = Math.min(5, Number(quantity) + 1);
+    setQuantity(value.toString());
+  };
+
+  const decrementQuantity = () => {
+    const value = Math.max(1, Number(quantity) - 1);
+    setQuantity(value.toString());
+  };
+
+  const mintNFT = async () => {
+    if (!address || !sdk) {
+      setStatus('Connect wallet first');
+      setIsOpen(true);
+      return;
+    }
+    if (!nftContract || !usdtContract) {
+      setStatus('Contract not loaded');
+      setIsOpen(true);
+      return;
+    }
+    setIsMinting(true);
+    setStatus('Verifying wallet...');
+    setIsOpen(true);
+    try {
+      const verifyRes = await fetch(`https://agv-api-1.onrender.com/verify-wallet?address=${address}`);
+      if (!verifyRes.ok) throw new Error('Failed to verify wallet');
+      const isWhitelisted = await verifyRes.json();
+      if (!isWhitelisted) throw new Error('Wallet not whitelisted');
+      const merkleRes = await fetch(`/api/merkle?address=${address}&contract=${nftContractAddr}`);
+      if (!merkleRes.ok) throw new Error('Failed to fetch Merkle proof');
+      const { proof, leaf } = await merkleRes.json();
+      const price = PASS_PRICES[nftType].wei * Number(quantity);
+      await usdtContract.call('approve', [nftContractAddr, price]);
+      await nftContract.call('mintTo', [address, "ipfs://your-token-uri"]);
+      setStatus('Minted successfully!');
+    } catch (error) {
+      console.error('Minting error:', error);
+      setStatus(`Error: ${(error as Error).message}`);
+    } finally {
+      setIsMinting(false);
+    }
+  };
+
+  // Check if NFT contract address exists for the selected chain
+  const isNftAvailable = (type: NftType) => {
+    return NFT_CONTRACTS[type] && NFT_CONTRACTS[type][chainId];
+  };
+
+  return (
+    <div className="container mx-auto p-4 flex flex-col items-center min-h-screen">
+      <Card className="w-full max-w-xl shadow-lg">
+        <CardHeader className="flex justify-between items-center">
+          <CardTitle className="text-3xl font-bold">AGV NFT Mint</CardTitle>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </Button>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="text-center">
+            <ConnectWallet
+              className="w-full max-w-xs mx-auto bg-blue-500 text-white hover:bg-blue-600"
+            />
+          </div>
+          {status && (
+            <Alert variant="destructive">
+              <AlertDescription>{status}</AlertDescription>
+            </Alert>
+          )}
+          <h3 className="text-lg font-semibold">Select Blockchain Network</h3>
+          <div className="flex justify-center space-x-4">
+            <Button
+              variant={chainId === '56' ? 'default' : 'outline'}
+              onClick={() => setChainId('56')}
+              className={`hover:bg-gray-200 hover:text-blue-600 ${chainId === '56' ? 'bg-gray-200 text-blue-600' : ''}`}
+            >
+              BNB Chain
+            </Button>
+            <Button
+              variant={chainId === '137' ? 'default' : 'outline'}
+              onClick={() => setChainId('137')}
+              className={`hover:bg-gray-200 hover:text-blue-600 ${chainId === '137' ? 'bg-gray-200 text-blue-600' : ''}`}
+            >
+              Polygon
+            </Button>
+            <Button
+              variant={chainId === '42161' ? 'default' : 'outline'}
+              onClick={() => setChainId('42161')}
+              className={`hover:bg-gray-200 hover:text-blue-600 ${chainId === '42161' ? 'bg-gray-200 text-blue-600' : ''}`}
+            >
+              Arbitrum
+            </Button>
+          </div>
+          <p className="text-center text-sm">Selected Network: {chain?.name ?? 'BNB Chain'}</p>
+          <h3 className="text-lg font-semibold">Choose Your NFT Pass</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {['seed', 'tree', 'solar', 'compute'].map((type) => (
+              <Button
+                key={type}
+                variant={nftType === type ? 'default' : 'outline'}
+                onClick={() => isNftAvailable(type as NftType) ? setNftType(type as NftType) : null}
+                disabled={!isNftAvailable(type as NftType)}
+                className={`flex-1 p-4 min-h-[120px] text-center hover:bg-gray-100 dark:hover:bg-gray-800 ${nftType === type && isNftAvailable(type as NftType) ? 'bg-gray-200 text-blue-600' : ''}`}
+              >
+                <div>
+                  <h4 className="font-bold">{type.charAt(0).toUpperCase() + type.slice(1)}Pass</h4>
+                  <p className="text-xs">Price: ${PASS_PRICES[type as NftType].usd} USDT</p>
+                </div>
+              </Button>
+            ))}
+          </div>
+          <p className="text-center text-sm text-muted-foreground">Only whitelisted wallets can mint now.</p>
+          <div className="flex items-center justify-center space-x-4">
+            <h3 className="text-left text-lg font-semibold">Mint Your NFT</h3>
+            <input
+              type="number"
+              value={quantity}
+              onChange={handleQuantityChange}
+              min="1"
+              max="5"
+              className="w-16 p-2 border rounded text-center"
+            />
+            <span className="text-sm">(Max of 5 NFTs)</span>
+          </div>
+          <div className="space-y-2 text-sm">
+            <p>Unit Price: ${unitPrice} USDT</p>
+            <p>Total: ${totalPrice.toFixed(2)} USDT</p>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-end">
+          <Button
+            onClick={mintNFT}
+            disabled={!address || isMinting}
+            className="bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
+          >
+            {isMinting ? 'Minting...' : 'Mint Now'}
+          </Button>
+        </CardFooter>
+      </Card>
+      <div className="mt-6 text-center">
+        <Link href="/dashboard" className="text-primary hover:underline">
+          Go to Dashboard
+        </Link>
+      </div>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent>
+          <DialogTitle>Minting Status</DialogTitle>
+          {status && <Alert>
+            <AlertDescription>{status}</AlertDescription>
+          </Alert>}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <ThirdwebProvider clientId={CLIENT_ID} supportedChains={[Binance, Polygon, Arbitrum]}>
+      <MintingContent />
+    </ThirdwebProvider>
   );
 }
