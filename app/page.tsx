@@ -143,69 +143,189 @@ export default function MintingContent() {
     });
   };
 
-  const buildTransaction = async () => {
-    if (!account) {
-      toast({ title: "Wallet Not Connected", description: "Please connect your wallet first", variant: "destructive" });
-      throw new Error("Please connect your wallet first");
+const buildTransaction = async () => {
+  if (!account || !account.address) {
+    toast({
+      title: "Wallet Not Connected",
+      description: "Please connect your wallet to proceed with minting.",
+      variant: "destructive",
+    });
+    throw new Error("Wallet not connected");
+  }
+
+  if (!nftContract || !usdtContract || !contractAddr) {
+    toast({
+      title: "Contract Error",
+      description: "Contracts not loaded for the selected network.",
+      variant: "destructive",
+    });
+    throw new Error("Contracts not loaded");
+  }
+
+  if (!isWhitelisted) {
+    toast({
+      title: "Not Whitelisted",
+      description: "Your wallet is not whitelisted for minting.",
+      variant: "destructive",
+    });
+    throw new Error("Wallet not whitelisted");
+  }
+
+  setIsMinting(true);
+  setStatus("Preparing transaction...");
+
+  try {
+    // Validate KOL ID if provided
+    if (kolId) {
+      setStatus("Validating KOL ID...");
+      const q = query(collection(db, "kols"), where("kolId", "==", kolId));
+      const snap = await getDocs(q);
+      if (snap.empty) {
+        toast({
+          title: "Invalid KOL ID",
+          description: "The provided KOL ID is invalid.",
+          variant: "destructive",
+        });
+        throw new Error("Invalid KOL ID");
+      }
     }
-    if (!nftContract || !usdtContract || !contractAddr) {
-      toast({ title: "Contract Error", description: "Contract not loaded for selected network", variant: "destructive" });
-      throw new Error("Contract not loaded for selected network");
+
+    // Check minting eligibility
+    setStatus("Checking minting eligibility...");
+    const { allowed, message } = await canMintNFT({
+      nftContract,
+      nftType,
+      quantity: Number(quantity),
+    });
+    if (!allowed) {
+      toast({
+        title: "Minting Not Allowed",
+        description: message,
+        variant: "destructive",
+      });
+      throw new Error(message);
     }
-    if (!isWhitelisted) {
-      toast({ title: "Not Whitelisted", description: "Your wallet is not whitelisted for minting", variant: "destructive" });
-      throw new Error("Your wallet is not whitelisted for minting");
+
+    // Verify wallet with AGV API
+    setStatus("Verifying wallet with AGV...");
+    const verifyRes = await fetchWithRetry(
+      () => fetch(`https://agv-api-1.onrender.com/verify-wallet?address=${account.address}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+      3,
+      1000
+    );
+    if (!verifyRes.ok) {
+      const errorText = await verifyRes.text();
+      toast({
+        title: "Verification Error",
+        description: `Failed to verify wallet with AGV API: ${errorText}`,
+        variant: "destructive",
+      });
+      throw new Error(`AGV API verification failed: ${errorText}`);
     }
-    setIsMinting(true);
-    setStatus("Preparing transaction...");
+
+    const verifyData = await verifyRes.json();
+    if (!verifyData.result?.isValid || !verifyData.result?.details?.found) {
+      toast({
+        title: "Wallet Not Verified",
+        description: "Wallet not found in AGV verification system.",
+        variant: "destructive",
+      });
+      throw new Error("Wallet not verified by AGV");
+    }
+
+    // Fetch Merkle proof
+    setStatus("Getting Merkle proof...");
+    const merkleRes = await fetchWithRetry(
+      () => fetch(`/api/merkle?address=${account.address}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-client-id': process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || 'YOUR_THIRDWEB_CLIENT_ID',
+        },
+      }),
+      3,
+      1000
+    );
+
+    if (!merkleRes.ok) {
+      const errorData = await merkleRes.json();
+      console.error("Merkle API error response:", errorData);
+      toast({
+        title: "Whitelist Error",
+        description: `Failed to get whitelist proof: ${errorData.error || merkleRes.statusText} (${merkleRes.status})`,
+        variant: "destructive",
+      });
+      throw new Error(`Failed to get whitelist proof: ${errorData.error || merkleRes.statusText}`);
+    }
+
+    let merkleData;
     try {
-      if (kolId) {
-        setStatus("Validating KOL ID...");
-        const q = query(collection(db, "kols"), where("kolId", "==", kolId));
-        const snap = await getDocs(q);
-        if (snap.empty) {
-          toast({ title: "Invalid KOL ID", description: "Invalid KOL ID provided", variant: "destructive" });
-          throw new Error("Invalid KOL ID provided");
-        }
-      }
-      setStatus("Checking minting eligibility...");
-      const { allowed, message } = await canMintNFT({ nftContract, nftType, quantity: Number(quantity) });
-      if (!allowed) {
-        toast({ title: "Minting Not Allowed", description: message, variant: "destructive" });
-        throw new Error(message);
-      }
-      setStatus("Verifying wallet with AGV...");
-      const verifyRes = await fetch(`https://agv-api-1.onrender.com/verify-wallet?address=${account.address}`);
-      if (!verifyRes.ok) {
-        toast({ title: "Verification Error", description: "Failed to verify wallet with AGV API", variant: "destructive" });
-        throw new Error("Failed to verify wallet with AGV API");
-      }
-      const verifyData = await verifyRes.json();
-      if (!verifyData.result?.isValid || !verifyData.result?.details?.found) {
-        toast({ title: "Wallet Not Verified", description: "Wallet not found in AGV verification system", variant: "destructive" });
-        throw new Error("Wallet not found in AGV verification system");
-      }
-      setStatus("Getting merkle proof...");
-      const merkleRes = await fetch(`/api/merkle?address=${account.address}`);
-      if (!merkleRes.ok) {
-        const errorText = await merkleRes.text();
-        console.error("Merkle API error response:", errorText);
-        toast({ title: "Whitelist Error", description: `Failed to get whitelist proof: ${errorText}`, variant: "destructive" });
-        throw new Error(`Failed to get whitelist proof: ${errorText}`);
-      }
-      let merkleData;
-      try {
-        merkleData = await merkleRes.json();
-      } catch (jsonError) {
-        console.error("Error parsing Merkle API response:", jsonError);
-        toast({ title: "Whitelist Error", description: "Invalid response from whitelist API", variant: "destructive" });
-        throw new Error("Invalid response from whitelist API");
-      }
-      const { proof } = merkleData;
-      if (!proof || !Array.isArray(proof) || proof.length === 0) {
-        toast({ title: "Not Whitelisted", description: "Invalid whitelist proof - wallet not eligible", variant: "destructive" });
-        throw new Error("Invalid whitelist proof - wallet not eligible");
-      }
+      merkleData = await merkleRes.json();
+    } catch (jsonError) {
+      console.error("Error parsing Merkle API response:", jsonError);
+      toast({
+        title: "Whitelist Error",
+        description: "Invalid response from whitelist API.",
+        variant: "destructive",
+      });
+      throw new Error("Invalid Merkle API response");
+    }
+
+    const { proof, root } = merkleData;
+    if (!proof || typeof proof !== 'string' || proof.trim() === '') {
+      toast({
+        title: "Invalid Whitelist Proof",
+        description: "Received invalid or empty Merkle proof.",
+        variant: "destructive",
+      });
+      throw new Error("Invalid or empty Merkle proof");
+    }
+
+    // Convert comma-separated proof string to array for smart contract
+    const proofArray = proof.split(',').map(hash => hash.trim());
+    if (proofArray.length === 0 || proofArray.some(hash => !/^0x[a-fA-F0-9]{64}$/.test(hash))) {
+      toast({
+        title: "Invalid Whitelist Proof",
+        description: "Merkle proof contains invalid hashes.",
+        variant: "destructive",
+      });
+      throw new Error("Invalid Merkle proof hashes");
+    }
+
+    setStatus("Merkle proof retrieved successfully");
+    return { proof: proofArray, root, nftContract, usdtContract, contractAddr, quantity: Number(quantity) };
+  } catch (error) {
+    setIsMinting(false);
+    console.error("Transaction preparation failed:", error.message);
+    toast({
+      title: "Transaction Error",
+      description: `Failed to prepare transaction: ${error.message}`,
+      variant: "destructive",
+    });
+    throw error;
+  }
+};
+
+// Utility function for retrying fetch requests
+async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number = 3, delay: number = 1000): Promise<Response> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetchFn();
+      return response;
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      console.warn(`Retry ${i + 1}/${retries} after ${delay}ms: ${error.message}`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error("Max retries reached");
+}
+
       const priceWei = PASS_PRICES[nftType]?.wei
         ? BigInt(PASS_PRICES[nftType].wei) * BigInt(quantity)
         : BigInt(unitPrice) * BigInt(quantity) * BigInt(1e6);
