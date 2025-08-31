@@ -1,3 +1,8 @@
+import { getContract } from "thirdweb";
+
+// Define the Thirdweb contract type
+type ThirdwebContract = ReturnType<typeof getContract>;
+
 // Minting caps for each NFT type (global across all chains)
 export const MINTING_CAPS = {
   seed: {
@@ -26,7 +31,7 @@ export async function canMintNFT({
   nftType,
   quantity,
 }: {
-  nftContract: any; // Thirdweb contract instance
+  nftContract: ThirdwebContract; // Fixed: Removed extra space and added proper type
   nftType: NftType;
   quantity: number;
 }): Promise<{ allowed: boolean; message: string }> {

@@ -1,28 +1,26 @@
+import { defineChain } from "thirdweb/chains";
 
-import { binance, polygon, arbitrum } from "thirdweb/chains";
-
-export const CLIENT_ID = 'b4616379dd466ee683b2901b7f291aa5';
-
-export const CHAINS: Record<string, any> = {
-  '56': {
-    chainId: '56',
-    name: 'Binance Smart Chain',
-    symbol: 'BNB',
-    chain: Binance,
+export const CHAINS = {
+  "56": {
+    chainId: "56",
+    name: "Binance Smart Chain",
+    symbol: "BNB",
+    chain: defineChain(56),
   },
-  '137': {
-    chainId: '137',
-    name: 'Polygon',
-    symbol: 'MATIC',
-    chain: Polygon,
+  "137": {
+    chainId: "137",
+    name: "Polygon",
+    symbol: "MATIC",
+    chain: defineChain(137),
   },
-  '42161': {
-    chainId: '42161',
-    name: 'Arbitrum',
-    symbol: 'ETH',
-    chain: Arbitrum,
+  "42161": {
+    chainId: "42161",
+    name: "Arbitrum One",
+    symbol: "ETH",
+    chain: defineChain(42161),
   },
 };
+
 
 export const USDT_ADDRESSES: Record<string, string> = {
   '56': '0x55d398326f99059ff775485246999027b3197955', // BSC USDT 

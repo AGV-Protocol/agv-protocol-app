@@ -85,8 +85,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const address = searchParams.get('address');
-    const contract = searchParams.get('contract'); // Unused, kept for extensibility
-
+    
     // Validate address
     if (!address || !ethers.utils.isAddress(address)) {
       return NextResponse.json({ error: 'Invalid address' }, { status: 400 });

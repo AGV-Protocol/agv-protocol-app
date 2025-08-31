@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./provider";
 
-const queryClient = new QueryClient();
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AGV Protocol",
-  description: "AGV NFT Minting Platform",
+  title: "AGV NFT Mint",
+  description: "Mint AGV NFTs with USDT",
 };
 
 export default function RootLayout({
@@ -17,12 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-background text-foreground">
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
-          </ThemeProvider>
-        </QueryClientProvider>
+      <body className={inter.className}>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
