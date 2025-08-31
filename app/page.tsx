@@ -18,7 +18,6 @@ import {
   AlertDescription,
 } from "@/components/ui";
 import { CHAINS, USDT_ADDRESSES, NFT_CONTRACTS, CLIENT_ID, NFT_ABI } from "@/lib/contracts";
-import { PASS_PRICES, PASS_DETAILS } from "@/lib/pricing";
 import { canMintNFT } from "@/lib/mintingCap";
 import Link from "next/link";
 import { useTheme } from "next-themes";

@@ -5,13 +5,17 @@ import { google } from 'googleapis';
 
 // Google Sheets API setup
 const auth = new google.auth.GoogleAuth({
-  keyFile: 'lib/credentials.json', // Service account JSON
+  credentials: {
+    client_email: process.env.GOOGLE_CLIENT_EMAIL,
+    private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    project_id: process.env.GOOGLE_PROJECT_ID,
+  },
   scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
 });
 const sheets = google.sheets({ version: 'v4', auth });
 
 // Google Sheet configuration
-const SPREADSHEET_ID = '1vbPHAJbMF-qinDM4G06T9PbixBhja-pKehDghuaIx-4'; // Replace with actual Sheet ID
+const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID || '1vbPHAJbMF-qinDM4G06T9PbixBhja-pKehDghuaIx-4';
 const RANGE = 'Sheet1!S2:S'; // Column S, starting from row 2
 
 // Cache for Merkle tree and whitelist hash
