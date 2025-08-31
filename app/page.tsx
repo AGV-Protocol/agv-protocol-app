@@ -12,7 +12,7 @@ import {
   prepareContractCall,
   sendTransaction,
 } from "thirdweb";
-import { Moon, Sun, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
+import { Moon, Sun, AlertTriangle, CheckCircle } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
@@ -40,59 +40,17 @@ export default function MintingContent() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isWhitelisted, setIsWhitelisted] = useState<boolean | null>(null);
   const { setTheme, theme } = useTheme();
-
-  const checkWhitelistStatus = async (walletAddress: string) => {
-    try {
-      const verifyRes = await fetch(
-        `https://agv-api-1.onrender.com/verify-wallet?address=${walletAddress}`
-      );
-      if (!verifyRes.ok) throw new Error("Failed to verify wallet");
-      const verifyData = await verifyRes.json();
-      return verifyData.result?.isValid && verifyData.result?.details?.found;
-    } catch (error) {
-      console.error("Error checking whitelist:", error);
-      return false;
-    }
-  };
 
   useEffect(() => {
     const initializeComponent = async () => {
-      if (!account) {
-        setStatus("Connect wallet first to mint");
+      setIsLoading(true);
+      if (!account || !account.address) {
+        setStatus("Connect wallet to mint");
         setIsOpen(true);
-        setIsWhitelisted(null);
       } else {
         setIsOpen(false);
-        setStatus("Checking whitelist status...");
-        try {
-          const whitelisted = await checkWhitelistStatus(account.address);
-          setIsWhitelisted(whitelisted);
-          if (!whitelisted) {
-            setStatus("Wallet not whitelisted for minting");
-            toast({
-              title: "Wallet Not Whitelisted",
-              description: "Your wallet address is not on the whitelist for minting NFTs.",
-              variant: "destructive",
-            });
-          } else {
-            setStatus("");
-            toast({
-              title: "Wallet Verified",
-              description: "Your wallet is whitelisted and eligible for minting!",
-              variant: "default",
-            });
-          }
-        } catch (error) {
-          console.error("Error checking whitelist:", error);
-          setStatus("Error checking whitelist status");
-          toast({
-            title: "Verification Error",
-            description: "Unable to verify whitelist status. Please try again.",
-            variant: "destructive",
-          });
-        }
+        setStatus("");
       }
       setIsLoading(false);
     };
@@ -128,8 +86,8 @@ export default function MintingContent() {
   const handleChainChange = async (newChainId: ChainId) => {
     setChainId(newChainId);
     if (account) toast({
-      title: "Checking New Network",
-      description: "Verifying whitelist status on new network...",
+      title: "Network Changed",
+      description: `Switched to ${newChainId === "56" ? "BNB Chain" : newChainId === "137" ? "Polygon" : "Arbitrum"}`,
       variant: "default",
     });
   };
@@ -138,201 +96,73 @@ export default function MintingContent() {
     setNftType(newNftType);
     if (account) toast({
       title: "NFT Type Changed",
-      description: "Verifying eligibility for new NFT type...",
+      description: `Selected ${newNftType}Pass`,
       variant: "default",
     });
   };
 
-const buildTransaction = async () => {
-  if (!account || !account.address) {
-    toast({
-      title: "Wallet Not Connected",
-      description: "Please connect your wallet to proceed with minting.",
-      variant: "destructive",
-    });
-    throw new Error("Wallet not connected");
-  }
+  const buildTransaction = async () => {
+    if (!account || !account.address) {
+      toast({
+        title: "Wallet Not Connected",
+        description: "Please connect your wallet to proceed with minting.",
+        variant: "destructive",
+      });
+      throw new Error("Wallet not connected");
+    }
 
-  if (!nftContract || !usdtContract || !contractAddr) {
-    toast({
-      title: "Contract Error",
-      description: "Contracts not loaded for the selected network.",
-      variant: "destructive",
-    });
-    throw new Error("Contracts not loaded");
-  }
+    if (!nftContract || !usdtContract || !contractAddr) {
+      toast({
+        title: "Contract Error",
+        description: "Contracts not loaded for the selected network.",
+        variant: "destructive",
+      });
+      throw new Error("Contracts not loaded");
+    }
 
-  if (!isWhitelisted) {
-    toast({
-      title: "Not Whitelisted",
-      description: "Your wallet is not whitelisted for minting.",
-      variant: "destructive",
-    });
-    throw new Error("Wallet not whitelisted");
-  }
+    setIsMinting(true);
+    setStatus("Preparing transaction...");
 
-  setIsMinting(true);
-  setStatus("Preparing transaction...");
+    try {
+      // Validate KOL ID if provided
+      if (kolId) {
+        setStatus("Validating KOL ID...");
+        const q = query(collection(db, "kols"), where("kolId", "==", kolId));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          toast({
+            title: "Invalid KOL ID",
+            description: "The provided KOL ID is invalid.",
+            variant: "destructive",
+          });
+          throw new Error("Invalid KOL ID");
+        }
+      }
 
-  try {
-    // Validate KOL ID if provided
-    if (kolId) {
-      setStatus("Validating KOL ID...");
-      const q = query(collection(db, "kols"), where("kolId", "==", kolId));
-      const snap = await getDocs(q);
-      if (snap.empty) {
+      // Check minting eligibility
+      setStatus("Checking minting eligibility...");
+      const { allowed, message } = await canMintNFT({
+        nftContract,
+        nftType,
+        quantity: Number(quantity),
+      });
+      if (!allowed) {
         toast({
-          title: "Invalid KOL ID",
-          description: "The provided KOL ID is invalid.",
+          title: "Minting Not Allowed",
+          description: message,
           variant: "destructive",
         });
-        throw new Error("Invalid KOL ID");
+        throw new Error(message);
       }
-    }
 
-    // Check minting eligibility
-    setStatus("Checking minting eligibility...");
-    const { allowed, message } = await canMintNFT({
-      nftContract,
-      nftType,
-      quantity: Number(quantity),
-    });
-    if (!allowed) {
-      toast({
-        title: "Minting Not Allowed",
-        description: message,
-        variant: "destructive",
-      });
-      throw new Error(message);
-    }
-
-    // Verify wallet with AGV API
-    setStatus("Verifying wallet with AGV...");
-    const verifyRes = await fetchWithRetry(
-      () => fetch(`https://agv-api-1.onrender.com/verify-wallet?address=${account.address}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }),
-      3,
-      1000
-    );
-    if (!verifyRes.ok) {
-      const errorText = await verifyRes.text();
-      toast({
-        title: "Verification Error",
-        description: `Failed to verify wallet with AGV API: ${errorText}`,
-        variant: "destructive",
-      });
-      throw new Error(`AGV API verification failed: ${errorText}`);
-    }
-
-    const verifyData = await verifyRes.json();
-    if (!verifyData.result?.isValid || !verifyData.result?.details?.found) {
-      toast({
-        title: "Wallet Not Verified",
-        description: "Wallet not found in AGV verification system.",
-        variant: "destructive",
-      });
-      throw new Error("Wallet not verified by AGV");
-    }
-
-    // Fetch Merkle proof
-    setStatus("Getting Merkle proof...");
-    const merkleRes = await fetchWithRetry(
-      () => fetch(`/api/merkle?address=${account.address}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || 'YOUR_THIRDWEB_CLIENT_ID',
-        },
-      }),
-      3,
-      1000
-    );
-
-    if (!merkleRes.ok) {
-      const errorData = await merkleRes.json();
-      console.error("Merkle API error response:", errorData);
-      toast({
-        title: "Whitelist Error",
-        description: `Failed to get whitelist proof: ${errorData.error || merkleRes.statusText} (${merkleRes.status})`,
-        variant: "destructive",
-      });
-      throw new Error(`Failed to get whitelist proof: ${errorData.error || merkleRes.statusText}`);
-    }
-
-    let merkleData;
-    try {
-      merkleData = await merkleRes.json();
-    } catch (jsonError) {
-      console.error("Error parsing Merkle API response:", jsonError);
-      toast({
-        title: "Whitelist Error",
-        description: "Invalid response from whitelist API.",
-        variant: "destructive",
-      });
-      throw new Error("Invalid Merkle API response");
-    }
-
-    const { proof, root } = merkleData;
-    if (!proof || typeof proof !== 'string' || proof.trim() === '') {
-      toast({
-        title: "Invalid Whitelist Proof",
-        description: "Received invalid or empty Merkle proof.",
-        variant: "destructive",
-      });
-      throw new Error("Invalid or empty Merkle proof");
-    }
-
-    // Convert comma-separated proof string to array for smart contract
-    const proofArray = proof.split(',').map(hash => hash.trim());
-    if (proofArray.length === 0 || proofArray.some(hash => !/^0x[a-fA-F0-9]{64}$/.test(hash))) {
-      toast({
-        title: "Invalid Whitelist Proof",
-        description: "Merkle proof contains invalid hashes.",
-        variant: "destructive",
-      });
-      throw new Error("Invalid Merkle proof hashes");
-    }
-
-    setStatus("Merkle proof retrieved successfully");
-    return { proof: proofArray, root, nftContract, usdtContract, contractAddr, quantity: Number(quantity) };
-  } catch (error) {
-    setIsMinting(false);
-    console.error("Transaction preparation failed:", error.message);
-    toast({
-      title: "Transaction Error",
-      description: `Failed to prepare transaction: ${error.message}`,
-      variant: "destructive",
-    });
-    throw error;
-  }
-};
-
-// Utility function for retrying fetch requests
-async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number = 3, delay: number = 1000): Promise<Response> {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const response = await fetchFn();
-      return response;
-    } catch (error) {
-      if (i === retries - 1) throw error;
-      console.warn(`Retry ${i + 1}/${retries} after ${delay}ms: ${error.message}`);
-      await new Promise(resolve => setTimeout(resolve, delay));
-    }
-  }
-  throw new Error("Max retries reached");
-}
-
+      // Prepare USDT approval
+      setStatus("Approving USDT spending...");
       const priceWei = PASS_PRICES[nftType]?.wei
         ? BigInt(PASS_PRICES[nftType].wei) * BigInt(quantity)
         : BigInt(unitPrice) * BigInt(quantity) * BigInt(1e6);
-      setStatus("Approving USDT spending...");
       toast({
         title: "Approve Transaction",
-        description: "Please approve USDT spending in your wallet",
+        description: "Please approve USDT spending in your wallet.",
         variant: "default",
       });
       const approveTx = prepareContractCall({
@@ -341,11 +171,13 @@ async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number 
         params: [contractAddr, priceWei],
       });
       await sendTransaction({ transaction: approveTx, account });
+
+      // Prepare mint transaction with empty proof
       setStatus("Preparing mint transaction...");
       return prepareContractCall({
         contract: nftContract,
         method: "mint",
-        params: [Number(quantity), proof],
+        params: [account.address, []], // Empty proof array
       });
     } catch (error) {
       setIsMinting(false);
@@ -362,8 +194,9 @@ async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number 
       <div style={{ minHeight: "100vh", backgroundColor: "#e6f0fa", padding: "1rem", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <div style={{ width: "100%", maxWidth: "32rem", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}>
           <div style={{ paddingTop: "1.5rem" }}>
-            <div style={{ backgroundColor: "#fee2e2", padding: "1rem", border: "1px solid #fecaca" }}>
-              <span style={{ color: "#dc2626" }}>Contract not loaded for selected network</span>
+            <div style={{ backgroundColor: "#fee2e2", padding: "1rem", border: "1px solid #fecaca", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#dc2626" }} />
+              <span style={{ color: "#dc2626", marginLeft: "0.5rem" }}>Contract not loaded for selected network</span>
             </div>
           </div>
         </div>
@@ -384,43 +217,28 @@ async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number 
               {theme === "dark" ? <Sun style={{ height: "1.25rem", width: "1.25rem" }} /> : <Moon style={{ height: "1.25rem", width: "1.25rem" }} />}
             </button>
           </div>
-          <div style={{ padding: "1.5rem", gap: "1.5rem" }}>
+          <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
             <div style={{ textAlign: "center" }}>
               <ConnectButton client={thirdwebClient} />
             </div>
             {!account && !isLoading && (
-              <div style={{ backgroundColor: "#fee2e2", padding: "1rem", border: "1px solid #fecaca" }}>
-                <span style={{ color: "#dc2626" }}>Contract not loaded</span>
+              <div style={{ backgroundColor: "#fee2e2", padding: "1rem", border: "1px solid #fecaca", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#dc2626" }} />
+                <span style={{ color: "#dc2626", marginLeft: "0.5rem" }}>Please connect your wallet</span>
               </div>
             )}
             {account && (
-              <div style={{ textAlign: "center" }}>
-                {isWhitelisted === true && (
-                  <div style={{ backgroundColor: "#f0fdf4", padding: "1rem", border: "1px solid #34d399" }}>
-                    <CheckCircle style={{ height: "1rem", width: "1rem", color: "#10b981" }} />
-                    <span style={{ color: "#065f46", marginLeft: "0.5rem" }}>Wallet is whitelisted and eligible for minting</span>
-                  </div>
-                )}
-                {isWhitelisted === false && (
-                  <div style={{ backgroundColor: "#fee2e2", padding: "1rem", border: "1px solid #fecaca" }}>
-                    <XCircle style={{ height: "1rem", width: "1rem" }} />
-                    <span style={{ color: "#dc2626" }}>Wallet is not whitelisted for minting</span>
-                  </div>
-                )}
-                {isWhitelisted === null && (
-                  <div style={{ backgroundColor: "#fefcbf", padding: "1rem", border: "1px solid #facc15" }}>
-                    <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#d97706" }} />
-                    <span style={{ color: "#92400e", marginLeft: "0.5rem" }}>Checking whitelist status...</span>
-                  </div>
-                )}
+              <div style={{ backgroundColor: "#f0fdf4", padding: "1rem", border: "1px solid #34d399", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <CheckCircle style={{ height: "1rem", width: "1rem", color: "#10b981" }} />
+                <span style={{ color: "#065f46", marginLeft: "0.5rem" }}>Wallet connected and eligible for minting</span>
               </div>
             )}
             {status && (
-              <div style={{ backgroundColor: "#fee2e2", padding: "1rem", border: "1px solid #fecaca" }}>
-                <span style={{ color: "#dc2626" }}>{status}</span>
+              <div style={{ backgroundColor: "#fefcbf", padding: "1rem", border: "1px solid #facc15", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ color: "#92400e" }}>{status}</span>
               </div>
             )}
-            <div style={{ gap: "0.75rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               <h3 style={{ fontSize: "1.125rem", fontWeight: "semibold", color: "#1f2937" }}>Select Blockchain Network</h3>
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <button
@@ -470,7 +288,7 @@ async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number 
                 Selected Network: {chainId === "56" ? "BNB Chain" : chainId === "137" ? "Polygon" : "Arbitrum"}
               </p>
             </div>
-            <div style={{ gap: "0.75rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               <h3 style={{ fontSize: "1.125rem", fontWeight: "semibold", color: "#1f2937" }}>Choose Your NFT Pass</h3>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "0.75rem" }}>
                 <button
@@ -484,10 +302,8 @@ async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number 
                     color: nftType === "seed" ? "#fff" : "#1f2937",
                     border: "1px solid #e5e7eb",
                     borderRadius: "0.375rem",
-                    cursor: !isWhitelisted ? "not-allowed" : "pointer",
-                    opacity: !isWhitelisted ? 0.5 : 1,
+                    cursor: "pointer",
                   }}
-                  disabled={!isWhitelisted}
                 >
                   <span style={{ fontWeight: "semibold" }}>SeedPass</span>
                   <span style={{ fontSize: "0.875rem" }}>Price: $29 USDT</span>
@@ -503,10 +319,8 @@ async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number 
                     color: nftType === "tree" ? "#fff" : "#1f2937",
                     border: "1px solid #e5e7eb",
                     borderRadius: "0.375rem",
-                    cursor: !isWhitelisted ? "not-allowed" : "pointer",
-                    opacity: !isWhitelisted ? 0.5 : 1,
+                    cursor: "pointer",
                   }}
-                  disabled={!isWhitelisted}
                 >
                   <span style={{ fontWeight: "semibold" }}>TreePass</span>
                   <span style={{ fontSize: "0.875rem" }}>Price: $59 USDT</span>
@@ -551,7 +365,7 @@ async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number 
                 </button>
               </div>
             </div>
-            <div style={{ gap: "0.5rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               <label htmlFor="kolId" style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}>
                 KOL ID (Optional)
               </label>
@@ -565,9 +379,9 @@ async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number 
               />
             </div>
             <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#6b7280" }}>
-              Only whitelisted wallets can mint now.
+              Connect your wallet to mint.
             </p>
-            <div style={{ gap: "0.75rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <h3 style={{ fontSize: "1.125rem", fontWeight: "semibold", color: "#1f2937" }}>Mint Your NFT</h3>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -577,14 +391,14 @@ async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number 
                     max="5"
                     value={quantity}
                     onChange={handleQuantityChange}
-                    disabled={!isWhitelisted}
+                    disabled={!account}
                     style={{ width: "4rem", padding: "0.5rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", textAlign: "center", outline: "none" }}
                   />
                   <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>(Max of 5 NFTs)</span>
                 </div>
               </div>
             </div>
-            <div style={{ gap: "0.25rem", fontSize: "0.875rem", color: "#4b5563" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.875rem", color: "#4b5563" }}>
               <p>Unit Price: ${unitPrice} USDT</p>
               <p style={{ fontWeight: "semibold", color: "#1f2937" }}>Total: ${totalPrice.toFixed(2)} USDT</p>
             </div>
@@ -626,13 +440,11 @@ async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number 
                     toast({ title: "Insufficient Funds", description: "You don't have enough USDT to complete this transaction", variant: "destructive" });
                   } else if (errorMessage.toLowerCase().includes("rejected")) {
                     toast({ title: "Transaction Rejected", description: "Transaction was rejected in your wallet", variant: "destructive" });
-                  } else if (errorMessage.toLowerCase().includes("whitelist")) {
-                    toast({ title: "Whitelist Error", description: errorMessage, variant: "destructive" });
                   } else {
                     toast({ title: "Transaction Failed", description: errorMessage, variant: "destructive" });
                   }
                 }}
-                disabled={!account || !isWhitelisted || isMinting || (nftType !== "seed" && nftType !== "tree")}
+                disabled={!account || isMinting || (nftType !== "seed" && nftType !== "tree")}
                 style={{
                   width: "100%",
                   backgroundColor: "#16a34a",
@@ -641,11 +453,11 @@ async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number 
                   padding: "1rem",
                   borderRadius: "0.75rem",
                   fontSize: "1.125rem",
-                  cursor: !account || !isWhitelisted || isMinting || (nftType !== "seed" && nftType !== "tree") ? "not-allowed" : "pointer",
-                  opacity: !account || !isWhitelisted || isMinting || (nftType !== "seed" && nftType !== "tree") ? 0.5 : 1,
+                  cursor: !account || isMinting || (nftType !== "seed" && nftType !== "tree") ? "not-allowed" : "pointer",
+                  opacity: !account || isMinting || (nftType !== "seed" && nftType !== "tree") ? 0.5 : 1,
                 }}
               >
-                {isMinting ? "Minting..." : !account ? "Connect Wallet" : !isWhitelisted ? "Not Whitelisted" : (nftType !== "seed" && nftType !== "tree") ? "Not Available" : "Mint Now"}
+                {isMinting ? "Minting..." : !account ? "Connect Wallet" : (nftType !== "seed" && nftType !== "tree") ? "Not Available" : "Mint Now"}
               </TransactionButton>
             </div>
           </div>
@@ -658,9 +470,12 @@ async function fetchWithRetry(fetchFn: () => Promise<Response>, retries: number 
         {isOpen && (
           <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", backgroundColor: "#fff", padding: "1rem", borderRadius: "1rem", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}>
             <h3 style={{ fontSize: "1.25rem", fontWeight: "semibold" }}>Wallet Connection Required</h3>
-            <div style={{ backgroundColor: "#fefcbf", padding: "1rem", border: "1px solid #facc15", marginTop: "0.5rem" }}>
+            <div style={{ backgroundColor: "#fefcbf", padding: "1rem", border: "1px solid #facc15", marginTop: "0.5rem", display: "flex", alignItems: "center" }}>
               <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#d97706" }} />
               <span style={{ color: "#92400e", marginLeft: "0.5rem" }}>Please connect your wallet to continue with minting.</span>
+            </div>
+            <div style={{ marginTop: "1rem", textAlign: "center" }}>
+              <ConnectButton client={thirdwebClient} />
             </div>
           </div>
         )}
