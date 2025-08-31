@@ -1,5 +1,5 @@
 
-import { Binance, Polygon, Arbitrum } from '@thirdweb-dev/chains';
+import { binance, polygon, arbitrum } from "thirdweb/chains";
 
 export const CLIENT_ID = 'b4616379dd466ee683b2901b7f291aa5';
 

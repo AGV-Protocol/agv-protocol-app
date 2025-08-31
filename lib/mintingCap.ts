@@ -1,6 +1,3 @@
-import { ethers } from 'ethers';
-import { useContract } from '@thirdweb-dev/react';
-
 // Minting caps for each NFT type (global across all chains)
 export const MINTING_CAPS = {
   seed: {

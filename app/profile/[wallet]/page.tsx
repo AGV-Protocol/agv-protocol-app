@@ -1,37 +1,60 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAddress } from '@thirdweb-dev/react';
-import { Button, Input, Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui';
-import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useActiveAccount } from "thirdweb/react"; 
+import {
+  Button,
+  Input,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui";
+import { db } from "@/lib/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 const formSchema = z.object({
-  username: z.string().min(2, 'Username must be at least 2 characters'),
-  email: z.string().email('Invalid email address')
+  username: z.string().min(2, "Username must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
 });
 
 export default function Profile({ params }: { params: { wallet: string } }) {
-  const address = useAddress();
+  const account = useActiveAccount();
+  const address = account?.address; 
   const router = useRouter();
-  const [profile, setProfile] = useState({ username: '', email: '', wallet: params.wallet });
+  const [profile, setProfile] = useState({
+    username: "",
+    email: "",
+    wallet: params.wallet,
+  });
+
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: { username: '', email: '' }
+    defaultValues: { username: "", email: "" },
   });
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const docRef = doc(db, 'kols', params.wallet);
+      const docRef = doc(db, "kols", params.wallet);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
-        if (data && typeof data.username === 'string' && typeof data.email === 'string') {
-          setProfile({ username: data.username, email: data.email, wallet: params.wallet });
+        if (
+          data &&
+          typeof data.username === "string" &&
+          typeof data.email === "string"
+        ) {
+          setProfile({
+            username: data.username,
+            email: data.email,
+            wallet: params.wallet,
+          });
           form.reset({ username: data.username, email: data.email });
         }
       }
@@ -41,10 +64,13 @@ export default function Profile({ params }: { params: { wallet: string } }) {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     if (address !== params.wallet) {
-      alert('Unauthorized');
+      alert("Unauthorized");
       return;
     }
-    await setDoc(doc(db, 'kols', params.wallet), { ...data, wallet: params.wallet });
+    await setDoc(doc(db, "kols", params.wallet), {
+      ...data,
+      wallet: params.wallet,
+    });
     setProfile({ ...data, wallet: params.wallet });
   };
 
@@ -80,12 +106,19 @@ export default function Profile({ params }: { params: { wallet: string } }) {
             )}
           />
           <div>
-            <p><strong>Wallet:</strong> {profile.wallet.slice(0, 6)}...{profile.wallet.slice(-4)}</p>
+            <p>
+              <strong>Wallet:</strong>{" "}
+              {profile.wallet.slice(0, 6)}...{profile.wallet.slice(-4)}
+            </p>
           </div>
-          <Button type="submit" disabled={address !== params.wallet}>Update</Button>
+          <Button type="submit" disabled={address !== params.wallet}>
+            Update
+          </Button>
         </form>
       </Form>
-      <Button onClick={() => router.push('/dashboard')} className="mt-4">Back to Dashboard</Button>
+      <Button onClick={() => router.push("/dashboard")} className="mt-4">
+        Back to Dashboard
+      </Button>
     </div>
   );
 }
