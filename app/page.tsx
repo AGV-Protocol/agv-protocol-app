@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect, useCallback } from "react";
 import {
   ConnectButton,
@@ -661,35 +662,15 @@ export default function MintingContent() {
     setIsMinting(false);
     setShowProgressModal(false);
     if (errorMessage.toLowerCase().includes("insufficient")) {
-      toast({
-        title: "Insufficient Funds",
-        description: "You don't have enough USDT to complete this transaction",
-        variant: "destructive"
-      });
+      toast({ title: "Insufficient Funds", description: "You don't have enough USDT to complete this transaction", variant: "destructive" });
     } else if (errorMessage.toLowerCase().includes("rejected")) {
-      toast({
-        title: "Transaction Rejected",
-        description: "Transaction was rejected in your wallet",
-        variant: "destructive"
-      });
+      toast({ title: "Transaction Rejected", description: "Transaction was rejected in your wallet", variant: "destructive" });
     } else if (errorMessage.toLowerCase().includes("supply cap exceeded")) {
-      toast({
-        title: "Supply Cap Exceeded",
-        description: errorMessage,
-        variant: "destructive"
-      });
+      toast({ title: "Supply Cap Exceeded", description: errorMessage, variant: "destructive" });
     } else if (errorMessage.toLowerCase().includes("failed to fetch")) {
-      toast({
-        title: "Network Error",
-        description: "Failed to connect to the blockchain. Please try again.",
-        variant: "destructive"
-      });
+      toast({ title: "Network Error", description: "Failed to connect to the blockchain. Please try again.", variant: "destructive" });
     } else {
-      toast({
-        title: "Transaction Failed",
-        description: errorMessage,
-        variant: "destructive"
-      });
+      toast({ title: "Transaction Failed", description: errorMessage, variant: "destructive" });
     }
   };
 
@@ -936,23 +917,6 @@ export default function MintingContent() {
                 style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", outline: "none" }}
               />
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h3 style={{ fontSize: "1.125rem", fontWeight: "semibold", color: "#1f2937" }}>Mint Your NFT</h3>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <input
-                    type="number"
-                    min="1"
-                    max="5"
-                    value={quantity}
-                    onChange={handleQuantityChange}
-                    disabled={!account || !isEligible}
-                    style={{ width: "4rem", padding: "0.5rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", textAlign: "center", outline: "none" }}
-                  />
-                  <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>(Max of 5 NFTs)</span>
-                </div>
-              </div>
-            </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.875rem", color: "#4b5563" }}>
               <p>Unit Price: ${unitPrice} USDT</p>
               <p style={{ fontWeight: "semibold", color: "#1f2937" }}>Total: ${totalPrice.toFixed(2)} USDT</p>
@@ -1023,7 +987,7 @@ export default function MintingContent() {
           </Link>
         </div>
         {isOpen && (
-          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", backgroundColor: "#ecececff", padding: "1rem", borderRadius: "1rem", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}>
+          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", backgroundColor: "#dfdedeff", padding: "1rem", borderRadius: "1rem", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}>
             <h3 style={{ fontSize: "1.25rem", fontWeight: "semibold" }}>Wallet Connection Required</h3>
             <div style={{ backgroundColor: "#fefcbf", padding: "1rem", border: "1px solid #facc15", marginTop: "0.5rem", display: "flex", alignItems: "center" }}>
               <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#d97706" }} />
