@@ -12,6 +12,7 @@ import {
   getContract,
   prepareContractCall,
   sendTransaction,
+  getContractEvents,
 } from "thirdweb";
 import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2 } from "lucide-react";
 import { db } from "@/lib/firebase";
@@ -22,7 +23,6 @@ import { toast } from "sonner";
 import { CHAINS, USDT_ADDRESSES, NFT_CONTRACTS, NFT_ABI, USDT_ABI } from "@/lib/contracts";
 import { PASS_PRICES } from "@/lib/pricing";
 
-// Create client inside the component to avoid SSR issues
 const thirdwebClient = createThirdwebClient({
   clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID!,
 });
@@ -30,12 +30,11 @@ const thirdwebClient = createThirdwebClient({
 type ChainId = "56" | "137" | "42161";
 type NftType = keyof typeof PASS_PRICES;
 
-// Public mint supply caps
 const PUBLIC_MINT_CAPS = {
   seed: 400,
   tree: 200,
-  solar: 0, // Not available for public mint
-  compute: 0, // Not available for public mint
+  solar: 0,
+  compute: 0,
 } as const;
 
 interface SpendingCapModalProps {
@@ -228,7 +227,7 @@ const ProgressAlertBox = ({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      zIndex: 60, // Higher zIndex than SpendingCapModal
+      zIndex: 60,
     }}>
       <div style={{
         backgroundColor: "#1f2937",
@@ -279,7 +278,6 @@ export default function MintingContent() {
   const [status, setStatus] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [isEligible, setIsEligible] = useState(false);
   const [eligibilityChecked, setEligibilityChecked] = useState(false);
   const [showSpendingModal, setShowSpendingModal] = useState(false);
@@ -287,45 +285,65 @@ export default function MintingContent() {
   const [pendingApprovalTx, setPendingApprovalTx] = useState<any>(null);
   const [pendingMintTx, setPendingMintTx] = useState<any>(null);
   const { setTheme, theme } = useTheme();
+
   const chainInfo = CHAINS[chainId];
   const contractAddr = NFT_CONTRACTS[nftType]?.[chainId];
   const usdtAddr = USDT_ADDRESSES[chainId];
-  const nftContract = contractAddr ? getContract({
+
+  // Validate contract addresses
+  const isValidContractAddr = contractAddr && contractAddr !== "0x0" && /^0x[a-fA-F0-9]{40}$/.test(contractAddr);
+  const isValidUsdtAddr = usdtAddr && usdtAddr !== "0x0" && /^0x[a-fA-F0-9]{40}$/.test(usdtAddr);
+
+  const nftContract = isValidContractAddr ? getContract({
     client: thirdwebClient,
     address: contractAddr,
     chain: chainInfo.chain,
     abi: NFT_ABI,
   }) : null;
-  const usdtContract = usdtAddr ? getContract({
+
+  const usdtContract = isValidUsdtAddr ? getContract({
     client: thirdwebClient,
     address: usdtAddr,
     chain: chainInfo.chain,
     abi: USDT_ABI,
   }) : null;
 
-  // Get NFT supply information using ThirdWeb hooks
-  const { data: totalSupply } = useReadContract({
-    contract: nftContract!,
-    method: "totalSupply",
-    params: [],
-  });
-  const { data: userBalance } = useReadContract({
-    contract: nftContract!,
-    method: "balanceOf",
-    params: [account?.address || "0x0"],
-  });
+  // Get NFT supply information
+  const { data: totalSupply } = useReadContract(
+    nftContract ? {
+      contract: nftContract,
+      method: "totalSupply",
+      params: [],
+    } : undefined
+  );
+
+  const { data: userBalance } = useReadContract(
+    nftContract && account?.address ? {
+      contract: nftContract,
+      method: "balanceOf",
+      params: [account.address],
+    } : undefined
+  );
+
+  // Check USDT allowance
+  const { data: usdtAllowance } = useReadContract(
+    usdtContract && account?.address && isValidContractAddr ? {
+      contract: usdtContract,
+      method: "allowance",
+      params: [account.address, contractAddr],
+    } : undefined
+  );
+
   const unitPrice = PASS_PRICES[nftType]?.usd || 59;
   const totalPrice = unitPrice * Number(quantity);
   const publicMintCap = PUBLIC_MINT_CAPS[nftType];
   const currentSupply = totalSupply ? Number(totalSupply) : 0;
   const remainingSupply = Math.max(0, publicMintCap - currentSupply);
 
-  // One-time eligibility check on wallet connection
   const checkEligibility = useCallback(async () => {
     if (!account?.address || !nftContract || eligibilityChecked) return;
     setStatus("Checking minting eligibility...");
     try {
-      // Check if public mint cap has been reached
       const currentSupply = totalSupply ? Number(totalSupply) : 0;
       const publicMintCap = PUBLIC_MINT_CAPS[nftType];
       if (currentSupply >= publicMintCap) {
@@ -350,9 +368,8 @@ export default function MintingContent() {
         setEligibilityChecked(true);
         return;
       }
-      // Check if user has already minted the maximum allowed per wallet
       const userMintedCount = userBalance ? Number(userBalance) : 0;
-      const maxPerWallet = 5; // Assuming 5 is the max per wallet
+      const maxPerWallet = 5;
       if (userMintedCount >= maxPerWallet) {
         setIsEligible(false);
         setStatus(`Maximum minting limit reached (${maxPerWallet})`);
@@ -381,34 +398,26 @@ export default function MintingContent() {
   }, [account?.address, nftContract, userBalance, eligibilityChecked, totalSupply, nftType]);
 
   useEffect(() => {
-    const initializeComponent = async () => {
-      setIsLoading(true);
-      if (!account || !account.address) {
-        setStatus("Connect wallet to mint");
-        setIsOpen(true);
-        setEligibilityChecked(false);
-        setIsEligible(false);
-      } else {
-        setIsOpen(false);
-        // Only check eligibility once when wallet connects
-        if (!eligibilityChecked) {
-          await checkEligibility();
-        }
+    if (!account || !account.address) {
+      setStatus("Connect wallet to mint");
+      setIsOpen(true);
+      setEligibilityChecked(false);
+      setIsEligible(false);
+    } else {
+      setIsOpen(false);
+      if (!eligibilityChecked && nftContract) {
+        checkEligibility();
       }
-      setIsLoading(false);
-    };
-    initializeComponent();
-  }, [account, checkEligibility, eligibilityChecked]);
+    }
+  }, [account, checkEligibility, eligibilityChecked, nftContract]);
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Math.max(1, Math.min(5, Number(e.target.value) || 1));
-    // Check if the selected quantity would exceed available supply
     const userMintedCount = userBalance ? Number(userBalance) : 0;
     const totalAfterMinting = userMintedCount + value;
     const maxPerWallet = 5;
     const currentSupply = totalSupply ? Number(totalSupply) : 0;
     const publicMintCap = PUBLIC_MINT_CAPS[nftType];
-    // Check per-wallet limit
     if (totalAfterMinting > maxPerWallet) {
       toast({
         title: "Quantity Limit",
@@ -418,7 +427,6 @@ export default function MintingContent() {
       setQuantity((maxPerWallet - userMintedCount).toString());
       return;
     }
-    // Check public mint cap
     if (currentSupply + value > publicMintCap) {
       const remaining = publicMintCap - currentSupply;
       toast({
@@ -434,7 +442,6 @@ export default function MintingContent() {
 
   const handleChainChange = async (newChainId: ChainId) => {
     setChainId(newChainId);
-    // Reset eligibility check for new chain
     setEligibilityChecked(false);
     setIsEligible(false);
     if (account) {
@@ -443,14 +450,12 @@ export default function MintingContent() {
         description: `Switched to ${newChainId === "56" ? "BNB Chain" : newChainId === "137" ? "Polygon" : "Arbitrum"}`,
         variant: "default",
       });
-      // Re-check eligibility for new chain
       setTimeout(() => checkEligibility(), 1000);
     }
   };
 
   const handleNftTypeChange = async (newNftType: NftType) => {
     setNftType(newNftType);
-    // Reset eligibility check for new NFT type
     setEligibilityChecked(false);
     setIsEligible(false);
     if (account) {
@@ -459,7 +464,6 @@ export default function MintingContent() {
         description: `Selected ${newNftType}Pass`,
         variant: "default",
       });
-      // Re-check eligibility for new NFT type
       setTimeout(() => checkEligibility(), 1000);
     }
   };
@@ -470,8 +474,8 @@ export default function MintingContent() {
 
   const handleSpendingCapConfirm = async () => {
     setShowSpendingModal(false);
-    setShowProgressModal(true); // Show progress modal after confirm
-    if (pendingApprovalTx && pendingMintTx) {
+    setShowProgressModal(true);
+    if (pendingApprovalTx && pendingMintTx && account) {
       try {
         setStatus("Approving USDT spending...");
         toast({
@@ -486,12 +490,11 @@ export default function MintingContent() {
           variant: "default",
         });
         setStatus("Executing mint transaction...");
-        // Return the mint transaction to be executed by TransactionButton
         return pendingMintTx;
-      } catch (error) {
+      } catch (error: any) {
         toast({
           title: "Approval Failed",
-          description: "Failed to approve USDT spending",
+          description: error.message || "Failed to approve USDT spending",
           variant: "destructive",
         });
         setIsMinting(false);
@@ -511,8 +514,6 @@ export default function MintingContent() {
   };
 
   const handleProgressClose = () => {
-    // Optionally prevent closing during critical steps
-    // For now, allow closing but warn user
     toast({
       title: "Minting in Progress",
       description: "Closing this may interrupt the process. Are you sure?",
@@ -538,10 +539,10 @@ export default function MintingContent() {
       });
       throw new Error("Not eligible for minting");
     }
-    if (!nftContract || !usdtContract || !contractAddr) {
+    if (!nftContract || !usdtContract || !isValidContractAddr || !isValidUsdtAddr) {
       toast({
         title: "Contract Error",
-        description: "Contracts not loaded for the selected network.",
+        description: "Contracts not loaded for the selected network or NFT type.",
         variant: "destructive",
       });
       throw new Error("Contracts not loaded");
@@ -549,7 +550,6 @@ export default function MintingContent() {
     setIsMinting(true);
     setStatus("Preparing transaction...");
     try {
-      // Validate KOL ID if provided
       if (kolId) {
         setStatus("Validating KOL ID...");
         const q = query(collection(db, "kols"), where("kolId", "==", kolId));
@@ -563,7 +563,6 @@ export default function MintingContent() {
           throw new Error("Invalid KOL ID");
         }
       }
-      // Check supply availability
       const userMintedCount = userBalance ? Number(userBalance) : 0;
       const totalAfterMinting = userMintedCount + Number(quantity);
       const maxPerWallet = 5;
@@ -578,55 +577,70 @@ export default function MintingContent() {
       if (publicMintCap === 0) {
         throw new Error(`${nftType}Pass is not available for public mint`);
       }
-      // Calculate price for approval
       const totalPrice = Number(quantity) * (PASS_PRICES[nftType]?.usd || 59);
-      // Adjust decimals based on chain: 18 for BNB, 6 for Polygon/Arbitrum
       const decimals = chainId === "56" ? 1_000_000_000_000_000_000 : 1_000_000;
       const priceWei = BigInt(Math.floor(totalPrice * decimals)).toString();
-      // Prepare USDT approval transaction with exact spending cap
-      setStatus("Preparing USDT approval...");
-      const approveTx = prepareContractCall({
+
+      // Check USDT balance
+      const { data: usdtBalance } = await useReadContract({
         contract: usdtContract,
-        method: "approve",
-        params: [contractAddr, priceWei], // Use string to avoid BigInt issues
+        method: "balanceOf",
+        params: [account.address],
       });
-      // Prepare mint transaction
+      if (!usdtBalance || BigInt(usdtBalance) < BigInt(priceWei)) {
+        throw new Error("Insufficient USDT balance");
+      }
+
+      // Check existing allowance
+      if (usdtAllowance && BigInt(usdtAllowance) >= BigInt(priceWei)) {
+        setStatus("Sufficient allowance detected, skipping approval...");
+      } else {
+        setStatus("Preparing USDT approval...");
+        const approveTx = prepareContractCall({
+          contract: usdtContract,
+          method: "approve",
+          params: [contractAddr, priceWei],
+        });
+        setPendingApprovalTx(approveTx);
+      }
+
       const mintTx = prepareContractCall({
         contract: nftContract,
         method: "mint",
-        params: [account.address, Number(quantity)], // Assuming mint function takes recipient and quantity
+        params: [BigInt(quantity), []],
       });
-      setPendingApprovalTx(approveTx);
       setPendingMintTx(mintTx);
-      // Show spending cap modal for approval
-      showSpendingCapApproval();
-      // Wait for user confirmation and return mint transaction
-      return new Promise((resolve, reject) => {
-        const checkModalClosed = setInterval(() => {
-          if (!showSpendingModal && pendingMintTx) {
+
+      if (pendingApprovalTx) {
+        showSpendingCapApproval();
+        return new Promise((resolve, reject) => {
+          const checkModalClosed = setInterval(() => {
+            if (!showSpendingModal && pendingMintTx) {
+              clearInterval(checkModalClosed);
+              setStatus("Awaiting wallet approval...");
+              resolve(pendingMintTx);
+            }
+          }, 500);
+          setTimeout(() => {
             clearInterval(checkModalClosed);
-            setStatus("Awaiting wallet approval...");
-            resolve(pendingMintTx);
-          }
-        }, 500);
-        // Timeout after 2 minutes
-        setTimeout(() => {
-          clearInterval(checkModalClosed);
-          setIsMinting(false);
-          setShowProgressModal(false);
-          reject(new Error("Transaction approval timeout"));
-        }, 120_000);
-      });
-    } catch (error) {
+            setIsMinting(false);
+            setShowProgressModal(false);
+            reject(new Error("Transaction approval timeout"));
+          }, 120_000);
+        });
+      } else {
+        setStatus("Executing mint transaction...");
+        return mintTx;
+      }
+    } catch (error: any) {
       setIsMinting(false);
       setShowProgressModal(false);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      const errorMessage = error.message || "Unknown error occurred";
       setStatus(`Error: ${errorMessage}`);
       throw error;
     }
   };
 
-  // Auto-reload page after successful transaction
   const handleTransactionSuccess = async (receipt: any) => {
     try {
       await addDoc(collection(db, "mintEvents"), {
@@ -647,7 +661,6 @@ export default function MintingContent() {
         description: `Successfully minted ${quantity} ${nftType}Pass NFT${Number(quantity) > 1 ? 's' : ''}`,
         variant: "default",
       });
-      // Auto-reload page after 3 seconds
       setTimeout(() => {
         window.location.reload();
       }, 3000);
@@ -660,18 +673,33 @@ export default function MintingContent() {
       });
       setIsMinting(false);
       setShowProgressModal(false);
-      // Still reload even if database save fails
       setTimeout(() => {
         window.location.reload();
       }, 3000);
     }
   };
 
-  const handleTransactionError = (err: any) => {
-    const errorMessage = err instanceof Error ? err.message : "Transaction failed";
-    setStatus(`Error: ${errorMessage}`);
+  const handleTransactionError = async (err: any) => {
+    let errorMessage = err.message || "Transaction failed";
     setIsMinting(false);
     setShowProgressModal(false);
+    if (nftContract && err.transactionHash) {
+      try {
+        const events = await getContractEvents({
+          contract: nftContract,
+          events: [],
+          fromBlock: err.blockNumber ? BigInt(err.blockNumber) - BigInt(1) : undefined,
+          toBlock: err.blockNumber ? BigInt(err.blockNumber) : undefined,
+        });
+        const revertEvent = events.find(event => event.eventName.includes("Error") || event.eventName.includes("Failed"));
+        if (revertEvent?.args?.reason) {
+          errorMessage = revertEvent.args.reason;
+        }
+      } catch (eventError) {
+        console.error("Failed to fetch revert reason:", eventError);
+      }
+    }
+    setStatus(`Error: ${errorMessage}`);
     if (errorMessage.toLowerCase().includes("insufficient")) {
       toast({ title: "Insufficient Funds", description: "You don't have enough USDT to complete this transaction", variant: "destructive" });
     } else if (errorMessage.toLowerCase().includes("rejected")) {
@@ -685,16 +713,16 @@ export default function MintingContent() {
     }
   };
 
-  if (isLoading) return <div style={{ textAlign: "center", padding: "1rem" }}>Loading...</div>;
-
-  if (!contractAddr || !usdtAddr) {
+  if (!isValidContractAddr || !isValidUsdtAddr) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#e6f0fa", padding: "1rem", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <div style={{ width: "100%", maxWidth: "32rem", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}>
           <div style={{ paddingTop: "1.5rem" }}>
             <div style={{ backgroundColor: "#fee2e2", padding: "1rem", border: "1px solid #fecaca", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#dc2626" }} />
-              <span style={{ color: "#dc2626", marginLeft: "0.5rem" }}>Contract not loaded for selected network</span>
+              <span style={{ color: "#dc2626", marginLeft: "0.5rem" }}>
+                Invalid contract address for {nftType}Pass on {chainId === "56" ? "BNB Chain" : chainId === "137" ? "Polygon" : "Arbitrum"}
+              </span>
             </div>
           </div>
         </div>
@@ -723,8 +751,7 @@ export default function MintingContent() {
             <div style={{ textAlign: "center" }}>
               <ConnectButton client={thirdwebClient} />
             </div>
-            {/* Supply Information */}
-            {totalSupply !== undefined && (
+            {nftContract && totalSupply !== undefined && (
               <div style={{ backgroundColor: "#f0f9ff", padding: "1rem", border: "1px solid #0ea5e9", borderRadius: "0.5rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem", color: "#0369a1", marginBottom: "0.5rem" }}>
                   <span>{nftType}Pass Public Mint</span>
@@ -752,7 +779,6 @@ export default function MintingContent() {
                 </div>
               </div>
             )}
-            {/* User Minting Status */}
             {account && eligibilityChecked && (
               <div style={{ backgroundColor: isEligible ? "#f0fdf4" : "#fee2e2", padding: "1rem", border: `1px solid ${isEligible ? "#34d399" : "#fecaca"}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {isEligible ? <CheckCircle style={{ height: "1rem", width: "1rem", color: "#10b981" }} /> : <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#dc2626" }} />}
@@ -761,7 +787,7 @@ export default function MintingContent() {
                 </span>
               </div>
             )}
-            {!account && !isLoading && (
+            {!account && (
               <div style={{ backgroundColor: "#fee2e2", padding: "1rem", border: "1px solid #fecaca", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#dc2626" }} />
                 <span style={{ color: "#dc2626", marginLeft: "0.5rem" }}>Please connect your wallet</span>
@@ -928,6 +954,20 @@ export default function MintingContent() {
                 style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", outline: "none" }}
               />
             </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <label htmlFor="quantity" style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}>
+                Quantity
+              </label>
+              <input
+                id="quantity"
+                type="number"
+                value={quantity}
+                onChange={handleQuantityChange}
+                min="1"
+                max={canMintMore}
+                style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", outline: "none" }}
+              />
+            </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.875rem", color: "#4b5563" }}>
               <p>Unit Price: ${unitPrice} USDT</p>
               <p style={{ fontWeight: "semibold", color: "#1f2937" }}>Total: ${totalPrice.toFixed(2)} USDT</p>
@@ -942,7 +982,7 @@ export default function MintingContent() {
                 transaction={buildTransaction}
                 onTransactionConfirmed={handleTransactionSuccess}
                 onError={handleTransactionError}
-                disabled={!account || isMinting || !isEligible || remainingSupply === 0}
+                disabled={!account || isMinting || !isEligible || remainingSupply === 0 || !isValidContractAddr || !isValidUsdtAddr}
                 style={{
                   width: "100%",
                   backgroundColor: "#16a34a",
@@ -951,20 +991,20 @@ export default function MintingContent() {
                   padding: "1rem",
                   borderRadius: "0.75rem",
                   fontSize: "1.125rem",
-                  cursor: (!account || isMinting || !isEligible || remainingSupply === 0) ? "not-allowed" : "pointer",
-                  opacity: (!account || isMinting || !isEligible || remainingSupply === 0) ? 0.5 : 1,
+                  cursor: (!account || isMinting || !isEligible || remainingSupply === 0 || !isValidContractAddr || !isValidUsdtAddr) ? "not-allowed" : "pointer",
+                  opacity: (!account || isMinting || !isEligible || remainingSupply === 0 || !isValidContractAddr || !isValidUsdtAddr) ? 0.5 : 1,
                 }}
               >
                 {isMinting ? "Processing..." :
                  !account ? "Connect Wallet" :
                  !isEligible ? "Not Eligible" :
                  remainingSupply === 0 ? "Sold Out" :
+                 !isValidContractAddr || !isValidUsdtAddr ? "Invalid Contract" :
                  "Mint Now"}
               </TransactionButton>
             </div>
           </div>
         </div>
-        {/* Spending Cap Modal */}
         <SpendingCapModal
           isOpen={showSpendingModal}
           onClose={handleSpendingCapClose}
@@ -975,7 +1015,6 @@ export default function MintingContent() {
           tokenSymbol="USDT"
           networkFee="0.12"
         />
-        {/* Progress Alert Box */}
         <ProgressAlertBox
           isOpen={showProgressModal}
           onClose={handleProgressClose}
