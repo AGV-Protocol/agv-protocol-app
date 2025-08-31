@@ -228,7 +228,7 @@ const ProgressAlertBox = ({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      zIndex: 50,
+      zIndex: 60, // Higher zIndex than SpendingCapModal
     }}>
       <div style={{
         backgroundColor: "#1f2937",
@@ -400,15 +400,6 @@ export default function MintingContent() {
     initializeComponent();
   }, [account, checkEligibility, eligibilityChecked]);
 
-  useEffect(() => {
-    // Show progress modal when minting starts, hide when complete or on error
-    if (isMinting) {
-      setShowProgressModal(true);
-    } else {
-      setShowProgressModal(false);
-    }
-  }, [isMinting]);
-
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Math.max(1, Math.min(5, Number(e.target.value) || 1));
     // Check if the selected quantity would exceed available supply
@@ -479,6 +470,7 @@ export default function MintingContent() {
 
   const handleSpendingCapConfirm = async () => {
     setShowSpendingModal(false);
+    setShowProgressModal(true); // Show progress modal after confirm
     if (pendingApprovalTx && pendingMintTx) {
       try {
         setStatus("Approving USDT spending...");
@@ -508,6 +500,25 @@ export default function MintingContent() {
         throw error;
       }
     }
+  };
+
+  const handleSpendingCapClose = () => {
+    setShowSpendingModal(false);
+    setIsMinting(false);
+    setStatus("");
+    setPendingApprovalTx(null);
+    setPendingMintTx(null);
+  };
+
+  const handleProgressClose = () => {
+    // Optionally prevent closing during critical steps
+    // For now, allow closing but warn user
+    toast({
+      title: "Minting in Progress",
+      description: "Closing this may interrupt the process. Are you sure?",
+      variant: "warning",
+    });
+    setShowProgressModal(false);
   };
 
   const buildTransaction = async () => {
@@ -956,14 +967,7 @@ export default function MintingContent() {
         {/* Spending Cap Modal */}
         <SpendingCapModal
           isOpen={showSpendingModal}
-          onClose={() => {
-            setShowSpendingModal(false);
-            setIsMinting(false);
-            setShowProgressModal(false);
-            setStatus("");
-            setPendingApprovalTx(null);
-            setPendingMintTx(null);
-          }}
+          onClose={handleSpendingCapClose}
           onConfirm={handleSpendingCapConfirm}
           spender={contractAddr?.substring(0, 6) + "..." + contractAddr?.substring(contractAddr.length - 4) || ""}
           requestFrom="agv-nft.com"
@@ -974,11 +978,7 @@ export default function MintingContent() {
         {/* Progress Alert Box */}
         <ProgressAlertBox
           isOpen={showProgressModal}
-          onClose={() => {
-            setShowProgressModal(false);
-            setIsMinting(false);
-            setStatus("");
-          }}
+          onClose={handleProgressClose}
           status={status}
         />
         <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
@@ -987,7 +987,7 @@ export default function MintingContent() {
           </Link>
         </div>
         {isOpen && (
-          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", backgroundColor: "#dfdedeff", padding: "1rem", borderRadius: "1rem", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}>
+          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", backgroundColor: "#ecececff", padding: "1rem", borderRadius: "1rem", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}>
             <h3 style={{ fontSize: "1.25rem", fontWeight: "semibold" }}>Wallet Connection Required</h3>
             <div style={{ backgroundColor: "#fefcbf", padding: "1rem", border: "1px solid #facc15", marginTop: "0.5rem", display: "flex", alignItems: "center" }}>
               <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#d97706" }} />
