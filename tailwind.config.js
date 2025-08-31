@@ -63,10 +63,10 @@ module.exports = {
         border: "hsl(var(--border))",
       },
       borderRadius: {
-        sm: "var(--radius-sm)",
-        md: "var(--radius-md)",
-        lg: "var(--radius)",
-        xl: "var(--radius-xl)",
+        sm: "var(--radius-sm, 0.125rem)",
+        md: "var(--radius-md, 0.375rem)",
+        lg: "var(--radius, 0.625rem)",
+        xl: "var(--radius-xl, 1rem)",
       },
       fontFamily: {
         sans: ["var(--font-geist-sans)", "sans-serif"],

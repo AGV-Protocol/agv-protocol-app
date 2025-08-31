@@ -11,29 +11,17 @@ import {
   getContract,
   prepareContractCall,
 } from "thirdweb";
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Alert,
-  AlertDescription,
-} from "@/components/ui";
-import { CHAINS, USDT_ADDRESSES, NFT_CONTRACTS, NFT_ABI } from "@/lib/contracts";
-import { toast } from "sonner";
-import { PASS_PRICES } from "@/lib/pricing";
-import { canMintNFT } from "@/lib/mintingCap";
-import Link from "next/link";
-import { useTheme } from "next-themes";
 import { Moon, Sun, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import Link from "next/link";
+import { useTheme } from "next-themes";
+import { toast } from "sonner";
+import { CHAINS, USDT_ADDRESSES, NFT_CONTRACTS, NFT_ABI } from "@/lib/contracts";
+import { PASS_PRICES } from "@/lib/pricing";
+import { canMintNFT } from "@/lib/mintingCap";
 
+// Create client inside the component to avoid SSR issues
 const thirdwebClient = createThirdwebClient({
   clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID!,
 });
@@ -53,26 +41,15 @@ export default function MintingContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isWhitelisted, setIsWhitelisted] = useState<boolean | null>(null);
   const { setTheme, theme } = useTheme();
-  
-  // Check if wallet is whitelisted using the verification endpoint
+
   const checkWhitelistStatus = async (walletAddress: string) => {
     try {
-      // First verify wallet with the AGV API
       const verifyRes = await fetch(
         `https://agv-api-1.onrender.com/verify-wallet?address=${walletAddress}`
       );
-      
-      if (!verifyRes.ok) {
-        throw new Error("Failed to verify wallet");
-      }
-      
+      if (!verifyRes.ok) throw new Error("Failed to verify wallet");
       const verifyData = await verifyRes.json();
-      
-      if (!verifyData.result?.isValid || !verifyData.result?.details?.found) {
-        return false;
-      }
-
-      return true;
+      return verifyData.result?.isValid && verifyData.result?.details?.found;
     } catch (error) {
       console.error("Error checking whitelist:", error);
       return false;
@@ -88,11 +65,9 @@ export default function MintingContent() {
       } else {
         setIsOpen(false);
         setStatus("Checking whitelist status...");
-        
         try {
           const whitelisted = await checkWhitelistStatus(account.address);
           setIsWhitelisted(whitelisted);
-          
           if (!whitelisted) {
             setStatus("Wallet not whitelisted for minting");
             toast({
@@ -120,9 +95,8 @@ export default function MintingContent() {
       }
       setIsLoading(false);
     };
-
     initializeComponent();
-  }, [account, chainId, nftType, toast]);
+  }, [account]);
 
   const chainInfo = CHAINS[chainId];
   const contractAddr = NFT_CONTRACTS[nftType]?.[chainId];
@@ -151,172 +125,87 @@ export default function MintingContent() {
 
   const handleChainChange = async (newChainId: ChainId) => {
     setChainId(newChainId);
-    if (account) {
-      toast({
-        title: "Checking New Network",
-        description: "Verifying whitelist status on new network...",
-        variant: "default",
-      });
-    }
+    if (account) toast({
+      title: "Checking New Network",
+      description: "Verifying whitelist status on new network...",
+      variant: "default",
+    });
   };
 
   const handleNftTypeChange = async (newNftType: NftType) => {
     setNftType(newNftType);
-    if (account) {
-      toast({
-        title: "NFT Type Changed",
-        description: "Verifying eligibility for new NFT type...",
-        variant: "default",
-      });
-    }
+    if (account) toast({
+      title: "NFT Type Changed",
+      description: "Verifying eligibility for new NFT type...",
+      variant: "default",
+    });
   };
 
   const buildTransaction = async () => {
     if (!account) {
-      const errorMsg = "Please connect your wallet first";
-      toast({
-        title: "Wallet Not Connected",
-        description: errorMsg,
-        variant: "destructive",
-      });
-      throw new Error(errorMsg);
+      toast({ title: "Wallet Not Connected", description: "Please connect your wallet first", variant: "destructive" });
+      throw new Error("Please connect your wallet first");
     }
-
     if (!nftContract || !usdtContract || !contractAddr) {
-      const errorMsg = "Contract not loaded for selected network";
-      toast({
-        title: "Contract Error",
-        description: errorMsg,
-        variant: "destructive",
-      });
-      throw new Error(errorMsg);
+      toast({ title: "Contract Error", description: "Contract not loaded for selected network", variant: "destructive" });
+      throw new Error("Contract not loaded for selected network");
     }
-
     if (!isWhitelisted) {
-      const errorMsg = "Your wallet is not whitelisted for minting";
-      toast({
-        title: "Not Whitelisted",
-        description: errorMsg,
-        variant: "destructive",
-      });
-      throw new Error(errorMsg);
+      toast({ title: "Not Whitelisted", description: "Your wallet is not whitelisted for minting", variant: "destructive" });
+      throw new Error("Your wallet is not whitelisted for minting");
     }
-
     setIsMinting(true);
     setStatus("Preparing transaction...");
-
     try {
-      // Validate KOL ID if provided
       if (kolId) {
         setStatus("Validating KOL ID...");
         const q = query(collection(db, "kols"), where("kolId", "==", kolId));
         const snap = await getDocs(q);
         if (snap.empty) {
-          const errorMsg = "Invalid KOL ID provided";
-          toast({
-            title: "Invalid KOL ID",
-            description: errorMsg,
-            variant: "destructive",
-          });
-          throw new Error(errorMsg);
+          toast({ title: "Invalid KOL ID", description: "Invalid KOL ID provided", variant: "destructive" });
+          throw new Error("Invalid KOL ID provided");
         }
       }
-
-      // Check minting cap
       setStatus("Checking minting eligibility...");
-      const { allowed, message } = await canMintNFT({
-        nftContract,
-        nftType,
-        quantity: Number(quantity),
-      });
-      
+      const { allowed, message } = await canMintNFT({ nftContract, nftType, quantity: Number(quantity) });
       if (!allowed) {
-        toast({
-          title: "Minting Not Allowed",
-          description: message,
-          variant: "destructive",
-        });
+        toast({ title: "Minting Not Allowed", description: message, variant: "destructive" });
         throw new Error(message);
       }
-
-      // First verify wallet with AGV API, then get Merkle Proof
       setStatus("Verifying wallet with AGV...");
-      const verifyRes = await fetch(
-        `https://agv-api-1.onrender.com/verify-wallet?address=${account.address}`
-      );
-      
+      const verifyRes = await fetch(`https://agv-api-1.onrender.com/verify-wallet?address=${account.address}`);
       if (!verifyRes.ok) {
-        const errorMsg = "Failed to verify wallet with AGV API";
-        toast({
-          title: "Verification Error",
-          description: errorMsg,
-          variant: "destructive",
-        });
-        throw new Error(errorMsg);
+        toast({ title: "Verification Error", description: "Failed to verify wallet with AGV API", variant: "destructive" });
+        throw new Error("Failed to verify wallet with AGV API");
       }
-      
       const verifyData = await verifyRes.json();
-      
       if (!verifyData.result?.isValid || !verifyData.result?.details?.found) {
-        const errorMsg = "Wallet not found in AGV verification system";
-        toast({
-          title: "Wallet Not Verified",
-          description: errorMsg,
-          variant: "destructive",
-        });
-        throw new Error(errorMsg);
+        toast({ title: "Wallet Not Verified", description: "Wallet not found in AGV verification system", variant: "destructive" });
+        throw new Error("Wallet not found in AGV verification system");
       }
-
-      // After successful verification, get Merkle Proof
       setStatus("Getting merkle proof...");
-      const merkleRes = await fetch(
-        `/api/merkle?address=${account.address}`
-      );
-      
+      const merkleRes = await fetch(`/api/merkle?address=${account.address}`);
       if (!merkleRes.ok) {
-        const errorMsg = "Failed to get whitelist proof";
-        toast({
-          title: "Whitelist Error",
-          description: errorMsg,
-          variant: "destructive",
-        });
-        throw new Error(errorMsg);
+        toast({ title: "Whitelist Error", description: "Failed to get whitelist proof", variant: "destructive" });
+        throw new Error("Failed to get whitelist proof");
       }
-      
       const { proof } = await merkleRes.json();
-
       if (!proof || proof.length === 0) {
-        const errorMsg = "Invalid whitelist proof - wallet not eligible";
-        toast({
-          title: "Not Whitelisted",
-          description: errorMsg,
-          variant: "destructive",
-        });
-        throw new Error(errorMsg);
+        toast({ title: "Not Whitelisted", description: "Invalid whitelist proof - wallet not eligible", variant: "destructive" });
+        throw new Error("Invalid whitelist proof - wallet not eligible");
       }
-
-      // Calculate price
       const priceWei = PASS_PRICES[nftType]?.wei
         ? BigInt(PASS_PRICES[nftType].wei) * BigInt(quantity)
         : BigInt(unitPrice) * BigInt(quantity) * BigInt(1e6);
-
-      // Approve USDT spending
       setStatus("Approving USDT spending...");
-      toast({
-        title: "Approve Transaction",
-        description: "Please approve USDT spending in your wallet",
-        variant: "default",
-      });
-      
+      toast({ title: "Approve Transaction", description: "Please approve USDT spending in your wallet", variant: "default" });
       await usdtContract.call("approve", [contractAddr, priceWei]);
-
       setStatus("Preparing mint transaction...");
       return prepareContractCall({
         contract: nftContract,
         method: "mint",
         params: [Number(quantity), proof],
       });
-
     } catch (error) {
       setIsMinting(false);
       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
@@ -325,178 +214,204 @@ export default function MintingContent() {
     }
   };
 
-  if (isLoading) return <div className="text-center py-4">Loading...</div>;
+  if (isLoading) return <div style={{ textAlign: "center", padding: "1rem" }}>Loading...</div>;
 
-  // Show contract not loaded message if contracts aren't available
   if (!contractAddr || !usdtAddr) {
     return (
-      <div className="min-h-screen bg-blue-50 p-4 flex items-center justify-center">
-        <Card className="w-full max-w-lg shadow-lg">
-          <CardContent className="pt-6">
-            <Alert variant="destructive">
-              <AlertDescription>Contract not loaded for selected network</AlertDescription>
-            </Alert>
-          </CardContent>
-        </Card>
+      <div style={{ minHeight: "100vh", backgroundColor: "#e6f0fa", padding: "1rem", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div style={{ width: "100%", maxWidth: "32rem", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}>
+          <div style={{ paddingTop: "1.5rem" }}>
+            <div style={{ backgroundColor: "#fee2e2", padding: "1rem", border: "1px solid #fecaca" }}>
+              <span style={{ color: "#dc2626" }}>Contract not loaded for selected network</span>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 p-4">
-      <div className="container mx-auto flex flex-col items-center">
-        {/* Main Card */}
-        <Card className="w-full max-w-lg shadow-lg bg-white rounded-2xl overflow-hidden">
-          {/* Header */}
-          <CardHeader className="flex flex-row justify-between items-center border-b border-gray-100">
-            <CardTitle className="text-2xl font-bold text-gray-800">AGV NFT Mint</CardTitle>
-            <Button
-              variant="outline"
-              size="icon"
+    <div style={{ minHeight: "100vh", backgroundColor: "#e6f0fa", padding: "1rem" }}>
+      <div style={{ maxWidth: "32rem", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ width: "100%", maxWidth: "32rem", backgroundColor: "#fff", borderRadius: "1rem", overflow: "hidden", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1rem", borderBottom: "1px solid #e5e7eb" }}>
+            <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#1f2937" }}>AGV NFT Mint</h2>
+            <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="rounded-full"
+              style={{ border: "1px solid #d1d5db", borderRadius: "9999px", padding: "0.25rem" }}
             >
-              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
-          </CardHeader>
-
-          <CardContent className="p-6 space-y-6">
-            {/* Wallet Connection */}
-            <div className="text-center">
+              {theme === "dark" ? <Sun style={{ height: "1.25rem", width: "1.25rem" }} /> : <Moon style={{ height: "1.25rem", width: "1.25rem" }} />}
+            </button>
+          </div>
+          <div style={{ padding: "1.5rem", gap: "1.5rem" }}>
+            <div style={{ textAlign: "center" }}>
               <ConnectButton client={thirdwebClient} />
             </div>
-
-            {/* Status Display */}
             {!account && !isLoading && (
-              <Alert variant="destructive" className="border-red-200 bg-red-50">
-                <AlertDescription className="text-red-700">Contract not loaded</AlertDescription>
-              </Alert>
+              <div style={{ backgroundColor: "#fee2e2", padding: "1rem", border: "1px solid #fecaca" }}>
+                <span style={{ color: "#dc2626" }}>Contract not loaded</span>
+              </div>
             )}
-
-            {/* Whitelist Status Indicator */}
             {account && (
-              <div className="text-center">
+              <div style={{ textAlign: "center" }}>
                 {isWhitelisted === true && (
-                  <Alert className="border-green-500 bg-green-50 dark:bg-green-950">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <AlertDescription className="text-green-700 dark:text-green-300">
-                    Wallet is whitelisted and eligible for minting
-                    </AlertDescription>
-                  </Alert>
+                  <div style={{ backgroundColor: "#f0fdf4", padding: "1rem", border: "1px solid #34d399" }}>
+                    <CheckCircle style={{ height: "1rem", width: "1rem", color: "#10b981" }} />
+                    <span style={{ color: "#065f46", marginLeft: "0.5rem" }}>Wallet is whitelisted and eligible for minting</span>
+                  </div>
                 )}
                 {isWhitelisted === false && (
-                  <Alert variant="destructive">
-                    <XCircle className="h-4 w-4" />
-                    <AlertDescription>
-                    Wallet is not whitelisted for minting
-                    </AlertDescription>
-                  </Alert>
+                  <div style={{ backgroundColor: "#fee2e2", padding: "1rem", border: "1px solid #fecaca" }}>
+                    <XCircle style={{ height: "1rem", width: "1rem" }} />
+                    <span style={{ color: "#dc2626" }}>Wallet is not whitelisted for minting</span>
+                  </div>
                 )}
                 {isWhitelisted === null && (
-                  <Alert className="border-yellow-500 bg-yellow-50">
-                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                    <AlertDescription className="text-yellow-700">
-                    Checking whitelist status...
-                    </AlertDescription>
-                  </Alert>
+                  <div style={{ backgroundColor: "#fefcbf", padding: "1rem", border: "1px solid #facc15" }}>
+                    <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#d97706" }} />
+                    <span style={{ color: "#92400e", marginLeft: "0.5rem" }}>Checking whitelist status...</span>
+                  </div>
                 )}
               </div>
             )}
-
             {status && (
-              <Alert variant="destructive">
-                <AlertDescription>{status}</AlertDescription>
-              </Alert>
+              <div style={{ backgroundColor: "#fee2e2", padding: "1rem", border: "1px solid #fecaca" }}>
+                <span style={{ color: "#dc2626" }}>{status}</span>
+              </div>
             )}
-
-            {/* Blockchain Network Selection */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-800">Select Blockchain Network</h3>
-              <div className="flex gap-2">
-                <Button
-                  variant={chainId === "56" ? "default" : "outline"}
+            <div style={{ gap: "0.75rem" }}>
+              <h3 style={{ fontSize: "1.125rem", fontWeight: "semibold", color: "#1f2937" }}>Select Blockchain Network</h3>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button
                   onClick={() => handleChainChange("56")}
-                  size="sm"
-                  className={`flex-1 ${chainId === "56" ? "bg-blue-600 hover:bg-blue-700 text-white" : "hover:bg-blue-50 hover:border-blue-300"}`}
+                  style={{
+                    flex: "1",
+                    padding: "0.5rem",
+                    backgroundColor: chainId === "56" ? "#2563eb" : "#f1f5f9",
+                    color: chainId === "56" ? "#fff" : "#1f2937",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "0.375rem",
+                    cursor: "pointer",
+                  }}
                 >
                   BNB Chain
-                </Button>
-                <Button
-                  variant={chainId === "137" ? "default" : "outline"}
+                </button>
+                <button
                   onClick={() => handleChainChange("137")}
-                  size="sm"
-                  className={`flex-1 ${chainId === "137" ? "bg-blue-600 hover:bg-blue-700 text-white" : "hover:bg-blue-50 hover:border-blue-300"}`}
+                  style={{
+                    flex: "1",
+                    padding: "0.5rem",
+                    backgroundColor: chainId === "137" ? "#2563eb" : "#f1f5f9",
+                    color: chainId === "137" ? "#fff" : "#1f2937",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "0.375rem",
+                    cursor: "pointer",
+                  }}
                 >
                   Polygon
-                </Button>
-                <Button
-                  variant={chainId === "42161" ? "default" : "outline"}
+                </button>
+                <button
                   onClick={() => handleChainChange("42161")}
-                  size="sm"
-                  className={`flex-1 ${chainId === "42161" ? "bg-blue-600 hover:bg-blue-700 text-white" : "hover:bg-blue-50 hover:border-blue-300"}`}
+                  style={{
+                    flex: "1",
+                    padding: "0.5rem",
+                    backgroundColor: chainId === "42161" ? "#2563eb" : "#f1f5f9",
+                    color: chainId === "42161" ? "#fff" : "#1f2937",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "0.375rem",
+                    cursor: "pointer",
+                  }}
                 >
                   Arbitrum
-                </Button>
+                </button>
               </div>
-              <p className="text-center text-sm text-gray-500">
+              <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#6b7280" }}>
                 Selected Network: {chainId === "56" ? "BNB Chain" : chainId === "137" ? "Polygon" : "Arbitrum"}
               </p>
             </div>
-
-            {/* NFT Pass Selection */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-800">Choose Your NFT Pass</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  variant={nftType === "seed" ? "default" : "outline"}
+            <div style={{ gap: "0.75rem" }}>
+              <h3 style={{ fontSize: "1.125rem", fontWeight: "semibold", color: "#1f2937" }}>Choose Your NFT Pass</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "0.75rem" }}>
+                <button
                   onClick={() => handleNftTypeChange("seed")}
-                  className={`flex flex-col h-auto p-4 ${
-                    nftType === "seed" 
-                      ? "bg-blue-600 hover:bg-blue-700 text-white" 
-                      : "hover:bg-blue-50 hover:border-blue-300"
-                  }`}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "auto",
+                    padding: "1rem",
+                    backgroundColor: nftType === "seed" ? "#2563eb" : "#f1f5f9",
+                    color: nftType === "seed" ? "#fff" : "#1f2937",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "0.375rem",
+                    cursor: !isWhitelisted ? "not-allowed" : "pointer",
+                    opacity: !isWhitelisted ? 0.5 : 1,
+                  }}
                   disabled={!isWhitelisted}
                 >
-                  <span className="font-semibold">SeedPass</span>
-                  <span className="text-sm">Price: $29 USDT</span>
-                </Button>
-                <Button
-                  variant={nftType === "tree" ? "default" : "outline"}
+                  <span style={{ fontWeight: "semibold" }}>SeedPass</span>
+                  <span style={{ fontSize: "0.875rem" }}>Price: $29 USDT</span>
+                </button>
+                <button
                   onClick={() => handleNftTypeChange("tree")}
-                  className={`flex flex-col h-auto p-4 ${
-                    nftType === "tree" 
-                      ? "bg-blue-600 hover:bg-blue-700 text-white" 
-                      : "hover:bg-blue-50 hover:border-blue-300"
-                  }`}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "auto",
+                    padding: "1rem",
+                    backgroundColor: nftType === "tree" ? "#2563eb" : "#f1f5f9",
+                    color: nftType === "tree" ? "#fff" : "#1f2937",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "0.375rem",
+                    cursor: !isWhitelisted ? "not-allowed" : "pointer",
+                    opacity: !isWhitelisted ? 0.5 : 1,
+                  }}
                   disabled={!isWhitelisted}
                 >
-                  <span className="font-semibold">TreePass</span>
-                  <span className="text-sm">Price: $59 USDT</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex flex-col h-auto p-4 opacity-50 cursor-not-allowed"
+                  <span style={{ fontWeight: "semibold" }}>TreePass</span>
+                  <span style={{ fontSize: "0.875rem" }}>Price: $59 USDT</span>
+                </button>
+                <button
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "auto",
+                    padding: "1rem",
+                    backgroundColor: "#f1f5f9",
+                    color: "#1f2937",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "0.375rem",
+                    opacity: 0.5,
+                    cursor: "not-allowed",
+                  }}
                   disabled={true}
                 >
-                  <span className="font-semibold">SolarPass</span>
-                  <span className="text-sm">Price: $299 USDT</span>
-                  <span className="text-xs text-red-500">Not Available</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex flex-col h-auto p-4 opacity-50 cursor-not-allowed"
+                  <span style={{ fontWeight: "semibold" }}>SolarPass</span>
+                  <span style={{ fontSize: "0.875rem" }}>Price: $299 USDT</span>
+                  <span style={{ fontSize: "0.75rem", color: "#dc2626" }}>Not Available</span>
+                </button>
+                <button
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "auto",
+                    padding: "1rem",
+                    backgroundColor: "#f1f5f9",
+                    color: "#1f2937",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "0.375rem",
+                    opacity: 0.5,
+                    cursor: "not-allowed",
+                  }}
                   disabled={true}
                 >
-                  <span className="font-semibold">ComputePass</span>
-                  <span className="text-sm">Price: $899 USDT</span>
-                  <span className="text-xs text-red-500">Not Available</span>
-                </Button>
+                  <span style={{ fontWeight: "semibold" }}>ComputePass</span>
+                  <span style={{ fontSize: "0.875rem" }}>Price: $899 USDT</span>
+                  <span style={{ fontSize: "0.75rem", color: "#dc2626" }}>Not Available</span>
+                </button>
               </div>
             </div>
-
-            {/* KOL ID Input (Optional) */}
-            <div className="space-y-2">
-              <label htmlFor="kolId" className="text-sm font-medium text-gray-700">
+            <div style={{ gap: "0.5rem" }}>
+              <label htmlFor="kolId" style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}>
                 KOL ID (Optional)
               </label>
               <input
@@ -505,19 +420,16 @@ export default function MintingContent() {
                 value={kolId}
                 onChange={(e) => setKolId(e.target.value)}
                 placeholder="Enter KOL ID if applicable"
-                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", outline: "none" }}
               />
             </div>
-
-            <p className="text-center text-sm text-gray-500">
+            <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#6b7280" }}>
               Only whitelisted wallets can mint now.
             </p>
-
-            {/* Quantity Selection */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-800">Mint Your NFT</h3>
-                <div className="flex items-center space-x-2">
+            <div style={{ gap: "0.75rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h3 style={{ fontSize: "1.125rem", fontWeight: "semibold", color: "#1f2937" }}>Mint Your NFT</h3>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <input
                     type="number"
                     min="1"
@@ -525,21 +437,17 @@ export default function MintingContent() {
                     value={quantity}
                     onChange={handleQuantityChange}
                     disabled={!isWhitelisted}
-                    className="w-16 px-2 py-2 border border-gray-300 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    style={{ width: "4rem", padding: "0.5rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", textAlign: "center", outline: "none" }}
                   />
-                  <span className="text-sm text-gray-500">(Max of 5 NFTs)</span>
+                  <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>(Max of 5 NFTs)</span>
                 </div>
               </div>
             </div>
-
-            {/* Price Section */}
-            <div className="space-y-1 text-sm text-gray-600">
+            <div style={{ gap: "0.25rem", fontSize: "0.875rem", color: "#4b5563" }}>
               <p>Unit Price: ${unitPrice} USDT</p>
-              <p className="font-semibold text-gray-800">Total: ${totalPrice.toFixed(2)} USDT</p>
+              <p style={{ fontWeight: "semibold", color: "#1f2937" }}>Total: ${totalPrice.toFixed(2)} USDT</p>
             </div>
-
-            {/* Mint Button */}
-            <CardFooter className="pt-4 px-0 pb-0">
+            <div style={{ paddingTop: "1rem", paddingBottom: "0" }}>
               <TransactionButton
                 transaction={buildTransaction}
                 onTransactionConfirmed={async (receipt) => {
@@ -553,10 +461,8 @@ export default function MintingContent() {
                       txHash: receipt.transactionHash,
                       timestamp: new Date(),
                     });
-                    
                     setStatus("Minted successfully!");
                     setIsMinting(false);
-                    
                     toast({
                       title: "Mint Successful! 🎉",
                       description: `Successfully minted ${quantity} ${nftType}Pass NFT${Number(quantity) > 1 ? 's' : ''}`,
@@ -575,67 +481,47 @@ export default function MintingContent() {
                   const errorMessage = err instanceof Error ? err.message : "Transaction failed";
                   setStatus(`Error: ${errorMessage}`);
                   setIsMinting(false);
-                  
-                  // Show specific error toasts
                   if (errorMessage.toLowerCase().includes("insufficient")) {
-                    toast({
-                      title: "Insufficient Funds",
-                      description: "You don't have enough USDT to complete this transaction",
-                      variant: "destructive",
-                    });
+                    toast({ title: "Insufficient Funds", description: "You don't have enough USDT to complete this transaction", variant: "destructive" });
                   } else if (errorMessage.toLowerCase().includes("rejected")) {
-                    toast({
-                      title: "Transaction Rejected",
-                      description: "Transaction was rejected in your wallet",
-                      variant: "destructive",
-                    });
+                    toast({ title: "Transaction Rejected", description: "Transaction was rejected in your wallet", variant: "destructive" });
                   } else if (errorMessage.toLowerCase().includes("whitelist")) {
-                    toast({
-                      title: "Whitelist Error",
-                      description: errorMessage,
-                      variant: "destructive",
-                    });
+                    toast({ title: "Whitelist Error", description: errorMessage, variant: "destructive" });
                   } else {
-                    toast({
-                      title: "Transaction Failed",
-                      description: errorMessage,
-                      variant: "destructive",
-                    });
+                    toast({ title: "Transaction Failed", description: errorMessage, variant: "destructive" });
                   }
                 }}
                 disabled={!account || !isWhitelisted || isMinting || (nftType !== "seed" && nftType !== "tree")}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-xl text-lg disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                style={{
+                  width: "100%",
+                  backgroundColor: "#16a34a",
+                  color: "#fff",
+                  fontWeight: "semibold",
+                  padding: "1rem",
+                  borderRadius: "0.75rem",
+                  fontSize: "1.125rem",
+                  cursor: !account || !isWhitelisted || isMinting || (nftType !== "seed" && nftType !== "tree") ? "not-allowed" : "pointer",
+                  opacity: !account || !isWhitelisted || isMinting || (nftType !== "seed" && nftType !== "tree") ? 0.5 : 1,
+                }}
               >
-                {isMinting ? "Minting..." : 
-                 !account ? "Connect Wallet" :
-                 !isWhitelisted ? "Not Whitelisted" :
-                 (nftType !== "seed" && nftType !== "tree") ? "Not Available" :
-                 "Mint Now"}
+                {isMinting ? "Minting..." : !account ? "Connect Wallet" : !isWhitelisted ? "Not Whitelisted" : (nftType !== "seed" && nftType !== "tree") ? "Not Available" : "Mint Now"}
               </TransactionButton>
-            </CardFooter>
-          </CardContent>
-        </Card>
-
-        {/* Dashboard Link */}
-        <div className="mt-6 text-center">
-          <Link href="/kol-dashboard" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+            </div>
+          </div>
+        </div>
+        <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
+          <Link href="/kol-dashboard" style={{ color: "#2563eb", fontWeight: "medium", textDecoration: "underline" }}>
             Go to Dashboard
           </Link>
         </div>
-
-        {/* Dialog */}
         {isOpen && (
-          <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogContent className="bg-white rounded-2xl">
-              <DialogTitle>Wallet Connection Required</DialogTitle>
-              <Alert>
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  Please connect your wallet to continue with minting.
-                </AlertDescription>
-              </Alert>
-            </DialogContent>
-          </Dialog>
+          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", backgroundColor: "#fff", padding: "1rem", borderRadius: "1rem", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: "semibold" }}>Wallet Connection Required</h3>
+            <div style={{ backgroundColor: "#fefcbf", padding: "1rem", border: "1px solid #facc15", marginTop: "0.5rem" }}>
+              <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#d97706" }} />
+              <span style={{ color: "#92400e", marginLeft: "0.5rem" }}>Please connect your wallet to continue with minting.</span>
+            </div>
+          </div>
         )}
       </div>
     </div>

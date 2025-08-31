@@ -1,0 +1,255 @@
+/* styles/MintingContent.css */
+body {
+  background-color: #e6f0fa;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.container {
+  max-width: 32rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card {
+  width: 100%;
+  max-width: 32rem;
+  background-color: #fff;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.card-header h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.card-header button {
+  border: 1px solid #d1d5db;
+  border-radius: 9999px;
+  padding: 0.25rem;
+  cursor: pointer;
+}
+
+.card-header button svg {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.card-content {
+  padding: 1.5rem;
+  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-content .text-center {
+  text-align: center;
+}
+
+.card-content .alert {
+  padding: 1rem;
+  border-radius: 0.375rem;
+}
+
+.alert-success {
+  background-color: #f0fdf4;
+  border: 1px solid #34d399;
+}
+
+.alert-success svg {
+  height: 1rem;
+  width: 1rem;
+  color: #10b981;
+}
+
+.alert-success span {
+  color: #065f46;
+  margin-left: 0.5rem;
+}
+
+.alert-error {
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+}
+
+.alert-error svg {
+  height: 1rem;
+  width: 1rem;
+}
+
+.alert-error span {
+  color: #dc2626;
+}
+
+.alert-warning {
+  background-color: #fefcbf;
+  border: 1px solid #facc15;
+}
+
+.alert-warning svg {
+  height: 1rem;
+  width: 1rem;
+  color: #d97706;
+}
+
+.alert-warning span {
+  color: #92400e;
+  margin-left: 0.5rem;
+}
+
+.network-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.network-buttons button {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.network-buttons .active {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.network-buttons button:hover:not(.active) {
+  background-color: #f1f5f9;
+}
+
+.nft-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.nft-buttons button {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.nft-buttons button.active {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.nft-buttons button:hover:not(.active) {
+  background-color: #f1f5f9;
+}
+
+.nft-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.kol-input label {
+  font-size: 0.875rem;
+  font-weight: medium;
+  color: #374151;
+}
+
+.kol-input input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  outline: none;
+}
+
+.quantity-input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.quantity-input input {
+  width: 4rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  text-align: center;
+  outline: none;
+}
+
+.quantity-input span {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.price-section p {
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.price-section p:last-child {
+  font-weight: semibold;
+  color: #1f2937;
+}
+
+.card-footer {
+  padding-top: 1rem;
+  padding-bottom: 0;
+}
+
+.card-footer button {
+  width: 100%;
+  background-color: #16a34a;
+  color: #fff;
+  font-weight: semibold;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  font-size: 1.125rem;
+  cursor: pointer;
+}
+
+.card-footer button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dashboard-link {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.dashboard-link a {
+  color: #2563eb;
+  font-weight: medium;
+  text-decoration: underline;
+}
+
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dialog h3 {
+  font-size: 1.25rem;
+  font-weight: semibold;
+}
