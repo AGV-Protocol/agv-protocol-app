@@ -188,11 +188,21 @@ export default function MintingContent() {
       setStatus("Getting merkle proof...");
       const merkleRes = await fetch(`/api/merkle?address=${account.address}`);
       if (!merkleRes.ok) {
-        toast({ title: "Whitelist Error", description: "Failed to get whitelist proof", variant: "destructive" });
-        throw new Error("Failed to get whitelist proof");
+        const errorText = await merkleRes.text();
+        console.error("Merkle API error response:", errorText);
+        toast({ title: "Whitelist Error", description: `Failed to get whitelist proof: ${errorText}`, variant: "destructive" });
+        throw new Error(`Failed to get whitelist proof: ${errorText}`);
       }
-      const { proof } = await merkleRes.json();
-      if (!proof || proof.length === 0) {
+      let merkleData;
+      try {
+        merkleData = await merkleRes.json();
+      } catch (jsonError) {
+        console.error("Error parsing Merkle API response:", jsonError);
+        toast({ title: "Whitelist Error", description: "Invalid response from whitelist API", variant: "destructive" });
+        throw new Error("Invalid response from whitelist API");
+      }
+      const { proof } = merkleData;
+      if (!proof || !Array.isArray(proof) || proof.length === 0) {
         toast({ title: "Not Whitelisted", description: "Invalid whitelist proof - wallet not eligible", variant: "destructive" });
         throw new Error("Invalid whitelist proof - wallet not eligible");
       }
