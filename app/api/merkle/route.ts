@@ -1,77 +1,46 @@
-import { ethers } from "ethers";
-import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import type { NextApiRequest, NextApiResponse } from 'next';
+import fs from 'fs';
+import path from 'path';
 
-const WHITELIST_FILE = path.join(process.cwd(), "Merkleproof.txt");
+// Merkle root from Merkleproof.txt
+const MERKLE_ROOT = '0x49a63deb617700134f44436c90cdb063263653a450a86e62274d7d3ee3ebb43f';
 
-interface WhitelistData {
-  merkleRoot: string;
-  proofs: Record<string, string[]>; // address → proof[]
-}
+// Path to merkleProofs.json (adjust if needed)
+const proofsFilePath = path.join(process.cwd(), 'public', 'proof.json');
 
-// Parse the TXT file into usable data
-function loadWhitelist(): WhitelistData {
-  const fileContent = fs.readFileSync(WHITELIST_FILE, "utf-8");
-
-  const lines = fileContent.split(/\r?\n/).map((l) => l.trim());
-  let merkleRoot = "";
-  const proofs: Record<string, string[]> = {};
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
-    if (line.startsWith("Merkle Root:")) {
-      merkleRoot = line.replace("Merkle Root:", "").trim();
-    }
-
-    if (line.startsWith("Address:")) {
-      const address = ethers.utils.getAddress(
-        line.replace("Address:", "").trim()
-      );
-
-      const proofLine = lines[i + 1] || "";
-      if (proofLine.startsWith("Proof:")) {
-        try {
-          const proof = JSON.parse(
-            proofLine.replace("Proof:", "").trim()
-          ) as string[];
-          proofs[address] = proof;
-        } catch (err) {
-          console.error("Failed to parse proof for", address, err);
-          proofs[address] = []; // fallback empty
-        }
-      } else {
-        proofs[address] = []; // no proof line
-      }
-    }
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  return { merkleRoot, proofs };
-}
+  const { address } = req.query;
 
-export async function GET(request: Request) {
+  if (!address || typeof address !== 'string') {
+    return res.status(400).json({ error: 'Valid address is required' });
+  }
+
   try {
-    const { searchParams } = new URL(request.url);
-    const address = searchParams.get("address");
+    // Read and parse the merkleProofs.json file
+    const proofsData = fs.readFileSync(proofsFilePath, 'utf8');
+    const proofs: { [address: string]: string[] } = JSON.parse(proofsData);
 
-    if (!address || !ethers.utils.isAddress(address)) {
-      return new NextResponse("Invalid address", { status: 400 });
+    // Normalize address to lowercase
+    const normalizedAddress = address.toLowerCase();
+    const proof = proofs[normalizedAddress];
+
+    if (!proof) {
+      return res.status(403).json({ error: 'Address is not whitelisted' });
     }
 
-    const normalizedAddress = ethers.utils.getAddress(address);
-    const { proofs } = loadWhitelist();
+    // Format proof as comma-separated string without brackets or quotes
+    const formattedProof = proof.join(',');
 
-    // return empty string if no proof found
-    const proofArray = proofs[normalizedAddress] || [];
-    const proofString = proofArray.length > 0 ? proofArray.join(",") : "";
-
-    return new NextResponse(proofString, {
-      status: 200,
-      headers: { "Content-Type": "text/plain" },
+    return res.status(200).json({
+      proof: formattedProof,
+      root: MERKLE_ROOT,
     });
   } catch (error) {
-    console.error("Merkle API error:", error);
-    return new NextResponse("Internal server error", { status: 500 });
+    console.error('Error reading proofs file:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
