@@ -4,7 +4,6 @@ import { ThirdwebProvider } from "thirdweb/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { createThirdwebClient } from "thirdweb";
-import { Toaster } from "sonner";
 
 // Create client instance
 const client = createThirdwebClient({
@@ -25,11 +24,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <ThirdwebProvider client={client}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
-          <Toaster 
-            position="top-right"
-            richColors
-            closeButton
-          />
         </ThemeProvider>
       </ThirdwebProvider>
     </QueryClientProvider>

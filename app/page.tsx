@@ -34,7 +34,6 @@ import { Moon, Sun, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 
-// Create client inside the component to avoid SSR issues
 const thirdwebClient = createThirdwebClient({
   clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID!,
 });
@@ -55,23 +54,25 @@ export default function MintingContent() {
   const [isWhitelisted, setIsWhitelisted] = useState<boolean | null>(null);
   const { setTheme, theme } = useTheme();
   
-  // Check if wallet is whitelisted
+  // Check if wallet is whitelisted using the verification endpoint
   const checkWhitelistStatus = async (walletAddress: string) => {
     try {
-      const contractAddr = NFT_CONTRACTS[nftType]?.[chainId];
-      if (!contractAddr) {
-        throw new Error("Contract not found for selected chain and NFT type");
-      }
-
-      const merkleRes = await fetch(
-        `/api/merkle?address=${walletAddress}&contract=${contractAddr}`
+      // First verify wallet with the AGV API
+      const verifyRes = await fetch(
+        `https://agv-api-1.onrender.com/verify-wallet?address=${walletAddress}`
       );
       
-      if (merkleRes.ok) {
-        const { proof } = await merkleRes.json();
-        return proof && proof.length > 0;
+      if (!verifyRes.ok) {
+        throw new Error("Failed to verify wallet");
       }
-      return false;
+      
+      const verifyData = await verifyRes.json();
+      
+      if (!verifyData.result?.isValid || !verifyData.result?.details?.found) {
+        return false;
+      }
+
+      return true;
     } catch (error) {
       console.error("Error checking whitelist:", error);
       return false;
@@ -238,10 +239,38 @@ export default function MintingContent() {
         throw new Error(message);
       }
 
-      // Get Merkle Proof
-      setStatus("Getting whitelist proof...");
+      // First verify wallet with AGV API, then get Merkle Proof
+      setStatus("Verifying wallet with AGV...");
+      const verifyRes = await fetch(
+        `https://agv-api-1.onrender.com/verify-wallet?address=${account.address}`
+      );
+      
+      if (!verifyRes.ok) {
+        const errorMsg = "Failed to verify wallet with AGV API";
+        toast({
+          title: "Verification Error",
+          description: errorMsg,
+          variant: "destructive",
+        });
+        throw new Error(errorMsg);
+      }
+      
+      const verifyData = await verifyRes.json();
+      
+      if (!verifyData.result?.isValid || !verifyData.result?.details?.found) {
+        const errorMsg = "Wallet not found in AGV verification system";
+        toast({
+          title: "Wallet Not Verified",
+          description: errorMsg,
+          variant: "destructive",
+        });
+        throw new Error(errorMsg);
+      }
+
+      // After successful verification, get Merkle Proof
+      setStatus("Getting merkle proof...");
       const merkleRes = await fetch(
-        `/api/merkle?address=${account.address}&contract=${contractAddr}`
+        `/api/merkle?address=${account.address}`
       );
       
       if (!merkleRes.ok) {
@@ -301,8 +330,8 @@ export default function MintingContent() {
   // Show contract not loaded message if contracts aren't available
   if (!contractAddr || !usdtAddr) {
     return (
-      <div className="container mx-auto p-4 flex flex-col items-center min-h-screen">
-        <Card className="w-full max-w-xl shadow-lg">
+      <div className="min-h-screen bg-blue-50 p-4 flex items-center justify-center">
+        <Card className="w-full max-w-lg shadow-lg">
           <CardContent className="pt-6">
             <Alert variant="destructive">
               <AlertDescription>Contract not loaded for selected network</AlertDescription>
@@ -314,276 +343,301 @@ export default function MintingContent() {
   }
 
   return (
-    <div className="container mx-auto p-4 flex flex-col items-center min-h-screen">
-      <Card className="w-full max-w-xl shadow-lg">
-        <CardHeader className="flex flex-row justify-between items-center">
-          <CardTitle className="text-3xl font-bold">AGV NFT Mint</CardTitle>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </Button>
-        </CardHeader>
+    <div className="min-h-screen bg-blue-50 p-4">
+      <div className="container mx-auto flex flex-col items-center">
+        {/* Main Card */}
+        <Card className="w-full max-w-lg shadow-lg bg-white rounded-2xl overflow-hidden">
+          {/* Header */}
+          <CardHeader className="flex flex-row justify-between items-center border-b border-gray-100">
+            <CardTitle className="text-2xl font-bold text-gray-800">AGV NFT Mint</CardTitle>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="rounded-full"
+            >
+              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
+          </CardHeader>
 
-        <CardContent className="space-y-6">
-          <div className="text-center">
-            <ConnectButton client={thirdwebClient} />
-          </div>
-
-          {/* Whitelist Status Indicator */}
-          {account && (
+          <CardContent className="p-6 space-y-6">
+            {/* Wallet Connection */}
             <div className="text-center">
-              {isWhitelisted === true && (
-                <Alert className="border-green-500 bg-green-50 dark:bg-green-950">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <AlertDescription className="text-green-700 dark:text-green-300">
-                    ✅ Wallet is whitelisted and eligible for minting
-                  </AlertDescription>
-                </Alert>
-              )}
-              {isWhitelisted === false && (
-                <Alert variant="destructive">
-                  <XCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    ❌ Wallet is not whitelisted for minting
-                  </AlertDescription>
-                </Alert>
-              )}
-              {isWhitelisted === null && (
-                <Alert>
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
-                    🔍 Checking whitelist status...
-                  </AlertDescription>
-                </Alert>
-              )}
+              <ConnectButton client={thirdwebClient} />
             </div>
-          )}
 
-          {status && (
-            <Alert variant="destructive">
-              <AlertDescription>{status}</AlertDescription>
-            </Alert>
-          )}
+            {/* Status Display */}
+            {!account && !isLoading && (
+              <Alert variant="destructive" className="border-red-200 bg-red-50">
+                <AlertDescription className="text-red-700">Contract not loaded</AlertDescription>
+              </Alert>
+            )}
 
-          {/* Blockchain Network Selection */}
-          <div className="space-y-3">
-            <h3 className="text-lg font-semibold">Select Blockchain Network</h3>
-            <div className="flex gap-2 justify-center">
-              <Button
-                variant={chainId === "56" ? "default" : "outline"}
-                onClick={() => handleChainChange("56")}
-                size="sm"
-              >
-                BNB Chain
-              </Button>
-              <Button
-                variant={chainId === "137" ? "default" : "outline"}
-                onClick={() => handleChainChange("137")}
-                size="sm"
-              >
-                Polygon
-              </Button>
-              <Button
-                variant={chainId === "42161" ? "default" : "outline"}
-                onClick={() => handleChainChange("42161")}
-                size="sm"
-              >
-                Arbitrum
-              </Button>
+            {/* Whitelist Status Indicator */}
+            {account && (
+              <div className="text-center">
+                {isWhitelisted === true && (
+                  <Alert className="border-green-500 bg-green-50 dark:bg-green-950">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertDescription className="text-green-700 dark:text-green-300">
+                    Wallet is whitelisted and eligible for minting
+                    </AlertDescription>
+                  </Alert>
+                )}
+                {isWhitelisted === false && (
+                  <Alert variant="destructive">
+                    <XCircle className="h-4 w-4" />
+                    <AlertDescription>
+                    Wallet is not whitelisted for minting
+                    </AlertDescription>
+                  </Alert>
+                )}
+                {isWhitelisted === null && (
+                  <Alert className="border-yellow-500 bg-yellow-50">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                    <AlertDescription className="text-yellow-700">
+                    Checking whitelist status...
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            )}
+
+            {status && (
+              <Alert variant="destructive">
+                <AlertDescription>{status}</AlertDescription>
+              </Alert>
+            )}
+
+            {/* Blockchain Network Selection */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-gray-800">Select Blockchain Network</h3>
+              <div className="flex gap-2">
+                <Button
+                  variant={chainId === "56" ? "default" : "outline"}
+                  onClick={() => handleChainChange("56")}
+                  size="sm"
+                  className={`flex-1 ${chainId === "56" ? "bg-blue-600 hover:bg-blue-700 text-white" : "hover:bg-blue-50 hover:border-blue-300"}`}
+                >
+                  BNB Chain
+                </Button>
+                <Button
+                  variant={chainId === "137" ? "default" : "outline"}
+                  onClick={() => handleChainChange("137")}
+                  size="sm"
+                  className={`flex-1 ${chainId === "137" ? "bg-blue-600 hover:bg-blue-700 text-white" : "hover:bg-blue-50 hover:border-blue-300"}`}
+                >
+                  Polygon
+                </Button>
+                <Button
+                  variant={chainId === "42161" ? "default" : "outline"}
+                  onClick={() => handleChainChange("42161")}
+                  size="sm"
+                  className={`flex-1 ${chainId === "42161" ? "bg-blue-600 hover:bg-blue-700 text-white" : "hover:bg-blue-50 hover:border-blue-300"}`}
+                >
+                  Arbitrum
+                </Button>
+              </div>
+              <p className="text-center text-sm text-gray-500">
+                Selected Network: {chainId === "56" ? "BNB Chain" : chainId === "137" ? "Polygon" : "Arbitrum"}
+              </p>
             </div>
-            <p className="text-center text-sm text-muted-foreground">
-              Selected Network: {chainId === "56" ? "BNB Chain" : chainId === "137" ? "Polygon" : "Arbitrum"}
-            </p>
-          </div>
 
-          {/* NFT Pass Selection */}
-          <div className="space-y-3">
-            <h3 className="text-lg font-semibold">Choose Your NFT Pass</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                variant={nftType === "seed" ? "default" : "outline"}
-                onClick={() => handleNftTypeChange("seed")}
-                className="flex flex-col h-auto p-3"
-                disabled={!isWhitelisted}
-              >
-                <span className="font-semibold">SeedPass</span>
-                <span className="text-sm">Price: $29 USDT</span>
-              </Button>
-              <Button
-                variant={nftType === "tree" ? "default" : "outline"}
-                onClick={() => handleNftTypeChange("tree")}
-                className="flex flex-col h-auto p-3"
-                disabled={!isWhitelisted}
-              >
-                <span className="font-semibold">TreePass</span>
-                <span className="text-sm">Price: $59 USDT</span>
-              </Button>
-              <Button
-                variant={nftType === "solar" ? "default" : "outline"}
-                onClick={() => handleNftTypeChange("solar")}
-                className="flex flex-col h-auto p-3"
-                disabled={true}
-              >
-                <span className="font-semibold">SolarPass</span>
-                <span className="text-sm">Price: $299 USDT</span>
-                <span className="text-xs text-red-500">Not Available</span>
-              </Button>
-              <Button
-                variant={nftType === "compute" ? "default" : "outline"}
-                onClick={() => handleNftTypeChange("compute")}
-                className="flex flex-col h-auto p-3"
-                disabled={true}
-              >
-                <span className="font-semibold">ComputePass</span>
-                <span className="text-sm">Price: $899 USDT</span>
-                <span className="text-xs text-red-500">Not Available</span>
-              </Button>
-            </div>
-          </div>
-
-          {/* KOL ID Input (Optional) */}
-          <div className="space-y-2">
-            <label htmlFor="kolId" className="text-sm font-medium">
-              KOL ID (Optional)
-            </label>
-            <input
-              id="kolId"
-              type="text"
-              value={kolId}
-              onChange={(e) => setKolId(e.target.value)}
-              placeholder="Enter KOL ID if applicable"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <p className="text-center text-sm text-muted-foreground">
-            Only whitelisted wallets can mint now.
-          </p>
-
-          {/* Quantity Selection */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Mint Your NFT</h3>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="number"
-                  min="1"
-                  max="5"
-                  value={quantity}
-                  onChange={handleQuantityChange}
+            {/* NFT Pass Selection */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-gray-800">Choose Your NFT Pass</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  variant={nftType === "seed" ? "default" : "outline"}
+                  onClick={() => handleNftTypeChange("seed")}
+                  className={`flex flex-col h-auto p-4 ${
+                    nftType === "seed" 
+                      ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                      : "hover:bg-blue-50 hover:border-blue-300"
+                  }`}
                   disabled={!isWhitelisted}
-                  className="w-16 px-2 py-1 border rounded text-center disabled:bg-gray-100 disabled:cursor-not-allowed"
-                />
-                <span className="text-sm text-muted-foreground">(Max of 5 NFTs)</span>
+                >
+                  <span className="font-semibold">SeedPass</span>
+                  <span className="text-sm">Price: $29 USDT</span>
+                </Button>
+                <Button
+                  variant={nftType === "tree" ? "default" : "outline"}
+                  onClick={() => handleNftTypeChange("tree")}
+                  className={`flex flex-col h-auto p-4 ${
+                    nftType === "tree" 
+                      ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                      : "hover:bg-blue-50 hover:border-blue-300"
+                  }`}
+                  disabled={!isWhitelisted}
+                >
+                  <span className="font-semibold">TreePass</span>
+                  <span className="text-sm">Price: $59 USDT</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex flex-col h-auto p-4 opacity-50 cursor-not-allowed"
+                  disabled={true}
+                >
+                  <span className="font-semibold">SolarPass</span>
+                  <span className="text-sm">Price: $299 USDT</span>
+                  <span className="text-xs text-red-500">Not Available</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex flex-col h-auto p-4 opacity-50 cursor-not-allowed"
+                  disabled={true}
+                >
+                  <span className="font-semibold">ComputePass</span>
+                  <span className="text-sm">Price: $899 USDT</span>
+                  <span className="text-xs text-red-500">Not Available</span>
+                </Button>
               </div>
             </div>
-          </div>
 
-          {/* Price Section */}
-          <div className="space-y-2 text-sm">
-            <p>Unit Price: ${unitPrice} USDT</p>
-            <p className="font-semibold">Total: ${totalPrice.toFixed(2)} USDT</p>
-          </div>
-        </CardContent>
+            {/* KOL ID Input (Optional) */}
+            <div className="space-y-2">
+              <label htmlFor="kolId" className="text-sm font-medium text-gray-700">
+                KOL ID (Optional)
+              </label>
+              <input
+                id="kolId"
+                type="text"
+                value={kolId}
+                onChange={(e) => setKolId(e.target.value)}
+                placeholder="Enter KOL ID if applicable"
+                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
 
-        <CardFooter className="flex justify-center pt-6">
-          <TransactionButton
-            transaction={buildTransaction}
-            onTransactionConfirmed={async (receipt) => {
-              try {
-                await addDoc(collection(db, "mintEvents"), {
-                  ...(kolId && { kolId }),
-                  address: account?.address,
-                  nftType,
-                  quantity: Number(quantity),
-                  chainId,
-                  txHash: receipt.transactionHash,
-                  timestamp: new Date(),
-                });
-                
-                setStatus("Minted successfully!");
-                setIsMinting(false);
-                
-                toast({
-                  title: "Mint Successful! 🎉",
-                  description: `Successfully minted ${quantity} ${nftType}Pass NFT${Number(quantity) > 1 ? 's' : ''}`,
-                  variant: "default",
-                });
-              } catch (error) {
-                console.error("Error saving mint event:", error);
-                toast({
-                  title: "Database Error",
-                  description: "NFT minted but failed to save to database",
-                  variant: "destructive",
-                });
-              }
-            }}
-            onError={(err) => {
-              const errorMessage = err instanceof Error ? err.message : "Transaction failed";
-              setStatus(`Error: ${errorMessage}`);
-              setIsMinting(false);
-              
-              // Show specific error toasts
-              if (errorMessage.toLowerCase().includes("insufficient")) {
-                toast({
-                  title: "Insufficient Funds",
-                  description: "You don't have enough USDT to complete this transaction",
-                  variant: "destructive",
-                });
-              } else if (errorMessage.toLowerCase().includes("rejected")) {
-                toast({
-                  title: "Transaction Rejected",
-                  description: "Transaction was rejected in your wallet",
-                  variant: "destructive",
-                });
-              } else if (errorMessage.toLowerCase().includes("whitelist")) {
-                toast({
-                  title: "Whitelist Error",
-                  description: errorMessage,
-                  variant: "destructive",
-                });
-              } else {
-                toast({
-                  title: "Transaction Failed",
-                  description: errorMessage,
-                  variant: "destructive",
-                });
-              }
-            }}
-            disabled={!account || !isWhitelisted || isMinting || (nftType !== "seed" && nftType !== "tree")}
-            className="w-full max-w-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg text-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
-          >
-            {isMinting ? "Minting..." : 
-             !account ? "Connect Wallet" :
-             !isWhitelisted ? "Not Whitelisted" :
-             (nftType !== "seed" && nftType !== "tree") ? "Not Available" :
-             "Mint Now"}
-          </TransactionButton>
-        </CardFooter>
-      </Card>
+            <p className="text-center text-sm text-gray-500">
+              Only whitelisted wallets can mint now.
+            </p>
 
-      <div className="mt-6 text-center">
-        <Link href="/kol-dashboard" className="text-primary hover:underline">
-          Go to Dashboard
-        </Link>
+            {/* Quantity Selection */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-800">Mint Your NFT</h3>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={quantity}
+                    onChange={handleQuantityChange}
+                    disabled={!isWhitelisted}
+                    className="w-16 px-2 py-2 border border-gray-300 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  />
+                  <span className="text-sm text-gray-500">(Max of 5 NFTs)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Price Section */}
+            <div className="space-y-1 text-sm text-gray-600">
+              <p>Unit Price: ${unitPrice} USDT</p>
+              <p className="font-semibold text-gray-800">Total: ${totalPrice.toFixed(2)} USDT</p>
+            </div>
+
+            {/* Mint Button */}
+            <CardFooter className="pt-4 px-0 pb-0">
+              <TransactionButton
+                transaction={buildTransaction}
+                onTransactionConfirmed={async (receipt) => {
+                  try {
+                    await addDoc(collection(db, "mintEvents"), {
+                      ...(kolId && { kolId }),
+                      address: account?.address,
+                      nftType,
+                      quantity: Number(quantity),
+                      chainId,
+                      txHash: receipt.transactionHash,
+                      timestamp: new Date(),
+                    });
+                    
+                    setStatus("Minted successfully!");
+                    setIsMinting(false);
+                    
+                    toast({
+                      title: "Mint Successful! 🎉",
+                      description: `Successfully minted ${quantity} ${nftType}Pass NFT${Number(quantity) > 1 ? 's' : ''}`,
+                      variant: "default",
+                    });
+                  } catch (error) {
+                    console.error("Error saving mint event:", error);
+                    toast({
+                      title: "Database Error",
+                      description: "NFT minted but failed to save to database",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                onError={(err) => {
+                  const errorMessage = err instanceof Error ? err.message : "Transaction failed";
+                  setStatus(`Error: ${errorMessage}`);
+                  setIsMinting(false);
+                  
+                  // Show specific error toasts
+                  if (errorMessage.toLowerCase().includes("insufficient")) {
+                    toast({
+                      title: "Insufficient Funds",
+                      description: "You don't have enough USDT to complete this transaction",
+                      variant: "destructive",
+                    });
+                  } else if (errorMessage.toLowerCase().includes("rejected")) {
+                    toast({
+                      title: "Transaction Rejected",
+                      description: "Transaction was rejected in your wallet",
+                      variant: "destructive",
+                    });
+                  } else if (errorMessage.toLowerCase().includes("whitelist")) {
+                    toast({
+                      title: "Whitelist Error",
+                      description: errorMessage,
+                      variant: "destructive",
+                    });
+                  } else {
+                    toast({
+                      title: "Transaction Failed",
+                      description: errorMessage,
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                disabled={!account || !isWhitelisted || isMinting || (nftType !== "seed" && nftType !== "tree")}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-xl text-lg disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              >
+                {isMinting ? "Minting..." : 
+                 !account ? "Connect Wallet" :
+                 !isWhitelisted ? "Not Whitelisted" :
+                 (nftType !== "seed" && nftType !== "tree") ? "Not Available" :
+                 "Mint Now"}
+              </TransactionButton>
+            </CardFooter>
+          </CardContent>
+        </Card>
+
+        {/* Dashboard Link */}
+        <div className="mt-6 text-center">
+          <Link href="/kol-dashboard" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+            Go to Dashboard
+          </Link>
+        </div>
+
+        {/* Dialog */}
+        {isOpen && (
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogContent className="bg-white rounded-2xl">
+              <DialogTitle>Wallet Connection Required</DialogTitle>
+              <Alert>
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  Please connect your wallet to continue with minting.
+                </AlertDescription>
+              </Alert>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
-
-      {isOpen && (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent>
-            <DialogTitle>Wallet Connection Required</DialogTitle>
-            <Alert>
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                Please connect your wallet to continue with minting.
-              </AlertDescription>
-            </Alert>
-          </DialogContent>
-        </Dialog>
-      )}
     </div>
   );
 }
