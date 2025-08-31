@@ -31,23 +31,23 @@ export const USDT_ADDRESSES: Record<string, string> = {
 export const NFT_CONTRACTS: Record<string, Record<string, string>> = {
   seed: {
     '56': '0xFF362C39eB0eDecA946A5528d30D9c9E9285f3fc', 
-    '137': '0xF1f6b7a1bF7a7C0c9361B70A3B69e7bF7fA4D8b6',
-    '42161': '0x3a71fC8dB3fB283dC0eFb0F0aCd73a4D6E2eD7a6',
+    '137': '0x492a86EdEEa01158FcD3C8f2348A4c0431b8A24d',
+    '42161': '0x90b9E1C8645bC731be19537A4932B26Fc218e464',
   },
   tree: {
     '56': '0x1E092126E4AB12503d37dD08E20F9192b8439458', 
-    '137': '0x7c4D8F98a0c2dC0b7e1a0eB3a8D0c8fB8a2eE7a2',
-    '42161': '0x9B2eD5C7dF8a3C0eB7e1a0eC8fB8a2eD5C7dF8a3',
+    '137': '0xf44f237b8775ae985107dd2f877d5c5bbaaea31f',
+    '42161': '0xc574AB1e7e2B27ff4460C299E3448C572894276A',
   },
   solar: {
     '56': '0x...', // Replace with BSC Solar address
-    '137': '0x4E8a6F0bC2d7E1a0eC8fB8a2eD5C7dF8a3C0eB7',
-    '42161': '0x6D0eB7e1a0eC8fB8a2eD5C7dF8a3C0eB7e1a0eC',
+    '137': '0x..',
+    '42161': '0x..',
   },
   compute: {
     '56': '0x...', // Replace with BSC Compute address
-    '137': '0x2F7a3C0eB7e1a0eC8fB8a2eD5C7dF8a3C0eB7e1',
-    '42161': '0x5B8a2eD5C7dF8a3C0eB7e1a0eC8fB8a2eD5C7dF',
+    '137': '0x..',
+    '42161': '0x..',
   },
 };
 
