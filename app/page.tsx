@@ -18,7 +18,7 @@ import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
-import { CHAINS, USDT_ADDRESSES, NFT_CONTRACTS, NFT_ABI } from "@/lib/contracts";
+import { CHAINS, USDT_ADDRESSES, NFT_CONTRACTS, NFT_ABI, USDT_ABI } from "@/lib/contracts";
 import { PASS_PRICES } from "@/lib/pricing";
 import { canMintNFT } from "@/lib/mintingCap";
 
@@ -114,6 +114,7 @@ export default function MintingContent() {
     client: thirdwebClient,
     address: usdtAddr,
     chain: chainInfo.chain,
+    abi: USDT_ABI,
   }) : null;
 
   const unitPrice = PASS_PRICES[nftType]?.usd || 59;

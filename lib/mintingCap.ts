@@ -1,4 +1,4 @@
-import { getContract } from "thirdweb";
+import { getContract, readContract } from "thirdweb";
 
 // Define the Thirdweb contract type
 type ThirdwebContract = ReturnType<typeof getContract>;
@@ -31,7 +31,7 @@ export async function canMintNFT({
   nftType,
   quantity,
 }: {
-  nftContract: ThirdwebContract; // Fixed: Removed extra space and added proper type
+  nftContract: ThirdwebContract;
   nftType: NftType;
   quantity: number;
 }): Promise<{ allowed: boolean; message: string }> {
@@ -45,7 +45,11 @@ export async function canMintNFT({
     }
 
     // Get total supply from contract
-    const totalSupply = await nftContract.call('totalSupply');
+    const totalSupply = await readContract({
+      contract: nftContract,
+      method: "totalSupply",
+      params: [],
+    });
     const totalMinted = Number(totalSupply.toString());
     const whitelistSupply = MINTING_CAPS[nftType].whitelistSupply;
 
