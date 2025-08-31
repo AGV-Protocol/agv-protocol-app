@@ -1,26 +1,56 @@
-import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { NextResponse } from "next/server";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
-export async function POST(request: Request) {
-  const { wallet, username, email } = await request.json();
-  if (!wallet || !username || !email) {
-    return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
-  }
-  await setDoc(doc(db, 'kols', wallet), { wallet, username, email, hawkinsScore: 0 });
-  return NextResponse.json({ message: 'Registered' });
+interface MintEvent {
+  kolId?: string;
+  address: string;
+  nftType: "seed" | "tree";
+  quantity: number;
+  chainId: string;
+  txHash: string;
+  timestamp: any;
 }
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const wallet = searchParams.get('wallet');
-  if (!wallet) {
-    return NextResponse.json({ error: 'Wallet required' }, { status: 400 });
+interface KOL {
+  kolId: string;
+  name: string;
+  walletAddress: string;
+}
+
+export async function GET() {
+  try {
+    // Fetch KOLs
+    const kolSnapshot = await getDocs(collection(db, "kols"));
+    const kolData: KOL[] = kolSnapshot.docs.map((doc) => doc.data() as KOL);
+
+    // Fetch mint events
+    const querySnapshot = await getDocs(collection(db, "mintEvents"));
+    const events: MintEvent[] = querySnapshot.docs.map((doc) => doc.data() as MintEvent);
+
+    // Aggregate stats by KOL
+    const kolStats: { [key: string]: { seed: number; tree: number; name: string } } = {};
+    kolData.forEach((kol) => {
+      kolStats[kol.kolId] = { seed: 0, tree: 0, name: kol.name };
+    });
+    events.forEach((event) => {
+      if (event.kolId && kolStats[event.kolId] && (event.nftType === "seed" || event.nftType === "tree")) {
+        kolStats[event.kolId][event.nftType] += event.quantity;
+      }
+    });
+
+    // Format response
+    const response = Object.entries(kolStats).map(([kolId, stats]) => ({
+      kolId,
+      name: stats.name,
+      seed: stats.seed,
+      tree: stats.tree,
+      total: stats.seed + stats.tree,
+    }));
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error("Error fetching KOL stats:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-  const docRef = doc(db, 'kols', wallet);
-  const docSnap = await getDoc(docRef);
-  if (!docSnap.exists()) {
-    return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
-  }
-  return NextResponse.json(docSnap.data());
 }
