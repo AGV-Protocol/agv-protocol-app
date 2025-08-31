@@ -19,7 +19,6 @@
     "clsx": "^2.1.1",
     "ethers": "5.7.2",
     "firebase": "^10.14.1",
-    "googleapis": "^144.0.0",
     "lucide-react": "^0.453.0",
     "merkletreejs": "^0.4.0",
     "next": "^15.0.1",

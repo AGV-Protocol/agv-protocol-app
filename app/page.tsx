@@ -10,6 +10,7 @@ import {
   createThirdwebClient,
   getContract,
   prepareContractCall,
+  sendTransaction,
 } from "thirdweb";
 import { Moon, Sun, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import { db } from "@/lib/firebase";
@@ -198,8 +199,17 @@ export default function MintingContent() {
         ? BigInt(PASS_PRICES[nftType].wei) * BigInt(quantity)
         : BigInt(unitPrice) * BigInt(quantity) * BigInt(1e6);
       setStatus("Approving USDT spending...");
-      toast({ title: "Approve Transaction", description: "Please approve USDT spending in your wallet", variant: "default" });
-      await usdtContract.call("approve", [contractAddr, priceWei]);
+      toast({
+        title: "Approve Transaction",
+        description: "Please approve USDT spending in your wallet",
+        variant: "default",
+      });
+      const approveTx = prepareContractCall({
+        contract: usdtContract,
+        method: "approve",
+        params: [contractAddr, priceWei],
+      });
+      await sendTransaction({ transaction: approveTx, account });
       setStatus("Preparing mint transaction...");
       return prepareContractCall({
         contract: nftContract,
