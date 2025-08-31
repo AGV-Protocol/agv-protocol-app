@@ -25,7 +25,21 @@ export const MINTING_CAPS = {
 
 type NftType = keyof typeof MINTING_CAPS;
 
-// Check if minting is allowed based on whitelist supply
+// Utility function for retrying async operations
+async function withRetry<T>(fn: () => Promise<T>, retries: number = 3, delay: number = 1000): Promise<T> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === retries - 1) throw new Error(`Max retries reached: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.warn(`Retry ${i + 1}/${retries} after ${delay}ms: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error("Max retries reached");
+}
+
+// Check if minting is allowed based on supply caps
 export async function canMintNFT({
   nftContract,
   nftType,
@@ -44,26 +58,38 @@ export async function canMintNFT({
       };
     }
 
-    // Get total supply from contract
-    const totalSupply = await readContract({
-      contract: nftContract,
-      method: "totalSupply",
-      params: [],
-    });
-    const totalMinted = Number(totalSupply.toString());
-    const whitelistSupply = MINTING_CAPS[nftType].whitelistSupply;
-
-    // Check whitelist supply cap
-    if (totalMinted + quantity > whitelistSupply) {
+    // Validate contract
+    if (!nftContract.address || !nftContract.chain || !nftContract.abi) {
       return {
         allowed: false,
-        message: `Whitelist supply cap exceeded: ${totalMinted}/${whitelistSupply} already minted for ${nftType}`,
+        message: "Invalid contract configuration: missing address, chain, or ABI",
+      };
+    }
+
+    // Get total supply from contract with retry
+    const totalSupply = await withRetry(async () => {
+      return await readContract({
+        contract: nftContract,
+        method: "totalSupply",
+        params: [],
+      });
+    }, 3, 1000);
+
+    const totalMinted = Number(totalSupply.toString());
+    const maxSupply = MINTING_CAPS[nftType].totalSupply; // Use totalSupply instead of whitelistSupply
+
+    // Check supply cap
+    if (totalMinted + quantity > maxSupply) {
+      return {
+        allowed: false,
+        message: `Supply cap exceeded: ${totalMinted}/${maxSupply} already minted for ${nftType}`,
       };
     }
 
     return { allowed: true, message: 'Minting allowed' };
   } catch (error) {
-    console.error('Error checking minting caps:', error);
-    return { allowed: false, message: `Error: ${(error as Error).message}` };
+    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+    console.error('Error checking minting caps:', errorMessage);
+    return { allowed: false, message: `Error checking minting caps: ${errorMessage}` };
   }
 }

@@ -440,6 +440,10 @@ export default function MintingContent() {
                     toast({ title: "Insufficient Funds", description: "You don't have enough USDT to complete this transaction", variant: "destructive" });
                   } else if (errorMessage.toLowerCase().includes("rejected")) {
                     toast({ title: "Transaction Rejected", description: "Transaction was rejected in your wallet", variant: "destructive" });
+                  } else if (errorMessage.toLowerCase().includes("supply cap exceeded")) {
+                    toast({ title: "Supply Cap Exceeded", description: errorMessage, variant: "destructive" });
+                  } else if (errorMessage.toLowerCase().includes("failed to fetch")) {
+                    toast({ title: "Network Error", description: "Failed to connect to the blockchain. Please try again.", variant: "destructive" });
                   } else {
                     toast({ title: "Transaction Failed", description: errorMessage, variant: "destructive" });
                   }
