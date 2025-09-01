@@ -1,8 +1,7 @@
 "use client";
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   ConnectButton,
-  TransactionButton,
   useActiveAccount,
   useReadContract,
   useWalletBalance,
@@ -12,6 +11,8 @@ import {
   getContract,
   prepareContractCall,
   sendTransaction,
+  waitForReceipt,
+  sendAndConfirmTransaction,
 } from "thirdweb";
 import { parseUnits } from "viem";
 import {
@@ -38,10 +39,12 @@ import {
 } from "@/lib/contracts";
 import { PASS_PRICES } from "@/lib/pricing";
 
+/** ---------------- Types ---------------- **/
 type ChainId = "56" | "137" | "42161";
 type NftType = keyof typeof PASS_PRICES;
+type MintMode = "public" | "agent";
 
-// ---------- Chain-aware caps ----------
+/** ---------------- Chain-aware caps ---------------- **/
 const PUBLIC_MINT_CAPS: Record<NftType, Record<ChainId, number>> = {
   seed: { "56": 400, "137": 400, "42161": 400 },
   tree: { "56": 200, "137": 200, "42161": 200 },
@@ -56,11 +59,12 @@ const MAX_PER_WALLET: Record<NftType, Record<ChainId, number>> = {
   compute: { "56": 1, "137": 1, "42161": 1 },
 } as const;
 
-// ---------- Thirdweb client ----------
+/** ---------------- Thirdweb client ---------------- **/
 const thirdwebClient = createThirdwebClient({
   clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID!,
 });
 
+/** ---------------- UI: Spending Cap Modal ---------------- **/
 interface SpendingCapModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -71,35 +75,6 @@ interface SpendingCapModalProps {
   tokenSymbol: string;
   networkFee: string;
 }
-
-interface TransactionProgressModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  status: string;
-  txHash?: string;
-  chainId: ChainId;
-  stage: "approval" | "mint" | "confirming" | "success" | "timeout" | "error";
-  onVerifyWallet: () => void;
-}
-
-// ---------- Small helpers ----------
-const normalizeError = (e: unknown) => {
-  if (!e) return "Unknown error";
-  if (typeof e === "string") return e;
-  if (e instanceof Error && e.message) return e.message;
-  try {
-    const any = e as any;
-    return (
-      any?.shortMessage ||
-      any?.reason ||
-      any?.error?.message ||
-      any?.message ||
-      JSON.stringify(any)
-    );
-  } catch {
-    return String(e);
-  }
-};
 
 const SpendingCapModal = ({
   isOpen,
@@ -170,6 +145,7 @@ const SpendingCapModal = ({
               cursor: "pointer",
               padding: "0.25rem",
             }}
+            aria-label="Close spending cap modal"
           >
             <X size={20} />
           </button>
@@ -202,8 +178,8 @@ const SpendingCapModal = ({
             Estimated changes
           </h4>
           <p style={{ color: "#d1d5db", fontSize: "0.875rem", marginBottom: "1rem" }}>
-            You are giving AGV Protocol the permission to spend this amount from your
-            account.
+            You are giving AGV Protocol the permission to spend this amount from
+            your account.
           </p>
           <div
             style={{
@@ -213,13 +189,20 @@ const SpendingCapModal = ({
               marginBottom: "1rem",
             }}
           >
-            <span style={{ color: "#d1d5db", fontSize: "0.875rem" }}>Spending cap</span>
+            <span style={{ color: "#d1d5db", fontSize: "0.875rem" }}>
+              Spending cap
+            </span>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <span style={{ color: "#fff", fontWeight: "semibold" }}>{spendingCap}</span>
-              <span style={{ color: "#10b981", fontSize: "0.875rem" }}>{tokenSymbol}</span>
+              <span style={{ color: "#fff", fontWeight: "semibold" }}>
+                {spendingCap}
+              </span>
+              <span style={{ color: "#10b981", fontSize: "0.875rem" }}>
+                {tokenSymbol}
+              </span>
             </div>
           </div>
         </div>
+
         <div
           style={{
             display: "flex",
@@ -228,33 +211,68 @@ const SpendingCapModal = ({
             marginBottom: "1.5rem",
           }}
         >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+          >
             <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>Spender</span>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <div style={{ width: "1rem", height: "1rem", borderRadius: "50%", backgroundColor: "#ef4444" }} />
-              <span style={{ color: "#fff", fontSize: "0.875rem", fontFamily: "monospace" }}>
+              <div
+                style={{
+                  width: "1rem",
+                  height: "1rem",
+                  borderRadius: "50%",
+                  backgroundColor: "#ef4444",
+                }}
+              />
+              <span
+                style={{
+                  color: "#fff",
+                  fontSize: "0.875rem",
+                  fontFamily: "monospace",
+                }}
+              >
                 {spender}
               </span>
             </div>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>Request from</span>
+          <div
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+          >
+            <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>
+              Request from
+            </span>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <div style={{ width: "1rem", height: "1rem", borderRadius: "50%", backgroundColor: "#8b5cf6" }} />
-              <span style={{ color: "#fff", fontSize: "0.875rem" }}>{requestFrom}</span>
+              <div
+                style={{
+                  width: "1rem",
+                  height: "1rem",
+                  borderRadius: "50%",
+                  backgroundColor: "#8b5cf6",
+                }}
+              />
+              <span style={{ color: "#fff", fontSize: "0.875rem" }}>
+                {requestFrom}
+              </span>
             </div>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>Network fee</span>
+          <div
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+          >
+            <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>
+              Network fee
+            </span>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <span style={{ color: "#fff", fontSize: "0.875rem" }}>{networkFee}</span>
-              <span style={{ color: "#10b981", fontSize: "0.875rem" }}>{tokenSymbol}</span>
+              <span style={{ color: "#10b981", fontSize: "0.875rem" }}>
+                {tokenSymbol}
+              </span>
             </div>
           </div>
           <p style={{ color: "#9ca3af", fontSize: "0.75rem", marginTop: "0.5rem" }}>
             Includes {networkFee} fee
           </p>
         </div>
+
         <div style={{ display: "flex", gap: "1rem" }}>
           <button
             onClick={onClose}
@@ -292,6 +310,17 @@ const SpendingCapModal = ({
   );
 };
 
+/** ---------------- UI: Transaction Progress Modal ---------------- **/
+interface TransactionProgressModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  status: string;
+  txHash?: string;
+  chainId: ChainId;
+  stage: "approval" | "mint" | "confirming" | "success" | "timeout" | "error";
+  onVerifyWallet: () => void;
+}
+
 const TransactionProgressModal = ({
   isOpen,
   onClose,
@@ -307,16 +336,18 @@ const TransactionProgressModal = ({
   const chainInfo = CHAINS[chainId];
   const explorerUrl = txHash ? `${chainInfo?.explorer}/tx/${txHash}` : null;
 
+  // One interval; avoid depth loops
   useEffect(() => {
     if (!isOpen || stage === "success") return;
-
     const timer = setInterval(() => setTimeElapsed((p) => p + 1), 1000);
+    return () => clearInterval(timer);
+  }, [isOpen, stage]);
 
+  useEffect(() => {
     if (stage === "confirming" && timeElapsed >= 120) {
       setShowTimeoutOption(true);
     }
-    return () => clearInterval(timer);
-  }, [isOpen, stage, timeElapsed]);
+  }, [stage, timeElapsed]);
 
   useEffect(() => {
     if (isOpen) {
@@ -328,10 +359,15 @@ const TransactionProgressModal = ({
   const copyTxHash = async () => {
     if (!txHash) return;
     await navigator.clipboard.writeText(txHash);
-    toast({ title: "Copied!", description: "Transaction hash copied", variant: "default" });
+    toast({
+      title: "Copied!",
+      description: "Transaction hash copied",
+      variant: "default",
+    });
   };
 
-  const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  const formatTime = (s: number) =>
+    `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
   if (!isOpen) return null;
 
@@ -358,14 +394,32 @@ const TransactionProgressModal = ({
           margin: "1rem",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "1rem",
+          }}
+        >
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             {stage === "success" ? (
-              <CheckCircle style={{ height: "1.5rem", width: "1.5rem", color: "#10b981" }} />
+              <CheckCircle
+                style={{ height: "1.5rem", width: "1.5rem", color: "#10b981" }}
+              />
             ) : stage === "error" ? (
-              <AlertTriangle style={{ height: "1.5rem", width: "1.5rem", color: "#ef4444" }} />
+              <AlertTriangle
+                style={{ height: "1.5rem", width: "1.5rem", color: "#ef4444" }}
+              />
             ) : (
-              <Loader2 style={{ height: "1.5rem", width: "1.5rem", color: "#3b82f6", animation: "spin 1s linear infinite" }} />
+              <Loader2
+                style={{
+                  height: "1.5rem",
+                  width: "1.5rem",
+                  color: "#3b82f6",
+                  animation: "spin 1s linear infinite",
+                }}
+              />
             )}
             <h3 style={{ fontSize: "1.125rem", fontWeight: "bold", margin: 0 }}>
               {stage === "success"
@@ -380,7 +434,14 @@ const TransactionProgressModal = ({
           {(stage === "success" || stage === "error" || showTimeoutOption) && (
             <button
               onClick={onClose}
-              style={{ background: "none", border: "none", color: "#9ca3af", cursor: "pointer", padding: "0.25rem" }}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#9ca3af",
+                cursor: "pointer",
+                padding: "0.25rem",
+              }}
+              aria-label="Close progress modal"
             >
               <X size={20} />
             </button>
@@ -388,18 +449,49 @@ const TransactionProgressModal = ({
         </div>
 
         <div style={{ marginBottom: "1rem" }}>
-          <p style={{ color: "#d1d5db", fontSize: "0.875rem", marginBottom: "0.5rem" }}>{status}</p>
+          <p
+            style={{
+              color: "#d1d5db",
+              fontSize: "0.875rem",
+              marginBottom: "0.5rem",
+            }}
+          >
+            {status}
+          </p>
           {timeElapsed > 0 && stage !== "success" && (
-            <p style={{ color: "#9ca3af", fontSize: "0.75rem" }}>Time elapsed: {formatTime(timeElapsed)}</p>
+            <p style={{ color: "#9ca3af", fontSize: "0.75rem" }}>
+              Time elapsed: {formatTime(timeElapsed)}
+            </p>
           )}
         </div>
 
         {txHash && (
-          <div style={{ backgroundColor: "#374151", borderRadius: "0.5rem", padding: "1rem", marginBottom: "1rem" }}>
-            <h4 style={{ color: "#f3f4f6", fontSize: "0.875rem", fontWeight: "semibold", marginBottom: "0.5rem" }}>
+          <div
+            style={{
+              backgroundColor: "#374151",
+              borderRadius: "0.5rem",
+              padding: "1rem",
+              marginBottom: "1rem",
+            }}
+          >
+            <h4
+              style={{
+                color: "#f3f4f6",
+                fontSize: "0.875rem",
+                fontWeight: "semibold",
+                marginBottom: "0.5rem",
+              }}
+            >
               Transaction Hash
             </h4>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                marginBottom: "0.5rem",
+              }}
+            >
               <span
                 style={{
                   color: "#10b981",
@@ -421,6 +513,7 @@ const TransactionProgressModal = ({
                   color: "#9ca3af",
                   cursor: "pointer",
                 }}
+                aria-label="Copy tx hash"
               >
                 <Copy size={14} />
               </button>
@@ -447,7 +540,14 @@ const TransactionProgressModal = ({
         )}
 
         <div style={{ marginBottom: "1rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              marginBottom: "0.5rem",
+            }}
+          >
             <div
               style={{
                 width: "1rem",
@@ -459,9 +559,20 @@ const TransactionProgressModal = ({
                 justifyContent: "center",
               }}
             >
-              {stage === "approval" ? <Loader2 size={8} style={{ animation: "spin 1s linear infinite" }} /> : <CheckCircle size={8} />}
+              {stage === "approval" ? (
+                <Loader2 size={8} style={{ animation: "spin 1s linear infinite" }} />
+              ) : (
+                <CheckCircle size={8} />
+              )}
             </div>
-            <span style={{ fontSize: "0.75rem", color: stage === "approval" ? "#3b82f6" : "#10b981" }}>USDT Approval</span>
+            <span
+              style={{
+                fontSize: "0.75rem",
+                color: stage === "approval" ? "#3b82f6" : "#10b981",
+              }}
+            >
+              USDT Approval
+            </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <div
@@ -489,7 +600,12 @@ const TransactionProgressModal = ({
             <span
               style={{
                 fontSize: "0.75rem",
-                color: stage === "mint" || stage === "confirming" ? "#3b82f6" : stage === "success" ? "#10b981" : "#9ca3af",
+                color:
+                  stage === "mint" || stage === "confirming"
+                    ? "#3b82f6"
+                    : stage === "success"
+                    ? "#10b981"
+                    : "#9ca3af",
               }}
             >
               NFT Mint
@@ -501,7 +617,8 @@ const TransactionProgressModal = ({
           {showTimeoutOption && stage === "confirming" && (
             <>
               <p style={{ color: "#fbbf24", fontSize: "0.75rem", marginBottom: "0.5rem" }}>
-                Transaction is taking longer than expected. This may be due to network congestion.
+                Transaction is taking longer than expected. This may be due to
+                network congestion.
               </p>
               <button
                 onClick={onVerifyWallet}
@@ -520,7 +637,8 @@ const TransactionProgressModal = ({
                 Check Wallet for NFTs
               </button>
               <p style={{ color: "#9ca3af", fontSize: "0.75rem", textAlign: "center" }}>
-                Please check your connected wallet to verify if the NFT was minted successfully
+                Please check your connected wallet to verify if the NFT was minted
+                successfully
               </p>
             </>
           )}
@@ -554,10 +672,31 @@ const TransactionProgressModal = ({
   );
 };
 
+/** ---------------- Helpers ---------------- **/
+const normalizeError = (e: unknown) => {
+  if (!e) return "Unknown error";
+  if (typeof e === "string") return e;
+  if (e instanceof Error && e.message) return e.message;
+  try {
+    const any = e as any;
+    return (
+      any?.shortMessage ||
+      any?.reason ||
+      any?.error?.message ||
+      any?.message ||
+      JSON.stringify(any)
+    );
+  } catch {
+    return String(e);
+  }
+};
+
+/** ---------------- Main Component ---------------- **/
 export default function MintingContent() {
   const account = useActiveAccount();
 
   // ----- UI State -----
+  const [mintMode, setMintMode] = useState<MintMode>("public"); // only "public" and "agent"
   const [kolId, setKolId] = useState("");
   const [chainId, setChainId] = useState<ChainId>("42161");
   const [nftType, setNftType] = useState<NftType>("tree");
@@ -575,12 +714,12 @@ export default function MintingContent() {
     "approval" | "mint" | "confirming" | "success" | "timeout" | "error"
   >("approval");
 
-  // approval→mint promise resolvers
-  const approveResolveRef = useRef<((tx: any) => void) | null>(null);
-  const approveRejectRef = useRef<((err: any) => void) | null>(null);
-  const approveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Transactions prepared (approval -> mint)
+  const [pendingApprovalTx, setPendingApprovalTx] = useState<any>(null);
+  const [pendingMintTx, setPendingMintTx] = useState<any>(null);
 
   const { setTheme, theme } = useTheme();
+
   const chainInfo = CHAINS[chainId];
   const contractAddr = NFT_CONTRACTS[nftType]?.[chainId];
   const usdtAddr = USDT_ADDRESSES[chainId];
@@ -645,7 +784,7 @@ export default function MintingContent() {
     Math.min(maxPerWalletChain - userMintedCount, remainingSupply)
   );
 
-  // ------ Balances via Hooks (no RPC) ------
+  // ------ Balances via Hooks (no manual RPC) ------
   const { data: nativeData } = useWalletBalance({
     client: thirdwebClient,
     chain: chainInfo.chain,
@@ -727,7 +866,9 @@ export default function MintingContent() {
     );
   }, []);
 
-  const handleMobileWalletRedirect = (walletType: "metamask" | "binance" | "trustwallet") => {
+  const handleMobileWalletRedirect = (
+    walletType: "metamask" | "binance" | "trustwallet"
+  ) => {
     const currentUrl = window.location.href;
     let deepLink = "";
     switch (walletType) {
@@ -751,83 +892,100 @@ export default function MintingContent() {
     });
   };
 
-  // ---- Eligibility logic (loop-safe) ----
+  /** ---- Eligibility logic (loop-safe) ---- */
   // Reset eligibility when core params change
   useEffect(() => {
     setEligibilityChecked(false);
     setIsEligible(false);
     setStatus("");
-  }, [account?.address, chainId, nftType]);
+  }, [account?.address, chainId, nftType, mintMode]);
 
-  // Perform one-off check when ready (guard with `eligibilityChecked`)
+  // Perform one-off check when ready
   useEffect(() => {
     const runCheck = async () => {
-      if (!account?.address || !nftContract || eligibilityChecked === true) return;
+      if (!account?.address || !nftContract || eligibilityChecked) return;
 
       setStatus("Checking minting eligibility...");
       try {
-        const currentSupplyNum = totalSupply ? Number(totalSupply) : 0;
-        const cap = PUBLIC_MINT_CAPS[nftType]?.[chainId] ?? 0;
+        if (mintMode === "public") {
+          const currentSupplyNum = totalSupply ? Number(totalSupply) : 0;
+          const cap = PUBLIC_MINT_CAPS[nftType]?.[chainId] ?? 0;
 
-        if (cap === 0) {
-          setIsEligible(false);
-          setStatus(`${nftType}Pass not available for public mint on this chain`);
-          toast({
-            title: "Not Available",
-            description: "This pass is not available for public mint on this network",
-            variant: "destructive",
-          });
-          setEligibilityChecked(true);
-          return;
-        }
+          if (cap === 0) {
+            setIsEligible(false);
+            setStatus(`${nftType}Pass not available for public mint on this chain`);
+            toast({
+              title: "Not Available",
+              description:
+                "This pass is not available for public mint on this network",
+              variant: "destructive",
+            });
+            setEligibilityChecked(true);
+            return;
+          }
 
-        if (currentSupplyNum >= cap) {
-          setIsEligible(false);
-          setStatus(`Public mint sold out (${cap}/${cap})`);
-          toast({
-            title: "Public Mint Sold Out",
-            description: `All ${cap} ${nftType}Pass on this network are minted`,
-            variant: "destructive",
-          });
-          setEligibilityChecked(true);
-          return;
-        }
+          if (currentSupplyNum >= cap) {
+            setIsEligible(false);
+            setStatus(`Public mint sold out (${cap}/${cap})`);
+            toast({
+              title: "Public Mint Sold Out",
+              description: `All ${cap} ${nftType}Pass on this network are minted`,
+              variant: "destructive",
+            });
+            setEligibilityChecked(true);
+            return;
+          }
 
-        const minted = userBalance ? Number(userBalance) : 0;
-        const maxPer = MAX_PER_WALLET[nftType]?.[chainId] ?? 0;
+          const minted = userBalance ? Number(userBalance) : 0;
+          const maxPer = MAX_PER_WALLET[nftType]?.[chainId] ?? 0;
 
-        if (minted >= maxPer) {
-          setIsEligible(false);
-          setStatus(`Per-wallet limit reached (${maxPer} on this chain)`);
-          toast({
-            title: "Minting Limit Reached",
-            description: `You already minted ${maxPer} on this network`,
-            variant: "destructive",
-          });
+          if (minted >= maxPer) {
+            setIsEligible(false);
+            setStatus(`Per-wallet limit reached (${maxPer} on this chain)`);
+            toast({
+              title: "Minting Limit Reached",
+              description: `You already minted ${maxPer} on this network`,
+              variant: "destructive",
+            });
+          } else {
+            const remainingForUser = Math.min(
+              maxPer - minted,
+              cap - currentSupplyNum
+            );
+            setIsEligible(true);
+            setStatus("Eligible for minting");
+            toast({
+              title: "Eligibility Confirmed",
+              description: `You can mint up to ${remainingForUser} more on this network`,
+              variant: "default",
+            });
+          }
         } else {
-          const remainingForUser = Math.min(maxPer - minted, cap - currentSupplyNum);
+          // Agent: requires KOL id; DB check will happen before mint; here allow UI to proceed
           setIsEligible(true);
-          setStatus("Eligible for minting");
-          toast({
-            title: "Eligibility Confirmed",
-            description: `You can mint up to ${remainingForUser} more on this network`,
-            variant: "default",
-          });
+          setStatus("Eligible for agent minting");
         }
       } catch (error) {
         console.error("Eligibility check failed:", error);
         setIsEligible(false);
         setStatus("Eligibility check failed");
       } finally {
-        // mark checked once per parameter change to avoid loops
         setEligibilityChecked(true);
       }
     };
 
     runCheck();
-    // only re-run when these core values change; avoid including functions/deriveds that churn on each render
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account?.address, nftContract, chainId, nftType, eligibilityChecked, totalSupply, userBalance]);
+  }, [
+    account?.address,
+    nftContract,
+    chainId,
+    nftType,
+    mintMode,
+    eligibilityChecked,
+    totalSupply,
+    userBalance,
+  ]);
 
   const handleChainChange = (newChainId: ChainId) => {
     if (newChainId === chainId) return;
@@ -835,7 +993,11 @@ export default function MintingContent() {
     toast({
       title: "Network Changed",
       description:
-        newChainId === "56" ? "BNB Chain" : newChainId === "137" ? "Polygon" : "Arbitrum",
+        newChainId === "56"
+          ? "BNB Chain"
+          : newChainId === "137"
+          ? "Polygon"
+          : "Arbitrum",
       variant: "default",
     });
   };
@@ -850,84 +1012,14 @@ export default function MintingContent() {
     });
   };
 
-  // Spending cap modal controls
-  const showSpendingCapApproval = () => setShowSpendingModal(true);
+  /** ---- Mint Flow:
+   *  1) Click "Mint" -> prepare txs -> show SpendingCapModal ONLY
+   *  2) Click "Confirm" in SpendingCapModal -> show ProgressModal and run approval+mint
+   *  3) Update progress stages accordingly
+   * ---- **/
 
-  const handleSpendingCapConfirm = async () => {
-    try {
-      setShowSpendingModal(false);
-      setShowProgressModal(true);
-      setProgressStage("approval");
-      setStatus("Approving USDT spending…");
-      toast({
-        title: "Approve Transaction",
-        description: "Please approve USDT spending in your wallet.",
-        variant: "default",
-      });
-
-      await sendTransaction({
-        transaction: pendingApprovalTxRef.current!,
-        account,
-      });
-
-      toast({
-        title: "Approval Successful",
-        description: "USDT spending approved. Proceeding with mint…",
-        variant: "default",
-      });
-
-      setProgressStage("mint");
-      setStatus("Executing mint transaction…");
-
-      if (approveTimeoutRef.current) clearTimeout(approveTimeoutRef.current);
-      approveResolveRef.current?.(pendingMintTxRef.current);
-    } catch (error) {
-      if (approveTimeoutRef.current) clearTimeout(approveTimeoutRef.current);
-      const errorMsg = normalizeError(error);
-      toast({
-        title: "Approval Failed",
-        description: errorMsg,
-        variant: "destructive",
-      });
-      setIsMinting(false);
-      setProgressStage("error");
-      setStatus("Approval failed");
-      approveRejectRef.current?.(error);
-    }
-  };
-
-  const handleSpendingCapClose = () => {
-    setShowSpendingModal(false);
-    setIsMinting(false);
-    setStatus("");
-    if (approveTimeoutRef.current) clearTimeout(approveTimeoutRef.current);
-    approveRejectRef.current?.(new Error("User closed spending cap modal"));
-  };
-
-  const handleProgressClose = () => {
-    setShowProgressModal(false);
-    setProgressStage("approval");
-    setTxHash("");
-    setIsMinting(false);
-    setStatus("");
-  };
-
-  const handleVerifyWallet = () => {
-    toast({
-      title: "Check Your Wallet",
-      description:
-        "Please check your connected wallet's NFT collection to verify if the mint was successful",
-      variant: "default",
-    });
-    setTimeout(() => window.location.reload(), 2000);
-  };
-
-  // Refs to hold prepared tx objects (avoid re-renders churn)
-  const pendingApprovalTxRef = useRef<any>(null);
-  const pendingMintTxRef = useRef<any>(null);
-
-  // Build transaction — approval then mint
-  const buildTransaction = async () => {
+  // Build & stage transactions (no progress modal here)
+  const prepareTransactions = async () => {
     if (!account?.address) {
       toast({
         title: "Wallet Not Connected",
@@ -956,101 +1048,172 @@ export default function MintingContent() {
     setIsMinting(true);
     setStatus("Preparing transaction…");
 
-    try {
-      // Optional KOL check
-      if (kolId) {
-        setStatus("Validating KOL ID…");
-        const q = query(collection(db, "kols"), where("kolId", "==", kolId));
-        const snap = await getDocs(q);
-        if (snap.empty) {
-          toast({
-            title: "Invalid KOL ID",
-            description: "The provided KOL ID is invalid.",
-            variant: "destructive",
-          });
-          throw new Error("Invalid KOL ID");
-        }
+    // Agent mode requires KOL ID and must exist
+    if (mintMode === "agent") {
+      if (!kolId.trim()) {
+        setIsMinting(false);
+        toast({
+          title: "KOL ID Required",
+          description: "Please enter a valid KOL ID for Agent minting.",
+          variant: "destructive",
+        });
+        throw new Error("KOL ID missing");
       }
+      // Validate KOL ID from Firestore
+      setStatus("Validating KOL ID…");
+      const q = query(collection(db, "kols"), where("kolId", "==", kolId.trim()));
+      const snap = await getDocs(q);
+      if (snap.empty) {
+        setIsMinting(false);
+        toast({
+          title: "Invalid KOL ID",
+          description: "The provided KOL ID is invalid.",
+          variant: "destructive",
+        });
+        throw new Error("Invalid KOL ID");
+      }
+    } else if (kolId.trim()) {
+      // Optional: allow KOL attribution on public mint, but do not block if invalid
+      const q = query(collection(db, "kols"), where("kolId", "==", kolId.trim()));
+      await getDocs(q).catch(() => void 0);
+    }
 
-      // Cap checks (chain-aware)
+    // Public mode caps and per-wallet limits
+    const qty = Number(quantity);
+    if (qty < 1) {
+      setIsMinting(false);
+      throw new Error("Quantity must be at least 1");
+    }
+
+    if (mintMode === "public") {
       const minted = userBalance ? Number(userBalance) : 0;
       const maxPer = MAX_PER_WALLET[nftType]?.[chainId] ?? 0;
       const cap = PUBLIC_MINT_CAPS[nftType]?.[chainId] ?? 0;
-      const qty = Number(quantity);
       const current = totalSupply ? Number(totalSupply) : 0;
 
-      if (cap === 0) throw new Error(`${nftType}Pass is not available for public mint`);
-      if (qty < 1) throw new Error("Quantity must be at least 1");
-      if (minted + qty > maxPer) throw new Error(`Exceeds maximum per wallet (${maxPer})`);
-      if (current + qty > cap)
+      if (cap === 0) {
+        setIsMinting(false);
+        throw new Error(`${nftType}Pass is not available for public mint`);
+      }
+      if (minted + qty > maxPer) {
+        setIsMinting(false);
+        throw new Error(`Exceeds maximum per wallet (${maxPer})`);
+      }
+      if (current + qty > cap) {
+        setIsMinting(false);
         throw new Error(`Exceeds public mint cap. Only ${cap - current} remaining`);
+      }
+    }
 
-      // Approval amount using real decimals
-      const decimals = Number(usdtDecimalsData ?? 6);
-      const unitAmount = parseUnits(String(PASS_PRICES[nftType]?.usd ?? 59), decimals);
-      const amountToApprove = unitAmount * BigInt(qty);
+    // Prepare approval+mint
+    const decimals = Number(usdtDecimalsData ?? 6);
+    const unitAmount = parseUnits(String(PASS_PRICES[nftType]?.usd ?? 59), decimals);
+    const amountToApprove = unitAmount * BigInt(qty);
 
-      const approveTx = prepareContractCall({
-        contract: usdtContract,
-        method: "approve",
-        params: [contractAddr, amountToApprove],
-      });
+    const approveTx = prepareContractCall({
+      contract: usdtContract,
+      method: "approve",
+      params: [contractAddr, amountToApprove],
+    });
 
-      const mintTx = prepareContractCall({
-        contract: nftContract,
-        method: "mint",
-        params: [BigInt(qty), []],
-      });
+    // Infer mint function for agent or public
+    const mintMethod = mintMode === "agent" ? "mintAgent" : "mint";
+    const mintParams: any[] =
+      mintMode === "agent" ? [BigInt(qty)] : [BigInt(qty), []];
 
-      pendingApprovalTxRef.current = approveTx;
-      pendingMintTxRef.current = mintTx;
+    const mintTx = prepareContractCall({
+      contract: nftContract,
+      // @ts-ignore allow custom method names from ABI
+      method: mintMethod,
+      params: mintParams,
+    });
 
-      // Show cap modal then return a promise resolved after approval confirm
-      showSpendingCapApproval();
+    setPendingApprovalTx(approveTx);
+    setPendingMintTx(mintTx);
+
+    // Show spending cap modal ONLY (as requested)
+    setShowSpendingModal(true);
+    setStatus("Review and confirm the spending cap to continue…");
+  };
+
+  const handleSpendingCapConfirm = async () => {
+    try {
+      // Close spending cap, then open progress modal (requested order)
+      setShowSpendingModal(false);
       setShowProgressModal(true);
       setProgressStage("approval");
-      setStatus("Approve USDT spending in your wallet…");
-
-      return new Promise<any>((resolve, reject) => {
-        approveResolveRef.current = resolve;
-        approveRejectRef.current = reject;
-        approveTimeoutRef.current = setTimeout(() => {
-          toast({
-            title: "Transaction approval timeout",
-            description: "You didn’t approve in time. Please try again.",
-            variant: "destructive",
-          });
-          setIsMinting(false);
-          setShowProgressModal(false);
-          reject(new Error("Transaction approval timeout"));
-        }, 120_000);
+      setStatus("Approving USDT spending…");
+      toast({
+        title: "Approve Transaction",
+        description: "Please approve USDT spending in your wallet.",
+        variant: "default",
       });
+
+      // 1) Send approval and wait receipt
+      const approveRes = await sendTransaction({
+        transaction: pendingApprovalTx,
+        account,
+      });
+
+      // show hash immediately once available
+      if (approveRes?.transactionHash) setTxHash(approveRes.transactionHash);
+
+      const approveReceipt = await waitForReceipt({
+        client: thirdwebClient,
+        chain: chainInfo.chain,
+        transactionHash: approveRes.transactionHash,
+      });
+      if (approveReceipt.status !== "success")
+        throw new Error("Approval failed on-chain");
+
+      toast({
+        title: "Approval Successful",
+        description: "USDT spending approved. Proceeding with mint…",
+        variant: "default",
+      });
+
+      // 2) Mint
+      setProgressStage("mint");
+      setStatus("Executing mint transaction…");
+      const receipt = await sendAndConfirmTransaction({
+        transaction: pendingMintTx,
+        account,
+      });
+
+      // 3) Confirming/Success
+      setProgressStage("confirming");
+      if (receipt?.transactionHash) setTxHash(receipt.transactionHash);
+
+      await handleTransactionSuccess(receipt);
     } catch (error) {
-      setIsMinting(false);
-      setShowProgressModal(false);
-      const msg = normalizeError(error);
-      setStatus(`Error: ${msg}`);
-      throw error;
+      handleTransactionError(error);
     }
   };
 
-  const handleTransactionSent = (hash: string) => {
-    setTxHash(hash);
-    setProgressStage("confirming");
-    setStatus("Transaction sent! Confirming on blockchain…");
+  const handleSpendingCapClose = () => {
+    setShowSpendingModal(false);
+    setIsMinting(false);
+    setStatus("");
+    setPendingApprovalTx(null);
+    setPendingMintTx(null);
+  };
+
+  const handleProgressClose = () => {
+    setShowProgressModal(false);
+    setProgressStage("approval");
+    setTxHash("");
+    setIsMinting(false);
+    setStatus("");
+  };
+
+  const handleVerifyWallet = () => {
     toast({
-      title: "Transaction Sent!",
-      description: `Transaction hash: ${hash.substring(0, 10)}…`,
+      title: "Check Your Wallet",
+      description:
+        "Please check your connected wallet's NFT collection to verify if the mint was successful",
       variant: "default",
     });
-
-    setTimeout(() => {
-      // if still confirming, show timeout note (modal itself handles "Check Wallet" CTAs)
-      setProgressStage((prev) => (prev === "confirming" ? "timeout" : prev));
-      setStatus((prev) =>
-        prev.includes("Confirming") ? "Transaction is taking longer than expected" : prev
-      );
-    }, 180000);
+    setTimeout(() => window.location.reload(), 2000);
   };
 
   const handleTransactionSuccess = async (receipt: any) => {
@@ -1073,9 +1236,9 @@ export default function MintingContent() {
         nftType,
         quantity: Number(quantity),
         chainId,
-        txHash: receipt.transactionHash || txHash,
+        txHash: receipt?.transactionHash || txHash,
         timestamp: new Date(),
-        mintType: "public",
+        mintType: mintMode,
       });
       toast({
         title: "Transaction Recorded",
@@ -1086,7 +1249,8 @@ export default function MintingContent() {
       console.error("Error saving mint event:", error);
       toast({
         title: "Database Warning",
-        description: "NFT minted successfully but failed to save to database",
+        description:
+          "NFT minted successfully but failed to save to database (non-critical)",
         variant: "default",
       });
     }
@@ -1149,9 +1313,9 @@ export default function MintingContent() {
     ) {
       toast({
         title: "Network Error",
-        description: `Failed to connect to ${
+        description: `${
           chainId === "56" ? "BNB Chain" : chainId === "137" ? "Polygon" : "Arbitrum"
-        }. Please try again.`,
+        } is unreachable. Please try again.`,
         variant: "destructive",
       });
     } else if (errorMessage.toLowerCase().includes("mint")) {
@@ -1181,6 +1345,7 @@ export default function MintingContent() {
   const unitPrice = PASS_PRICES[nftType]?.usd ?? 59;
   const progressPct = publicMintCap ? (currentSupply / publicMintCap) * 100 : 0;
 
+  // Mobile wallet helper modal
   const MobileWalletModal = () => {
     if (!showMobileWalletOptions) return null;
     return (
@@ -1205,8 +1370,22 @@ export default function MintingContent() {
             margin: "1rem",
           }}
         >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-            <h3 style={{ fontSize: "1.125rem", fontWeight: "bold", margin: 0, color: "#1f2937" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1rem",
+            }}
+          >
+            <h3
+              style={{
+                fontSize: "1.125rem",
+                fontWeight: "bold",
+                margin: 0,
+                color: "#1f2937",
+              }}
+            >
               Open in Mobile Wallet
             </h3>
             <button
@@ -1218,6 +1397,7 @@ export default function MintingContent() {
                 cursor: "pointer",
                 padding: "0.25rem",
               }}
+              aria-label="Close mobile wallet modal"
             >
               <X size={20} />
             </button>
@@ -1272,7 +1452,14 @@ export default function MintingContent() {
               Open in Trust Wallet
             </button>
           </div>
-          <p style={{ color: "#9ca3af", fontSize: "0.75rem", textAlign: "center", marginTop: "1rem" }}>
+          <p
+            style={{
+              color: "#9ca3af",
+              fontSize: "0.75rem",
+              textAlign: "center",
+              marginTop: "1rem",
+            }}
+          >
             Or use the regular wallet connect above
           </p>
         </div>
@@ -1282,7 +1469,8 @@ export default function MintingContent() {
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const maxPer = MAX_PER_WALLET[nftType]?.[chainId] ?? 0;
-    const value = Math.max(1, Math.min(maxPer, Number(e.target.value) || 1));
+    const raw = Number(e.target.value);
+    const value = Math.max(1, Math.min(maxPer || 1, Number.isFinite(raw) ? raw : 1));
 
     const minted = userMintedCount;
     const totalAfter = minted + value;
@@ -1290,26 +1478,28 @@ export default function MintingContent() {
     const cap = PUBLIC_MINT_CAPS[nftType]?.[chainId] ?? 0;
     const current = currentSupply;
 
-    if (totalAfter > maxPer) {
-      const remainingForUser = Math.max(0, maxPer - minted);
-      toast({
-        title: "Quantity Limit",
-        description: `You can mint ${remainingForUser} more ${nftType}Pass on this network`,
-        variant: "destructive",
-      });
-      setQuantity(String(Math.max(1, remainingForUser)));
-      return;
-    }
+    if (mintMode === "public") {
+      if (totalAfter > maxPer) {
+        const remainingForUser = Math.max(0, maxPer - minted);
+        toast({
+          title: "Quantity Limit",
+          description: `You can mint ${remainingForUser} more ${nftType}Pass on this network`,
+          variant: "destructive",
+        });
+        setQuantity(String(Math.max(1, remainingForUser)));
+        return;
+      }
 
-    if (current + value > cap) {
-      const remaining = Math.max(0, cap - current);
-      toast({
-        title: "Supply Limit",
-        description: `Only ${remaining} ${nftType}Pass remaining on this network`,
-        variant: "destructive",
-      });
-      setQuantity(String(Math.max(1, remaining)));
-      return;
+      if (current + value > cap) {
+        const remaining = Math.max(0, cap - current);
+        toast({
+          title: "Supply Limit",
+          description: `Only ${remaining} ${nftType}Pass remaining on this network`,
+          variant: "destructive",
+        });
+        setQuantity(String(Math.max(1, remaining)));
+        return;
+      }
     }
 
     setQuantity(String(value));
@@ -1327,7 +1517,13 @@ export default function MintingContent() {
           alignItems: "center",
         }}
       >
-        <div style={{ width: "100%", maxWidth: "32rem", boxShadow: "0 4px 6px rgba(0,0,0,0.1)" }}>
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "32rem",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+          }}
+        >
           <div style={{ paddingTop: "1.5rem" }}>
             <div
               style={{
@@ -1339,7 +1535,9 @@ export default function MintingContent() {
                 justifyContent: "center",
               }}
             >
-              <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#dc2626" }} />
+              <AlertTriangle
+                style={{ height: "1rem", width: "1rem", color: "#dc2626" }}
+              />
               <span style={{ color: "#dc2626", marginLeft: "0.5rem" }}>
                 Contract not loaded for selected network
               </span>
@@ -1352,16 +1550,58 @@ export default function MintingContent() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#e6f0fa", padding: "1rem" }}>
-      <div style={{ maxWidth: "32rem", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ width: "100%", maxWidth: "32rem", backgroundColor: "#fff", borderRadius: "1rem", overflow: "hidden", boxShadow: "0 4px 6px rgba(0,0,0,0.1)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1rem", borderBottom: "1px solid #e5e7eb" }}>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#1f2937" }}>AGV NFT Public Mint</h2>
-            <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} style={{ border: "1px solid #d1d5db", borderRadius: "9999px", padding: "0.25rem" }}>
-              {theme === "dark" ? <Sun style={{ height: "1.25rem", width: "1.25rem" }} /> : <Moon style={{ height: "1.25rem", width: "1.25rem" }} />}
+      <div
+        style={{
+          maxWidth: "32rem",
+          margin: "0 auto",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "32rem",
+            backgroundColor: "#fff",
+            borderRadius: "1rem",
+            overflow: "hidden",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "1rem",
+              borderBottom: "1px solid #e5e7eb",
+            }}
+          >
+            <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#1f2937" }}>
+              AGV NFT Mint
+            </h2>
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              style={{ border: "1px solid #d1d5db", borderRadius: "9999px", padding: "0.25rem" }}
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun style={{ height: "1.25rem", width: "1.25rem" }} />
+              ) : (
+                <Moon style={{ height: "1.25rem", width: "1.25rem" }} />
+              )}
             </button>
           </div>
 
-          <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          <div
+            style={{
+              padding: "1.5rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1.5rem",
+            }}
+          >
             {/* Connect */}
             <div style={{ textAlign: "center" }}>
               <ConnectButton client={thirdwebClient} />
@@ -1385,39 +1625,100 @@ export default function MintingContent() {
               )}
             </div>
 
-            {/* Supply Information */}
-            <div style={{ backgroundColor: "#f0f9ff", padding: "1rem", border: "1px solid #0ea5e9", borderRadius: "0.5rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem", color: "#0369a1", marginBottom: "0.5rem" }}>
-                <span>{nftType}Pass Public Mint</span>
-                <span>{publicMintCap} Total Cap (this chain)</span>
+            {/* Mint mode selector (Whitelist removed) */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <h3 style={{ fontSize: "1.125rem", fontWeight: "semibold", color: "#1f2937" }}>
+                Mint Type
+              </h3>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button
+                  onClick={() => setMintMode("public")}
+                  style={{
+                    flex: 1,
+                    padding: "0.5rem",
+                    backgroundColor: mintMode === "public" ? "#111827" : "#f1f5f9",
+                    color: mintMode === "public" ? "#fff" : "#111827",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "0.375rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  Public
+                </button>
+                <button
+                  onClick={() => setMintMode("agent")}
+                  style={{
+                    flex: 1,
+                    padding: "0.5rem",
+                    backgroundColor: mintMode === "agent" ? "#111827" : "#f1f5f9",
+                    color: mintMode === "agent" ? "#fff" : "#111827",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "0.375rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  Agent (KOL ID)
+                </button>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem", color: "#0369a1" }}>
-                <span>
-                  Minted: {currentSupply}/{publicMintCap}
-                </span>
-                <span>Available: {remainingSupply}</span>
-              </div>
+            </div>
+
+            {/* Supply Information (public only) */}
+            {mintMode === "public" && (
               <div
                 style={{
-                  width: "100%",
-                  backgroundColor: "#e0f2fe",
-                  borderRadius: "9999px",
-                  height: "0.5rem",
-                  marginTop: "0.5rem",
-                  overflow: "hidden",
+                  backgroundColor: "#f0f9ff",
+                  padding: "1rem",
+                  border: "1px solid #0ea5e9",
+                  borderRadius: "0.5rem",
                 }}
               >
                 <div
                   style={{
-                    width: `${progressPct}%`,
-                    backgroundColor: remainingSupply === 0 ? "#dc2626" : "#0ea5e9",
-                    height: "100%",
-                    borderRadius: "9999px",
-                    transition: "width 0.3s ease",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: "0.875rem",
+                    color: "#0369a1",
+                    marginBottom: "0.5rem",
                   }}
-                />
+                >
+                  <span>{nftType}Pass Public Mint</span>
+                  <span>{publicMintCap} Total Cap (this chain)</span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: "0.875rem",
+                    color: "#0369a1",
+                  }}
+                >
+                  <span>
+                    Minted: {currentSupply}/{publicMintCap}
+                  </span>
+                  <span>Available: {remainingSupply}</span>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#e0f2fe",
+                    borderRadius: "9999px",
+                    height: "0.5rem",
+                    marginTop: "0.5rem",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${progressPct}%`,
+                      backgroundColor: remainingSupply === 0 ? "#dc2626" : "#0ea5e9",
+                      height: "100%",
+                      borderRadius: "9999px",
+                      transition: "width 0.3s ease",
+                    }}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             {/* User Minting Status */}
             {account && eligibilityChecked && (
@@ -1432,13 +1733,24 @@ export default function MintingContent() {
                 }}
               >
                 {isEligible ? (
-                  <CheckCircle style={{ height: "1rem", width: "1rem", color: "#10b981" }} />
+                  <CheckCircle
+                    style={{ height: "1rem", width: "1rem", color: "#10b981" }}
+                  />
                 ) : (
-                  <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#dc2626" }} />
+                  <AlertTriangle
+                    style={{ height: "1rem", width: "1rem", color: "#dc2626" }}
+                  />
                 )}
-                <span style={{ color: isEligible ? "#065f46" : "#dc2626", marginLeft: "0.5rem" }}>
+                <span
+                  style={{
+                    color: isEligible ? "#065f46" : "#dc2626",
+                    marginLeft: "0.5rem",
+                  }}
+                >
                   {isEligible
-                    ? `You can mint ${canMintMore} more NFTs (${userMintedCount} already minted)`
+                    ? mintMode === "public"
+                      ? `You can mint ${canMintMore} more NFTs (${userMintedCount} already minted)`
+                      : "Agent mint available"
                     : status}
                 </span>
               </div>
@@ -1455,8 +1767,12 @@ export default function MintingContent() {
                   justifyContent: "center",
                 }}
               >
-                <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#dc2626" }} />
-                <span style={{ color: "#dc2626", marginLeft: "0.5rem" }}>Please connect your wallet</span>
+                <AlertTriangle
+                  style={{ height: "1rem", width: "1rem", color: "#dc2626" }}
+                />
+                <span style={{ color: "#dc2626", marginLeft: "0.5rem" }}>
+                  Please connect your wallet
+                </span>
               </div>
             )}
 
@@ -1474,28 +1790,62 @@ export default function MintingContent() {
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#d97706" }} />
-                  <span style={{ color: "#92400e", fontWeight: "semibold", fontSize: "0.875rem" }}>
+                  <AlertTriangle
+                    style={{ height: "1rem", width: "1rem", color: "#d97706" }}
+                  />
+                  <span
+                    style={{
+                      color: "#92400e",
+                      fontWeight: "semibold",
+                      fontSize: "0.875rem",
+                    }}
+                  >
                     Insufficient Gas Token
                   </span>
                 </div>
                 <p style={{ color: "#92400e", fontSize: "0.75rem", margin: 0 }}>
-                  You need {chainId === "56" ? "BNB" : chainId === "137" ? "MATIC" : "ETH"} tokens for
-                  transaction fees. Current balance: {parseFloat(nativeBalance).toFixed(4)}{" "}
+                  You need {chainId === "56" ? "BNB" : chainId === "137" ? "MATIC" : "ETH"} tokens
+                  for transaction fees. Current balance: {parseFloat(nativeBalance).toFixed(4)}{" "}
                   {chainId === "56" ? "BNB" : chainId === "137" ? "MATIC" : "ETH"}
                 </p>
                 <p style={{ color: "#92400e", fontSize: "0.75rem", margin: 0 }}>
-                  Required: ~{chainId === "56" ? "0.005 BNB" : chainId === "137" ? "0.01 MATIC" : "0.001 ETH"} for gas
-                  fees
+                  Required: ~
+                  {chainId === "56"
+                    ? "0.005 BNB"
+                    : chainId === "137"
+                    ? "0.01 MATIC"
+                    : "0.001 ETH"}{" "}
+                  for gas fees
                 </p>
               </div>
             )}
 
             {account && !hasInsufficientGas && nativeBalance !== "0" && (
-              <div style={{ backgroundColor: "#f0fdf4", padding: "0.75rem", border: "1px solid #34d399", borderRadius: "0.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ color: "#065f46", fontSize: "0.875rem" }}>Gas Token Balance:</span>
-                  <span style={{ color: "#065f46", fontSize: "0.875rem", fontWeight: "semibold" }}>
+              <div
+                style={{
+                  backgroundColor: "#f0fdf4",
+                  padding: "0.75rem",
+                  border: "1px solid #34d399",
+                  borderRadius: "0.5rem",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span style={{ color: "#065f46", fontSize: "0.875rem" }}>
+                    Gas Token Balance:
+                  </span>
+                  <span
+                    style={{
+                      color: "#065f46",
+                      fontSize: "0.875rem",
+                      fontWeight: "semibold",
+                    }}
+                  >
                     {parseFloat(nativeBalance).toFixed(4)}{" "}
                     {chainId === "56" ? "BNB" : chainId === "137" ? "MATIC" : "ETH"}
                   </span>
@@ -1568,7 +1918,8 @@ export default function MintingContent() {
                 </button>
               </div>
               <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#6b7280" }}>
-                Selected Network: {chainId === "56" ? "BNB Chain" : chainId === "137" ? "Polygon" : "Arbitrum"}
+                Selected Network:{" "}
+                {chainId === "56" ? "BNB Chain" : chainId === "137" ? "Polygon" : "Arbitrum"}
               </p>
             </div>
 
@@ -1588,11 +1939,11 @@ export default function MintingContent() {
                 {/* SeedPass */}
                 {(() => {
                   const cap = PUBLIC_MINT_CAPS.seed[chainId] ?? 0;
-                  const soldOut = cap === 0 || currentSupply >= cap;
+                  const soldOutPublic = mintMode === "public" && (cap === 0 || currentSupply >= cap);
                   return (
                     <button
                       onClick={() => handleNftTypeChange("seed")}
-                      disabled={soldOut}
+                      disabled={mintMode === "public" ? soldOutPublic : false}
                       style={{
                         display: "flex",
                         flexDirection: "column",
@@ -1602,21 +1953,24 @@ export default function MintingContent() {
                         color: nftType === "seed" ? "#fff" : "#1f2937",
                         border: "1px solid #e5e7eb",
                         borderRadius: "0.375rem",
-                        cursor: soldOut ? "not-allowed" : "pointer",
-                        opacity: soldOut ? 0.5 : 1,
+                        cursor:
+                          mintMode === "public" && soldOutPublic ? "not-allowed" : "pointer",
+                        opacity: mintMode === "public" && soldOutPublic ? 0.5 : 1,
                       }}
                     >
                       <span style={{ fontWeight: "semibold" }}>SeedPass</span>
                       <span style={{ fontSize: "0.875rem" }}>Price: $29 USDT</span>
-                      <span
-                        style={{
-                          fontSize: "0.75rem",
-                          color: nftType === "seed" ? "#e5e7eb" : "#6b7280",
-                        }}
-                      >
-                        Cap (this chain): {cap}
-                      </span>
-                      {soldOut && (
+                      {mintMode === "public" && (
+                        <span
+                          style={{
+                            fontSize: "0.75rem",
+                            color: nftType === "seed" ? "#e5e7eb" : "#6b7280",
+                          }}
+                        >
+                          Cap (this chain): {cap}
+                        </span>
+                      )}
+                      {mintMode === "public" && soldOutPublic && (
                         <span style={{ fontSize: "0.75rem", color: "#dc2626" }}>
                           {cap === 0 ? "Not in public mint" : "Sold Out"}
                         </span>
@@ -1628,11 +1982,11 @@ export default function MintingContent() {
                 {/* TreePass */}
                 {(() => {
                   const cap = PUBLIC_MINT_CAPS.tree[chainId] ?? 0;
-                  const soldOut = cap === 0 || currentSupply >= cap;
+                  const soldOutPublic = mintMode === "public" && (cap === 0 || currentSupply >= cap);
                   return (
                     <button
                       onClick={() => handleNftTypeChange("tree")}
-                      disabled={soldOut}
+                      disabled={mintMode === "public" ? soldOutPublic : false}
                       style={{
                         display: "flex",
                         flexDirection: "column",
@@ -1642,21 +1996,24 @@ export default function MintingContent() {
                         color: nftType === "tree" ? "#fff" : "#1f2937",
                         border: "1px solid #e5e7eb",
                         borderRadius: "0.375rem",
-                        cursor: soldOut ? "not-allowed" : "pointer",
-                        opacity: soldOut ? 0.5 : 1,
+                        cursor:
+                          mintMode === "public" && soldOutPublic ? "not-allowed" : "pointer",
+                        opacity: mintMode === "public" && soldOutPublic ? 0.5 : 1,
                       }}
                     >
                       <span style={{ fontWeight: "semibold" }}>TreePass</span>
                       <span style={{ fontSize: "0.875rem" }}>Price: $59 USDT</span>
-                      <span
-                        style={{
-                          fontSize: "0.75rem",
-                          color: nftType === "tree" ? "#e5e7eb" : "#6b7280",
-                        }}
-                      >
-                        Cap (this chain): {cap}
-                      </span>
-                      {soldOut && (
+                      {mintMode === "public" && (
+                        <span
+                          style={{
+                            fontSize: "0.75rem",
+                            color: nftType === "tree" ? "#e5e7eb" : "#6b7280",
+                          }}
+                        >
+                          Cap (this chain): {cap}
+                        </span>
+                      )}
+                      {mintMode === "public" && soldOutPublic && (
                         <span style={{ fontSize: "0.75rem", color: "#dc2626" }}>
                           {cap === 0 ? "Not in public mint" : "Sold Out"}
                         </span>
@@ -1665,7 +2022,7 @@ export default function MintingContent() {
                   );
                 })()}
 
-                {/* SolarPass (not in public mint) */}
+                {/* SolarPass (hidden from public; disabled) */}
                 <button
                   style={{
                     display: "flex",
@@ -1688,7 +2045,7 @@ export default function MintingContent() {
                   </span>
                 </button>
 
-                {/* ComputePass (not in public mint) */}
+                {/* ComputePass (hidden from public; disabled) */}
                 <button
                   style={{
                     display: "flex",
@@ -1717,7 +2074,10 @@ export default function MintingContent() {
             {(() => {
               const minted = userMintedCount;
               const maxPerThisChain = MAX_PER_WALLET[nftType][chainId] ?? 0;
-              const _canMintMore = Math.max(0, Math.min(maxPerThisChain - minted, remainingSupply));
+              const _canMintMore = Math.max(
+                0,
+                Math.min(maxPerThisChain - minted, remainingSupply)
+              );
 
               return (
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -1725,13 +2085,14 @@ export default function MintingContent() {
                     htmlFor="quantity"
                     style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}
                   >
-                    Quantity (Max {_canMintMore})
+                    Quantity
+                    {mintMode === "public" ? ` (Max ${_canMintMore})` : ""}
                   </label>
                   <input
                     id="quantity"
                     type="number"
                     min={1}
-                    max={Math.max(1, _canMintMore)}
+                    max={mintMode === "public" ? Math.max(1, _canMintMore) : 99}
                     value={quantity}
                     onChange={handleQuantityChange}
                     style={{
@@ -1746,20 +2107,24 @@ export default function MintingContent() {
               );
             })()}
 
-            {/* KOL ID */}
+            {/* KOL ID (required for Agent) */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               <label
                 htmlFor="kolId"
                 style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}
               >
-                KOL ID (Optional)
+                {mintMode === "agent" ? "KOL ID (Required)" : "KOL ID (Optional)"}
               </label>
               <input
                 id="kolId"
                 type="text"
                 value={kolId}
                 onChange={(e) => setKolId(e.target.value)}
-                placeholder="Enter KOL ID if applicable"
+                placeholder={
+                  mintMode === "agent"
+                    ? "Enter your KOL ID to mint as Agent"
+                    : "Enter KOL ID if applicable"
+                }
                 style={{
                   width: "100%",
                   padding: "0.75rem",
@@ -1796,19 +2161,23 @@ export default function MintingContent() {
               )}
             </div>
 
-            {/* Mint CTA */}
+            {/* Mint CTA (custom flow; no TransactionButton to avoid state loops) */}
             <div style={{ paddingTop: "1rem", paddingBottom: 0 }}>
-              <TransactionButton
-                transaction={buildTransaction}
-                onTransactionSent={handleTransactionSent}
-                onTransactionConfirmed={handleTransactionSuccess}
-                onError={handleTransactionError}
+              <button
+                onClick={async () => {
+                  try {
+                    await prepareTransactions();
+                  } catch (e) {
+                    // errors already toasted
+                  }
+                }}
                 disabled={
                   !account ||
                   isMinting ||
                   !isEligible ||
-                  remainingSupply === 0 ||
-                  hasInsufficientGas
+                  (mintMode === "public" && remainingSupply === 0) ||
+                  hasInsufficientGas ||
+                  (mintMode === "agent" && kolId.trim().length === 0)
                 }
                 style={{
                   width: "100%",
@@ -1822,46 +2191,46 @@ export default function MintingContent() {
                     !account ||
                     isMinting ||
                     !isEligible ||
-                    remainingSupply === 0 ||
-                    hasInsufficientGas
+                    (mintMode === "public" && remainingSupply === 0) ||
+                    hasInsufficientGas ||
+                    (mintMode === "agent" && kolId.trim().length === 0)
                       ? "not-allowed"
                       : "pointer",
                   opacity:
                     !account ||
                     isMinting ||
                     !isEligible ||
-                    remainingSupply === 0 ||
-                    hasInsufficientGas
+                    (mintMode === "public" && remainingSupply === 0) ||
+                    hasInsufficientGas ||
+                    (mintMode === "agent" && kolId.trim().length === 0)
                       ? 0.5
                       : 1,
                 }}
               >
                 {isMinting
-                  ? "Processing..."
+                  ? "Preparing…"
                   : !account
                   ? "Connect Wallet"
                   : hasInsufficientGas
                   ? `Need ${chainId === "56" ? "BNB" : chainId === "137" ? "MATIC" : "ETH"} for Gas`
                   : !isEligible
                   ? "Not Eligible"
-                  : remainingSupply === 0
+                  : mintMode === "agent" && !kolId.trim()
+                  ? "Enter KOL ID"
+                  : mintMode === "public" && remainingSupply === 0
                   ? "Sold Out"
                   : "Mint Now"}
-              </TransactionButton>
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Spending Cap Modal */}
+        {/* Spending Cap Modal (appears first after Mint clicked) */}
         <SpendingCapModal
           isOpen={showSpendingModal}
           onClose={handleSpendingCapClose}
           onConfirm={handleSpendingCapConfirm}
-          spender={
-            contractAddr
-              ? `${contractAddr.slice(0, 6)}...${contractAddr.slice(-4)}`
-              : ""
-          }
+          spender={contractAddr ? `${contractAddr.slice(0, 6)}...${contractAddr.slice(-4)}` : ""}
           requestFrom="agv-nft.com"
           spendingCap={(unitPrice * Number(quantity || 0)).toFixed(2)}
           tokenSymbol="USDT"
@@ -1871,7 +2240,7 @@ export default function MintingContent() {
         {/* Mobile Wallet Options Modal */}
         <MobileWalletModal />
 
-        {/* Progress Modal */}
+        {/* Transaction Progress Modal (ONLY after Confirm) */}
         <TransactionProgressModal
           isOpen={showProgressModal}
           onClose={handleProgressClose}
@@ -1919,7 +2288,9 @@ export default function MintingContent() {
                 alignItems: "center",
               }}
             >
-              <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#d97706" }} />
+              <AlertTriangle
+                style={{ height: "1rem", width: "1rem", color: "#d97706" }}
+              />
               <span style={{ color: "#92400e", marginLeft: "0.5rem" }}>
                 Please connect your wallet to continue with minting.
               </span>
