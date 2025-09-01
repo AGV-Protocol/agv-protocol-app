@@ -12,7 +12,7 @@ import {
   prepareContractCall,
   sendTransaction,
 } from "thirdweb";
-import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2 } from "lucide-react";
+import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2, ExternalLink, Copy } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
@@ -48,10 +48,14 @@ interface SpendingCapModalProps {
   networkFee: string;
 }
 
-interface ProgressAlertBoxProps {
+interface TransactionProgressModalProps {
   isOpen: boolean;
   onClose: () => void;
   status: string;
+  txHash?: string;
+  chainId: ChainId;
+  stage: 'approval' | 'mint' | 'confirming' | 'success' | 'timeout' | 'error';
+  onVerifyWallet: () => void;
 }
 
 const SpendingCapModal = ({
@@ -210,12 +214,62 @@ const SpendingCapModal = ({
   );
 };
 
-const ProgressAlertBox = ({
+const TransactionProgressModal = ({
   isOpen,
   onClose,
   status,
-}: ProgressAlertBoxProps) => {
+  txHash,
+  chainId,
+  stage,
+  onVerifyWallet,
+}: TransactionProgressModalProps) => {
+  const [timeElapsed, setTimeElapsed] = useState(0);
+  const [showTimeoutOption, setShowTimeoutOption] = useState(false);
+  
+  const chainInfo = CHAINS[chainId];
+  const explorerUrl = txHash ? `${chainInfo?.explorer}/tx/${txHash}` : null;
+
+  useEffect(() => {
+    if (!isOpen || stage === 'success') return;
+    
+    const timer = setInterval(() => {
+      setTimeElapsed(prev => prev + 1);
+    }, 1000);
+
+    // Show timeout option after 2 minutes for mint stage
+    if (stage === 'confirming' && timeElapsed >= 120) {
+      setShowTimeoutOption(true);
+    }
+
+    return () => clearInterval(timer);
+  }, [isOpen, stage, timeElapsed]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeElapsed(0);
+      setShowTimeoutOption(false);
+    }
+  }, [isOpen]);
+
+  const copyTxHash = async () => {
+    if (txHash) {
+      await navigator.clipboard.writeText(txHash);
+      toast({
+        title: "Copied!",
+        description: "Transaction hash copied to clipboard",
+        variant: "default",
+      });
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   if (!isOpen) return null;
+
   return (
     <div style={{
       position: "fixed",
@@ -240,30 +294,210 @@ const ProgressAlertBox = ({
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Loader2 style={{ height: "1.5rem", width: "1.5rem", color: "#3b82f6", animation: "spin 1s linear infinite" }} />
+            {stage === 'success' ? (
+              <CheckCircle style={{ height: "1.5rem", width: "1.5rem", color: "#10b981" }} />
+            ) : stage === 'error' ? (
+              <AlertTriangle style={{ height: "1.5rem", width: "1.5rem", color: "#ef4444" }} />
+            ) : (
+              <Loader2 style={{ 
+                height: "1.5rem", 
+                width: "1.5rem", 
+                color: "#3b82f6", 
+                animation: "spin 1s linear infinite" 
+              }} />
+            )}
             <h3 style={{ fontSize: "1.125rem", fontWeight: "bold", margin: 0 }}>
-              Minting in Progress
+              {stage === 'success' ? 'Transaction Successful!' : 
+               stage === 'error' ? 'Transaction Failed' :
+               stage === 'timeout' ? 'Transaction Timeout' :
+               'Transaction Progress'}
             </h3>
           </div>
-          <button
-            onClick={onClose}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#9ca3af",
-              cursor: "pointer",
-              padding: "0.25rem",
-            }}
-          >
-            <X size={20} />
-          </button>
+          {(stage === 'success' || stage === 'error' || showTimeoutOption) && (
+            <button
+              onClick={onClose}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#9ca3af",
+                cursor: "pointer",
+                padding: "0.25rem",
+              }}
+            >
+              <X size={20} />
+            </button>
+          )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
-          <span style={{ color: "#d1d5db", fontSize: "0.875rem" }}>{status}</span>
+
+        <div style={{ marginBottom: "1rem" }}>
+          <p style={{ color: "#d1d5db", fontSize: "0.875rem", marginBottom: "0.5rem" }}>
+            {status}
+          </p>
+          {timeElapsed > 0 && stage !== 'success' && (
+            <p style={{ color: "#9ca3af", fontSize: "0.75rem" }}>
+              Time elapsed: {formatTime(timeElapsed)}
+            </p>
+          )}
         </div>
-        <p style={{ color: "#9ca3af", fontSize: "0.75rem" }}>
-          Please do not refresh or leave the page during the minting process.
-        </p>
+
+        {/* Transaction Hash Display */}
+        {txHash && (
+          <div style={{ 
+            backgroundColor: "#374151", 
+            borderRadius: "0.5rem", 
+            padding: "1rem", 
+            marginBottom: "1rem" 
+          }}>
+            <h4 style={{ color: "#f3f4f6", fontSize: "0.875rem", fontWeight: "semibold", marginBottom: "0.5rem" }}>
+              Transaction Hash
+            </h4>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+              <span style={{ 
+                color: "#10b981", 
+                fontSize: "0.75rem", 
+                fontFamily: "monospace",
+                wordBreak: "break-all",
+                flex: 1
+              }}>
+                {txHash}
+              </span>
+              <button
+                onClick={copyTxHash}
+                style={{
+                  background: "none",
+                  border: "1px solid #4b5563",
+                  borderRadius: "0.25rem",
+                  padding: "0.25rem",
+                  color: "#9ca3af",
+                  cursor: "pointer",
+                }}
+              >
+                <Copy size={14} />
+              </button>
+            </div>
+            {explorerUrl && (
+              <a
+                href={explorerUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  color: "#3b82f6",
+                  fontSize: "0.75rem",
+                  textDecoration: "none",
+                }}
+              >
+                View on Explorer
+                <ExternalLink size={12} />
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Progress Steps */}
+        <div style={{ marginBottom: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+            <div style={{
+              width: "1rem",
+              height: "1rem",
+              borderRadius: "50%",
+              backgroundColor: stage === 'approval' ? "#3b82f6" : "#10b981",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+              {stage === 'approval' ? (
+                <Loader2 size={8} style={{ animation: "spin 1s linear infinite" }} />
+              ) : (
+                <CheckCircle size={8} />
+              )}
+            </div>
+            <span style={{ fontSize: "0.75rem", color: stage === 'approval' ? "#3b82f6" : "#10b981" }}>
+              USDT Approval
+            </span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <div style={{
+              width: "1rem",
+              height: "1rem",
+              borderRadius: "50%",
+              backgroundColor: stage === 'mint' || stage === 'confirming' ? "#3b82f6" : 
+                              stage === 'success' ? "#10b981" : "#4b5563",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+              {(stage === 'mint' || stage === 'confirming') ? (
+                <Loader2 size={8} style={{ animation: "spin 1s linear infinite" }} />
+              ) : stage === 'success' ? (
+                <CheckCircle size={8} />
+              ) : null}
+            </div>
+            <span style={{ 
+              fontSize: "0.75rem", 
+              color: (stage === 'mint' || stage === 'confirming') ? "#3b82f6" : 
+                     stage === 'success' ? "#10b981" : "#9ca3af" 
+            }}>
+              NFT Mint
+            </span>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div style={{ display: "flex", gap: "0.5rem", flexDirection: "column" }}>
+          {showTimeoutOption && stage === 'confirming' && (
+            <>
+              <p style={{ color: "#fbbf24", fontSize: "0.75rem", marginBottom: "0.5rem" }}>
+                Transaction is taking longer than expected. This may be due to network congestion.
+              </p>
+              <button
+                onClick={onVerifyWallet}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  backgroundColor: "#2563eb",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "0.5rem",
+                  cursor: "pointer",
+                  fontWeight: "medium",
+                  fontSize: "0.875rem",
+                }}
+              >
+                Check Wallet for NFTs
+              </button>
+              <p style={{ color: "#9ca3af", fontSize: "0.75rem", textAlign: "center" }}>
+                Please check your connected wallet to verify if the NFT was minted successfully
+              </p>
+            </>
+          )}
+          
+          {stage === 'error' && (
+            <button
+              onClick={onClose}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                backgroundColor: "#ef4444",
+                color: "#fff",
+                border: "none",
+                borderRadius: "0.5rem",
+                cursor: "pointer",
+                fontWeight: "medium",
+              }}
+            >
+              Close
+            </button>
+          )}
+        </div>
+
+        {stage === 'confirming' && !showTimeoutOption && (
+          <p style={{ color: "#9ca3af", fontSize: "0.75rem", textAlign: "center" }}>
+            Please do not refresh or leave the page. This may take a few minutes.
+          </p>
+        )}
       </div>
     </div>
   );
@@ -283,6 +517,8 @@ export default function MintingContent() {
   const [eligibilityChecked, setEligibilityChecked] = useState(false);
   const [showSpendingModal, setShowSpendingModal] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
+  const [txHash, setTxHash] = useState<string>("");
+  const [progressStage, setProgressStage] = useState<'approval' | 'mint' | 'confirming' | 'success' | 'timeout' | 'error'>('approval');
   const [pendingApprovalTx, setPendingApprovalTx] = useState<any>(null);
   const [pendingMintTx, setPendingMintTx] = useState<any>(null);
   const { setTheme, theme } = useTheme();
@@ -470,7 +706,9 @@ export default function MintingContent() {
 
   const handleSpendingCapConfirm = async () => {
     setShowSpendingModal(false);
-    setShowProgressModal(true); // Show progress modal after confirm
+    setShowProgressModal(true);
+    setProgressStage('approval');
+    
     if (pendingApprovalTx && pendingMintTx) {
       try {
         setStatus("Approving USDT spending...");
@@ -479,13 +717,18 @@ export default function MintingContent() {
           description: "Please approve USDT spending in your wallet.",
           variant: "default",
         });
-        await sendTransaction({ transaction: pendingApprovalTx, account });
+        
+        const approvalResult = await sendTransaction({ transaction: pendingApprovalTx, account });
+        
         toast({
           title: "Approval Successful",
           description: "USDT spending approved. Proceeding with mint...",
           variant: "default",
         });
+        
+        setProgressStage('mint');
         setStatus("Executing mint transaction...");
+        
         // Return the mint transaction to be executed by TransactionButton
         return pendingMintTx;
       } catch (error) {
@@ -495,8 +738,8 @@ export default function MintingContent() {
           variant: "destructive",
         });
         setIsMinting(false);
+        setProgressStage('error');
         setStatus("Approval failed");
-        setShowProgressModal(false);
         throw error;
       }
     }
@@ -511,14 +754,24 @@ export default function MintingContent() {
   };
 
   const handleProgressClose = () => {
-    // Optionally prevent closing during critical steps
-    // For now, allow closing but warn user
-    toast({
-      title: "Minting in Progress",
-      description: "Closing this may interrupt the process. Are you sure?",
-      variant: "warning",
-    });
     setShowProgressModal(false);
+    setProgressStage('approval');
+    setTxHash("");
+    setIsMinting(false);
+    setStatus("");
+  };
+
+  const handleVerifyWallet = () => {
+    toast({
+      title: "Check Your Wallet",
+      description: "Please check your connected wallet's NFT collection to verify if the mint was successful",
+      variant: "default",
+    });
+    
+    // Refresh the page to update NFT balance
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
   };
 
   const buildTransaction = async () => {
@@ -588,13 +841,13 @@ export default function MintingContent() {
       const approveTx = prepareContractCall({
         contract: usdtContract,
         method: "approve",
-        params: [contractAddr, priceWei], // Use string to avoid BigInt issues
+        params: [contractAddr, priceWei],
       });
       // Prepare mint transaction
       const mintTx = prepareContractCall({
         contract: nftContract,
         method: "mint",
-        params: [BigInt(quantity), []], // Fixed: Use BigInt for quantity and empty proof array
+        params: [BigInt(quantity), []],
       });
       setPendingApprovalTx(approveTx);
       setPendingMintTx(mintTx);
@@ -626,30 +879,57 @@ export default function MintingContent() {
     }
   };
 
+  const handleTransactionSent = (txHash: string) => {
+    // This fires immediately when transaction is sent
+    setTxHash(txHash);
+    setProgressStage('confirming');
+    setStatus("Transaction sent! Confirming on blockchain...");
+    
+    toast({
+      title: "Transaction Sent!",
+      description: `Transaction hash: ${txHash.substring(0, 10)}...`,
+      variant: "default",
+    });
+
+    // Set a timeout to show verification option if transaction takes too long
+    setTimeout(() => {
+      if (progressStage === 'confirming') {
+        setProgressStage('timeout');
+        setStatus("Transaction is taking longer than expected");
+      }
+    }, 180000); // 3 minutes timeout
+  };
+
   const handleTransactionSuccess = async (receipt: any) => {
     try {
+      setProgressStage('success');
+      setStatus("Minted successfully!");
+      
+      // Save to database
       await addDoc(collection(db, "mintEvents"), {
         ...(kolId && { kolId }),
         address: account?.address,
         nftType,
         quantity: Number(quantity),
         chainId,
-        txHash: receipt.transactionHash,
+        txHash: receipt.transactionHash || txHash,
         timestamp: new Date(),
         mintType: "public",
       });
-      setStatus("Minted successfully!");
+      
       setIsMinting(false);
-      setShowProgressModal(false);
+      
       toast({
         title: "Mint Successful! 🎉",
         description: `Successfully minted ${quantity} ${nftType}Pass NFT${Number(quantity) > 1 ? 's' : ''}`,
         variant: "default",
       });
-      // Auto-reload page after 3 seconds
+      
+      // Auto-reload page after 5 seconds to show new balance
       setTimeout(() => {
         window.location.reload();
-      }, 3000);
+      }, 5000);
+      
     } catch (error) {
       console.error("Error saving mint event:", error);
       toast({
@@ -658,11 +938,12 @@ export default function MintingContent() {
         variant: "destructive",
       });
       setIsMinting(false);
-      setShowProgressModal(false);
+      setProgressStage('success'); // Still show success since NFT was minted
+      
       // Still reload even if database save fails
       setTimeout(() => {
         window.location.reload();
-      }, 3000);
+      }, 5000);
     }
   };
 
@@ -670,7 +951,8 @@ export default function MintingContent() {
     const errorMessage = err instanceof Error ? err.message : "Transaction failed";
     setStatus(`Error: ${errorMessage}`);
     setIsMinting(false);
-    setShowProgressModal(false);
+    setProgressStage('error');
+    
     if (errorMessage.toLowerCase().includes("insufficient")) {
       toast({
         title: "Insufficient Funds",
@@ -941,6 +1223,20 @@ export default function MintingContent() {
               </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <label htmlFor="quantity" style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}>
+                Quantity (Max {Math.min(5, canMintMore)})
+              </label>
+              <input
+                id="quantity"
+                type="number"
+                min="1"
+                max={Math.min(5, canMintMore)}
+                value={quantity}
+                onChange={handleQuantityChange}
+                style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", outline: "none" }}
+              />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               <label htmlFor="kolId" style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}>
                 KOL ID (Optional)
               </label>
@@ -965,6 +1261,7 @@ export default function MintingContent() {
             <div style={{ paddingTop: "1rem", paddingBottom: "0" }}>
               <TransactionButton
                 transaction={buildTransaction}
+                onTransactionSent={handleTransactionSent}
                 onTransactionConfirmed={handleTransactionSuccess}
                 onError={handleTransactionError}
                 disabled={!account || isMinting || !isEligible || remainingSupply === 0}
@@ -1000,11 +1297,15 @@ export default function MintingContent() {
           tokenSymbol="USDT"
           networkFee="0.12"
         />
-        {/* Progress Alert Box */}
-        <ProgressAlertBox
+        {/* Enhanced Progress Modal */}
+        <TransactionProgressModal
           isOpen={showProgressModal}
           onClose={handleProgressClose}
           status={status}
+          txHash={txHash}
+          chainId={chainId}
+          stage={progressStage}
+          onVerifyWallet={handleVerifyWallet}
         />
         <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
           <Link href="/kol-dashboard" style={{ color: "#2563eb", fontWeight: "medium", textDecoration: "underline" }}>
