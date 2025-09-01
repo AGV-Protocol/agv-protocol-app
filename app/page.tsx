@@ -30,6 +30,7 @@ import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
+import type { CollectionKey } from "@/lib/contracts";
 import {
   CHAINS,
   USDT_ADDRESSES,
@@ -334,7 +335,11 @@ const TransactionProgressModal = ({
   const [showTimeoutOption, setShowTimeoutOption] = useState(false);
 
   const chainInfo = CHAINS[chainId];
-  const explorerUrl = txHash ? `${chainInfo?.explorer}/tx/${txHash}` : null;
+  const explorerBase =
+    chainInfo?.chain?.blockExplorers?.default?.url ??
+    chainInfo?.chain?.blockExplorers?.etherscan?.url ??
+    "";
+  const explorerUrl = txHash ? `${explorerBase}/tx/${txHash}` : null;
 
   // One interval; avoid depth loops
   useEffect(() => {
@@ -731,10 +736,10 @@ export default function MintingContent() {
             client: thirdwebClient,
             address: contractAddr,
             chain: chainInfo.chain,
-            abi: NFT_ABI,
+            abi: NFT_ABI[nftType as CollectionKey],
           })
         : null,
-    [contractAddr, chainInfo.chain]
+    [contractAddr, chainInfo.chain, nftType]
   );
 
   const usdtContract = useMemo(
