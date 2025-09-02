@@ -1,111 +1,140 @@
 // lib/recordMint.ts
 import {
-  collection,
-  doc,
-  getDocs,
-  increment,
-  query,
+  Firestore,
   runTransaction,
+  doc,
   serverTimestamp,
+  collection,
+  query,
   where,
+  getDocs,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 
-type NftType = "seed" | "tree" | "solar" | "compute";
+export type ChainId = "56" | "137" | "42161";
+export type NftType = "seed" | "tree" | "solar" | "compute";
 
-type RecordMintParams = {
-  kolId: string;              // e.g. "AGV-KOL123456"
-  address: string;            // buyer wallet
-  nftType: NftType;
-  quantity: number;           // > 0
-  chainId: "56" | "137" | "42161" | string;
-  txHash: string;             // on-chain tx hash
-};
+export interface MintRecordPayload {
+  address: string;          // buyer wallet
+  nftType: NftType;         // "seed" | "tree" | "solar" | "compute"
+  quantity: number;         // integer >= 1
+  chainId: ChainId;         // "56" | "137" | "42161"
+  txHash: string;           // on-chain tx hash
+  timestamp?: Date;         // optional; server timestamp will be used if omitted
+  mintType?: "public" | "agent";
+}
 
 /**
- * Appends a successful mint to mintEvents/{kolId} (docId = kolId),
- * increments aggregates, and syncs kols (fast counters).
- *
- * - NO-OP if the same txHash already exists (idempotent).
- * - FAILS if mintEvents/{kolId} does not exist (so users cannot create new kolIds).
- * - Caps events to the latest 5000 per KOL.
+ * Strict recorder for successful mints.
+ * - Requires an existing KOL in `kols` (random doc ID, has field `kolId`).
+ * - Requires an existing aggregate doc in `mintEvents/{kolId}`.
+ * - Idempotent on txHash: no double-increments if the same txHash is seen again.
+ * - Keeps *events* on the aggregate doc (capped at the last 500).
+ * - Updates counters on BOTH `mintEvents/{kolId}` and the matching `kols/{randomId}` doc.
  */
-export async function recordSuccessfulMintStrict(p: RecordMintParams) {
-  const qty = Math.max(1, Math.floor(p.quantity || 0));
-  const mintRef = doc(db, "mintEvents", p.kolId);
+export async function recordSuccessfulMintStrict(
+  db: Firestore,
+  kolId: string,
+  payload: MintRecordPayload
+): Promise<"ok" | "deduped"> {
+  const cleanKolId = (kolId || "").trim();
+  if (!cleanKolId) throw new Error("kol-id-empty");
 
-  // Find the KOL profile doc (random docId) up-front so we can update it inside the txn.
-  const kq = query(collection(db, "kols"), where("kolId", "==", p.kolId));
+  // Resolve the KOL doc (random doc id) by kolId field.
+  const kq = query(collection(db, "kols"), where("kolId", "==", cleanKolId));
   const ks = await getDocs(kq);
-  const kolDoc = ks.docs[0]; // expected exactly 1 created by Admin
+  if (ks.empty) throw new Error("kol-not-found");
 
-  await runTransaction(db, async (tx) => {
-    const snap = await tx.get(mintRef);
+  const kolDocRef = ks.docs[0].ref;
+  const mintDocRef = doc(db, "mintEvents", cleanKolId);
 
-    // If the mintEvents doc does not exist, abort: only Admins may create it.
-    if (!snap.exists()) {
-      throw new Error("Invalid KOL: kolId not found.");
+  const nftKey = payload.nftType; // dynamic field to bump
+  const qty = Number(payload.quantity || 0);
+  if (!qty || qty < 1) throw new Error("invalid-quantity");
+
+  const txHashLower = (payload.txHash || "").toLowerCase();
+
+  return runTransaction(db, async (tx) => {
+    // Must exist (admin created). Do NOT create here.
+    const mintSnap = await tx.get(mintDocRef);
+    if (!mintSnap.exists()) {
+      throw new Error("mint-doc-missing"); // admin must have initialized this
     }
 
-    const data = snap.data() || {};
-    const events: any[] = Array.isArray(data.events) ? data.events : [];
+    const kolSnap = await tx.get(kolDocRef);
+    if (!kolSnap.exists()) throw new Error("kol-not-found"); // race protection
 
-    // Idempotency: skip if we already have this txHash (check recent subset for speed).
-    const txLower = (p.txHash || "").toLowerCase();
-    const recent = events.slice(-100); // check the last 100 quickly
-    const dup = recent.some((e) => (e?.txHash || "").toLowerCase() === txLower);
-    if (dup) return; // no-op
+    const mintData = (mintSnap.data() || {}) as any;
+    const events: any[] = Array.isArray(mintData.events) ? mintData.events : [];
 
-    // Append new event & cap to 500 total
-    const newEvent = {
-      address: p.address,
-      nftType: p.nftType,
-      quantity: qty,
-      chainId: String(p.chainId),
-      txHash: p.txHash,
-      timestamp: serverTimestamp(),
+    // Idempotency: skip if txHash already present (case-insensitive).
+    if (
+      txHashLower &&
+      events.some((e) => String(e?.txHash || "").toLowerCase() === txHashLower)
+    ) {
+      return "deduped";
+    }
+
+    // Current counters
+    const curSeed = Number(mintData.seed || 0);
+    const curTree = Number(mintData.tree || 0);
+    const curSolar = Number(mintData.solar || 0);
+    const curCompute = Number(mintData.compute || 0);
+
+    // Per-chain bucket
+    const chainId = payload.chainId;
+    const perChain = (mintData.perChain || {}) as Record<
+      string,
+      Partial<Record<NftType, number>>
+    >;
+    const chainBucket = perChain[chainId] || {};
+
+    // Prepare updates (add qty to appropriate nft type)
+    const newTotals = {
+      seed: nftKey === "seed" ? curSeed + qty : curSeed,
+      tree: nftKey === "tree" ? curTree + qty : curTree,
+      solar: nftKey === "solar" ? curSolar + qty : curSolar,
+      compute: nftKey === "compute" ? curCompute + qty : curCompute,
     };
 
-    // Build a fresh array to ensure deterministic cap
-    const updatedEvents = [...events, newEvent];
-    const cappedEvents =
-      updatedEvents.length > 5000 ? updatedEvents.slice(updatedEvents.length - 5000) : updatedEvents;
+    const newPerChainQty = Number(chainBucket[nftKey] || 0) + qty;
 
-    // Bump totals
-    const prevSeed = Number(data.seed || 0);
-    const prevTree = Number(data.tree || 0);
-    const prevSolar = Number(data.solar || 0);
-    const prevCompute = Number(data.compute || 0);
+    // Append event (cap to last 500)
+    const newEvent = {
+      kolId: cleanKolId,
+      address: payload.address,
+      nftType: nftKey,
+      quantity: qty,
+      chainId,
+      txHash: payload.txHash,
+      timestamp: payload.timestamp ?? serverTimestamp(),
+      mintType: payload.mintType ?? "public",
+    };
+    const updatedEvents = [...events.slice(-499), newEvent];
 
-    // Per-chain nested bucket
-    const perChain = (data.perChain || {}) as Record<string, any>;
-    const chainBucket = (perChain[p.chainId] ||= {});
-    const prevChainType = Number(chainBucket[p.nftType] || 0);
-
-    // Write back the whole doc in the txn
-    tx.update(mintRef, {
-      // top-level counters
-      seed: p.nftType === "seed" ? prevSeed + qty : prevSeed,
-      tree: p.nftType === "tree" ? prevTree + qty : prevTree,
-      solar: p.nftType === "solar" ? prevSolar + qty : prevSolar,
-      compute: p.nftType === "compute" ? prevCompute + qty : prevCompute,
-
-      // flatten perChain updates to keep structure consistent
-      [`perChain.${p.chainId}.${p.nftType}`]: prevChainType + qty,
-
-      // events (capped)
-      events: cappedEvents,
-
+    // Update aggregate doc
+    tx.update(mintDocRef, {
+      ...newTotals,
+      [`perChain.${chainId}.${nftKey}`]: newPerChainQty,
+      events: updatedEvents,
       updatedAt: serverTimestamp(),
-      kolId: p.kolId, // keep invariant (rules require kolId == docId)
     });
 
-    // Update fast aggregates on the KOL profile if we found it
-    if (kolDoc) {
-      tx.update(kolDoc.ref, {
-        [p.nftType]: increment(qty),
-        updatedAt: serverTimestamp(),
-      });
-    }
+    // Update the KOL doc’s fast counters too
+    const k = (kolSnap.data() || {}) as any;
+    const kSeed = Number(k.seed || 0);
+    const kTree = Number(k.tree || 0);
+    const kSolar = Number(k.solar || 0);
+    const kCompute = Number(k.compute || 0);
+
+    const kolNewTotals = {
+      seed: nftKey === "seed" ? kSeed + qty : kSeed,
+      tree: nftKey === "tree" ? kTree + qty : kTree,
+      solar: nftKey === "solar" ? kSolar + qty : kSolar,
+      compute: nftKey === "compute" ? kCompute + qty : kCompute,
+    };
+
+    tx.update(kolDocRef, { ...kolNewTotals, updatedAt: serverTimestamp() });
+
+    return "ok";
   });
 }

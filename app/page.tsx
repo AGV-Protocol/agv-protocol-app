@@ -1,44 +1,17 @@
 "use client";
 import { useState, useEffect, useRef, useMemo } from "react";
-import {
-  ConnectButton,
-  useActiveAccount,
-  useReadContract,
-  useWalletBalance,
-} from "thirdweb/react";
-import {
-  createThirdwebClient,
-  getContract,
-  prepareContractCall,
-  sendTransaction,
-  waitForReceipt,
-  sendAndConfirmTransaction,
-} from "thirdweb";
+import { ConnectButton, useActiveAccount, useReadContract, useWalletBalance } from "thirdweb/react";
+import { createThirdwebClient, getContract, prepareContractCall, sendTransaction, waitForReceipt, sendAndConfirmTransaction } from "thirdweb";
 import { parseUnits } from "viem";
-import {
-  Moon,
-  Sun,
-  AlertTriangle,
-  CheckCircle,
-  X,
-  Loader2,
-  ExternalLink,
-  Copy,
-} from "lucide-react";
+import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2, ExternalLink, Copy } from "lucide-react";
 import { db } from "@/lib/firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { recordSuccessfulMintStrict } from "@/lib/recordMint";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import type { CollectionKey } from "@/lib/contracts";
-import {
-  CHAINS,
-  USDT_ADDRESSES,
-  NFT_CONTRACTS,
-  NFT_ABI,
-  USDT_ABI,
-} from "@/lib/contracts";
+import { CHAINS, USDT_ADDRESSES, NFT_CONTRACTS, NFT_ABI, USDT_ABI } from "@/lib/contracts";
 import { PASS_PRICES } from "@/lib/pricing";
 import { useSearchParams } from "next/navigation";
 
@@ -1249,30 +1222,46 @@ export default function MintingContent() {
     });
 
     try {
-      await addDoc(collection(db, "mintEvents"), {
-        ...(kolId && { kolId }),
-        address: account?.address,
+    const hash = receipt?.transactionHash || txHash || "";
+    if (kolId.trim()) {
+      const res = await recordSuccessfulMintStrict(db, kolId.trim(), {
+        address: account?.address || "",
         nftType,
         quantity: Number(quantity),
         chainId,
-        txHash: receipt?.transactionHash || txHash,
+        txHash: hash,
         timestamp: new Date(),
         mintType: mintMode,
       });
+
       toast({
-        title: "Transaction Recorded",
-        description: "Mint event saved to database successfully",
-        variant: "default",
-      });
-    } catch (error) {
-      console.error("Error saving mint event:", error);
-      toast({
-        title: "Database Warning",
+        title: res === "deduped" ? "Already Recorded" : "Transaction Recorded",
         description:
-          "NFT minted successfully but failed to save to database (non-critical)",
+          res === "deduped"
+            ? "This transaction was already saved. Counters were not double-counted."
+            : "Mint event saved to the KOL’s aggregate successfully.",
         variant: "default",
       });
+    } else {
+      // No kolId provided — nothing to record to KOL aggregate.
+      // (The on-chain mint already succeeded.)
     }
+  } catch (error: any) {
+    const msg = String(error?.message || error);
+    // Preserve strict behavior: DO NOT create new docs here.
+    // Surface meaningful messages when aggregates are missing.
+    let description = "NFT minted but failed to save to KOL aggregate.";
+    if (msg.includes("kol-not-found")) description = "Invalid KOL ID (not found).";
+    if (msg.includes("mint-doc-missing")) description = "KOL aggregate doc is missing (admin must create it).";
+
+    console.error("recordSuccessfulMintStrict error:", error);
+    toast({
+      title: "Database Warning",
+      description,
+      variant: "default",
+    });
+  }
+
 
     setTimeout(() => window.location.reload(), 5000);
   };
@@ -2326,96 +2315,4 @@ export default function MintingContent() {
       </div>
     </div>
   );
-}
-
-// Add this helper at the bottom of the file (no other changes)
-export async function recordSuccessfulMintStric(p: {
-  kolId: string;
-  address: string;
-  nftType: "seed" | "tree" | "solar" | "compute";
-  quantity: number;
-  chainId: "56" | "137" | "42161" | string;
-  txHash: string;
-}) {
-  const {
-    doc,
-    runTransaction,
-    serverTimestamp,
-    increment,
-    collection,
-    query,
-    where,
-    getDocs,
-  } = await import("firebase/firestore");
-  const { db } = await import("@/lib/firebase");
-
-  const qty = Math.max(1, Math.floor(p.quantity || 0));
-  const mintRef = doc(db, "mintEvents", p.kolId);
-
-  // Find KOL profile doc (random docId) once; use its ref inside the transaction.
-  const ks = await getDocs(query(collection(db, "kols"), where("kolId", "==", p.kolId)));
-  const kolDocRef = ks.docs[0]?.ref || null;
-
-  await runTransaction(db, async (tx) => {
-    const snap = await tx.get(mintRef);
-
-    // Prevent creating a new kolId: must already exist (created by Admin)
-    if (!snap.exists()) {
-      throw new Error("Invalid KOL: kolId not found.");
-    }
-
-    const data = snap.data() || {};
-    const events: any[] = Array.isArray(data.events) ? data.events : [];
-
-    // Idempotency: if txHash already present (check recent 100), do nothing
-    const txLower = (p.txHash || "").toLowerCase();
-    const recent = events.slice(-100);
-    const dup = recent.some((e) => (e?.txHash || "").toLowerCase() === txLower);
-    if (dup) return;
-
-    // Append event & cap to last 500
-    const newEvent = {
-      address: p.address,
-      nftType: p.nftType,
-      quantity: qty,
-      chainId: String(p.chainId),
-      txHash: p.txHash,
-      timestamp: serverTimestamp(),
-    };
-    const updatedEvents = [...events, newEvent];
-    const cappedEvents =
-      updatedEvents.length > 500 ? updatedEvents.slice(updatedEvents.length - 500) : updatedEvents;
-
-    // Current counters
-    const prevSeed = Number(data.seed || 0);
-    const prevTree = Number(data.tree || 0);
-    const prevSolar = Number(data.solar || 0);
-    const prevCompute = Number(data.compute || 0);
-
-    // Per-chain bucket
-    const perChain = (data.perChain || {}) as Record<string, any>;
-    const chainBucket = (perChain[p.chainId] ||= {});
-    const prevChainType = Number(chainBucket[p.nftType] || 0);
-
-    // Update mintEvents/{kolId}
-    tx.update(mintRef, {
-      seed: p.nftType === "seed" ? prevSeed + qty : prevSeed,
-      tree: p.nftType === "tree" ? prevTree + qty : prevTree,
-      solar: p.nftType === "solar" ? prevSolar + qty : prevSolar,
-      compute: p.nftType === "compute" ? prevCompute + qty : prevCompute,
-
-      [`perChain.${p.chainId}.${p.nftType}`]: prevChainType + qty,
-      events: cappedEvents,
-      updatedAt: serverTimestamp(),
-      kolId: p.kolId, // keep invariant for rules
-    });
-
-    // Sync fast aggregates in kols (if we found the profile doc)
-    if (kolDocRef) {
-      tx.update(kolDocRef, {
-        [p.nftType]: increment(qty),
-        updatedAt: serverTimestamp(),
-      });
-    }
-  });
 }

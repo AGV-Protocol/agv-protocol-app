@@ -4,68 +4,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  collection,
-  addDoc,
-  getDocs,
-  doc,
-  getDoc,
-  deleteDoc,
-  setDoc,
-  serverTimestamp,
-  } from "firebase/firestore";
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
-  signOut,
-  getIdTokenResult,
-  signInWithEmailAndPassword,
-  type User as FirebaseUser,
-} from "firebase/auth";
+import { collection, addDoc, getDocs, doc, getDoc, deleteDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, getIdTokenResult, signInWithEmailAndPassword, type User as FirebaseUser } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 import { toast } from "sonner";
-import {
-  Trophy,
-  Medal,
-  Award,
-  LogOut,
-  ShieldCheck,
-  LogIn,
-  Trash2,
-  Users,
-  ExternalLink,
-  Copy,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+import { Trophy, Medal, Award, LogOut, ShieldCheck, LogIn, Trash2, Users, ExternalLink, Copy, ChevronLeft, ChevronRight } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 // --- thirdweb (on-chain totals) ---
 import { createThirdwebClient, getContract } from "thirdweb";
@@ -151,8 +95,6 @@ function makeKolId() {
   const num = Math.floor(Math.random() * 1_000_000).toString().padStart(6, "0");
   return `AGV-KOL${num}`;
 }
-const formatRole = (r?: string) => (r ? r.charAt(0).toUpperCase() + r.slice(1) : r);
-
 const uiSelectRoles: UiRole[] = ["Admin", "BD", "Tech", "Finance", "Security", "Other"];
 const uiToClaimRole = (ui: UiRole) =>
   ui === "Admin" ? "admin" :
@@ -263,6 +205,10 @@ export default function AdminPage() {
   // Pagination
   const PAGE_SIZE = 5;
   const [page, setPage] = useState(0);
+
+  // KOL creation state
+  const [creatingKol, setCreatingKol] = useState(false);
+  const [createKolState, setCreateKolState] = useState<"idle" | "success" | "error">("idle");
 
   // ---- Permissions helpers
   const hasAnyClaim = (...roles: string[]) => {
@@ -403,27 +349,62 @@ export default function AdminPage() {
     router.push(`/kol/AGV-KOL${digits}`);
   };
 
-  const createKOL = async () => {
+    const createKOL = async () => {
     if (!auth.currentUser) return toast.error("Sign-in required");
-    if (!canCreateKOL) return toast.error("Insufficient role", { description: "Only Admin/BD/Tech/Finance/Security can create KOLs." });
+
+    // Align UI with your Firestore rules: Admin-only
+    if (!canCreateKOL) {
+      return toast.error("Insufficient role", {
+        description: "Only Admin can create KOLs.",
+      });
+    }
 
     const { name, walletAddress, email, target } = kolForm;
-    if (!name || !walletAddress) return toast.error("Name and Wallet are required");
+    if (!name || !walletAddress) {
+      return toast.error("Name and Wallet are required");
+    }
 
-    const kolId = makeKolId();
     try {
-      // kols/{randomId}
+      // Refresh custom claims so rules see latest role
+      await auth.currentUser.getIdToken(true);
+
+      // Generate a unique kolId by probing mintEvents/{kolId}
+      let kolId = makeKolId();
+      for (let i = 0; i < 5; i++) {
+        const mintRef = doc(db, "mintEvents", kolId);
+        const exists = await getDoc(mintRef);
+        if (!exists.exists()) break; // free to use
+        kolId = makeKolId(); // regenerate on collision (very rare)
+      }
+
+      // Final safety check right before writing (avoid accidental overwrite)
+      const mintRef = doc(db, "mintEvents", kolId);
+      const already = await getDoc(mintRef);
+      if (already.exists()) {
+        throw new Error("KOL ID collision detected. Please try again.");
+      }
+
+      // 1) Create kols/{randomId} with kolId as a field
       await addDoc(collection(db, "kols"), {
-        kolId, name, walletAddress,
+        kolId,
+        name,
+        walletAddress,
         email: email || null,
         target: target ? Number(target) : 0,
-        seed: 0, tree: 0, solar: 0, compute: 0,
+        seed: 0,
+        tree: 0,
+        solar: 0,
+        compute: 0,
         updatedAt: serverTimestamp(),
       } as KOL);
 
-      // mintEvents/{kolId}
-      await setDoc(doc(db, "mintEvents", kolId), {
-        kolId, seed: 0, tree: 0, solar: 0, compute: 0,
+      // 2) Initialize mintEvents/{kolId} (docId = kolId). Firestore rules require body.kolId === docId.
+      await setDoc(mintRef, {
+        kolId,
+        seed: 0,
+        tree: 0,
+        solar: 0,
+        compute: 0,
         perChain: {},
         events: [],
         updatedAt: serverTimestamp(),
@@ -434,17 +415,19 @@ export default function AdminPage() {
       const origin = typeof window !== "undefined" ? window.location.origin : "";
       const link = `${origin}/?kolId=${encodeURIComponent(kolId)}`;
       setReferralLink(link);
-      toast.success("KOL created", { description: "Referral link generated" });
 
+      toast.success("KOL created", { description: "Referral link generated" });
       setKolForm({ name: "", walletAddress: "", email: "", target: "" });
       setPage(0);
     } catch (e: any) {
-      const msg = e?.code === "permission-denied"
-        ? "Permission denied by Firestore rules. Ensure your user has one of: admin/bd/tech/finance/security."
-        : e?.message || String(e);
+      const msg =
+        e?.code === "permission-denied"
+          ? "Permission denied by Firestore rules. Only Admin can create KOLs."
+          : e?.message || String(e);
       toast.error("Failed to create KOL", { description: msg });
     }
   };
+
 
   const deleteKOL = async (kolId: string) => {
     if (!canDeleteKOL) return toast.error("Only Admin can delete KOLs");
@@ -537,7 +520,6 @@ export default function AdminPage() {
       filtered.forEach((e) => {
         const d = toDate(e.timestamp);
         const idx = d.getMonth();
-        // @ts-ignore
         byMonth[idx][e.nftType] += e.quantity;
       });
       return byMonth.sort((a, b) => a.ts - b.ts).map(({ ts, ...rest }) => rest);
@@ -793,40 +775,84 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* Big centered button */}
-          <div style={{ display: "flex", justifyContent: "center", marginTop: 16 }}>
+        {/* Big centered button */}
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 16 }}>
+          <button
+            onClick={async () => {
+              if (!canCreateKOL || creatingKol) return;
+              setCreatingKol(true);
+              setCreateKolState("idle");
+              const ok = await createKOL();
+              setCreateKolState(ok ? "success" : "error");
+              setCreatingKol(false);
+              // auto-reset the visual state after a short delay
+              setTimeout(() => setCreateKolState("idle"), 2500);
+            }}
+            disabled={!canCreateKOL || creatingKol}
+            aria-busy={creatingKol}
+            style={{
+              padding: "1rem 1.5rem",
+              background:
+                createKolState === "error"
+                  ? "#dc2626" // red on error
+                  : "#16a34a", // green default / success
+              color: "#fff",
+              borderRadius: 14,
+              border: 0,
+              fontWeight: 800,
+              fontSize: "1rem",
+              cursor: !canCreateKOL || creatingKol ? "not-allowed" : "pointer",
+              minWidth: 260,
+              opacity: !canCreateKOL ? 0.6 : 1,
+              transition: "background 150ms ease, opacity 150ms ease",
+            }}
+          >
+            {creatingKol
+              ? "Creating…"
+              : createKolState === "success"
+              ? "Created"
+              : createKolState === "error"
+              ? "Not Created"
+              : "Create & Generate KOL Link"}
+          </button>
+        </div>
+
+        {/* Link & copy */}
+        {referralLink && (
+          <div
+            style={{
+              marginTop: 10,
+              display: "flex",
+              gap: 8,
+              alignItems: "center",
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <a href={referralLink} style={{ color: "#2563eb", wordBreak: "break-all" }}>
+              {referralLink}
+            </a>
             <button
-              onClick={createKOL}
-              disabled={!canCreateKOL}
-              style={{
-                padding: "1rem 1.5rem",
-                background: canCreateKOL ? "#16a34a" : "#9ca3af",
-                color: "#fff",
-                borderRadius: 14,
-                border: 0,
-                fontWeight: 800,
-                fontSize: "1rem",
-                cursor: canCreateKOL ? "pointer" : "not-allowed",
-                minWidth: 260,
+              onClick={() => {
+                navigator.clipboard.writeText(referralLink);
+                toast.success("Copied referral link");
               }}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "0.5rem 0.7rem",
+                borderRadius: 8,
+                border: "1px solid #e5e7eb",
+                background: "#fff",
+                cursor: "pointer",
+              }}
+              title="Copy referral link"
             >
-              Create & Generate KOL Link
+              <Copy size={14} /> Copy
             </button>
           </div>
-
-          {/* Link & copy */}
-          {referralLink && (
-            <div style={{ marginTop: 10, display: "flex", gap: 8, alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
-              <a href={referralLink} style={{ color: "#2563eb", wordBreak: "break-all" }}>{referralLink}</a>
-              <button
-                onClick={() => { navigator.clipboard.writeText(referralLink); toast.success("Copied referral link"); }}
-                style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "0.5rem 0.7rem", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer" }}
-                title="Copy referral link"
-              >
-                <Copy size={14} /> Copy
-              </button>
-            </div>
-          )}
+        )}
         </Card>
 
 
