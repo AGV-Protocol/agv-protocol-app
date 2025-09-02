@@ -26,6 +26,7 @@ import {
   Copy,
 } from "lucide-react";
 import { db } from "@/lib/firebase";
+import { recordSuccessfulMintStrict } from "@/lib/recordMint";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
 import { useTheme } from "next-themes";
@@ -39,6 +40,7 @@ import {
   USDT_ABI,
 } from "@/lib/contracts";
 import { PASS_PRICES } from "@/lib/pricing";
+import { useSearchParams } from "next/navigation";
 
 /** ---------------- Types ---------------- **/
 type ChainId = "56" | "137" | "42161";
@@ -49,14 +51,14 @@ type MintMode = "public" | "agent";
 const PUBLIC_MINT_CAPS: Record<NftType, Record<ChainId, number>> = {
   seed: { "56": 400, "137": 400, "42161": 400 },
   tree: { "56": 200, "137": 200, "42161": 200 },
-  solar: { "56": 0, "137": 0, "42161": 0 },
-  compute: { "56": 0, "137": 0, "42161": 0 },
+  solar: { "56": 100, "137": 100, "42161": 100 },
+  compute: { "56": 20, "137": 20, "42161": 20 },
 } as const;
 
 const MAX_PER_WALLET: Record<NftType, Record<ChainId, number>> = {
   seed: { "56": 3, "137": 3, "42161": 3 },
   tree: { "56": 2, "137": 2, "42161": 2 },
-  solar: { "56": 1, "137": 1, "42161": 1 },
+  solar: { "56": 2, "137": 2, "42161": 2 },
   compute: { "56": 1, "137": 1, "42161": 1 },
 } as const;
 
@@ -718,6 +720,18 @@ export default function MintingContent() {
   const [progressStage, setProgressStage] = useState<
     "approval" | "mint" | "confirming" | "success" | "timeout" | "error"
   >("approval");
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Accept both ?kolId= and ?ref= just in case
+    const incoming = searchParams?.get("kolId") || searchParams?.get("ref");
+    if (incoming && !kolId) {
+      setKolId(incoming);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
 
   // Transactions prepared (approval -> mint)
   const [pendingApprovalTx, setPendingApprovalTx] = useState<any>(null);
@@ -2257,13 +2271,17 @@ export default function MintingContent() {
         />
 
         <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
+          Are you a KOL?{" "}
           <Link
-            href="/kol-dashboard"
+            href="/dashboard"
             style={{ color: "#2563eb", fontWeight: "medium", textDecoration: "underline" }}
           >
-            Go to Dashboard
+            Go to your Kol Dashboard
           </Link>
         </div>
+        <footer style={{ marginTop: "auto", textAlign: "center", color: "#6b7280", fontSize: "0.875rem" }}>
+          &copy; AGV Protocol {new Date().getFullYear()}. All rights reserved.
+        </footer>
 
         {/* Wallet required modal (derived, loop-safe) */}
         {!account && (
@@ -2273,7 +2291,7 @@ export default function MintingContent() {
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              backgroundColor: "#ecececff",
+              backgroundColor: "#000000ff",
               padding: "1rem",
               borderRadius: "1rem",
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
@@ -2308,4 +2326,96 @@ export default function MintingContent() {
       </div>
     </div>
   );
+}
+
+// Add this helper at the bottom of the file (no other changes)
+export async function recordSuccessfulMintStric(p: {
+  kolId: string;
+  address: string;
+  nftType: "seed" | "tree" | "solar" | "compute";
+  quantity: number;
+  chainId: "56" | "137" | "42161" | string;
+  txHash: string;
+}) {
+  const {
+    doc,
+    runTransaction,
+    serverTimestamp,
+    increment,
+    collection,
+    query,
+    where,
+    getDocs,
+  } = await import("firebase/firestore");
+  const { db } = await import("@/lib/firebase");
+
+  const qty = Math.max(1, Math.floor(p.quantity || 0));
+  const mintRef = doc(db, "mintEvents", p.kolId);
+
+  // Find KOL profile doc (random docId) once; use its ref inside the transaction.
+  const ks = await getDocs(query(collection(db, "kols"), where("kolId", "==", p.kolId)));
+  const kolDocRef = ks.docs[0]?.ref || null;
+
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(mintRef);
+
+    // Prevent creating a new kolId: must already exist (created by Admin)
+    if (!snap.exists()) {
+      throw new Error("Invalid KOL: kolId not found.");
+    }
+
+    const data = snap.data() || {};
+    const events: any[] = Array.isArray(data.events) ? data.events : [];
+
+    // Idempotency: if txHash already present (check recent 100), do nothing
+    const txLower = (p.txHash || "").toLowerCase();
+    const recent = events.slice(-100);
+    const dup = recent.some((e) => (e?.txHash || "").toLowerCase() === txLower);
+    if (dup) return;
+
+    // Append event & cap to last 500
+    const newEvent = {
+      address: p.address,
+      nftType: p.nftType,
+      quantity: qty,
+      chainId: String(p.chainId),
+      txHash: p.txHash,
+      timestamp: serverTimestamp(),
+    };
+    const updatedEvents = [...events, newEvent];
+    const cappedEvents =
+      updatedEvents.length > 500 ? updatedEvents.slice(updatedEvents.length - 500) : updatedEvents;
+
+    // Current counters
+    const prevSeed = Number(data.seed || 0);
+    const prevTree = Number(data.tree || 0);
+    const prevSolar = Number(data.solar || 0);
+    const prevCompute = Number(data.compute || 0);
+
+    // Per-chain bucket
+    const perChain = (data.perChain || {}) as Record<string, any>;
+    const chainBucket = (perChain[p.chainId] ||= {});
+    const prevChainType = Number(chainBucket[p.nftType] || 0);
+
+    // Update mintEvents/{kolId}
+    tx.update(mintRef, {
+      seed: p.nftType === "seed" ? prevSeed + qty : prevSeed,
+      tree: p.nftType === "tree" ? prevTree + qty : prevTree,
+      solar: p.nftType === "solar" ? prevSolar + qty : prevSolar,
+      compute: p.nftType === "compute" ? prevCompute + qty : prevCompute,
+
+      [`perChain.${p.chainId}.${p.nftType}`]: prevChainType + qty,
+      events: cappedEvents,
+      updatedAt: serverTimestamp(),
+      kolId: p.kolId, // keep invariant for rules
+    });
+
+    // Sync fast aggregates in kols (if we found the profile doc)
+    if (kolDocRef) {
+      tx.update(kolDocRef, {
+        [p.nftType]: increment(qty),
+        updatedAt: serverTimestamp(),
+      });
+    }
+  });
 }
