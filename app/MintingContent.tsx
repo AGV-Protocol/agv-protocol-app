@@ -1,16 +1,43 @@
 "use client";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { ConnectButton, useActiveAccount, useReadContract, useWalletBalance } from "thirdweb/react";
-import { createThirdwebClient, getContract, prepareContractCall, sendTransaction, waitForReceipt, sendAndConfirmTransaction } from "thirdweb";
+import {
+  ConnectButton,
+  useActiveAccount,
+  useReadContract,
+  useWalletBalance,
+} from "thirdweb/react";
+import {
+  createThirdwebClient,
+  getContract,
+  prepareContractCall,
+  sendTransaction,
+  waitForReceipt,
+  sendAndConfirmTransaction,
+} from "thirdweb";
 import { parseUnits } from "viem";
-import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2, ExternalLink, Copy } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  AlertTriangle,
+  CheckCircle,
+  X,
+  Loader2,
+  ExternalLink,
+  Copy,
+} from "lucide-react";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import type { CollectionKey } from "@/lib/contracts";
-import { CHAINS, USDT_ADDRESSES, NFT_CONTRACTS, NFT_ABI, USDT_ABI } from "@/lib/contracts";
+import {
+  CHAINS,
+  USDT_ADDRESSES,
+  NFT_CONTRACTS,
+  NFT_ABI,
+  USDT_ABI,
+} from "@/lib/contracts";
 import { PASS_PRICES } from "@/lib/pricing";
 import { useSearchParams } from "next/navigation";
 
@@ -23,14 +50,14 @@ type MintMode = "public" | "agent";
 const PUBLIC_MINT_CAPS: Record<NftType, Record<ChainId, number>> = {
   seed: { "56": 400, "137": 400, "42161": 400 },
   tree: { "56": 200, "137": 200, "42161": 200 },
-  solar: { "56": 100, "137": 100, "42161": 100 },
-  compute: { "56": 20, "137": 20, "42161": 20 },
+  solar: { "56": 0, "137": 0, "42161": 0 },
+  compute: { "56": 0, "137": 0, "42161": 0 },
 } as const;
 
 const MAX_PER_WALLET: Record<NftType, Record<ChainId, number>> = {
   seed: { "56": 3, "137": 3, "42161": 3 },
   tree: { "56": 2, "137": 2, "42161": 2 },
-  solar: { "56": 2, "137": 2, "42161": 2 },
+  solar: { "56": 1, "137": 1, "42161": 1 },
   compute: { "56": 1, "137": 1, "42161": 1 },
 } as const;
 
@@ -682,7 +709,7 @@ export default function MintingContent() {
   const [quantity, setQuantity] = useState("1");
   const [status, setStatus] = useState("");
   const [isMinting, setIsMinting] = useState(false);
-  const postedTxsRef = useRef<Set<string>>(new Set());
+  const searchParams = useSearchParams();
 
   const [isEligible, setIsEligible] = useState(false);
   const [eligibilityChecked, setEligibilityChecked] = useState(false);
@@ -693,18 +720,6 @@ export default function MintingContent() {
   const [progressStage, setProgressStage] = useState<
     "approval" | "mint" | "confirming" | "success" | "timeout" | "error"
   >("approval");
-
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    // Accept both ?kolId= and ?ref= just in case
-    const incoming = searchParams?.get("kolId") || searchParams?.get("ref");
-    if (incoming && !kolId) {
-      setKolId(incoming);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
-
 
   // Transactions prepared (approval -> mint)
   const [pendingApprovalTx, setPendingApprovalTx] = useState<any>(null);
@@ -793,6 +808,12 @@ export default function MintingContent() {
   const [nativeBalance, setNativeBalance] = useState<string>("0");
   const [hasInsufficientGas, setHasInsufficientGas] = useState(false);
   const gasToastShownRef = useRef(false);
+
+  // Sync kolId from URL params (ref is alias)
+  useEffect(() => {
+  const v = searchParams?.get("kolId") ?? searchParams?.get("ref");
+  if (v) setKolId(v);
+    }, [searchParams]);
 
   // Derive gas balance + threshold alerts (avoid loops with refs)
   useEffect(() => {
@@ -1209,81 +1230,46 @@ export default function MintingContent() {
   };
 
   const handleTransactionSuccess = async (receipt: any) => {
-  setProgressStage("success");
-  setStatus("Minted successfully!");
-  setIsMinting(false);
-
-  toast({
-    title: "Mint Successful! 🎉",
-    description: `Successfully minted ${quantity} ${nftType}Pass NFT${
-      Number(quantity) > 1 ? "s" : ""
-    }`,
-    variant: "default",
-  });
-
-  try {
-    const tx = (receipt?.transactionHash || txHash || "").toLowerCase().trim();
-    if (!tx) {
-      toast({
-        title: "No Transaction Hash",
-        description: "Mint succeeded but no transaction hash was found.",
-        variant: "default",
-      });
-      return;
-    }
-
-    // Client-side de-dupe: never post the same tx twice
-    if (postedTxsRef.current.has(tx)) {
-      toast({
-        title: "Already Recorded",
-        description: "This transaction was already submitted for recording.",
-        variant: "default",
-      });
-      return;
-    }
-    postedTxsRef.current.add(tx);
-
-    const payload = {
-      kolId: (kolId || "").trim() || null, // null or valid kolId
-      address: account?.address || "",
-      nftType,
-      quantity: Number(quantity || 0),
-      chainId,
-      txHash: tx,
-    };
-
-    const res = await fetch("/api/mint/record", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json().catch(() => ({} as any));
-
-    if (!res.ok) {
-      // Server rejects if kolId doesn’t exist or rule violated
-      throw new Error(data?.error || "Failed to record mint");
-    }
+    setProgressStage("success");
+    setStatus("Minted successfully!");
+    setIsMinting(false);
 
     toast({
-      title: "Transaction Recorded",
-      description: "Mint event saved successfully.",
+      title: "Mint Successful! 🎉",
+      description: `Successfully minted ${quantity} ${nftType}Pass NFT${
+        Number(quantity) > 1 ? "s" : ""
+      }`,
       variant: "default",
     });
-  } catch (error: any) {
-    console.error("Error recording mint:", error);
-    toast({
-      title: "Database Warning",
-      description:
-        error?.message ||
-        "NFT minted successfully but failed to save on the server.",
-      variant: "default",
-    });
-  }
 
-  // Optional UX refresh
-  setTimeout(() => window.location.reload(), 5000);
-};
+    try {
+      await addDoc(collection(db, "mintEvents"), {
+        ...(kolId && { kolId }),
+        address: account?.address,
+        nftType,
+        quantity: Number(quantity),
+        chainId,
+        txHash: receipt?.transactionHash || txHash,
+        timestamp: new Date(),
+        mintType: mintMode,
+      });
+      toast({
+        title: "Transaction Recorded",
+        description: "Mint event saved to database successfully",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Error saving mint event:", error);
+      toast({
+        title: "Database Warning",
+        description:
+          "NFT minted successfully but failed to save to database (non-critical)",
+        variant: "default",
+      });
+    }
+
+    setTimeout(() => window.location.reload(), 5000);
+  };
 
   const handleTransactionError = (err: any) => {
     const errorMessage = normalizeError(err);
@@ -2279,17 +2265,13 @@ export default function MintingContent() {
         />
 
         <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
-          Are you a KOL?{" "}
           <Link
-            href="/dashboard"
+            href="/kol-dashboard"
             style={{ color: "#2563eb", fontWeight: "medium", textDecoration: "underline" }}
           >
-            Go to your Kol Dashboard
+            Go to Dashboard
           </Link>
         </div>
-        <footer style={{ marginTop: "auto", textAlign: "center", color: "#6b7280", fontSize: "0.875rem" }}>
-          &copy; AGV Protocol {new Date().getFullYear()}. All rights reserved.
-        </footer>
 
         {/* Wallet required modal (derived, loop-safe) */}
         {!account && (
@@ -2299,14 +2281,14 @@ export default function MintingContent() {
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              backgroundColor: "#000000ff",
+              backgroundColor: "#ecececff",
               padding: "1rem",
               borderRadius: "1rem",
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
               zIndex: 80,
             }}
           >
-            <h3 style={{ fontSize: "1.25rem", fontWeight: "semibold" , color: "#ffffffff" }}>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: "semibold" }}>
               Wallet Connection Required
             </h3>
             <div
