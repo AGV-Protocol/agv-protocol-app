@@ -9,3 +9,4 @@ export * from './alert';
 export * from './table';
 export * from './badge';
 export * from './sonner';
+export * from './pagination';
