@@ -6,15 +6,16 @@ import { parseUnits } from "viem";
 import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2, ExternalLink, Copy } from "lucide-react";
 import { recordSuccessfulMintStrict } from "@/lib/recordMint";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import type { CollectionKey } from "@/lib/contracts";
 import { CHAINS, USDT_ADDRESSES, NFT_CONTRACTS, NFT_ABI, USDT_ABI } from "@/lib/contracts";
 import { PASS_PRICES } from "@/lib/pricing";
-import { useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 /** ---------------- Types ---------------- **/
 type ChainId = "56" | "137" | "42161";
@@ -678,13 +679,18 @@ export default function MintingContent() {
 
   // ----- UI State -----
   const [mintMode, setMintMode] = useState<MintMode>("public"); // only "public" and "agent"
-  const [kolId, setKolId] = useState("");
+  const [kolDigits, setKolDigits] = useState(""); // 0-6 digits only
+  const fullKolId = useMemo(
+    () => (kolDigits && kolDigits.length === 6 ? `AGV-KOL${kolDigits}` : ""),
+    [kolDigits]
+  );
   const [chainId, setChainId] = useState<ChainId>("42161");
   const [nftType, setNftType] = useState<NftType>("tree");
   const [quantity, setQuantity] = useState("1");
   const [status, setStatus] = useState("");
   const [isMinting, setIsMinting] = useState(false);
   const searchParams = useSearchParams();
+
 
   const [isEligible, setIsEligible] = useState(false);
   const [eligibilityChecked, setEligibilityChecked] = useState(false);
@@ -785,10 +791,24 @@ export default function MintingContent() {
   const gasToastShownRef = useRef(false);
 
   // Sync kolId from URL params (ref is alias)
+const pathname = usePathname();
+
+// Sync KOL from URL: support ?kolId=, ?ref=, and /123456
   useEffect(() => {
-  const v = searchParams?.get("kolId") ?? searchParams?.get("ref");
-  if (v) setKolId(v);
-    }, [searchParams]);
+    // 1) query params (accept full or digits)
+    const qp = (searchParams?.get("kolId") ?? searchParams?.get("ref") ?? "").trim();
+    let digits = "";
+    if (qp) digits = (qp.match(/\d{6}/) || [])[0] || "";
+
+    // 2) path segment /123456
+    if (!digits && pathname) {
+      const m = pathname.match(/\/(\d{6})(?:$|[/?#])/);
+      if (m) digits = m[1];
+    }
+
+    if (digits) setKolDigits(digits);
+  }, [searchParams, pathname]);
+
 
   // Derive gas balance + threshold alerts (avoid loops with refs)
   useEffect(() => {
@@ -1038,18 +1058,19 @@ export default function MintingContent() {
 
     // Agent mode requires KOL ID and must exist
     if (mintMode === "agent") {
-      if (!kolId.trim()) {
+      if (!fullKolId) {
         setIsMinting(false);
         toast({
           title: "KOL ID Required",
-          description: "Please enter a valid KOL ID for Agent minting.",
+          description: "Please enter a valid 6-digit KOL ID for Agent minting.",
           variant: "destructive",
         });
         throw new Error("KOL ID missing");
       }
+
       // Validate KOL ID from Firestore
       setStatus("Validating KOL ID…");
-      const q = query(collection(db, "kols"), where("kolId", "==", kolId.trim()));
+      const q = query(collection(db, "kols"), where("kolId", "==", fullKolId));
       const snap = await getDocs(q);
       if (snap.empty) {
         setIsMinting(false);
@@ -1060,9 +1081,9 @@ export default function MintingContent() {
         });
         throw new Error("Invalid KOL ID");
       }
-    } else if (kolId.trim()) {
-      // Optional: allow KOL attribution on public mint, but do not block if invalid
-      const q = query(collection(db, "kols"), where("kolId", "==", kolId.trim()));
+    } else if (fullKolId) {
+      // Optional attribution on public mint; non-blocking
+      const q = query(collection(db, "kols"), where("kolId", "==", fullKolId));
       await getDocs(q).catch(() => void 0);
     }
 
@@ -1218,7 +1239,7 @@ export default function MintingContent() {
     });
 
     try {
-      await recordSuccessfulMintStrict(db, kolId, {
+      await recordSuccessfulMintStrict(db, fullKolId, {
         address: account?.address!,
         nftType,
         quantity: Number(quantity),
@@ -2097,30 +2118,31 @@ export default function MintingContent() {
 
             {/* KOL ID (required for Agent) */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              <label
-                htmlFor="kolId"
-                style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}
-              >
-                {mintMode === "agent" ? "KOL ID (Required)" : "KOL ID (Optional)"}
-              </label>
-              <input
-                id="kolId"
-                type="text"
-                value={kolId}
-                onChange={(e) => setKolId(e.target.value)}
-                placeholder={
-                  mintMode === "agent"
-                    ? "Enter your KOL ID to mint as Agent"
-                    : "Enter KOL ID if applicable"
-                }
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #d1d5db",
-                  borderRadius: "0.375rem",
-                  outline: "none",
-                }}
-              />
+            <label htmlFor="kolDigits" style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}>
+              {mintMode === "agent" ? "KOL ID (6 digits, Required)" : "KOL ID (6 digits, Optional)"}
+            </label>
+            <input
+              id="kolDigits"
+              inputMode="numeric"
+              pattern="\d{6}"
+              maxLength={6}
+              value={kolDigits}
+              onChange={(e) => setKolDigits(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              placeholder="e.g. 123456"
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "1px solid #d1d5db",
+                borderRadius: "0.375rem",
+                outline: "none",
+                letterSpacing: 2,
+              }}
+            />
+            {kolDigits.length === 6 && (
+              <p style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: 6 }}>
+                Using referral: <strong>{`AGV-KOL${kolDigits}`}</strong>
+              </p>
+            )}
             </div>
 
             {/* Price summary */}
@@ -2165,7 +2187,7 @@ export default function MintingContent() {
                   !isEligible ||
                   (mintMode === "public" && remainingSupply === 0) ||
                   hasInsufficientGas ||
-                  (mintMode === "agent" && kolId.trim().length === 0)
+                  (mintMode === "agent" && !fullKolId)
                 }
                 style={{
                   width: "100%",
@@ -2181,7 +2203,7 @@ export default function MintingContent() {
                     !isEligible ||
                     (mintMode === "public" && remainingSupply === 0) ||
                     hasInsufficientGas ||
-                    (mintMode === "agent" && kolId.trim().length === 0)
+                    (mintMode === "agent" && !fullKolId)
                       ? "not-allowed"
                       : "pointer",
                   opacity:
@@ -2190,7 +2212,7 @@ export default function MintingContent() {
                     !isEligible ||
                     (mintMode === "public" && remainingSupply === 0) ||
                     hasInsufficientGas ||
-                    (mintMode === "agent" && kolId.trim().length === 0)
+                    (mintMode === "agent" && !fullKolId)
                       ? 0.5
                       : 1,
                 }}
@@ -2203,7 +2225,7 @@ export default function MintingContent() {
                   ? `Need ${chainId === "56" ? "BNB" : chainId === "137" ? "MATIC" : "ETH"} for Gas`
                   : !isEligible
                   ? "Not Eligible"
-                  : mintMode === "agent" && !kolId.trim()
+                  : (mintMode === "agent" && !fullKolId)
                   ? "Enter KOL ID"
                   : mintMode === "public" && remainingSupply === 0
                   ? "Sold Out"
