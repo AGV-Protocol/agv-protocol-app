@@ -4,6 +4,7 @@ import { ConnectButton, useActiveAccount, useReadContract, useWalletBalance } fr
 import { createThirdwebClient, getContract, prepareContractCall, sendTransaction, waitForReceipt, sendAndConfirmTransaction } from "thirdweb";
 import { parseUnits } from "viem";
 import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2, ExternalLink, Copy } from "lucide-react";
+import { recordSuccessfulMintStrict } from "@/lib/recordMint";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
@@ -1217,9 +1218,8 @@ export default function MintingContent() {
     });
 
     try {
-      await addDoc(collection(db, "mintEvents"), {
-        ...(kolId && { kolId }),
-        address: account?.address,
+      await recordSuccessfulMintStrict(db, kolId, {
+        address: account?.address!,
         nftType,
         quantity: Number(quantity),
         chainId,
@@ -1227,17 +1227,18 @@ export default function MintingContent() {
         timestamp: new Date(),
         mintType: mintMode,
       });
+
       toast({
         title: "Transaction Recorded",
-        description: "Mint event saved to database successfully",
+        description: "Mint recorded successfully for KOL and mintEvents",
         variant: "default",
       });
     } catch (error) {
-      console.error("Error saving mint event:", error);
+      console.error("Error recording mint:", error);
       toast({
         title: "Database Warning",
         description:
-          "NFT minted successfully but failed to save to database (non-critical)",
+          "NFT minted successfully but failed to update KOL counters (non-critical)",
         variant: "default",
       });
     }
@@ -2268,14 +2269,14 @@ export default function MintingContent() {
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              backgroundColor: "#ecececff",
+              backgroundColor: "#000000ff",
               padding: "1rem",
               borderRadius: "1rem",
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
               zIndex: 80,
             }}
           >
-            <h3 style={{ fontSize: "1.25rem", fontWeight: "semibold" }}>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: "semibold", color: "#ffffffff" }}>
               Wallet Connection Required
             </h3>
             <div
