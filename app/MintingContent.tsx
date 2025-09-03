@@ -2242,7 +2242,7 @@ export default function MintingContent() {
           <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", color: "#1f2937" }}>
             Are you a KOL or Agent? {""}       
             <Link
-            href="/kol-dashboard"
+            href="/dashboard"
             style={{ color: "#2563eb", fontWeight: "medium", textDecoration: "underline" }}
           >
             Go to Dashboard
