@@ -1,30 +1,16 @@
+// app/kol/[kolId]/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { db } from "@/lib/firebase";
 import {
-  collection,
-  getDocs,
-  query,
-  where,
-  Timestamp,
-  getDoc,
-  doc,
-} from "firebase/firestore";
-import {
-  getAuth,
   onAuthStateChanged,
   signOut,
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card";
+import { auth } from "@/lib/firebase";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -55,7 +41,7 @@ interface KOLDoc {
   walletAddress: string;
   email?: string;
   target?: number;
-  createdAt?: Date | Timestamp;
+  createdAt?: any;
   // Aggregates stored in kols collection:
   seed?: number;
   tree?: number;
@@ -70,7 +56,7 @@ interface MintEvent {
   quantity: number;
   chainId: string; // "56" | "137" | "42161"
   txHash?: string | null;
-  timestamp: { seconds: number; nanoseconds: number } | Date | Timestamp;
+  timestamp: { seconds: number; nanoseconds: number } | Date | any;
 }
 
 interface MintDoc {
@@ -79,12 +65,20 @@ interface MintDoc {
   tree?: number;
   solar?: number;
   compute?: number;
-  perChain?: Record<string, { seed?: number; tree?: number; solar?: number; compute?: number }>;
+  perChain?: Record<
+    string,
+    { seed?: number; tree?: number; solar?: number; compute?: number }
+  >;
   events?: MintEvent[];
   updatedAt?: any;
 }
 
-const NFT_PRICES = { seed: 29, tree: 59, solar: 299, compute: 899 } as const;
+const NFT_PRICES = {
+  seed: 29,
+  tree: 59,
+  solar: 299,
+  compute: 899,
+} as const;
 
 const toDate = (ts: any) =>
   typeof ts?.toDate === "function"
@@ -94,35 +88,36 @@ const toDate = (ts: any) =>
     : new Date((ts?.seconds ?? 0) * 1000);
 
 export default function KOLPage() {
+  // IMPORTANT: Folder name must be "app/kol/[kolId]/page.tsx"
+  // so that the key below is exactly "kolId"
   const params = useParams();
   const kolId = (params?.kolId as string) || "";
-  const auth = getAuth();
 
   const [authReady, setAuthReady] = useState(false);
-  const [user, setUser] = useState<{ email: string | null } | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   const [kol, setKol] = useState<KOLDoc | null>(null);
-  const [mintDoc, setMintDoc] = useState<MintDoc | null>(null);
   const [events, setEvents] = useState<MintEvent[]>([]);
   const [filter, setFilter] = useState<"DAILY" | "WEEKLY" | "MONTHLY">(
     "DAILY"
   );
   const [loading, setLoading] = useState(true);
 
-  // --- Auth gate (required by Firestore rules) ---
+  // --- Auth gate (kept minimal; Admin restrictions live on the Admin page) ---
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u ? { email: u.email } : null);
+      setUserEmail(u?.email ?? null);
       setAuthReady(true);
     });
     return () => unsub();
-  }, [auth]);
+  }, []);
 
-  // --- Load KOL doc + mintEvents/{kolId} doc once signed in ---
+  // --- Fetch via API using Firebase ID token (never read Firestore directly here) ---
   useEffect(() => {
     if (!kolId || !authReady) return;
+
+    // If not signed in, just stop loading and render the sign-in card
     if (!auth.currentUser) {
-      // Not signed in: don't hit Firestore yet
       setLoading(false);
       return;
     }
@@ -130,39 +125,39 @@ export default function KOLPage() {
     (async () => {
       try {
         setLoading(true);
+        const token = await auth.currentUser!.getIdToken().catch(() => null);
+        const res = await fetch(`/api/kol/${encodeURIComponent(kolId)}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          cache: "no-store",
+        });
 
-        // kols: random doc IDs, kolId stored as a field
-        const kq = query(collection(db, "kols"), where("kolId", "==", kolId));
-        const ks = await getDocs(kq);
-        const k = (ks.docs[0]?.data() as KOLDoc | undefined) ?? null;
+        if (!res.ok) {
+          const e = await res.json().catch(() => ({}));
+          throw new Error(e?.error || "Failed to fetch KOL data");
+        }
+
+        const data = (await res.json()) as {
+          kol?: KOLDoc | null;
+          mintDoc?: MintDoc | null;
+        };
+
+        const k = data?.kol ?? null;
+        const md = data?.mintDoc ?? null;
+
         setKol(k);
+        setEvents(Array.isArray(md?.events) ? (md!.events as MintEvent[]) : []);
 
-        // mintEvents: single document whose id = kolId
-        const mdRef = doc(db, "mintEvents", kolId);
-        const mdSnap = await getDoc(mdRef);
-        const md = mdSnap.exists()
-          ? ({ kolId, ...mdSnap.data() } as MintDoc)
-          : null;
-        setMintDoc(md);
-        setEvents(Array.isArray(md?.events) ? md!.events : []);
-
-        if (!k) {
-          toast.error("KOL not found");
-        }
-        if (!mdSnap.exists()) {
-          // This KOL might be new (no mints yet)
-          // Not an error — keep page usable.
-        }
-      } catch (e) {
+        if (!k) toast.error("KOL not found");
+      } catch (e: any) {
         console.error(e);
-        toast.error("Failed to load KOL data");
+        toast.error("Failed to load KOL data", { description: e?.message });
       } finally {
         setLoading(false);
       }
     })();
-  }, [kolId, authReady, auth]);
+  }, [kolId, authReady]);
 
-  // --- Stats: use kols counters first; fallback to events sum ---
+  // --- Stats: prefer counters on kols doc; fallback to event sums ---
   const stats = useMemo(() => {
     const sumFromEvents = () => {
       const seed = events
@@ -190,9 +185,7 @@ export default function KOLPage() {
           }
         : sumFromEvents();
 
-    const totalMints =
-      agg.seed + agg.tree + agg.solar + agg.compute;
-
+    const totalMints = agg.seed + agg.tree + agg.solar + agg.compute;
     const totalValue =
       agg.seed * NFT_PRICES.seed +
       agg.tree * NFT_PRICES.tree +
@@ -202,7 +195,7 @@ export default function KOLPage() {
     return { ...agg, totalMints, totalValue };
   }, [kol, events]);
 
-  // --- Time series from events (last 500 kept per KOL) ---
+  // --- Time series from events ---
   const series = useMemo(() => {
     type Row = {
       _key: number;
@@ -259,12 +252,12 @@ export default function KOLPage() {
     return Array.from(buckets.values()).sort((a, b) => a._key - b._key);
   }, [events, filter]);
 
-  const origin =
-    typeof window !== "undefined" ? window.location.origin : "";
-  const referralLink =
-    kol && kol.kolId
-      ? `${origin}/?kolId=${encodeURIComponent(kol.kolId)}`
-      : "";
+  // Avoid SSR/hydration mismatch by computing origin on client only
+  const referralLink = useMemo(() => {
+    if (typeof window === "undefined") return "";
+    if (!kol?.kolId) return "";
+    return `${window.location.origin}/?kolId=${encodeURIComponent(kol.kolId)}`;
+  }, [kol?.kolId]);
 
   const signInGoogle = async () => {
     try {
@@ -286,7 +279,7 @@ export default function KOLPage() {
     );
   }
 
-  // Not signed in yet → prompt to sign in (rules require auth to read)
+  // Not signed in yet → prompt to sign in
   if (!auth.currentUser) {
     return (
       <div className="container mx-auto p-4">
@@ -319,7 +312,8 @@ export default function KOLPage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                We couldn’t find a KOL with ID <span className="font-mono">{kolId}</span>.
+                We couldn’t find a KOL with ID{" "}
+                <span className="font-mono">{kolId}</span>.
               </p>
             </CardContent>
           </Card>
@@ -333,7 +327,7 @@ export default function KOLPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">KOL Dashboard</h1>
         <div className="flex items-center gap-2">
-          <Badge variant="outline">{user?.email}</Badge>
+          <Badge variant="outline">{userEmail}</Badge>
           <Button variant="secondary" onClick={() => signOut(auth)}>
             <LogOut className="h-4 w-4 mr-2" /> Sign out
           </Button>
@@ -383,8 +377,10 @@ export default function KOLPage() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  navigator.clipboard.writeText(referralLink);
-                  toast.success("Copied");
+                  if (referralLink) {
+                    navigator.clipboard.writeText(referralLink);
+                    toast.success("Copied");
+                  }
                 }}
               >
                 <Copy className="h-4 w-4 mr-2" /> Copy
@@ -397,9 +393,7 @@ export default function KOLPage() {
       {/* Area Chart controls */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            NFTs Minted — {filter}
-          </CardTitle>
+          <CardTitle>NFTs Minted — {filter}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2 mb-4">

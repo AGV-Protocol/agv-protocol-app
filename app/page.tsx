@@ -6,7 +6,6 @@ import { parseUnits } from "viem";
 import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2, ExternalLink, Copy } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { recordSuccessfulMintStrict } from "@/lib/recordMint";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
@@ -683,6 +682,7 @@ export default function MintingContent() {
   const [quantity, setQuantity] = useState("1");
   const [status, setStatus] = useState("");
   const [isMinting, setIsMinting] = useState(false);
+  const postedTxsRef = useRef<Set<string>>(new Set());
 
   const [isEligible, setIsEligible] = useState(false);
   const [eligibilityChecked, setEligibilityChecked] = useState(false);
@@ -1209,62 +1209,81 @@ export default function MintingContent() {
   };
 
   const handleTransactionSuccess = async (receipt: any) => {
-    setProgressStage("success");
-    setStatus("Minted successfully!");
-    setIsMinting(false);
+  setProgressStage("success");
+  setStatus("Minted successfully!");
+  setIsMinting(false);
 
-    toast({
-      title: "Mint Successful! 🎉",
-      description: `Successfully minted ${quantity} ${nftType}Pass NFT${
-        Number(quantity) > 1 ? "s" : ""
-      }`,
-      variant: "default",
-    });
+  toast({
+    title: "Mint Successful! 🎉",
+    description: `Successfully minted ${quantity} ${nftType}Pass NFT${
+      Number(quantity) > 1 ? "s" : ""
+    }`,
+    variant: "default",
+  });
 
-    try {
-    const hash = receipt?.transactionHash || txHash || "";
-    if (kolId.trim()) {
-      const res = await recordSuccessfulMintStrict(db, kolId.trim(), {
-        address: account?.address || "",
-        nftType,
-        quantity: Number(quantity),
-        chainId,
-        txHash: hash,
-        timestamp: new Date(),
-        mintType: mintMode,
-      });
-
+  try {
+    const tx = (receipt?.transactionHash || txHash || "").toLowerCase().trim();
+    if (!tx) {
       toast({
-        title: res === "deduped" ? "Already Recorded" : "Transaction Recorded",
-        description:
-          res === "deduped"
-            ? "This transaction was already saved. Counters were not double-counted."
-            : "Mint event saved to the KOL’s aggregate successfully.",
+        title: "No Transaction Hash",
+        description: "Mint succeeded but no transaction hash was found.",
         variant: "default",
       });
-    } else {
-      // No kolId provided — nothing to record to KOL aggregate.
-      // (The on-chain mint already succeeded.)
+      return;
     }
-  } catch (error: any) {
-    const msg = String(error?.message || error);
-    // Preserve strict behavior: DO NOT create new docs here.
-    // Surface meaningful messages when aggregates are missing.
-    let description = "NFT minted but failed to save to KOL aggregate.";
-    if (msg.includes("kol-not-found")) description = "Invalid KOL ID (not found).";
-    if (msg.includes("mint-doc-missing")) description = "KOL aggregate doc is missing (admin must create it).";
 
-    console.error("recordSuccessfulMintStrict error:", error);
+    // Client-side de-dupe: never post the same tx twice
+    if (postedTxsRef.current.has(tx)) {
+      toast({
+        title: "Already Recorded",
+        description: "This transaction was already submitted for recording.",
+        variant: "default",
+      });
+      return;
+    }
+    postedTxsRef.current.add(tx);
+
+    const payload = {
+      kolId: (kolId || "").trim() || null, // null or valid kolId
+      address: account?.address || "",
+      nftType,
+      quantity: Number(quantity || 0),
+      chainId,
+      txHash: tx,
+    };
+
+    const res = await fetch("/api/mint/record", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json().catch(() => ({} as any));
+
+    if (!res.ok) {
+      // Server rejects if kolId doesn’t exist or rule violated
+      throw new Error(data?.error || "Failed to record mint");
+    }
+
+    toast({
+      title: "Transaction Recorded",
+      description: "Mint event saved successfully.",
+      variant: "default",
+    });
+  } catch (error: any) {
+    console.error("Error recording mint:", error);
     toast({
       title: "Database Warning",
-      description,
+      description:
+        error?.message ||
+        "NFT minted successfully but failed to save on the server.",
       variant: "default",
     });
   }
 
-
-    setTimeout(() => window.location.reload(), 5000);
-  };
+  // Optional UX refresh
+  setTimeout(() => window.location.reload(), 5000);
+};
 
   const handleTransactionError = (err: any) => {
     const errorMessage = normalizeError(err);

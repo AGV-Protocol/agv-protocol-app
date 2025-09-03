@@ -21,7 +21,6 @@ const app = initializeApp(firebaseConfig);
 // Fix Unknown SID: force long polling (or switch to auto-detect if you prefer)
 export const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,                 // <- deterministic fix
-  // experimentalAutoDetectLongPolling: true,         // <- alternative (use instead of force)
   experimentalLongPollingOptions: { timeoutSeconds: 30 },
   ignoreUndefinedProperties: true,
   localCache: persistentLocalCache({
