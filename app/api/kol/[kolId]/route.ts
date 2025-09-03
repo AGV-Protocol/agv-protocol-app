@@ -1,25 +1,28 @@
 // app/api/kol/[kolId]/route.ts
 export const runtime = "nodejs";
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { adminDb, adminAuth } from "@/lib/firebaseAdmin";
 
-export async function GET(req: Request, ctx: { params: { kolId: string } }) {
+type Params = { kolId: string };
+type MaybePromise<T> = T | Promise<T>;
+
+export async function GET(req: NextRequest, ctx: { params: MaybePromise<Params> }) {
   try {
-    const kolIdRaw = ctx.params?.kolId ?? "";
-    const kolId = decodeURIComponent(kolIdRaw).trim();
+    const { kolId: kolIdRaw } = await Promise.resolve(ctx.params);
+    const kolId = decodeURIComponent(kolIdRaw || "").trim();
     if (!kolId) {
       return NextResponse.json({ error: "kolId required" }, { status: 400 });
     }
 
-    // --- Auth (keep strict in prod) ---
+    // --- Auth (strict) ---
     const authH = req.headers.get("authorization") || "";
     const token = authH.startsWith("Bearer ") ? authH.slice(7) : "";
     if (!token) return NextResponse.json({ error: "Missing Authorization" }, { status: 401 });
     const decoded = await adminAuth.verifyIdToken(token).catch(() => null);
     if (!decoded) return NextResponse.json({ error: "Invalid token" }, { status: 401 });
 
-    // --- Get KOL (try by docId, then by field kolId, then kolID) ---
+    // --- Get KOL (by docId -> by 'kolId' field -> by legacy 'kolID') ---
     let kol: any = null;
 
     const byId = await adminDb.collection("kols").doc(kolId).get();
