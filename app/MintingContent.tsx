@@ -2239,13 +2239,26 @@ export default function MintingContent() {
         />
 
         <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
-          <Link
+          <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", color: "#1f2937" }}>
+            Are you a KOL or Agent? {""}       
+            <Link
             href="/kol-dashboard"
             style={{ color: "#2563eb", fontWeight: "medium", textDecoration: "underline" }}
           >
             Go to Dashboard
           </Link>
+          </h2>
         </div>
+        <footer
+          style={{
+            marginTop: "auto",
+            textAlign: "center",
+            color: "#6b7280",
+            fontSize: "0.875rem",
+          }}
+        >
+          &copy; AGV Protocol {new Date().getFullYear()}
+        </footer>
 
         {/* Wallet required modal (derived, loop-safe) */}
         {!account && (
