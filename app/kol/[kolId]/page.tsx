@@ -10,18 +10,6 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import {
   AreaChart,
@@ -33,7 +21,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { User, LogIn, LogOut, Copy, Wallet } from "lucide-react";
+import { User, LogIn, LogOut, Copy, Wallet, Loader2 } from "lucide-react";
 
 interface KOLDoc {
   kolId: string;
@@ -268,12 +256,124 @@ export default function KOLPage() {
     }
   };
 
+  // ---------- Styled helpers ----------
+  const Card: React.FC<{ title?: React.ReactNode; children: React.ReactNode; right?: React.ReactNode }> = ({ title, children, right }) => (
+    <div
+      style={{
+        backgroundColor: "#fff",
+        borderRadius: "1rem",
+        boxShadow: "0 4px 6px rgba(0,0,0,0.08)",
+        overflow: "hidden",
+      }}
+    >
+      {(title || right) && (
+        <div
+          style={{
+            padding: "1rem 1.25rem",
+            borderBottom: "1px solid #e5e7eb",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>{title}</div>
+          {right}
+        </div>
+      )}
+      <div style={{ padding: "1.25rem" }}>{children}</div>
+    </div>
+  );
+
+  const Label: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <p style={{ fontSize: ".875rem", color: "#6b7280", marginBottom: ".25rem" }}>{children}</p>
+  );
+
+  const Mono: React.FC<{ children: React.ReactNode; truncate?: boolean }> = ({ children, truncate }) => (
+    <span style={{ fontFamily: "monospace", whiteSpace: truncate ? "nowrap" : undefined, overflow: truncate ? "hidden" : undefined, textOverflow: truncate ? "ellipsis" : undefined }}>
+      {children}
+    </span>
+  );
+
+  const SolidButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, style, ...rest }) => (
+    <button
+      {...rest}
+      style={{
+        backgroundColor: "#2563eb",
+        color: "#fff",
+        border: "none",
+        borderRadius: "0.5rem",
+        padding: ".5rem .8rem",
+        cursor: "pointer",
+        fontWeight: "medium",
+        ...style,
+      }}
+    >
+      {children}
+    </button>
+  );
+
+  const OutlineButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, style, ...rest }) => (
+    <button
+      {...rest}
+      style={{
+        background: "transparent",
+        color: "#111827",
+        border: "1px solid #d1d5db",
+        borderRadius: "0.5rem",
+        padding: ".45rem .8rem",
+        cursor: "pointer",
+        ...style,
+      }}
+    >
+      {children}
+    </button>
+  );
+
+  const ToggleButton: React.FC<{ active?: boolean; onClick?: () => void; children: React.ReactNode }> = ({ active, onClick, children }) => (
+    <button
+      onClick={onClick}
+      style={{
+        padding: ".35rem .75rem",
+        borderRadius: ".5rem",
+        border: "1px solid #e5e7eb",
+        backgroundColor: active ? "#111827" : "#f1f5f9",
+        color: active ? "#fff" : "#111827",
+        cursor: "pointer",
+      }}
+    >
+      {children}
+    </button>
+  );
+
+  // ---------- Screens ----------
   if (loading || !authReady) {
     return (
-      <div className="container mx-auto p-4">
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2">Loading KOL dashboard…</p>
+      <div
+        style={{
+          minHeight: "100vh",
+          backgroundColor: "#e6f0fa",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "1rem",
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: "#fff",
+            borderRadius: "1rem",
+            padding: "2rem",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.08)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: ".75rem",
+            width: "100%",
+            maxWidth: "28rem",
+          }}
+        >
+          <Loader2 style={{ height: 28, width: 28, color: "#2563eb", animation: "spin 1s linear infinite" }} />
+          <p style={{ color: "#374151" }}>Loading KOL dashboard…</p>
         </div>
       </div>
     );
@@ -282,20 +382,19 @@ export default function KOLPage() {
   // Not signed in yet → prompt to sign in
   if (!auth.currentUser) {
     return (
-      <div className="container mx-auto p-4">
-        <div className="max-w-md mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sign in to view KOL: {kolId}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                You need to sign in to view this page.
-              </p>
-              <Button onClick={signInGoogle}>
-                <LogIn className="h-4 w-4 mr-2" /> Continue with Google
-              </Button>
-            </CardContent>
+      <div style={{ minHeight: "100vh", backgroundColor: "#e6f0fa", padding: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: "100%", maxWidth: "28rem" }}>
+          <Card
+            title={<h2 style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Sign in to view KOL: {kolId}</h2>}
+          >
+            <p style={{ fontSize: ".9rem", color: "#6b7280", marginBottom: ".75rem" }}>
+              You need to sign in to view this page.
+            </p>
+            <SolidButton onClick={signInGoogle}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: ".5rem" }}>
+                <LogIn size={16} /> Continue with Google
+              </span>
+            </SolidButton>
           </Card>
         </div>
       </div>
@@ -304,217 +403,237 @@ export default function KOLPage() {
 
   if (!kol) {
     return (
-      <div className="container mx-auto p-4">
-        <div className="max-w-xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>KOL not found</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                We couldn’t find a KOL with ID{" "}
-                <span className="font-mono">{kolId}</span>.
-              </p>
-            </CardContent>
+      <div style={{ minHeight: "100vh", backgroundColor: "#e6f0fa", padding: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: "100%", maxWidth: "32rem" }}>
+          <Card title={<h2 style={{ fontSize: "1.25rem", fontWeight: "bold" }}>KOL not found</h2>}>
+            <p style={{ color: "#6b7280" }}>
+              We couldn’t find a KOL with ID <Mono>{kolId}</Mono>.
+            </p>
           </Card>
         </div>
       </div>
     );
   }
 
+  // ---------- Main ----------
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">KOL Dashboard</h1>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline">{userEmail}</Badge>
-          <Button variant="secondary" onClick={() => signOut(auth)}>
-            <LogOut className="h-4 w-4 mr-2" /> Sign out
-          </Button>
+    <div style={{ minHeight: "100vh", backgroundColor: "#e6f0fa", padding: "1rem" }}>
+      <div style={{ maxWidth: "72rem", margin: "0 auto", display: "grid", gap: "1rem" }}>
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: ".25rem .25rem",
+          }}
+        >
+          <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#111827" }}>KOL Dashboard</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
+            <span
+              style={{
+                border: "1px solid #d1d5db",
+                padding: ".25rem .5rem",
+                borderRadius: "9999px",
+                fontSize: ".875rem",
+                color: "#374151",
+                background: "#fff",
+              }}
+              title={userEmail ?? ""}
+            >
+              {userEmail}
+            </span>
+            <OutlineButton onClick={() => signOut(auth)}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: ".4rem" }}>
+                <LogOut size={16} /> Sign out
+              </span>
+            </OutlineButton>
+          </div>
         </div>
-      </div>
 
-      {/* Profile Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" /> Profile
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-3">
-          <div>
-            <p className="text-sm text-muted-foreground">KOL Name</p>
-            <p className="text-xl font-semibold">{kol.name}</p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground">KOL ID</p>
-            <p className="font-mono">{kol.kolId}</p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground">Wallet</p>
-            <p className="flex items-center gap-2 font-mono truncate">
-              <Wallet className="h-4 w-4" /> {kol.walletAddress}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground">Target</p>
-            <p className="font-semibold">{kol.target ?? 0}</p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground">Total Mints</p>
-            <p className="font-semibold">{stats.totalMints}</p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground">Total Value</p>
-            <p className="font-bold text-green-600">
-              ${stats.totalValue.toLocaleString()}
-            </p>
-          </div>
-          <div className="md:col-span-3">
-            <p className="text-sm text-muted-foreground">Referral Link</p>
-            <div className="flex gap-2">
-              <Input readOnly value={referralLink} />
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (referralLink) {
-                    navigator.clipboard.writeText(referralLink);
-                    toast.success("Copied");
-                  }
-                }}
-              >
-                <Copy className="h-4 w-4 mr-2" /> Copy
-              </Button>
+        {/* Profile Card */}
+        <Card
+          title={
+            <>
+              <User size={18} />
+              <span style={{ fontWeight: 700 }}>Profile</span>
+            </>
+          }
+        >
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
+              gap: "1rem",
+            }}
+          >
+            {/* Row 1 */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "1rem" }}>
+              <div>
+                <Label>KOL Name</Label>
+                <p style={{ fontSize: "1.125rem", fontWeight: 600 }}>{kol.name}</p>
+              </div>
+              <div>
+                <Label>KOL ID</Label>
+                <Mono>{kol.kolId}</Mono>
+              </div>
+              <div>
+                <Label>Wallet</Label>
+                <p style={{ display: "flex", alignItems: "center", gap: ".4rem", margin: 0 }}>
+                  <Wallet size={16} />
+                  <Mono truncate>{kol.walletAddress}</Mono>
+                </p>
+              </div>
+            </div>
+
+            {/* Row 2 */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "1rem" }}>
+              <div>
+                <Label>Target</Label>
+                <p style={{ fontWeight: 600 }}>{kol.target ?? 0}</p>
+              </div>
+              <div>
+                <Label>Total Mints</Label>
+                <p style={{ fontWeight: 600 }}>{stats.totalMints}</p>
+              </div>
+              <div>
+                <Label>Total Value</Label>
+                <p style={{ fontWeight: 700, color: "#059669" }}>
+                  ${stats.totalValue.toLocaleString()}
+                </p>
+              </div>
+            </div>
+
+            {/* Referral */}
+            <div>
+              <Label>Referral Link</Label>
+              <div style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
+                <input
+                  readOnly
+                  value={referralLink}
+                  style={{
+                    flex: 1,
+                    padding: ".6rem .75rem",
+                    border: "1px solid #d1d5db",
+                    borderRadius: ".5rem",
+                    outline: "none",
+                  }}
+                />
+                <OutlineButton
+                  onClick={() => {
+                    if (referralLink) {
+                      navigator.clipboard.writeText(referralLink);
+                      toast.success("Copied");
+                    }
+                  }}
+                >
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: ".4rem" }}>
+                    <Copy size={16} /> Copy
+                  </span>
+                </OutlineButton>
+              </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </Card>
 
-      {/* Area Chart controls */}
-      <Card>
-        <CardHeader>
-          <CardTitle>NFTs Minted — {filter}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-2 mb-4">
-            {(["DAILY", "WEEKLY", "MONTHLY"] as const).map((m) => (
-              <Button
-                key={m}
-                size="sm"
-                variant={filter === m ? "default" : "outline"}
-                onClick={() => setFilter(m)}
-              >
-                {m}
-              </Button>
-            ))}
-          </div>
-          <div className="h-[360px] w-full">
+        {/* Area Chart */}
+        <Card
+          title={<span style={{ fontWeight: 700 }}>NFTs Minted — {filter}</span>}
+          right={
+            <div style={{ display: "flex", gap: ".5rem" }}>
+              {(["DAILY", "WEEKLY", "MONTHLY"] as const).map((m) => (
+                <ToggleButton key={m} active={filter === m} onClick={() => setFilter(m)}>
+                  {m}
+                </ToggleButton>
+              ))}
+            </div>
+          }
+        >
+          <div style={{ height: 360, width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={series}
-                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-              >
+              <AreaChart data={series} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="label" />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Legend />
-                <Area
-                  type="monotone"
-                  dataKey="seed"
-                  stackId="1"
-                  stroke="#3B82F6"
-                  fill="#3B82F6"
-                  name="SeedPass"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="tree"
-                  stackId="1"
-                  stroke="#10B981"
-                  fill="#10B981"
-                  name="TreePass"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="solar"
-                  stackId="1"
-                  stroke="#F59E0B"
-                  fill="#F59E0B"
-                  name="SolarPass"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="compute"
-                  stackId="1"
-                  stroke="#8B5CF6"
-                  fill="#8B5CF6"
-                  name="ComputePass"
-                />
+                <Area type="monotone" dataKey="seed" stackId="1" stroke="#3B82F6" fill="#3B82F6" name="SeedPass" />
+                <Area type="monotone" dataKey="tree" stackId="1" stroke="#10B981" fill="#10B981" name="TreePass" />
+                <Area type="monotone" dataKey="solar" stackId="1" stroke="#F59E0B" fill="#F59E0B" name="SolarPass" />
+                <Area type="monotone" dataKey="compute" stackId="1" stroke="#8B5CF6" fill="#8B5CF6" name="ComputePass" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
-        </CardContent>
-      </Card>
+        </Card>
 
-      {/* Recent mint events */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Mints</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>NFT Type</TableHead>
-                <TableHead className="text-center">Qty</TableHead>
-                <TableHead>Wallet</TableHead>
-                <TableHead>Tx</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {events
-                .slice()
-                .sort(
-                  (a, b) =>
-                    toDate(b.timestamp).getTime() -
-                    toDate(a.timestamp).getTime()
-                )
-                .slice(0, 25)
-                .map((e, i) => (
-                  <TableRow key={`${e.txHash ?? "tx"}-${i}`}>
-                    <TableCell>
-                      {toDate(e.timestamp).toLocaleString()}
-                    </TableCell>
-                    <TableCell className="capitalize">
-                      {e.nftType}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {e.quantity}
-                    </TableCell>
-                    <TableCell className="font-mono truncate">
-                      {e.address}
-                    </TableCell>
-                    <TableCell className="font-mono truncate">
-                      {e.txHash ?? "—"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              {events.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="text-center py-8 text-muted-foreground"
-                  >
-                    No mint events yet
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+        {/* Recent Mints */}
+        <Card title={<span style={{ fontWeight: 700 }}>Recent Mints</span>}>
+          <div style={{ width: "100%", overflowX: "auto" }}>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "separate",
+                borderSpacing: 0,
+                fontSize: ".925rem",
+              }}
+            >
+              <thead>
+                <tr>
+                  {["Date", "NFT Type", "Qty", "Wallet", "Tx"].map((h, i) => (
+                    <th
+                      key={h}
+                      style={{
+                        textAlign: i === 2 ? "center" : "left",
+                        color: "#374151",
+                        fontWeight: 600,
+                        padding: ".75rem",
+                        borderBottom: "1px solid #e5e7eb",
+                        background: "#f9fafb",
+                      }}
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {events
+                  .slice()
+                  .sort(
+                    (a, b) => toDate(b.timestamp).getTime() - toDate(a.timestamp).getTime()
+                  )
+                  .slice(0, 25)
+                  .map((e, i) => (
+                    <tr key={`${e.txHash ?? "tx"}-${i}`} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                      <td style={{ padding: ".75rem", color: "#374151" }}>
+                        {toDate(e.timestamp).toLocaleString()}
+                      </td>
+                      <td style={{ padding: ".75rem", textTransform: "capitalize", color: "#374151" }}>
+                        {e.nftType}
+                      </td>
+                      <td style={{ padding: ".75rem", textAlign: "center", color: "#111827" }}>
+                        {e.quantity}
+                      </td>
+                      <td style={{ padding: ".75rem", color: "#111827", maxWidth: 240 }}>
+                        <Mono truncate>{e.address}</Mono>
+                      </td>
+                      <td style={{ padding: ".75rem", color: "#6b7280", maxWidth: 240 }}>
+                        <Mono truncate>{e.txHash ?? "—"}</Mono>
+                      </td>
+                    </tr>
+                  ))}
+                {events.length === 0 && (
+                  <tr>
+                    <td colSpan={5} style={{ padding: "2rem", textAlign: "center", color: "#6b7280" }}>
+                      No mint events yet
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }

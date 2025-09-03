@@ -2306,7 +2306,7 @@ export default function MintingContent() {
               zIndex: 80,
             }}
           >
-            <h3 style={{ fontSize: "1.25rem", fontWeight: "semibold" }}>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: "semibold" , color: "#ffffffff" }}>
               Wallet Connection Required
             </h3>
             <div
