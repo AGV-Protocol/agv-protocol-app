@@ -1,45 +1,19 @@
 "use client";
 import { useState, useEffect, useRef, useMemo } from "react";
-import {
-  ConnectButton,
-  useActiveAccount,
-  useReadContract,
-  useWalletBalance,
-} from "thirdweb/react";
-import {
-  createThirdwebClient,
-  getContract,
-  prepareContractCall,
-  sendTransaction,
-  waitForReceipt,
-  sendAndConfirmTransaction,
-} from "thirdweb";
+import { ConnectButton, useActiveAccount, useReadContract, useWalletBalance } from "thirdweb/react";
+import { createThirdwebClient, getContract, prepareContractCall, sendTransaction, waitForReceipt, sendAndConfirmTransaction } from "thirdweb";
 import { parseUnits } from "viem";
-import {
-  Moon,
-  Sun,
-  AlertTriangle,
-  CheckCircle,
-  X,
-  Loader2,
-  ExternalLink,
-  Copy,
-} from "lucide-react";
+import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2, ExternalLink, Copy } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import type { CollectionKey } from "@/lib/contracts";
-import {
-  CHAINS,
-  USDT_ADDRESSES,
-  NFT_CONTRACTS,
-  NFT_ABI,
-  USDT_ABI,
-} from "@/lib/contracts";
+import { CHAINS, USDT_ADDRESSES, NFT_CONTRACTS, NFT_ABI, USDT_ABI } from "@/lib/contracts";
 import { PASS_PRICES } from "@/lib/pricing";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 /** ---------------- Types ---------------- **/
 type ChainId = "56" | "137" | "42161";
@@ -1589,8 +1563,8 @@ export default function MintingContent() {
               alignItems: "center",
               padding: "1rem",
               borderBottom: "1px solid #e5e7eb",
-            }}
-          >
+            }}>
+            <Image src="/logo.svg" alt="AGV Protocol Logo" height={32} width={32} />
             <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#1f2937" }}>
               AGV NFT Mint
             </h2>

@@ -3,25 +3,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import {
-  onAuthStateChanged,
-  signOut,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
+import { onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { toast } from "sonner";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { User, LogIn, LogOut, Copy, Wallet, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 interface KOLDoc {
   kolId: string;
@@ -427,7 +414,7 @@ export default function KOLPage() {
             justifyContent: "space-between",
             padding: ".25rem .25rem",
           }}
-        >
+        ><Image src="/logo.svg" alt="AGV Protocol Logo" height={32} width={32} />
           <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#111827" }}>KOL Dashboard</h1>
           <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
             <span
