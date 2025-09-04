@@ -114,6 +114,11 @@ const addDays = (d: Date, n: number) =>
   new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
 const n = (x: any) => (x ? Number(x) : 0);
 
+const KOL_PREFIX = "AGV-KOL";
+const toKolDigits = (id?: string) => (id || "").replace(/\D/g, "").slice(-6);
+const kolIdFromDigits = (digits: string) => `${KOL_PREFIX}${digits}`;
+
+
 function getWeekRange(base = new Date(), last = false) {
   const day = base.getDay();
   const diffToMon = (day + 6) % 7;
@@ -711,9 +716,8 @@ export default function AdminPage() {
 
       await refreshData();
 
-      const link =
-        data.referralLink ||
-        `${window.location.origin}/?kolId=${encodeURIComponent(data.kolId)}`;
+      const digits = toKolDigits(data.kolId);
+      const link = `${window.location.origin}/${digits}`;
       setReferralLink(link);
       toast.success("KOL created", { description: "Referral link generated" });
 
@@ -1459,10 +1463,9 @@ export default function AdminPage() {
                     const name = kol?.name || "—";
                     const wallet = kol?.walletAddress || "—";
                     const email = kol?.email || "—";
-                    const link = id
-                      ? `${
-                          typeof window !== "undefined" ? window.location.origin : ""
-                        }/?kolId=${encodeURIComponent(id)}`
+                    const digitsOnly = toKolDigits(id);
+                    const link = digitsOnly
+                      ? `${typeof window !== "undefined" ? window.location.origin : ""}/${digitsOnly}`
                       : "";
 
                     return (
