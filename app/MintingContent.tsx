@@ -2210,7 +2210,7 @@ export default function MintingContent() {
               />
             </div>
 
-            {/* Price summary */}
+            {/* Price Summary */}
             <div
               style={{
                 display: "flex",
