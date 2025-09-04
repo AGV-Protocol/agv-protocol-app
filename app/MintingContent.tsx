@@ -1,9 +1,31 @@
 "use client";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { ConnectButton, useActiveAccount, useReadContract, useWalletBalance } from "thirdweb/react";
-import { createThirdwebClient, getContract, prepareContractCall, sendTransaction, waitForReceipt, sendAndConfirmTransaction } from "thirdweb";
+import {
+  ConnectButton,
+  useActiveAccount,
+  useReadContract,
+  useWalletBalance,
+} from "thirdweb/react";
+import {
+  createThirdwebClient,
+  getContract,
+  prepareContractCall,
+  sendTransaction,
+  waitForReceipt,
+  sendAndConfirmTransaction,
+} from "thirdweb";
 import { parseUnits } from "viem";
-import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2, ExternalLink, Copy } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  AlertTriangle,
+  CheckCircle,
+  X,
+  Loader2,
+  ExternalLink,
+  Copy,
+  Lock,
+} from "lucide-react";
 import { recordSuccessfulMintStrict } from "@/lib/recordMint";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
@@ -11,29 +33,61 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import type { CollectionKey } from "@/lib/contracts";
-import { CHAINS, USDT_ADDRESSES, NFT_CONTRACTS, NFT_ABI, USDT_ABI } from "@/lib/contracts";
+import {
+  CHAINS,
+  USDT_ADDRESSES,
+  NFT_CONTRACTS,
+  NFT_ABI,
+  USDT_ABI,
+} from "@/lib/contracts";
 import { PASS_PRICES } from "@/lib/pricing";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 
 /** ---------------- Types ---------------- **/
 type ChainId = "56" | "137" | "42161";
 type NftType = keyof typeof PASS_PRICES;
-type MintMode = "public" | "agent";
+type EffectiveMode = "public" | "whitelist";
 
-/** ---------------- Chain-aware caps ---------------- **/
-const PUBLIC_MINT_CAPS: Record<NftType, Record<ChainId, number>> = {
-  seed: { "56": 400, "137": 400, "42161": 400 },
-  tree: { "56": 200, "137": 200, "42161": 200 },
-  solar: { "56": 0, "137": 0, "42161": 0 },
-  compute: { "56": 0, "137": 0, "42161": 0 },
+/** ---------------- Mode caps (per chain) ---------------- **/
+/**
+ * Kept as-is per your totals:
+ * Seed: WL 200, Public 400
+ * Tree: WL 100, Public 200
+ * Solar: WL 100, Public 100, Agent 100 (agent now on /agent-mint)
+ * Compute: WL 29, Public 20, Agent 50 (agent now on /agent-mint)
+ */
+const MODE_CAPS_BY_CHAIN: Record<
+  NftType,
+  Record<ChainId, { whitelist: number; public: number }>
+> = {
+  seed: {
+    "56": { whitelist: 100, public: 250 },
+    "137": { whitelist: 50, public: 100 },
+    "42161": { whitelist: 50, public: 50 },
+  },
+  tree: {
+    "56": { whitelist: 50, public: 150 },
+    "137": { whitelist: 25, public: 50 },
+    "42161": { whitelist: 25, public: 50 },
+  },
+  solar: {
+    "56": { whitelist: 100, public: 50 },
+    "137": { whitelist: 50, public: 25 },
+    "42161": { whitelist: 50, public: 25 },
+  },
+  compute: {
+    "56": { whitelist: 40, public: 10 },
+    "137": { whitelist: 29, public: 5 },
+    "42161": { whitelist: 29, public: 5 },
+  },
 } as const;
 
+/** Per-chain wallet caps (unchanged) **/
 const MAX_PER_WALLET: Record<NftType, Record<ChainId, number>> = {
   seed: { "56": 3, "137": 3, "42161": 3 },
   tree: { "56": 2, "137": 2, "42161": 2 },
-  solar: { "56": 1, "137": 1, "42161": 1 },
+  solar: { "56": 2, "137": 2, "42161": 2 },
   compute: { "56": 1, "137": 1, "42161": 1 },
 } as const;
 
@@ -155,7 +209,13 @@ const SpendingCapModal = ({
           >
             Estimated changes
           </h4>
-          <p style={{ color: "#d1d5db", fontSize: "0.875rem", marginBottom: "1rem" }}>
+          <p
+            style={{
+              color: "#d1d5db",
+              fontSize: "0.875rem",
+              marginBottom: "1rem",
+            }}
+          >
             You are giving AGV Protocol the permission to spend this amount from
             your account.
           </p>
@@ -312,13 +372,21 @@ const TransactionProgressModal = ({
   const [showTimeoutOption, setShowTimeoutOption] = useState(false);
 
   const chainInfo = CHAINS[chainId];
-  const explorerBase =
+
+  const EXPLORERS: Record<ChainId, string> = {
+    "56": "https://bscscan.io",
+    "137": "https://polscan.io",
+    "42161": "https://arbiscan.io",
+  };
+
+  const fallback =
     chainInfo?.chain?.blockExplorers?.default?.url ??
     chainInfo?.chain?.blockExplorers?.etherscan?.url ??
     "";
+
+  const explorerBase = EXPLORERS[chainId] ?? fallback;
   const explorerUrl = txHash ? `${explorerBase}/tx/${txHash}` : null;
 
-  // One interval; avoid depth loops
   useEffect(() => {
     if (!isOpen || stage === "success") return;
     const timer = setInterval(() => setTimeElapsed((p) => p + 1), 1000);
@@ -673,13 +741,35 @@ const normalizeError = (e: unknown) => {
   }
 };
 
+const networkLabel = (id: ChainId) =>
+  id === "56" ? "BNB Chain" : id === "137" ? "Polygon" : "Arbitrum";
+
+/** Normalize config() result across Seed/Tree (uint16 vs uint256 counters) */
+function parseSaleConfig(raw: any) {
+  if (!raw) return null as null;
+  const get = (x: any, k: number | string) =>
+    typeof k === "number" ? (Array.isArray(x) ? x[k] : undefined) : (x?.[k]);
+  const wlStartTime = Number(get(raw, 0) ?? get(raw, "wlStartTime") ?? 0);
+  const wlEndTime = Number(get(raw, 1) ?? get(raw, "wlEndTime") ?? 0);
+  const saleActive = Boolean(get(raw, 2) ?? get(raw, "saleActive") ?? false);
+  const metadataFrozen = Boolean(get(raw, 3) ?? get(raw, "metadataFrozen") ?? false);
+  const publicMinted = Number(get(raw, 4) ?? get(raw, "publicMinted") ?? 0);
+  const whitelistMinted = Number(get(raw, 5) ?? get(raw, "whitelistMinted") ?? 0);
+  return { wlStartTime, wlEndTime, saleActive, metadataFrozen, publicMinted, whitelistMinted };
+}
+
+const isWhitelistPhaseString = (s: string) => {
+  const u = (s || "").toUpperCase();
+  return u.includes("WL") || u.includes("WHITELIST");
+};
+
 /** ---------------- Main Component ---------------- **/
 export default function MintingContent() {
   const account = useActiveAccount();
 
   // ----- UI State -----
-  const [mintMode, setMintMode] = useState<MintMode>("public"); // only "public" and "agent"
   const [kolDigits, setKolDigits] = useState(""); // 0-6 digits only
+  const [kolLocked, setKolLocked] = useState(false); // locked when from referral
   const fullKolId = useMemo(
     () => (kolDigits && kolDigits.length === 6 ? `AGV-KOL${kolDigits}` : ""),
     [kolDigits]
@@ -690,7 +780,6 @@ export default function MintingContent() {
   const [status, setStatus] = useState("");
   const [isMinting, setIsMinting] = useState(false);
   const searchParams = useSearchParams();
-
 
   const [isEligible, setIsEligible] = useState(false);
   const [eligibilityChecked, setEligibilityChecked] = useState(false);
@@ -705,6 +794,11 @@ export default function MintingContent() {
   // Transactions prepared (approval -> mint)
   const [pendingApprovalTx, setPendingApprovalTx] = useState<any>(null);
   const [pendingMintTx, setPendingMintTx] = useState<any>(null);
+
+  // ----- Whitelist gating (proof from API) -----
+  const [wlEligible, setWlEligible] = useState(false);
+  const [wlProof, setWlProof] = useState<string[] | null>(null);
+  const [checkingWl, setCheckingWl] = useState(false);
 
   const { setTheme, theme } = useTheme();
 
@@ -746,6 +840,76 @@ export default function MintingContent() {
     queryOptions: { enabled: !!nftContract },
   });
 
+  // On-chain sale config + phase
+  const { data: rawConfig, isLoading: loadingConfig, error: configErr } = useReadContract({
+    contract: nftContract!,
+    method: "config",
+    params: [],
+    queryOptions: { enabled: !!nftContract },
+  });
+
+  const { data: rawPhase } = useReadContract({
+    contract: nftContract!,
+    method: "getCurrentPhase",
+    params: [],
+    queryOptions: { enabled: !!nftContract },
+  });
+
+  const saleConfig = useMemo(() => parseSaleConfig(rawConfig), [rawConfig]);
+  const phaseStr = useMemo(() => (rawPhase ? String(rawPhase) : ""), [rawPhase]);
+
+  const nowSec = Math.floor(Date.now() / 1000);
+  const wlWindowOpen =
+    !!saleConfig &&
+    saleConfig.saleActive &&
+    nowSec >= saleConfig.wlStartTime &&
+    nowSec <= saleConfig.wlEndTime &&
+    isWhitelistPhaseString(phaseStr);
+
+  const wlHasNotStarted =
+    !!saleConfig && saleConfig.saleActive && nowSec < saleConfig.wlStartTime;
+
+  const wlHasEnded =
+    !!saleConfig &&
+    saleConfig.saleActive &&
+    (nowSec > saleConfig.wlEndTime || (!isWhitelistPhaseString(phaseStr) && phaseStr.toUpperCase().includes("PUBLIC")));
+
+  const configAvailable = !!saleConfig;
+  const mintingActive = !!saleConfig?.saleActive;
+
+  const effectiveMode: EffectiveMode =
+    wlWindowOpen && wlEligible ? "whitelist" : "public";
+
+  // Per-mode minted from config (more accurate than totalSupply for progress in the selected mode)
+  const mintedForMode = saleConfig
+    ? effectiveMode === "whitelist"
+      ? Number(saleConfig.whitelistMinted || 0)
+      : Number(saleConfig.publicMinted || 0)
+    : 0;
+
+  // Mode-cap helpers (per chain) based on effective mode
+  const capForMode = MODE_CAPS_BY_CHAIN[nftType]?.[chainId]?.[effectiveMode] ?? 0;
+
+  // REAL remaining for logic
+  const remainingActual = Math.max(0, capForMode - mintedForMode);
+
+  // FOMO: display only 10% of actual remaining unless actual (nearest whole) < 10
+  const nearestRem = Math.round(remainingActual);
+  const displayRemaining = nearestRem < 10 ? nearestRem : Math.max(1, Math.floor(nearestRem * 0.1));
+
+
+  // Progress (per selected mode)
+  // FOMO: 10% view of actual remaining (already computed above as displayRemaining)
+  const fomoRemaining = displayRemaining;
+
+  // Progress must correspond to the *displayed* available:
+  // e.g., if total=250 and Available=24, progress = (250-24)/250 = 90.4%
+  const progressPct = capForMode
+    ? ((capForMode - Math.min(fomoRemaining, capForMode)) / capForMode) * 100
+    : 0;
+
+
+  // User minted count & per-wallet cap
   const { data: userBalance } = useReadContract({
     contract: nftContract!,
     method: "balanceOf",
@@ -753,26 +917,10 @@ export default function MintingContent() {
     queryOptions: { enabled: !!nftContract && !!account?.address },
   });
 
-  const { data: usdtDecimalsData } = useReadContract({
-    contract: usdtContract!,
-    method: "decimals",
-    params: [],
-    queryOptions: { enabled: !!usdtContract },
-  });
-
-  // Caps (chain-aware)
-  const publicMintCap = PUBLIC_MINT_CAPS[nftType]?.[chainId] ?? 0;
-  const currentSupply = totalSupply ? Number(totalSupply) : 0;
-  const remainingSupply = Math.max(0, publicMintCap - currentSupply);
-
   const userMintedCount = userBalance ? Number(userBalance) : 0;
   const maxPerWalletChain = MAX_PER_WALLET[nftType]?.[chainId] ?? 0;
-  const canMintMore = Math.max(
-    0,
-    Math.min(maxPerWalletChain - userMintedCount, remainingSupply)
-  );
 
-  // ------ Balances via Hooks (no manual RPC) ------
+  // ------ Balances via Hooks ------
   const { data: nativeData } = useWalletBalance({
     client: thirdwebClient,
     chain: chainInfo.chain,
@@ -790,27 +938,25 @@ export default function MintingContent() {
   const [hasInsufficientGas, setHasInsufficientGas] = useState(false);
   const gasToastShownRef = useRef(false);
 
-  // Sync kolId from URL params (ref is alias)
-const pathname = usePathname();
-
-// Sync KOL from URL: support ?kolId=, ?ref=, and /123456
+  // Sync kolId from URL params (ref is alias) and LOCK if prefilled
+  const pathname = usePathname();
   useEffect(() => {
-    // 1) query params (accept full or digits)
     const qp = (searchParams?.get("kolId") ?? searchParams?.get("ref") ?? "").trim();
     let digits = "";
     if (qp) digits = (qp.match(/\d{6}/) || [])[0] || "";
 
-    // 2) path segment /123456
     if (!digits && pathname) {
       const m = pathname.match(/\/(\d{6})(?:$|[/?#])/);
       if (m) digits = m[1];
     }
 
-    if (digits) setKolDigits(digits);
+    if (digits) {
+      setKolDigits(digits);
+      setKolLocked(true); // lock if from referral link
+    }
   }, [searchParams, pathname]);
 
-
-  // Derive gas balance + threshold alerts (avoid loops with refs)
+  // Gas thresholds
   useEffect(() => {
     const display = nativeData?.displayValue ?? "0";
     setNativeBalance(display);
@@ -839,7 +985,7 @@ const pathname = usePathname();
     }
   }, [nativeData?.displayValue, chainId, account?.address]);
 
-  // Global error toasts so nothing is silent
+  // Global error toasts
   useEffect(() => {
     const onErr = (event: ErrorEvent) => {
       toast({
@@ -900,86 +1046,116 @@ const pathname = usePathname();
     });
   };
 
-  /** ---- Eligibility logic (loop-safe) ---- */
-  // Reset eligibility when core params change
+  /** ---- Whitelist proof fetch ---- */
+  useEffect(() => {
+    const run = async () => {
+      setWlEligible(false);
+      setWlProof(null);
+      if (!account?.address) return;
+
+      try {
+        setCheckingWl(true);
+        const res = await fetch(`/api/merkle-proof?address=${account.address}`, {
+          cache: "no-store",
+        });
+        if (!res.ok) {
+          setWlEligible(false);
+          setWlProof(null);
+          return;
+        }
+        const data = await res.json();
+        const proof = Array.isArray(data?.proof) ? data.proof : [];
+        if (data?.whitelisted && proof.length > 0) {
+          setWlEligible(true);
+          setWlProof(proof);
+        } else {
+          setWlEligible(false);
+          setWlProof(null);
+        }
+      } catch {
+        setWlEligible(false);
+        setWlProof(null);
+      } finally {
+        setCheckingWl(false);
+      }
+    };
+    run();
+  }, [account?.address]);
+
+  /** ---- Eligibility (auto-mode) ---- */
   useEffect(() => {
     setEligibilityChecked(false);
     setIsEligible(false);
     setStatus("");
-  }, [account?.address, chainId, nftType, mintMode]);
+  }, [account?.address, chainId, nftType, saleConfig, phaseStr, wlEligible, wlProof]);
 
-  // Perform one-off check when ready
   useEffect(() => {
     const runCheck = async () => {
-      if (!account?.address || !nftContract || eligibilityChecked) return;
+      if (!account?.address) return;
 
-      setStatus("Checking minting eligibility...");
-      try {
-        if (mintMode === "public") {
-          const currentSupplyNum = totalSupply ? Number(totalSupply) : 0;
-          const cap = PUBLIC_MINT_CAPS[nftType]?.[chainId] ?? 0;
-
-          if (cap === 0) {
-            setIsEligible(false);
-            setStatus(`${nftType}Pass not available for public mint on this chain`);
-            toast({
-              title: "Not Available",
-              description:
-                "This pass is not available for public mint on this network",
-              variant: "destructive",
-            });
-            setEligibilityChecked(true);
-            return;
-          }
-
-          if (currentSupplyNum >= cap) {
-            setIsEligible(false);
-            setStatus(`Public mint sold out (${cap}/${cap})`);
-            toast({
-              title: "Public Mint Sold Out",
-              description: `All ${cap} ${nftType}Pass on this network are minted`,
-              variant: "destructive",
-            });
-            setEligibilityChecked(true);
-            return;
-          }
-
-          const minted = userBalance ? Number(userBalance) : 0;
-          const maxPer = MAX_PER_WALLET[nftType]?.[chainId] ?? 0;
-
-          if (minted >= maxPer) {
-            setIsEligible(false);
-            setStatus(`Per-wallet limit reached (${maxPer} on this chain)`);
-            toast({
-              title: "Minting Limit Reached",
-              description: `You already minted ${maxPer} on this network`,
-              variant: "destructive",
-            });
-          } else {
-            const remainingForUser = Math.min(
-              maxPer - minted,
-              cap - currentSupplyNum
-            );
-            setIsEligible(true);
-            setStatus("Eligible for minting");
-            toast({
-              title: "Eligibility Confirmed",
-              description: `You can mint up to ${remainingForUser} more on this network`,
-              variant: "default",
-            });
-          }
-        } else {
-          // Agent: requires KOL id; DB check will happen before mint; here allow UI to proceed
-          setIsEligible(true);
-          setStatus("Eligible for agent minting");
-        }
-      } catch (error) {
-        console.error("Eligibility check failed:", error);
+      // If contract/config not available
+      if (!nftContract || !configAvailable) {
         setIsEligible(false);
-        setStatus("Eligibility check failed");
-      } finally {
+        setStatus("Unavailable on this network");
         setEligibilityChecked(true);
+        return;
       }
+
+      // saleActive gates minting entirely
+      if (!mintingActive) {
+        setIsEligible(false);
+        setStatus("Minting not active");
+        setEligibilityChecked(true);
+        return;
+      }
+
+      // Per-wallet + supply checks against EFFECTIVE mode
+      const minted = userMintedCount;
+      const maxPer = maxPerWalletChain;
+      const cap = capForMode;
+      const mintedMode = mintedForMode;
+
+      if (cap === 0) {
+        setIsEligible(false);
+        setStatus(`This pass is not available for ${effectiveMode} mint on this network`);
+        setEligibilityChecked(true);
+        return;
+      }
+      if (mintedMode >= cap || remainingActual <= 0) {
+        setIsEligible(false);
+        setStatus(`${effectiveMode === "public" ? "Public" : "Whitelist"} mint sold out (${cap}/${cap})`);
+        setEligibilityChecked(true);
+        return;
+      }
+      if (minted >= maxPer) {
+        setIsEligible(false);
+        setStatus(`Per-wallet limit reached (${maxPer} on this chain)`);
+        setEligibilityChecked(true);
+        return;
+      }
+
+      // WL-specific requirement when we’re inside WL phase
+      if (effectiveMode === "whitelist") {
+        if (checkingWl) {
+          setStatus("Fetching whitelist proof…");
+          return;
+        }
+        if (!wlProof || wlProof.length === 0) {
+          setIsEligible(false);
+          setStatus("Address not whitelisted");
+          setEligibilityChecked(true);
+          return;
+        }
+      }
+
+      const remainingForUser = Math.min(maxPer - minted, remainingActual);
+      setIsEligible(true);
+      setStatus(
+        effectiveMode === "public"
+          ? `You can mint up to ${remainingForUser} more on this network`
+          : "Eligible for whitelist minting"
+      );
+      setEligibilityChecked(true);
     };
 
     runCheck();
@@ -987,12 +1163,16 @@ const pathname = usePathname();
   }, [
     account?.address,
     nftContract,
-    chainId,
-    nftType,
-    mintMode,
-    eligibilityChecked,
-    totalSupply,
-    userBalance,
+    configAvailable,
+    mintingActive,
+    effectiveMode,
+    checkingWl,
+    wlProof,
+    userMintedCount,
+    maxPerWalletChain,
+    capForMode,
+    mintedForMode,
+    remainingActual,
   ]);
 
   const handleChainChange = (newChainId: ChainId) => {
@@ -1000,12 +1180,7 @@ const pathname = usePathname();
     setChainId(newChainId);
     toast({
       title: "Network Changed",
-      description:
-        newChainId === "56"
-          ? "BNB Chain"
-          : newChainId === "137"
-          ? "Polygon"
-          : "Arbitrum",
+      description: newChainId === "56" ? "BNB Chain" : newChainId === "137" ? "Polygon" : "Arbitrum",
       variant: "default",
     });
   };
@@ -1020,13 +1195,7 @@ const pathname = usePathname();
     });
   };
 
-  /** ---- Mint Flow:
-   *  1) Click "Mint" -> prepare txs -> show SpendingCapModal ONLY
-   *  2) Click "Confirm" in SpendingCapModal -> show ProgressModal and run approval+mint
-   *  3) Update progress stages accordingly
-   * ---- **/
-
-  // Build & stage transactions (no progress modal here)
+  /** ---- Mint Flow ---- **/
   const prepareTransactions = async () => {
     if (!account?.address) {
       toast({
@@ -1052,69 +1221,59 @@ const pathname = usePathname();
       });
       throw new Error("Contracts not loaded");
     }
+    if (!configAvailable) {
+      toast({
+        title: "Unavailable",
+        description: "Contract not available on this network.",
+        variant: "destructive",
+      });
+      throw new Error("Config not available");
+    }
+    if (!mintingActive) {
+      toast({
+        title: "Minting Inactive",
+        description: "Minting is not active on-chain.",
+        variant: "destructive",
+      });
+      throw new Error("Minting inactive");
+    }
 
     setIsMinting(true);
     setStatus("Preparing transaction…");
 
-    // Agent mode requires KOL ID and must exist
-    if (mintMode === "agent") {
-      if (!fullKolId) {
-        setIsMinting(false);
-        toast({
-          title: "KOL ID Required",
-          description: "Please enter a valid 6-digit KOL ID for Agent minting.",
-          variant: "destructive",
-        });
-        throw new Error("KOL ID missing");
-      }
-
-      // Validate KOL ID from Firestore
-      setStatus("Validating KOL ID…");
-      const q = query(collection(db, "kols"), where("kolId", "==", fullKolId));
-      const snap = await getDocs(q);
-      if (snap.empty) {
-        setIsMinting(false);
-        toast({
-          title: "Invalid KOL ID",
-          description: "The provided KOL ID is invalid.",
-          variant: "destructive",
-        });
-        throw new Error("Invalid KOL ID");
-      }
-    } else if (fullKolId) {
-      // Optional attribution on public mint; non-blocking
+    // Optional KOL attribution (non-blocking here)
+    if (fullKolId) {
       const q = query(collection(db, "kols"), where("kolId", "==", fullKolId));
       await getDocs(q).catch(() => void 0);
     }
 
-    // Public mode caps and per-wallet limits
     const qty = Number(quantity);
     if (qty < 1) {
       setIsMinting(false);
       throw new Error("Quantity must be at least 1");
     }
 
-    if (mintMode === "public") {
-      const minted = userBalance ? Number(userBalance) : 0;
-      const maxPer = MAX_PER_WALLET[nftType]?.[chainId] ?? 0;
-      const cap = PUBLIC_MINT_CAPS[nftType]?.[chainId] ?? 0;
-      const current = totalSupply ? Number(totalSupply) : 0;
+    // Per-wallet & cap checks with ACTUAL remaining
+    const minted = userMintedCount;
+    const maxPer = maxPerWalletChain;
+    const cap = capForMode;
+    const currentModeMinted = mintedForMode;
 
-      if (cap === 0) {
-        setIsMinting(false);
-        throw new Error(`${nftType}Pass is not available for public mint`);
-      }
-      if (minted + qty > maxPer) {
-        setIsMinting(false);
-        throw new Error(`Exceeds maximum per wallet (${maxPer})`);
-      }
-      if (current + qty > cap) {
-        setIsMinting(false);
-        throw new Error(`Exceeds public mint cap. Only ${cap - current} remaining`);
-      }
+    if (cap === 0) {
+      setIsMinting(false);
+      throw new Error(`Not available for ${effectiveMode} mint`);
+    }
+    if (minted + qty > maxPer) {
+      setIsMinting(false);
+      throw new Error(`Exceeds maximum per wallet (${maxPer})`);
+    }
+    if (currentModeMinted + qty > cap) {
+      setIsMinting(false);
+      throw new Error(
+        `Exceeds ${effectiveMode} cap. Only ${Math.max(0, cap - currentModeMinted)} remaining`
+      );
     }
 
-    // Prepare approval+mint
     const decimals = Number(usdtDecimalsData ?? 6);
     const unitAmount = parseUnits(String(PASS_PRICES[nftType]?.usd ?? 59), decimals);
     const amountToApprove = unitAmount * BigInt(qty);
@@ -1125,29 +1284,32 @@ const pathname = usePathname();
       params: [contractAddr, amountToApprove],
     });
 
-    // Infer mint function for agent or public
-    const mintMethod = mintMode === "agent" ? "mintAgent" : "mint";
+    // mint(uint256 qty, bytes32[] proof)
     const mintParams: any[] =
-      mintMode === "agent" ? [BigInt(qty)] : [BigInt(qty), []];
+      effectiveMode === "whitelist" ? [BigInt(qty), wlProof ?? []] : [BigInt(qty), []];
 
     const mintTx = prepareContractCall({
       contract: nftContract,
-      // @ts-ignore allow custom method names from ABI
-      method: mintMethod,
+      method: "mint",
       params: mintParams,
     });
 
     setPendingApprovalTx(approveTx);
     setPendingMintTx(mintTx);
 
-    // Show spending cap modal ONLY (as requested)
     setShowSpendingModal(true);
     setStatus("Review and confirm the spending cap to continue…");
   };
 
+  const { data: usdtDecimalsData } = useReadContract({
+    contract: usdtContract!,
+    method: "decimals",
+    params: [],
+    queryOptions: { enabled: !!usdtContract },
+  });
+
   const handleSpendingCapConfirm = async () => {
     try {
-      // Close spending cap, then open progress modal (requested order)
       setShowSpendingModal(false);
       setShowProgressModal(true);
       setProgressStage("approval");
@@ -1158,13 +1320,11 @@ const pathname = usePathname();
         variant: "default",
       });
 
-      // 1) Send approval and wait receipt
       const approveRes = await sendTransaction({
         transaction: pendingApprovalTx,
         account,
       });
 
-      // show hash immediately once available
       if (approveRes?.transactionHash) setTxHash(approveRes.transactionHash);
 
       const approveReceipt = await waitForReceipt({
@@ -1181,7 +1341,6 @@ const pathname = usePathname();
         variant: "default",
       });
 
-      // 2) Mint
       setProgressStage("mint");
       setStatus("Executing mint transaction…");
       const receipt = await sendAndConfirmTransaction({
@@ -1189,7 +1348,6 @@ const pathname = usePathname();
         account,
       });
 
-      // 3) Confirming/Success
       setProgressStage("confirming");
       if (receipt?.transactionHash) setTxHash(receipt.transactionHash);
 
@@ -1246,7 +1404,7 @@ const pathname = usePathname();
         chainId,
         txHash: receipt?.transactionHash || txHash,
         timestamp: new Date(),
-        mintType: mintMode,
+        mintType: effectiveMode,
       });
 
       toast({
@@ -1349,10 +1507,6 @@ const pathname = usePathname();
       });
     }
   };
-
-  // Deriveds
-  const unitPrice = PASS_PRICES[nftType]?.usd ?? 59;
-  const progressPct = publicMintCap ? (currentSupply / publicMintCap) * 100 : 0;
 
   // Mobile wallet helper modal
   const MobileWalletModal = () => {
@@ -1477,38 +1631,36 @@ const pathname = usePathname();
   };
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const maxPer = MAX_PER_WALLET[nftType]?.[chainId] ?? 0;
+    const maxPer = maxPerWalletChain;
     const raw = Number(e.target.value);
     const value = Math.max(1, Math.min(maxPer || 1, Number.isFinite(raw) ? raw : 1));
 
     const minted = userMintedCount;
     const totalAfter = minted + value;
 
-    const cap = PUBLIC_MINT_CAPS[nftType]?.[chainId] ?? 0;
-    const current = currentSupply;
+    const cap = capForMode;
+    const currentModeMinted = mintedForMode;
 
-    if (mintMode === "public") {
-      if (totalAfter > maxPer) {
-        const remainingForUser = Math.max(0, maxPer - minted);
-        toast({
-          title: "Quantity Limit",
-          description: `You can mint ${remainingForUser} more ${nftType}Pass on this network`,
-          variant: "destructive",
-        });
-        setQuantity(String(Math.max(1, remainingForUser)));
-        return;
-      }
+    if (totalAfter > maxPer) {
+      const remainingForUser = Math.max(0, maxPer - minted);
+      toast({
+        title: "Quantity Limit",
+        description: `You can mint ${remainingForUser} more ${nftType}Pass on this network`,
+        variant: "destructive",
+      });
+      setQuantity(String(Math.max(1, remainingForUser)));
+      return;
+    }
 
-      if (current + value > cap) {
-        const remaining = Math.max(0, cap - current);
-        toast({
-          title: "Supply Limit",
-          description: `Only ${remaining} ${nftType}Pass remaining on this network`,
-          variant: "destructive",
-        });
-        setQuantity(String(Math.max(1, remaining)));
-        return;
-      }
+    if (currentModeMinted + value > cap) {
+      const remaining = Math.max(0, cap - currentModeMinted);
+      toast({
+        title: "Supply Limit",
+        description: `Only ${remaining} ${nftType}Pass remaining in ${effectiveMode === "public" ? "Public" : "Whitelist"} on this network`,
+        variant: "destructive",
+      });
+      setQuantity(String(Math.max(1, remaining)));
+      return;
     }
 
     setQuantity(String(value));
@@ -1557,6 +1709,8 @@ const pathname = usePathname();
     );
   }
 
+  const unitPrice = PASS_PRICES[nftType]?.usd ?? 59;
+
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#e6f0fa", padding: "1rem" }}>
       <div
@@ -1585,7 +1739,8 @@ const pathname = usePathname();
               alignItems: "center",
               padding: "1rem",
               borderBottom: "1px solid #e5e7eb",
-            }}>
+            }}
+          >
             <Image src="/logo.svg" alt="AGV Protocol Logo" height={32} width={32} />
             <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#1f2937" }}>
               AGV NFT Mint
@@ -1634,100 +1789,99 @@ const pathname = usePathname();
               )}
             </div>
 
-            {/* Mint mode selector (Whitelist removed) */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              <h3 style={{ fontSize: "1.125rem", fontWeight: "semibold", color: "#1f2937" }}>
-                Mint Type
-              </h3>
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <button
-                  onClick={() => setMintMode("public")}
-                  style={{
-                    flex: 1,
-                    padding: "0.5rem",
-                    backgroundColor: mintMode === "public" ? "#111827" : "#f1f5f9",
-                    color: mintMode === "public" ? "#fff" : "#111827",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "0.375rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  Public
-                </button>
-                <button
-                  onClick={() => setMintMode("agent")}
-                  style={{
-                    flex: 1,
-                    padding: "0.5rem",
-                    backgroundColor: mintMode === "agent" ? "#111827" : "#f1f5f9",
-                    color: mintMode === "agent" ? "#fff" : "#111827",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "0.375rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  Agent (KOL ID)
-                </button>
-              </div>
-            </div>
-
-            {/* Supply Information (public only) */}
-            {mintMode === "public" && (
+            {/* Supply / Cap box (per effective mode) */}
+            <div
+              style={{
+                backgroundColor: "#f0f9ff",
+                padding: "1rem",
+                border: "1px solid #0ea5e9",
+                borderRadius: "0.5rem",
+              }}
+            >
               <div
                 style={{
-                  backgroundColor: "#f0f9ff",
-                  padding: "1rem",
-                  border: "1px solid #0ea5e9",
-                  borderRadius: "0.5rem",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: "0.875rem",
+                  color: "#0369a1",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                <span>
+                  {nftType}Pass {effectiveMode === "public" ? "Public" : "Whitelist"} Mint
+                </span>
+                <span>{`Cap (${networkLabel(chainId)} / ${effectiveMode === "public" ? "Public" : "Whitelist"}): ${capForMode}`}</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  fontSize: "0.875rem",
+                  color: "#0369a1",
+                }}
+              >
+                <span>Available: {displayRemaining}</span>
+              </div>
+              <div
+                style={{
+                  width: "100%",
+                  backgroundColor: "#e0f2fe",
+                  borderRadius: "9999px",
+                  height: "0.5rem",
+                  marginTop: "0.5rem",
+                  overflow: "hidden",
                 }}
               >
                 <div
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    fontSize: "0.875rem",
-                    color: "#0369a1",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  <span>{nftType}Pass Public Mint</span>
-                  <span>{publicMintCap} Total Cap (this chain)</span>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    fontSize: "0.875rem",
-                    color: "#0369a1",
-                  }}
-                >
-                  <span>
-                    Minted: {currentSupply}/{publicMintCap}
-                  </span>
-                  <span>Available: {remainingSupply}</span>
-                </div>
-                <div
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#e0f2fe",
+                    width: `${progressPct}%`,
+                    backgroundColor: displayRemaining === 0 ? "#dc2626" : "#0ea5e9",
+                    height: "100%",
                     borderRadius: "9999px",
-                    height: "0.5rem",
-                    marginTop: "0.5rem",
-                    overflow: "hidden",
+                    transition: "width 0.3s ease",
                   }}
-                >
-                  <div
-                    style={{
-                      width: `${progressPct}%`,
-                      backgroundColor: remainingSupply === 0 ? "#dc2626" : "#0ea5e9",
-                      height: "100%",
-                      borderRadius: "9999px",
-                      transition: "width 0.3s ease",
-                    }}
-                  />
-                </div>
+                />
               </div>
-            )}
+
+              {/* WL timing + alerts */}
+              {configAvailable && (
+                <div style={{ marginTop: "0.5rem", fontSize: "0.8rem", color: "#0369a1" }}>
+                  <div>
+                    WL window:{" "}
+                    <strong>{new Date((saleConfig!.wlStartTime || 0) * 1000).toLocaleString()}</strong>{" "}
+                    —{" "}
+                    <strong>{new Date((saleConfig!.wlEndTime || 0) * 1000).toLocaleString()}</strong>
+                  </div>
+
+                  {!mintingActive && (
+                    <div style={{ color: "#b91c1c", marginTop: 6 }}>
+                      Minting not active.
+                    </div>
+                  )}
+
+                  {mintingActive && wlHasNotStarted && (
+                    <div style={{ color: "#b45309", marginTop: 6 }}>
+                      Whitelist opens at{" "}
+                      <strong>
+                        {new Date(saleConfig!.wlStartTime * 1000).toLocaleString()}
+                      </strong>
+                    </div>
+                  )}
+
+                  {mintingActive && wlHasEnded && (
+                    <div style={{ color: "#b45309", marginTop: 6 }}>
+                      Whitelist minting has ended, minting is now only available in public mode
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {!configAvailable && (
+                <p style={{ marginTop: "0.5rem", color: "#b45309", fontSize: "0.875rem" }}>
+                  Unavailable on this network
+                </p>
+              )}
+            </div>
 
             {/* User Minting Status */}
             {account && eligibilityChecked && (
@@ -1757,9 +1911,12 @@ const pathname = usePathname();
                   }}
                 >
                   {isEligible
-                    ? mintMode === "public"
-                      ? `You can mint ${canMintMore} more NFTs (${userMintedCount} already minted)`
-                      : "Agent mint available"
+                    ? effectiveMode === "public"
+                      ? `You can mint up to ${Math.min(
+                          maxPerWalletChain - userMintedCount,
+                          remainingActual
+                        )} more NFTs (${userMintedCount} already minted)`
+                      : "Eligible for whitelist minting"
                     : status}
                 </span>
               </div>
@@ -1928,11 +2085,11 @@ const pathname = usePathname();
               </div>
               <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#6b7280" }}>
                 Selected Network:{" "}
-                {chainId === "56" ? "BNB Chain" : chainId === "137" ? "Polygon" : "Arbitrum"}
+                {networkLabel(chainId)}
               </p>
             </div>
 
-            {/* Pass selector */}
+            {/* Pass selector (all four visible; availability determined after select via config()) */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               <h3 style={{ fontSize: "1.125rem", fontWeight: "semibold", color: "#1f2937" }}>
                 Choose Your NFT Pass
@@ -1945,137 +2102,39 @@ const pathname = usePathname();
                   gap: "0.75rem",
                 }}
               >
-                {/* SeedPass */}
-                {(() => {
-                  const cap = PUBLIC_MINT_CAPS.seed[chainId] ?? 0;
-                  const soldOutPublic = mintMode === "public" && (cap === 0 || currentSupply >= cap);
-                  return (
-                    <button
-                      onClick={() => handleNftTypeChange("seed")}
-                      disabled={mintMode === "public" ? soldOutPublic : false}
+                {(["seed","tree","solar","compute"] as NftType[]).map((key) => (
+                  <button
+                    key={key}
+                    onClick={() => handleNftTypeChange(key)}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      height: "auto",
+                      padding: "1rem",
+                      backgroundColor: nftType === key ? "#2563eb" : "#f1f5f9",
+                      color: nftType === key ? "#fff" : "#1f2937",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "0.375rem",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <span style={{ fontWeight: "semibold" }}>
+                      {key[0].toUpperCase() + key.slice(1)}Pass
+                    </span>
+                    <span style={{ fontSize: "0.875rem" }}>
+                      Price: ${PASS_PRICES[key].usd} USDT
+                    </span>
+                    <span
                       style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        height: "auto",
-                        padding: "1rem",
-                        backgroundColor: nftType === "seed" ? "#2563eb" : "#f1f5f9",
-                        color: nftType === "seed" ? "#fff" : "#1f2937",
-                        border: "1px solid #e5e7eb",
-                        borderRadius: "0.375rem",
-                        cursor:
-                          mintMode === "public" && soldOutPublic ? "not-allowed" : "pointer",
-                        opacity: mintMode === "public" && soldOutPublic ? 0.5 : 1,
+                        fontSize: "0.75rem",
+                        color: nftType === key ? "#e5e7eb" : "#6b7280",
                       }}
                     >
-                      <span style={{ fontWeight: "semibold" }}>SeedPass</span>
-                      <span style={{ fontSize: "0.875rem" }}>Price: $29 USDT</span>
-                      {mintMode === "public" && (
-                        <span
-                          style={{
-                            fontSize: "0.75rem",
-                            color: nftType === "seed" ? "#e5e7eb" : "#6b7280",
-                          }}
-                        >
-                          Cap (this chain): {cap}
-                        </span>
-                      )}
-                      {mintMode === "public" && soldOutPublic && (
-                        <span style={{ fontSize: "0.75rem", color: "#dc2626" }}>
-                          {cap === 0 ? "Not in public mint" : "Sold Out"}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })()}
-
-                {/* TreePass */}
-                {(() => {
-                  const cap = PUBLIC_MINT_CAPS.tree[chainId] ?? 0;
-                  const soldOutPublic = mintMode === "public" && (cap === 0 || currentSupply >= cap);
-                  return (
-                    <button
-                      onClick={() => handleNftTypeChange("tree")}
-                      disabled={mintMode === "public" ? soldOutPublic : false}
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        height: "auto",
-                        padding: "1rem",
-                        backgroundColor: nftType === "tree" ? "#2563eb" : "#f1f5f9",
-                        color: nftType === "tree" ? "#fff" : "#1f2937",
-                        border: "1px solid #e5e7eb",
-                        borderRadius: "0.375rem",
-                        cursor:
-                          mintMode === "public" && soldOutPublic ? "not-allowed" : "pointer",
-                        opacity: mintMode === "public" && soldOutPublic ? 0.5 : 1,
-                      }}
-                    >
-                      <span style={{ fontWeight: "semibold" }}>TreePass</span>
-                      <span style={{ fontSize: "0.875rem" }}>Price: $59 USDT</span>
-                      {mintMode === "public" && (
-                        <span
-                          style={{
-                            fontSize: "0.75rem",
-                            color: nftType === "tree" ? "#e5e7eb" : "#6b7280",
-                          }}
-                        >
-                          Cap (this chain): {cap}
-                        </span>
-                      )}
-                      {mintMode === "public" && soldOutPublic && (
-                        <span style={{ fontSize: "0.75rem", color: "#dc2626" }}>
-                          {cap === 0 ? "Not in public mint" : "Sold Out"}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })()}
-
-                {/* SolarPass (hidden from public; disabled) */}
-                <button
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    height: "auto",
-                    padding: "1rem",
-                    backgroundColor: "#f1f5f9",
-                    color: "#1f2937",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "0.375rem",
-                    opacity: 0.5,
-                    cursor: "not-allowed",
-                  }}
-                  disabled
-                >
-                  <span style={{ fontWeight: "semibold" }}>SolarPass</span>
-                  <span style={{ fontSize: "0.875rem" }}>Price: $299 USDT</span>
-                  <span style={{ fontSize: "0.75rem", color: "#dc2626" }}>
-                    Not Available in Public Mint
-                  </span>
-                </button>
-
-                {/* ComputePass (hidden from public; disabled) */}
-                <button
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    height: "auto",
-                    padding: "1rem",
-                    backgroundColor: "#f1f5f9",
-                    color: "#1f2937",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "0.375rem",
-                    opacity: 0.5,
-                    cursor: "not-allowed",
-                  }}
-                  disabled
-                >
-                  <span style={{ fontWeight: "semibold" }}>ComputePass</span>
-                  <span style={{ fontSize: "0.875rem" }}>Price: $899 USDT</span>
-                  <span style={{ fontSize: "0.75rem", color: "#dc2626" }}>
-                    Not Available in Public Mint
-                  </span>
-                </button>
+                      Cap ({networkLabel(chainId)} / {effectiveMode === "public" ? "Public" : "Whitelist"}):{" "}
+                      {MODE_CAPS_BY_CHAIN[key][chainId][effectiveMode]}
+                    </span>
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -2083,10 +2142,7 @@ const pathname = usePathname();
             {(() => {
               const minted = userMintedCount;
               const maxPerThisChain = MAX_PER_WALLET[nftType][chainId] ?? 0;
-              const _canMintMore = Math.max(
-                0,
-                Math.min(maxPerThisChain - minted, remainingSupply)
-              );
+              const _canMintMore = Math.max(0, Math.min(maxPerThisChain - minted, remainingActual));
 
               return (
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -2094,14 +2150,13 @@ const pathname = usePathname();
                     htmlFor="quantity"
                     style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}
                   >
-                    Quantity
-                    {mintMode === "public" ? ` (Max ${_canMintMore})` : ""}
+                    Quantity (Max {_canMintMore})
                   </label>
                   <input
                     id="quantity"
                     type="number"
                     min={1}
-                    max={mintMode === "public" ? Math.max(1, _canMintMore) : 99}
+                    max={Math.max(1, _canMintMore)}
                     value={quantity}
                     onChange={handleQuantityChange}
                     style={{
@@ -2116,33 +2171,49 @@ const pathname = usePathname();
               );
             })()}
 
-            {/* KOL ID (required for Agent) */}
+            {/* KOL ID (locks if prefilled via referral) */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            <label htmlFor="kolDigits" style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}>
-              {mintMode === "agent" ? "KOL ID (6 digits, Required)" : "KOL ID (6 digits, Optional)"}
-            </label>
-            <input
-              id="kolDigits"
-              inputMode="numeric"
-              pattern="\d{6}"
-              maxLength={6}
-              value={kolDigits}
-              onChange={(e) => setKolDigits(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              placeholder="e.g. 123456"
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                border: "1px solid #d1d5db",
-                borderRadius: "0.375rem",
-                outline: "none",
-                letterSpacing: 2,
-              }}
-            />
-            {kolDigits.length === 6 && (
-              <p style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: 6 }}>
-                Using referral: <strong>{`AGV-KOL${kolDigits}`}</strong>
-              </p>
-            )}
+              <label
+                htmlFor="kolDigits"
+                style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}
+              >
+                KOL ID (6 digits, Optional){" "}
+                {kolLocked && (
+                  <span style={{ marginLeft: 8, color: "#6b7280", fontSize: 12 }}>
+                    <Lock style={{ display: "inline", width: 14, height: 14, marginRight: 4 }} />
+                    locked by referral
+                  </span>
+                )}
+              </label>
+              <input
+                id="kolDigits"
+                inputMode="numeric"
+                pattern="\d{6}"
+                maxLength={6}
+                value={kolDigits}
+                readOnly={kolLocked}
+                onChange={(e) => {
+                  if (kolLocked) return;
+                  setKolDigits(e.target.value.replace(/\D/g, "").slice(0, 6));
+                }}
+                placeholder="e.g. 123456"
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "0.375rem",
+                  outline: "none",
+                  letterSpacing: 2,
+                  backgroundColor: kolLocked ? "#f3f4f6" : "#fff",
+                  color: kolLocked ? "#6b7280" : "#111827",
+                  cursor: kolLocked ? "not-allowed" : "text",
+                }}
+              />
+              {kolDigits.length === 6 && (
+                <p style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: 6 }}>
+                  Using referral: <strong>{`AGV-KOL${kolDigits}`}</strong>
+                </p>
+              )}
             </div>
 
             {/* Price summary */}
@@ -2171,23 +2242,29 @@ const pathname = usePathname();
               )}
             </div>
 
-            {/* Mint CTA (custom flow; no TransactionButton to avoid state loops) */}
+            {/* Mint CTA */}
             <div style={{ paddingTop: "1rem", paddingBottom: 0 }}>
               <button
                 onClick={async () => {
                   try {
                     await prepareTransactions();
                   } catch (e) {
-                    // errors already toasted
+                    toast({
+                      title: "Unable to proceed",
+                      description: normalizeError(e),
+                      variant: "destructive",
+                    });
                   }
                 }}
                 disabled={
                   !account ||
                   isMinting ||
                   !isEligible ||
-                  (mintMode === "public" && remainingSupply === 0) ||
+                  remainingActual === 0 ||
                   hasInsufficientGas ||
-                  (mintMode === "agent" && !fullKolId)
+                  !configAvailable ||
+                  !mintingActive ||
+                  (effectiveMode === "whitelist" && (checkingWl || !wlProof || wlProof.length === 0))
                 }
                 style={{
                   width: "100%",
@@ -2201,18 +2278,22 @@ const pathname = usePathname();
                     !account ||
                     isMinting ||
                     !isEligible ||
-                    (mintMode === "public" && remainingSupply === 0) ||
+                    remainingActual === 0 ||
                     hasInsufficientGas ||
-                    (mintMode === "agent" && !fullKolId)
+                    !configAvailable ||
+                    !mintingActive ||
+                    (effectiveMode === "whitelist" && (checkingWl || !wlProof || wlProof.length === 0))
                       ? "not-allowed"
                       : "pointer",
                   opacity:
                     !account ||
                     isMinting ||
                     !isEligible ||
-                    (mintMode === "public" && remainingSupply === 0) ||
+                    remainingActual === 0 ||
                     hasInsufficientGas ||
-                    (mintMode === "agent" && !fullKolId)
+                    !configAvailable ||
+                    !mintingActive ||
+                    (effectiveMode === "whitelist" && (checkingWl || !wlProof || wlProof.length === 0))
                       ? 0.5
                       : 1,
                 }}
@@ -2223,19 +2304,23 @@ const pathname = usePathname();
                   ? "Connect Wallet"
                   : hasInsufficientGas
                   ? `Need ${chainId === "56" ? "BNB" : chainId === "137" ? "MATIC" : "ETH"} for Gas`
+                  : !configAvailable
+                  ? "Unavailable on this network"
+                  : !mintingActive
+                  ? "Minting not active"
                   : !isEligible
                   ? "Not Eligible"
-                  : (mintMode === "agent" && !fullKolId)
-                  ? "Enter KOL ID"
-                  : mintMode === "public" && remainingSupply === 0
+                  : remainingActual === 0
                   ? "Sold Out"
+                  : effectiveMode === "whitelist" && (checkingWl || !wlProof || wlProof.length === 0)
+                  ? "Verifying whitelist…"
                   : "Mint Now"}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Spending Cap Modal (appears first after Mint clicked) */}
+        {/* Spending Cap Modal */}
         <SpendingCapModal
           isOpen={showSpendingModal}
           onClose={handleSpendingCapClose}
@@ -2250,7 +2335,7 @@ const pathname = usePathname();
         {/* Mobile Wallet Options Modal */}
         <MobileWalletModal />
 
-        {/* Transaction Progress Modal (ONLY after Confirm) */}
+        {/* Transaction Progress Modal */}
         <TransactionProgressModal
           isOpen={showProgressModal}
           onClose={handleProgressClose}
@@ -2260,30 +2345,17 @@ const pathname = usePathname();
           stage={progressStage}
           onVerifyWallet={handleVerifyWallet}
         />
+        <div style={{ marginTop: "1.5rem", textAlign: "center" }}> 
+        <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", color: "#1f2937" }}>  
+        <Link href="/dashboard" style={{ color: "#2563eb", fontWeight: "medium", textDecoration: "underline" }} >
+          Go to Dashboard </Link> 
+        </h2> 
+        </div> 
+        <footer style={{ marginTop: "auto", textAlign: "center", color: "#6b7280", fontSize: "0.875rem", }} >
+          &copy; AGV Protocol {new Date().getFullYear()} 
+         </footer>
 
-        <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
-          <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", color: "#1f2937" }}>
-            Are you a KOL or Agent? {""}       
-            <Link
-            href="/dashboard"
-            style={{ color: "#2563eb", fontWeight: "medium", textDecoration: "underline" }}
-          >
-            Go to Dashboard
-          </Link>
-          </h2>
-        </div>
-        <footer
-          style={{
-            marginTop: "auto",
-            textAlign: "center",
-            color: "#6b7280",
-            fontSize: "0.875rem",
-          }}
-        >
-          &copy; AGV Protocol {new Date().getFullYear()}
-        </footer>
-
-        {/* Wallet required modal (derived, loop-safe) */}
+        {/* Wallet required modal */}
         {!account && (
           <div
             style={{
@@ -2311,9 +2383,7 @@ const pathname = usePathname();
                 alignItems: "center",
               }}
             >
-              <AlertTriangle
-                style={{ height: "1rem", width: "1rem", color: "#d97706" }}
-              />
+              <AlertTriangle style={{ height: "1rem", width: "1rem", color: "#d97706" }} />
               <span style={{ color: "#92400e", marginLeft: "0.5rem" }}>
                 Please connect your wallet to continue with minting.
               </span>
