@@ -2177,11 +2177,10 @@ export default function MintingContent() {
                 htmlFor="kolDigits"
                 style={{ fontSize: "0.875rem", fontWeight: "medium", color: "#374151" }}
               >
-                KOL ID (6 digits, Optional){" "}
+                ID (6 digits, Optional - "Only input an ID if you were given one"){" "}
                 {kolLocked && (
                   <span style={{ marginLeft: 8, color: "#6b7280", fontSize: 12 }}>
                     <Lock style={{ display: "inline", width: 14, height: 14, marginRight: 4 }} />
-                    locked by referral
                   </span>
                 )}
               </label>
@@ -2209,11 +2208,6 @@ export default function MintingContent() {
                   cursor: kolLocked ? "not-allowed" : "text",
                 }}
               />
-              {kolDigits.length === 6 && (
-                <p style={{ fontSize: "0.75rem", color: "#6b7280", marginTop: 6 }}>
-                  Using referral: <strong>{`AGV-KOL${kolDigits}`}</strong>
-                </p>
-              )}
             </div>
 
             {/* Price summary */}
