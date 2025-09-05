@@ -1,4 +1,3 @@
-// app/kol/[kolId]/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -7,8 +6,34 @@ import { onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from
 import { auth } from "@/lib/firebase";
 import { toast } from "sonner";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { User, LogIn, LogOut, Copy, Wallet, Loader2 } from "lucide-react";
+import { 
+  User, 
+  LogIn, 
+  LogOut, 
+  Copy, 
+  Wallet, 
+  Loader2,
+  TrendingUp,
+  Activity,
+  DollarSign,
+  Users,
+  BarChart3,
+  ExternalLink
+} from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+
+// UI Components
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { StatCard } from "@/components/ui/stat-card";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { EmptyState } from "@/components/ui/empty-state";
+import { AppNav } from "@/components/navigation/app-nav";
+import { Footer } from "@/components/layout/footer";
+import { cn } from "@/lib/utils";
 
 interface KOLDoc {
   kolId: string;
@@ -17,7 +42,6 @@ interface KOLDoc {
   email?: string;
   target?: number;
   createdAt?: any;
-  // Aggregates stored in kols collection:
   seed?: number;
   tree?: number;
   solar?: number;
@@ -29,21 +53,18 @@ interface MintEvent {
   address: string;
   nftType: "seed" | "tree" | "solar" | "compute";
   quantity: number;
-  chainId: string; // "56" | "137" | "42161"
+  chainId: string;
   txHash?: string | null;
   timestamp: { seconds: number; nanoseconds: number } | Date | any;
 }
 
 interface MintDoc {
-  kolId: string; // == document id
+  kolId: string;
   seed?: number;
   tree?: number;
   solar?: number;
   compute?: number;
-  perChain?: Record<
-    string,
-    { seed?: number; tree?: number; solar?: number; compute?: number }
-  >;
+  perChain?: Record<string, { seed?: number; tree?: number; solar?: number; compute?: number }>;
   events?: MintEvent[];
   updatedAt?: any;
 }
@@ -63,8 +84,6 @@ const toDate = (ts: any) =>
     : new Date((ts?.seconds ?? 0) * 1000);
 
 export default function KOLPage() {
-  // IMPORTANT: Folder name must be "app/kol/[kolId]/page.tsx"
-  // so that the key below is exactly "kolId"
   const params = useParams();
   const kolId = (params?.kolId as string) || "";
 
@@ -73,12 +92,10 @@ export default function KOLPage() {
 
   const [kol, setKol] = useState<KOLDoc | null>(null);
   const [events, setEvents] = useState<MintEvent[]>([]);
-  const [filter, setFilter] = useState<"DAILY" | "WEEKLY" | "MONTHLY">(
-    "DAILY"
-  );
+  const [filter, setFilter] = useState<"DAILY" | "WEEKLY" | "MONTHLY">("DAILY");
   const [loading, setLoading] = useState(true);
 
-  // --- Auth gate (kept minimal; Admin restrictions live on the Admin page) ---
+  // Auth gate
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
       setUserEmail(u?.email ?? null);
@@ -87,11 +104,10 @@ export default function KOLPage() {
     return () => unsub();
   }, []);
 
-  // --- Fetch via API using Firebase ID token (never read Firestore directly here) ---
+  // Fetch KOL data
   useEffect(() => {
     if (!kolId || !authReady) return;
 
-    // If not signed in, just stop loading and render the sign-in card
     if (!auth.currentUser) {
       setLoading(false);
       return;
@@ -132,7 +148,7 @@ export default function KOLPage() {
     })();
   }, [kolId, authReady]);
 
-  // --- Stats: prefer counters on kols doc; fallback to event sums ---
+  // Stats calculation
   const stats = useMemo(() => {
     const sumFromEvents = () => {
       const seed = events
@@ -170,7 +186,7 @@ export default function KOLPage() {
     return { ...agg, totalMints, totalValue };
   }, [kol, events]);
 
-  // --- Time series from events ---
+  // Time series data
   const series = useMemo(() => {
     type Row = {
       _key: number;
@@ -198,7 +214,6 @@ export default function KOLPage() {
           monday.getDate()
         );
       } else {
-        // MONTHLY
         keyDate = new Date(d.getFullYear(), d.getMonth(), 1);
       }
 
@@ -227,7 +242,7 @@ export default function KOLPage() {
     return Array.from(buckets.values()).sort((a, b) => a._key - b._key);
   }, [events, filter]);
 
-  // Avoid SSR/hydration mismatch by computing origin on client only
+  // Referral link
   const referralLink = useMemo(() => {
     if (typeof window === "undefined") return "";
     if (!kol?.kolId) return "";
@@ -243,384 +258,345 @@ export default function KOLPage() {
     }
   };
 
-  // ---------- Styled helpers ----------
-  const Card: React.FC<{ title?: React.ReactNode; children: React.ReactNode; right?: React.ReactNode }> = ({ title, children, right }) => (
-    <div
-      style={{
-        backgroundColor: "#fff",
-        borderRadius: "1rem",
-        boxShadow: "0 4px 6px rgba(0,0,0,0.08)",
-        overflow: "hidden",
-      }}
-    >
-      {(title || right) && (
-        <div
-          style={{
-            padding: "1rem 1.25rem",
-            borderBottom: "1px solid #e5e7eb",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>{title}</div>
-          {right}
-        </div>
-      )}
-      <div style={{ padding: "1.25rem" }}>{children}</div>
-    </div>
-  );
+  const doSignOut = async () => {
+    await signOut(auth);
+  };
 
-  const Label: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <p style={{ fontSize: ".875rem", color: "#6b7280", marginBottom: ".25rem" }}>{children}</p>
-  );
-
-  const Mono: React.FC<{ children: React.ReactNode; truncate?: boolean }> = ({ children, truncate }) => (
-    <span style={{ fontFamily: "monospace", whiteSpace: truncate ? "nowrap" : undefined, overflow: truncate ? "hidden" : undefined, textOverflow: truncate ? "ellipsis" : undefined }}>
-      {children}
-    </span>
-  );
-
-  const SolidButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, style, ...rest }) => (
-    <button
-      {...rest}
-      style={{
-        backgroundColor: "#2563eb",
-        color: "#fff",
-        border: "none",
-        borderRadius: "0.5rem",
-        padding: ".5rem .8rem",
-        cursor: "pointer",
-        fontWeight: "medium",
-        ...style,
-      }}
-    >
-      {children}
-    </button>
-  );
-
-  const OutlineButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, style, ...rest }) => (
-    <button
-      {...rest}
-      style={{
-        background: "transparent",
-        color: "#111827",
-        border: "1px solid #d1d5db",
-        borderRadius: "0.5rem",
-        padding: ".45rem .8rem",
-        cursor: "pointer",
-        ...style,
-      }}
-    >
-      {children}
-    </button>
-  );
-
-  const ToggleButton: React.FC<{ active?: boolean; onClick?: () => void; children: React.ReactNode }> = ({ active, onClick, children }) => (
-    <button
-      onClick={onClick}
-      style={{
-        padding: ".35rem .75rem",
-        borderRadius: ".5rem",
-        border: "1px solid #e5e7eb",
-        backgroundColor: active ? "#111827" : "#f1f5f9",
-        color: active ? "#fff" : "#111827",
-        cursor: "pointer",
-      }}
-    >
-      {children}
-    </button>
-  );
-
-  // ---------- Screens ----------
+  // Loading state
   if (loading || !authReady) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          backgroundColor: "#e6f0fa",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "1rem",
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: "#fff",
-            borderRadius: "1rem",
-            padding: "2rem",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.08)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: ".75rem",
-            width: "100%",
-            maxWidth: "28rem",
-          }}
-        >
-          <Loader2 style={{ height: 28, width: 28, color: "#2563eb", animation: "spin 1s linear infinite" }} />
-          <p style={{ color: "#374151" }}>Loading KOL dashboard…</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" text="Loading KOL dashboard..." />
       </div>
     );
   }
 
-  // Not signed in yet → prompt to sign in
+  // Not signed in
   if (!auth.currentUser) {
     return (
-      <div style={{ minHeight: "100vh", backgroundColor: "#e6f0fa", padding: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: "100%", maxWidth: "28rem" }}>
-          <Card
-            title={<h2 style={{ fontSize: "1.25rem", fontWeight: "bold" }}>Sign in to view KOL: {kolId}</h2>}
-          >
-            <p style={{ fontSize: ".9rem", color: "#6b7280", marginBottom: ".75rem" }}>
-              You need to sign in to view this page.
-            </p>
-            <SolidButton onClick={signInGoogle}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: ".5rem" }}>
-                <LogIn size={16} /> Continue with Google
-              </span>
-            </SolidButton>
-          </Card>
+      <div className="min-h-screen bg-background">
+        <AppNav />
+        <div className="container py-24">
+          <div className="max-w-md mx-auto">
+            <Card>
+              <CardHeader className="text-center">
+                <CardTitle>Sign in to view KOL: {kolId}</CardTitle>
+                <CardDescription>
+                  You need to sign in to view this KOL dashboard
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button onClick={signInGoogle} className="w-full">
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Continue with Google
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     );
   }
 
+  // KOL not found
   if (!kol) {
     return (
-      <div style={{ minHeight: "100vh", backgroundColor: "#e6f0fa", padding: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: "100%", maxWidth: "32rem" }}>
-          <Card title={<h2 style={{ fontSize: "1.25rem", fontWeight: "bold" }}>KOL not found</h2>}>
-            <p style={{ color: "#6b7280" }}>
-              We couldn’t find a KOL with ID <Mono>{kolId}</Mono>.
-            </p>
-          </Card>
+      <div className="min-h-screen bg-background">
+        <AppNav user={{ email: userEmail }} onSignOut={doSignOut} />
+        <div className="container py-24">
+          <div className="max-w-md mx-auto">
+            <Card>
+              <CardHeader className="text-center">
+                <CardTitle>KOL not found</CardTitle>
+                <CardDescription>
+                  We couldn't find a KOL with ID {kolId}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
         </div>
       </div>
     );
   }
 
-  // ---------- Main ----------
+  // Main KOL dashboard
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#e6f0fa", padding: "1rem" }}>
-      <div style={{ maxWidth: "72rem", margin: "0 auto", display: "grid", gap: "1rem" }}>
-        {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: ".25rem .25rem",
-          }}
-        ><Image src="/logo.svg" alt="AGV Protocol Logo" height={32} width={32} />
-          <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#111827" }}>KOL Dashboard</h1>
-          <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
-            <span
-              style={{
-                border: "1px solid #d1d5db",
-                padding: ".25rem .5rem",
-                borderRadius: "9999px",
-                fontSize: ".875rem",
-                color: "#374151",
-                background: "#fff",
-              }}
-              title={userEmail ?? ""}
-            >
-              {userEmail}
-            </span>
-            <OutlineButton onClick={() => signOut(auth)}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: ".4rem" }}>
-                <LogOut size={16} /> Sign out
-              </span>
-            </OutlineButton>
+    <div className="min-h-screen bg-background">
+      <AppNav 
+        user={{ 
+          email: userEmail,
+          name: userEmail?.split('@')[0]
+        }} 
+        onSignOut={doSignOut} 
+      />
+      
+      <div className="container py-8">
+        <div className="space-y-8">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-full bg-primary/10">
+                <User className="h-8 w-8 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold">{kol.name}</h1>
+                <p className="text-muted-foreground">KOL Dashboard</p>
+              </div>
+            </div>
+            <Badge variant="secondary" className="text-sm">
+              {kol.kolId}
+            </Badge>
           </div>
+
+          {/* Stats Overview */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <StatCard
+              title="Total Mints"
+              value={stats.totalMints}
+              description="NFTs minted"
+              icon={Activity}
+            />
+            <StatCard
+              title="Total Value"
+              value={`$${stats.totalValue.toLocaleString()}`}
+              description="Generated revenue"
+              icon={DollarSign}
+            />
+            <StatCard
+              title="Target"
+              value={kol.target || 0}
+              description="Minting target"
+              icon={TrendingUp}
+            />
+            <StatCard
+              title="Referrals"
+              value={events.length}
+              description="Referral events"
+              icon={Users}
+            />
+          </div>
+
+          <Tabs defaultValue="overview" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="activity">Activity</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview" className="space-y-6">
+              <div className="grid gap-6 lg:grid-cols-2">
+                {/* Profile Card */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <User className="h-5 w-5" />
+                      <span>Profile Information</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">KOL Name</label>
+                        <p className="text-lg font-semibold">{kol.name}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">KOL ID</label>
+                        <p className="font-mono text-sm bg-muted px-2 py-1 rounded">{kol.kolId}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">Wallet Address</label>
+                        <p className="font-mono text-sm bg-muted px-2 py-1 rounded break-all">{kol.walletAddress}</p>
+                      </div>
+                      {kol.email && (
+                        <div>
+                          <label className="text-sm font-medium text-muted-foreground">Email</label>
+                          <p className="text-sm">{kol.email}</p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Referral Link */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Referral Link</CardTitle>
+                    <CardDescription>
+                      Share this link to track referrals
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex space-x-2">
+                      <input
+                        readOnly
+                        value={referralLink}
+                        className="flex-1 px-3 py-2 border border-input rounded-md bg-muted text-sm"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (referralLink) {
+                            navigator.clipboard.writeText(referralLink);
+                            toast.success("Copied referral link");
+                          }
+                        }}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Button asChild className="w-full">
+                      <Link href={referralLink} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Open Referral Link
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* NFT Breakdown */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>NFT Breakdown</CardTitle>
+                  <CardDescription>
+                    Detailed breakdown of minted NFTs by type
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-4">
+                    {[
+                      { type: "seed", name: "SeedPass", price: 29, color: "bg-blue-500" },
+                      { type: "tree", name: "TreePass", price: 59, color: "bg-green-500" },
+                      { type: "solar", name: "SolarPass", price: 299, color: "bg-yellow-500" },
+                      { type: "compute", name: "ComputePass", price: 899, color: "bg-purple-500" },
+                    ].map((nft) => {
+                      const count = stats[nft.type as keyof typeof stats] as number;
+                      const value = count * nft.price;
+                      
+                      return (
+                        <div key={nft.type} className="p-4 border rounded-lg">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <div className={`w-3 h-3 rounded-full ${nft.color}`} />
+                            <span className="font-medium">{nft.name}</span>
+                          </div>
+                          <div className="text-2xl font-bold">{count}</div>
+                          <div className="text-sm text-muted-foreground">
+                            ${value.toLocaleString()} value
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="analytics" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Minting Analytics</span>
+                    <div className="flex space-x-2">
+                      {(["DAILY", "WEEKLY", "MONTHLY"] as const).map((f) => (
+                        <Button
+                          key={f}
+                          variant={filter === f ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setFilter(f)}
+                        >
+                          {f}
+                        </Button>
+                      ))}
+                    </div>
+                  </CardTitle>
+                  <CardDescription>
+                    Track minting performance over time
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {series.length > 0 ? (
+                    <div className="h-80">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={series} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="label" />
+                          <YAxis allowDecimals={false} />
+                          <Tooltip />
+                          <Legend />
+                          <Area type="monotone" dataKey="seed" stackId="1" stroke="#3B82F6" fill="#3B82F6" name="SeedPass" />
+                          <Area type="monotone" dataKey="tree" stackId="1" stroke="#10B981" fill="#10B981" name="TreePass" />
+                          <Area type="monotone" dataKey="solar" stackId="1" stroke="#F59E0B" fill="#F59E0B" name="SolarPass" />
+                          <Area type="monotone" dataKey="compute" stackId="1" stroke="#8B5CF6" fill="#8B5CF6" name="ComputePass" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  ) : (
+                    <EmptyState
+                      icon={BarChart3}
+                      title="No analytics data"
+                      description="Analytics will appear here once minting activity begins"
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="activity" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Minting Activity</CardTitle>
+                  <CardDescription>
+                    Latest minting events and transactions
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {events.length > 0 ? (
+                    <div className="space-y-4">
+                      {events
+                        .slice()
+                        .sort((a, b) => toDate(b.timestamp).getTime() - toDate(a.timestamp).getTime())
+                        .slice(0, 10)
+                        .map((event, index) => (
+                          <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                            <div className="flex items-center space-x-4">
+                              <div className={`w-3 h-3 rounded-full ${
+                                event.nftType === "seed" ? "bg-blue-500" :
+                                event.nftType === "tree" ? "bg-green-500" :
+                                event.nftType === "solar" ? "bg-yellow-500" : "bg-purple-500"
+                              }`} />
+                              <div>
+                                <p className="font-medium capitalize">{event.nftType}Pass</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {toDate(event.timestamp).toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-medium">Qty: {event.quantity}</p>
+                              <p className="text-sm text-muted-foreground">
+                                ${(event.quantity * NFT_PRICES[event.nftType]).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    <EmptyState
+                      icon={Activity}
+                      title="No activity yet"
+                      description="Minting activity will appear here once users start minting through your referral link"
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
-
-        {/* Profile Card */}
-        <Card
-          title={
-            <>
-              <User size={18} />
-              <span style={{ fontWeight: 700 }}>Profile</span>
-            </>
-          }
-        >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
-              gap: "1rem",
-            }}
-          >
-            {/* Row 1 */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "1rem" }}>
-              <div>
-                <Label>KOL Name</Label>
-                <p style={{ fontSize: "1.125rem", fontWeight: 600 }}>{kol.name}</p>
-              </div>
-              <div>
-                <Label>KOL ID</Label>
-                <Mono>{kol.kolId}</Mono>
-              </div>
-              <div>
-                <Label>Wallet</Label>
-                <p style={{ display: "flex", alignItems: "center", gap: ".4rem", margin: 0 }}>
-                  <Wallet size={16} />
-                  <Mono truncate>{kol.walletAddress}</Mono>
-                </p>
-              </div>
-            </div>
-
-            {/* Row 2 */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "1rem" }}>
-              <div>
-                <Label>Target</Label>
-                <p style={{ fontWeight: 600 }}>{kol.target ?? 0}</p>
-              </div>
-              <div>
-                <Label>Total Mints</Label>
-                <p style={{ fontWeight: 600 }}>{stats.totalMints}</p>
-              </div>
-              <div>
-                <Label>Total Value</Label>
-                <p style={{ fontWeight: 700, color: "#059669" }}>
-                  ${stats.totalValue.toLocaleString()}
-                </p>
-              </div>
-            </div>
-
-            {/* Referral */}
-            <div>
-              <Label>Referral Link</Label>
-              <div style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
-                <input
-                  readOnly
-                  value={referralLink}
-                  style={{
-                    flex: 1,
-                    padding: ".6rem .75rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: ".5rem",
-                    outline: "none",
-                  }}
-                />
-                <OutlineButton
-                  onClick={() => {
-                    if (referralLink) {
-                      navigator.clipboard.writeText(referralLink);
-                      toast.success("Copied");
-                    }
-                  }}
-                >
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: ".4rem" }}>
-                    <Copy size={16} /> Copy
-                  </span>
-                </OutlineButton>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Area Chart */}
-        <Card
-          title={<span style={{ fontWeight: 700 }}>NFTs Minted — {filter}</span>}
-          right={
-            <div style={{ display: "flex", gap: ".5rem" }}>
-              {(["DAILY", "WEEKLY", "MONTHLY"] as const).map((m) => (
-                <ToggleButton key={m} active={filter === m} onClick={() => setFilter(m)}>
-                  {m}
-                </ToggleButton>
-              ))}
-            </div>
-          }
-        >
-          <div style={{ height: 360, width: "100%" }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={series} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="label" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Legend />
-                <Area type="monotone" dataKey="seed" stackId="1" stroke="#3B82F6" fill="#3B82F6" name="SeedPass" />
-                <Area type="monotone" dataKey="tree" stackId="1" stroke="#10B981" fill="#10B981" name="TreePass" />
-                <Area type="monotone" dataKey="solar" stackId="1" stroke="#F59E0B" fill="#F59E0B" name="SolarPass" />
-                <Area type="monotone" dataKey="compute" stackId="1" stroke="#8B5CF6" fill="#8B5CF6" name="ComputePass" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-
-        {/* Recent Mints */}
-        <Card title={<span style={{ fontWeight: 700 }}>Recent Mints</span>}>
-          <div style={{ width: "100%", overflowX: "auto" }}>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "separate",
-                borderSpacing: 0,
-                fontSize: ".925rem",
-              }}
-            >
-              <thead>
-                <tr>
-                  {["Date", "NFT Type", "Qty", "Wallet", "Tx"].map((h, i) => (
-                    <th
-                      key={h}
-                      style={{
-                        textAlign: i === 2 ? "center" : "left",
-                        color: "#374151",
-                        fontWeight: 600,
-                        padding: ".75rem",
-                        borderBottom: "1px solid #e5e7eb",
-                        background: "#f9fafb",
-                      }}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {events
-                  .slice()
-                  .sort(
-                    (a, b) => toDate(b.timestamp).getTime() - toDate(a.timestamp).getTime()
-                  )
-                  .slice(0, 25)
-                  .map((e, i) => (
-                    <tr key={`${e.txHash ?? "tx"}-${i}`} style={{ borderBottom: "1px solid #f3f4f6" }}>
-                      <td style={{ padding: ".75rem", color: "#374151" }}>
-                        {toDate(e.timestamp).toLocaleString()}
-                      </td>
-                      <td style={{ padding: ".75rem", textTransform: "capitalize", color: "#374151" }}>
-                        {e.nftType}
-                      </td>
-                      <td style={{ padding: ".75rem", textAlign: "center", color: "#111827" }}>
-                        {e.quantity}
-                      </td>
-                      <td style={{ padding: ".75rem", color: "#111827", maxWidth: 240 }}>
-                        <Mono truncate>{e.address}</Mono>
-                      </td>
-                      <td style={{ padding: ".75rem", color: "#6b7280", maxWidth: 240 }}>
-                        <Mono truncate>{e.txHash ?? "—"}</Mono>
-                      </td>
-                    </tr>
-                  ))}
-                {events.length === 0 && (
-                  <tr>
-                    <td colSpan={5} style={{ padding: "2rem", textAlign: "center", color: "#6b7280" }}>
-                      No mint events yet
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </Card>
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
