@@ -290,7 +290,7 @@ const SpendingCapModal = ({
                 }}
               />
               <span style={{ color: "#fff", fontSize: "0.875rem" }}>
-                {requestFrom}
+                agv-nft.com
               </span>
             </div>
           </div>
@@ -766,12 +766,7 @@ const isWhitelistPhaseString = (s: string) => {
 
 const isPublicPhaseString = (s: string) => (s || "").toUpperCase().includes("PUBLIC");
 
-/** Decide strictly from on-chain phase & saleActive.
- * If getCurrentPhase says WL -> WL only (even if user not eligible).
- * If PUBLIC -> public.
- * If sale not active -> closed.
- * As a fallback (if phase string is unexpected), respect the wl window.
- */
+/** Decide strictly from on-chain phase & saleActive. */
 function computeContractMode(saleConfig: ReturnType<typeof parseSaleConfig> | null, phaseStr: string): ContractMode {
   if (!saleConfig || !saleConfig.saleActive) return "closed";
   const p = (phaseStr || "").toUpperCase();
@@ -819,10 +814,13 @@ export default function MintingContent() {
   const [pendingApprovalTx, setPendingApprovalTx] = useState<any>(null);
   const [pendingMintTx, setPendingMintTx] = useState<any>(null);
 
-  // ----- Whitelist gating (proof from API) -----
+  // ----- Whitelist gating (status from API, proof ignored) -----
   const [wlEligible, setWlEligible] = useState(false);
-  const [wlProof, setWlProof] = useState<string[] | null>(null);
+  const [wlProof, setWlProof] = useState<string[] | null>(null); // we always send []
   const [checkingWl, setCheckingWl] = useState(false);
+
+  // NEW: ensure the WL check runs once per wallet connection
+  const wlCheckedAddressRef = useRef<string | null>(null);
 
   const { setTheme, theme } = useTheme();
 
@@ -883,30 +881,42 @@ export default function MintingContent() {
   const phaseStr = useMemo(() => (rawPhase ? String(rawPhase) : ""), [rawPhase]);
 
   const configAvailable = !!saleConfig;
-  const mintingActive = !!saleConfig?.saleActive;
 
-  // STRICT: mode is dictated by the contract, never by eligibility
-  const contractMode: ContractMode = useMemo(
-    () => computeContractMode(saleConfig, phaseStr),
-    [saleConfig, phaseStr]
-  );
+  // ---------- Frontend-only override for Solar & Compute ----------
+  const isComputeOrSolar = nftType === "compute" || nftType === "solar";
+  const nowSec = Math.floor(Date.now() / 1000);
+  const twoDaysSec = 2 * 24 * 60 * 60;
+
+  // What mode should the UI/gates use?
+  const contractMode: ContractMode = useMemo(() => {
+    // Force whitelist mode in the UI for compute & solar
+    return isComputeOrSolar ? "whitelist" : computeContractMode(saleConfig, phaseStr);
+  }, [isComputeOrSolar, saleConfig, phaseStr]);
+
+  // UI whitelist window (hardcoded for compute/solar)
+  const wlStartTimeUi = isComputeOrSolar ? nowSec : (saleConfig?.wlStartTime ?? 0);
+  const wlEndTimeUi = isComputeOrSolar ? nowSec + twoDaysSec : (saleConfig?.wlEndTime ?? 0);
+  const mintingActiveUi = isComputeOrSolar ? true : !!saleConfig?.saleActive;
 
   // For cap lookups we only have {whitelist, public} buckets
   const modeKeyForCaps: EffectiveMode = contractMode === "whitelist" ? "whitelist" : "public";
 
-  // For UI hints about WL timing (non-authoritative, contractMode is the truth)
-  const nowSec = Math.floor(Date.now() / 1000);
-  const wlHasNotStarted = !!saleConfig && saleConfig.saleActive && nowSec < saleConfig.wlStartTime;
-  const wlHasEnded = !!saleConfig && saleConfig.saleActive && nowSec > saleConfig.wlEndTime;
+  // For UI hints about WL timing (non-authoritative for compute/solar)
+  const wlHasNotStarted = mintingActiveUi && nowSec < wlStartTimeUi;
+  const wlHasEnded = mintingActiveUi && nowSec > wlEndTimeUi;
 
-  // Per-mode minted from config, aligned with contractMode
+  // Per-mode minted for progress/caps
   const mintedForMode = saleConfig
-    ? contractMode === "whitelist"
-      ? Number(saleConfig.whitelistMinted || 0)
-      : Number(saleConfig.publicMinted || 0)
+    ? // In our override WL (compute/solar), the contract is actually public;
+      // use publicMinted to reflect real on-chain progress.
+      (isComputeOrSolar
+        ? Number(saleConfig.publicMinted || 0)
+        : contractMode === "whitelist"
+        ? Number(saleConfig.whitelistMinted || 0)
+        : Number(saleConfig.publicMinted || 0))
     : 0;
 
-  // Mode-cap helpers (per chain) based on contractMode
+  // Mode-cap helpers (per chain) based on our UI mode
   const capForMode = MODE_CAPS_BY_CHAIN[nftType]?.[chainId]?.[modeKeyForCaps] ?? 0;
 
   // REAL remaining for logic
@@ -1059,52 +1069,53 @@ export default function MintingContent() {
     });
   };
 
-  /** ---- Whitelist proof fetch ---- */
+  /** ---- Whitelist check (ONE-TIME per wallet connection) ---- */
   useEffect(() => {
     const run = async () => {
-      setWlEligible(false);
-      setWlProof(null);
-      if (!account?.address) return;
+      // Reset on disconnect
+      if (!account?.address) {
+        setWlEligible(false);
+        setWlProof([]);
+        wlCheckedAddressRef.current = null;
+        return;
+      }
+
+      // Already checked this address during this connection session
+      if (wlCheckedAddressRef.current === account.address) return;
 
       try {
         setCheckingWl(true);
         const res = await fetch(`/api/merkle-proof?address=${account.address}`, {
           cache: "no-store",
         });
-        if (!res.ok) {
-          // 404 -> explicitly not whitelisted (proof not found)
-          setWlEligible(false);
-          setWlProof(null);
-          // If we are in WL phase, show a clear reason
-          if (contractMode === "whitelist") setStatus("Address not whitelisted for current phase");
-          return;
+
+        let whitelisted = false;
+        if (res.ok) {
+          const data = await res.json();
+          // API always returns empty/ignored proof; we only need the boolean
+          whitelisted = !!data?.whitelisted;
         }
-        const data = await res.json();
-        const proof = Array.isArray(data?.proof) ? data.proof : [];
-        if (data?.whitelisted && proof.length > 0) {
-          setWlEligible(true);
-          setWlProof(proof);
-        } else {
-          setWlEligible(false);
-          setWlProof(null);
-        }
+
+        setWlEligible(whitelisted);
+        setWlProof([]); // always empty
       } catch {
         setWlEligible(false);
-        setWlProof(null);
+        setWlProof([]);
       } finally {
         setCheckingWl(false);
+        // Mark this address as checked so we don't re-call until wallet changes
+        wlCheckedAddressRef.current = account.address;
       }
     };
     run();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account?.address, contractMode]);
+  }, [account?.address]);
 
   /** ---- Eligibility (auto-mode) ---- */
   useEffect(() => {
     setEligibilityChecked(false);
     setIsEligible(false);
     setStatus("");
-  }, [account?.address, chainId, nftType, saleConfig, phaseStr, wlEligible, wlProof]);
+  }, [account?.address, chainId, nftType, saleConfig, phaseStr, wlEligible]);
 
   useEffect(() => {
     const runCheck = async () => {
@@ -1117,14 +1128,14 @@ export default function MintingContent() {
         return;
       }
 
-      if (!mintingActive) {
+      if (!mintingActiveUi) {
         setIsEligible(false);
         setStatus("Minting not active");
         setEligibilityChecked(true);
         return;
       }
 
-      // Contract says which mode we're in; no fallbacks
+      // Contract says which mode the UI enforces (with our override)
       if (contractMode === "closed") {
         setIsEligible(false);
         setStatus("Minting closed");
@@ -1158,13 +1169,13 @@ export default function MintingContent() {
         return;
       }
 
-      // WL-specific gating when contract is in WL
+      // WL-specific gating (front-end enforced) — we only rely on the boolean.
       if (contractMode === "whitelist") {
         if (checkingWl) {
-          setStatus("Fetching whitelist proof…");
+          setStatus("Fetching whitelist status…");
           return;
         }
-        if (!wlProof || wlProof.length === 0) {
+        if (!wlEligible) {
           setIsEligible(false);
           setStatus("Address not whitelisted for current phase");
           setEligibilityChecked(true);
@@ -1183,15 +1194,14 @@ export default function MintingContent() {
     };
 
     runCheck();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     account?.address,
     nftContract,
     configAvailable,
-    mintingActive,
+    mintingActiveUi,
     contractMode,
     checkingWl,
-    wlProof,
+    wlEligible,
     userMintedCount,
     maxPerWalletChain,
     capForMode,
@@ -1263,7 +1273,7 @@ export default function MintingContent() {
       });
       throw new Error("Config not available");
     }
-    if (!mintingActive || contractMode === "closed") {
+    if (!mintingActiveUi || contractMode === "closed") {
       toast({
         title: "Minting Inactive",
         description: "Minting is not active on-chain.",
@@ -1318,15 +1328,15 @@ export default function MintingContent() {
       params: [contractAddr, amountToApprove],
     });
 
-    // mint(uint256 qty, bytes32[] proof)
-    // Strict: only pass proof in WL phase, never fall back
-    if (contractMode === "whitelist" && (!wlProof || wlProof.length === 0)) {
+    // Frontend-enforced WL: require wlEligible when in our WL mode,
+    // but ALWAYS send an EMPTY merkle proof to the contract.
+    if (contractMode === "whitelist" && !wlEligible) {
       setIsMinting(false);
       throw new Error("Address not whitelisted for current phase");
     }
 
-    const mintParams: any[] =
-      contractMode === "whitelist" ? [BigInt(qty), wlProof ?? []] : [BigInt(qty), []];
+    const proofToSend: string[] = []; // <-- always empty per requirement
+    const mintParams: any[] = [BigInt(qty), proofToSend];
 
     const mintTx = prepareContractCall({
       contract: nftContract,
@@ -1437,7 +1447,7 @@ export default function MintingContent() {
         chainId,
         txHash: receipt?.transactionHash || txHash,
         timestamp: new Date(),
-        mintType: modeKeyForCaps, // public | whitelist
+        mintType: modeKeyForCaps, // public | whitelist (WL for compute/solar override)
       });
 
       toast({
@@ -1462,7 +1472,6 @@ export default function MintingContent() {
     const errorMessage = normalizeError(err);
     console.error("Transaction error:", err);
 
-    // Friendly not-whitelisted / invalid proof handling
     const em = errorMessage.toLowerCase();
     if (
       em.includes("notwhitelisted") ||
@@ -1472,7 +1481,7 @@ export default function MintingContent() {
     ) {
       toast({
         title: "Not Whitelisted",
-        description: "This phase requires a valid whitelist proof for your address.",
+        description: "This phase requires a valid whitelist status for your address.",
         variant: "destructive",
       });
       setStatus(`Error: ${errorMessage}`);
@@ -1901,35 +1910,35 @@ export default function MintingContent() {
                 <div style={{ marginTop: "0.5rem", fontSize: "0.8rem", color: "#0369a1" }}>
                   <div>
                     WL window:{" "}
-                    <strong>{new Date((saleConfig!.wlStartTime || 0) * 1000).toLocaleString()}</strong>{" "}
+                    <strong>{new Date(wlStartTimeUi * 1000).toLocaleString()}</strong>{" "}
                     —{" "}
-                    <strong>{new Date((saleConfig!.wlEndTime || 0) * 1000).toLocaleString()}</strong>
+                    <strong>{new Date(wlEndTimeUi * 1000).toLocaleString()}</strong>
                   </div>
 
-                  {!mintingActive && (
+                  {!mintingActiveUi && (
                     <div style={{ color: "#b91c1c", marginTop: 6 }}>
                       Minting not active.
                     </div>
                   )}
 
-                  {mintingActive && wlHasNotStarted && (
+                  {mintingActiveUi && wlHasNotStarted && (
                     <div style={{ color: "#b45309", marginTop: 6 }}>
                       Whitelist opens at{" "}
                       <strong>
-                        {new Date(saleConfig!.wlStartTime * 1000).toLocaleString()}
+                        {new Date(wlStartTimeUi * 1000).toLocaleString()}
                       </strong>
                     </div>
                   )}
 
-                  {mintingActive && wlHasEnded && contractMode !== "whitelist" && (
+                  {mintingActiveUi && wlHasEnded && contractMode !== "whitelist" && (
                     <div style={{ color: "#b45309", marginTop: 6 }}>
                       Whitelist minting has ended, minting is now only available in public mode
                     </div>
                   )}
 
-                  {mintingActive && contractMode === "whitelist" && !wlHasNotStarted && !wlHasEnded && (
+                  {mintingActiveUi && contractMode === "whitelist" && !wlHasNotStarted && !wlHasEnded && (
                     <div style={{ color: "#0ea5e9", marginTop: 6 }}>
-                      Whitelist phase is currently active — a valid proof is required.
+                      Whitelist phase is currently active — a valid whitelist status is required.
                     </div>
                   )}
                 </div>
@@ -2143,8 +2152,7 @@ export default function MintingContent() {
                 </button>
               </div>
               <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#6b7280" }}>
-                Selected Network:{" "}
-                {networkLabel(chainId)}
+                Selected Network: {networkLabel(chainId)}
               </p>
             </div>
 
@@ -2316,9 +2324,9 @@ export default function MintingContent() {
                   remainingActual === 0 ||
                   hasInsufficientGas ||
                   !configAvailable ||
-                  !mintingActive ||
+                  !mintingActiveUi ||
                   contractMode === "closed" ||
-                  (contractMode === "whitelist" && (checkingWl || !wlProof || wlProof.length === 0))
+                  (contractMode === "whitelist" && (checkingWl || !wlEligible))
                 }
                 style={{
                   width: "100%",
@@ -2335,9 +2343,9 @@ export default function MintingContent() {
                     remainingActual === 0 ||
                     hasInsufficientGas ||
                     !configAvailable ||
-                    !mintingActive ||
+                    !mintingActiveUi ||
                     contractMode === "closed" ||
-                    (contractMode === "whitelist" && (checkingWl || !wlProof || wlProof.length === 0))
+                    (contractMode === "whitelist" && (checkingWl || !wlEligible))
                       ? "not-allowed"
                       : "pointer",
                   opacity:
@@ -2347,9 +2355,9 @@ export default function MintingContent() {
                     remainingActual === 0 ||
                     hasInsufficientGas ||
                     !configAvailable ||
-                    !mintingActive ||
+                    !mintingActiveUi ||
                     contractMode === "closed" ||
-                    (contractMode === "whitelist" && (checkingWl || !wlProof || wlProof.length === 0))
+                    (contractMode === "whitelist" && (checkingWl || !wlEligible))
                       ? 0.5
                       : 1,
                 }}
@@ -2362,13 +2370,13 @@ export default function MintingContent() {
                   ? `Need ${chainId === "56" ? "BNB" : chainId === "137" ? "MATIC" : "ETH"} for Gas`
                   : !configAvailable
                   ? "Unavailable on this network"
-                  : !mintingActive || contractMode === "closed"
+                  : !mintingActiveUi || contractMode === "closed"
                   ? "Minting not active"
                   : !isEligible
                   ? (contractMode === "whitelist" ? "Not Whitelisted" : "Not Eligible")
                   : remainingActual === 0
                   ? "Sold Out"
-                  : (contractMode === "whitelist" && (checkingWl || !wlProof || wlProof.length === 0))
+                  : (contractMode === "whitelist" && (checkingWl || !wlEligible))
                   ? "Verifying whitelist…"
                   : "Mint Now"}
               </button>
