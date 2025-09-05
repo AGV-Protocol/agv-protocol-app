@@ -6,30 +6,39 @@ export const revalidate = 0;
 import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
-import { MerkleTree } from "merkletreejs";
-import { isAddress, solidityPackedKeccak256, keccak256 as keccak256Hex } from "ethers";
+import { isAddress, solidityPackedKeccak256, getAddress } from "ethers";
 
-/** ================= Config ================= **/
 /**
- * Put Whitelist.csv at project root by default.
- * You can override path via WL_CSV_PATH (absolute or relative).
- * Adjust cache TTL with WL_CACHE_TTL_MS (ms). Default 5 minutes.
+ * CONFIG
+ * - PROOFS_JSON_PATH: absolute or relative path to your precomputed file (default: merkle.json).
+ * - MERKLE_ROOT (optional): if set, the API validates the file's root matches this string.
+ * - WL_CACHE_TTL_MS: cache the parsed JSON for N ms (default: 5m).
  */
-const WL_CSV_PATH = process.env.WL_CSV_PATH || "Whitelist.csv";
+const PROOFS_JSON_PATH = process.env.PROOFS_JSON_PATH || "merkle.json";
+const MERKLE_ROOT_EXPECTED = process.env.MERKLE_ROOT || "0x49a63deb617700134f44436c90cdb063263653a450a86e62274d7d3ee3ebb43f";
 const WL_CACHE_TTL_MS = Number(process.env.WL_CACHE_TTL_MS || 5 * 60 * 1000);
 
-/** ================= Helpers ================= **/
-function keccak256Buf(data: Buffer) {
-  // merkletreejs wants a Buffer-based keccak
-  return Buffer.from(keccak256Hex(data).slice(2), "hex");
-}
+type ProofsFile = {
+  merkleRoot: string;
+  proofs: Record<string, string[]>;
+};
 
-async function resolveCsvPath(): Promise<string> {
+let cache:
+  | {
+      at: number;
+      root: string;
+      proofsLc: Record<string, string[]>; // keys lowercased
+    }
+  | null = null;
+
+async function resolvePath(): Promise<string> {
   const cwd = process.cwd();
   const candidates = [
-    path.isAbsolute(WL_CSV_PATH) ? WL_CSV_PATH : path.join(cwd, WL_CSV_PATH),
-    path.join(cwd, "Whitelist.csv"),
-    path.join(cwd, "public", "Whitelist.csv"),
+    path.isAbsolute(PROOFS_JSON_PATH)
+      ? PROOFS_JSON_PATH
+      : path.join(cwd, PROOFS_JSON_PATH),
+    path.join(cwd, "merkle.json"),
+    path.join(cwd, "public", "merkle.json"),
   ];
   for (const p of candidates) {
     try {
@@ -38,104 +47,96 @@ async function resolveCsvPath(): Promise<string> {
     } catch {}
   }
   throw new Error(
-    `Whitelist CSV not found. Looked for:\n` + candidates.map(c => ` - ${c}`).join("\n")
+    `Proofs JSON not found. Looked for:\n` +
+      candidates.map((c) => ` - ${c}`).join("\n")
   );
 }
 
-/** Parse CSV -> lowercase addresses (first column), remove quotes, validate */
-function parseAddressesFromCsv(content: string): string[] {
-  const lines = content.split(/\r?\n/);
-
-  const raw = lines
-    .map(l => l.trim())
-    .filter(l => l && !l.startsWith("#"))
-    .map(l => (l.split(",")[0] || "").trim().replace(/^["']|["']$/g, ""))
-    .map(a => a.toLowerCase())
-    .filter(a => !!a && isAddress(a));
-
-  // dedupe (case-insensitive; all are lower already) and sort
-  const set = new Set(raw);
-  const list = Array.from(set);
-  list.sort();
-  return list;
+function normalizeProofs(pf: ProofsFile) {
+  // Normalize keys to lowercase, ensure each proof element is 0x-prefixed hex
+  const proofsLc: Record<string, string[]> = {};
+  for (const [addr, arr] of Object.entries(pf.proofs || {})) {
+    if (!addr) continue;
+    const key = addr.toLowerCase();
+    proofsLc[key] = (arr || []).map((x) =>
+      x.startsWith("0x") ? x : `0x${x}`
+    );
+  }
+  return {
+    root: pf.merkleRoot,
+    proofsLc,
+  };
 }
 
-/** ================= Cache ================= **/
-let cache:
-  | {
-      at: number;
-      lcAddresses: string[];           // lowercased, sorted
-      tree: MerkleTree;
-      root: string;
-      lcSet: Set<string>;
-    }
-  | null = null;
-
-async function getTree() {
+async function loadProofs() {
   const now = Date.now();
-  if (!cache || now - cache.at > WL_CACHE_TTL_MS) {
-    const csvPath = await resolveCsvPath();
-    const csv = await fs.readFile(csvPath, "utf8");
-    const lcAddresses = parseAddressesFromCsv(csv);
+  if (cache && now - cache.at <= WL_CACHE_TTL_MS) return cache;
 
-    // EXACT leaf generation as your script:
-    // Buffer.from(ethers.solidityPackedKeccak256(['address'], [addr]).slice(2), 'hex')
-    const leaves = lcAddresses.map(addr =>
-      Buffer.from(solidityPackedKeccak256(["address"], [addr]).slice(2), "hex")
-    );
-
-    const tree = new MerkleTree(leaves, keccak256Buf, {
-      sortLeaves: true,
-      sortPairs: true,
-      duplicateOdd: false,
-    });
-
-    const root = "0x" + tree.getRoot().toString("hex");
-    const lcSet = new Set(lcAddresses);
-    cache = { at: now, lcAddresses, tree, root, lcSet };
+  const filePath = await resolvePath();
+  const raw = await fs.readFile(filePath, "utf8");
+  let parsed: ProofsFile;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new Error("Invalid JSON in proofs file.");
   }
+  if (!parsed?.merkleRoot || typeof parsed.merkleRoot !== "string")
+    throw new Error("Missing/invalid merkleRoot in proofs file.");
+  if (!parsed?.proofs || typeof parsed.proofs !== "object")
+    throw new Error("Missing/invalid proofs mapping in proofs file.");
+
+  const { root, proofsLc } = normalizeProofs(parsed);
+
+  if (
+    MERKLE_ROOT_EXPECTED &&
+    root.toLowerCase() !== MERKLE_ROOT_EXPECTED.toLowerCase()
+  ) {
+    throw new Error(
+      `Configured MERKLE_ROOT does not match file's merkleRoot.
+Expected: ${MERKLE_ROOT_EXPECTED}
+     Got: ${root}`
+    );
+  }
+
+  cache = { at: now, root, proofsLc };
   return cache;
 }
 
-/** ================= Handler ================= **/
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const addrParam = (url.searchParams.get("address") || "").trim();
 
-  // validate & normalize to lowercase (to mirror the script data)
+  // Basic validation
   if (!isAddress(addrParam)) {
     return NextResponse.json({ error: "Invalid address" }, { status: 400 });
   }
+
+  // We accept any checksum, but look up by lowercase
   const addressLc = addrParam.toLowerCase();
+  const checksum = getAddress(addrParam); // canonical checksum for display
 
   try {
-    const { lcSet, tree, root } = await getTree();
+    const { root, proofsLc } = await loadProofs();
+    const proof = proofsLc[addressLc] || [];
 
-    if (!lcSet.has(addressLc)) {
-      return NextResponse.json({ whitelisted: false, root, proof: [] }, { status: 404 });
+    if (!proof.length) {
+      return NextResponse.json(
+        { whitelisted: false, root, proof: [] },
+        { status: 404 }
+      );
     }
 
-    // EXACT proof generation as your script:
-    const leafBuf = Buffer.from(
-      solidityPackedKeccak256(["address"], [addressLc]).slice(2),
-      "hex"
-    );
-    const proof = tree.getProof(leafBuf).map(p => "0x" + p.data.toString("hex"));
+    // Optional: include the leaf so clients can precheck on the front end
+    const leaf = solidityPackedKeccak256(["address"], [addressLc]);
 
     return NextResponse.json({
       whitelisted: true,
-      address: addressLc, // lowercased, same as input set/script
+      address: checksum,
       root,
+      leaf,
       proof,
     });
   } catch (e: any) {
-    return NextResponse.json(
-      {
-        error:
-          e?.message ||
-          "Server error. Ensure Whitelist.csv exists (or WL_CSV_PATH is set) and contains valid addresses.",
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: e?.message || "Server error" }, { status: 500 });
   }
 }
