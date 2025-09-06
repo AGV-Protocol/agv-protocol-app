@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
-import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2, ExternalLink, Copy, Wallet, Zap, Shield, Globe } from "lucide-react";
+import { useSearchParams, usePathname } from "next/navigation";
+import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2, ExternalLink, Copy, Wallet, Zap, Shield, Globe, Lock } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -65,8 +65,16 @@ const MAX_PER_WALLET: Record<NftType, Record<ChainId, number>> = {
 export default function ModernMintingInterface() {
   const { theme, setTheme } = useTheme();
   const searchParams = useSearchParams();
-  const kolId = searchParams.get("kolId");
+  const pathname = usePathname();
   const { isConnected, address, chainId } = useWallet();
+
+  // KOL Referral State
+  const [kolDigits, setKolDigits] = useState(""); // 0-6 digits only
+  const [kolLocked, setKolLocked] = useState(false); // locked when from referral
+  const fullKolId = useMemo(
+    () => (kolDigits && kolDigits.length === 6 ? `AGV-KOL${kolDigits}` : ""),
+    [kolDigits]
+  );
 
   // State
   const [selectedChain, setSelectedChain] = useState<ChainId>("56");
@@ -141,7 +149,8 @@ export default function ModernMintingInterface() {
           type,
           quantity: qty,
           txHash: `0x${Math.random().toString(16).substr(2, 64)}`,
-          cost: qty * PASS_PRICES[type as NftType]
+          cost: qty * PASS_PRICES[type as NftType],
+          kolId: fullKolId || null
         }));
 
       setMintResults(results);
@@ -160,8 +169,25 @@ export default function ModernMintingInterface() {
     }
   };
 
+  // Sync kolId from URL params (ref is alias) and LOCK if prefilled
+  useEffect(() => {
+    const qp = (searchParams?.get("kolId") ?? searchParams?.get("ref") ?? "").trim();
+    let digits = "";
+    if (qp) digits = (qp.match(/\d{6}/) || [])[0] || "";
+
+    if (!digits && pathname) {
+      const m = pathname.match(/\/(\d{6})(?:$|[/?#])/);
+      if (m) digits = m[1];
+    }
+
+    if (digits) {
+      setKolDigits(digits);
+      setKolLocked(true); // lock if from referral link
+    }
+  }, [searchParams, pathname]);
+
   const handleCopyReferralLink = () => {
-    const link = `${window.location.origin}/?kolId=${kolId}`;
+    const link = `${window.location.origin}/?kolId=${fullKolId}`;
     navigator.clipboard.writeText(link);
     toast.success("Referral link copied to clipboard");
   };
@@ -188,7 +214,7 @@ export default function ModernMintingInterface() {
       </div>
 
       {/* KOL Referral Banner */}
-      {kolId && (
+      {fullKolId && (
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -198,7 +224,7 @@ export default function ModernMintingInterface() {
                 </div>
                 <div>
                   <p className="font-semibold">Referred by KOL</p>
-                  <p className="text-sm text-muted-foreground">KOL ID: {kolId}</p>
+                  <p className="text-sm text-muted-foreground">KOL ID: {fullKolId}</p>
                 </div>
               </div>
               <Button variant="outline" size="sm" onClick={handleCopyReferralLink}>
@@ -333,6 +359,55 @@ export default function ModernMintingInterface() {
             </CardContent>
           </Card>
 
+          {/* KOL ID Input */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Shield className="h-5 w-5" />
+                <span>KOL Referral ID</span>
+              </CardTitle>
+              <CardDescription>
+                Enter a 6-digit KOL ID if you were referred by a Key Opinion Leader
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <Label htmlFor="kolDigits" className="text-sm font-medium">
+                  ID (6 digits, Optional - "Only input an ID if you were given one"){" "}
+                  {kolLocked && (
+                    <span className="text-muted-foreground text-xs">
+                      <Lock className="inline h-3 w-3 mr-1" />
+                      Locked from referral link
+                    </span>
+                  )}
+                </Label>
+                <Input
+                  id="kolDigits"
+                  inputMode="numeric"
+                  pattern="\d{6}"
+                  maxLength={6}
+                  value={kolDigits}
+                  readOnly={kolLocked}
+                  onChange={(e) => {
+                    if (kolLocked) return;
+                    setKolDigits(e.target.value.replace(/\D/g, "").slice(0, 6));
+                  }}
+                  placeholder="e.g. 123456"
+                  className={cn(
+                    "text-center text-lg font-mono tracking-wider",
+                    kolLocked && "bg-muted cursor-not-allowed"
+                  )}
+                />
+                {fullKolId && (
+                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                    <Shield className="h-4 w-4" />
+                    <span>Full KOL ID: {fullKolId}</span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Wallet Connection & Minting */}
           <Card>
             <CardHeader>
@@ -460,13 +535,21 @@ export default function ModernMintingInterface() {
                 </div>
                 <div className="space-y-2">
                   {mintResults.map((result, index) => (
-                    <div key={index} className="flex items-center justify-between text-sm">
-                      <span>{result.quantity}x {NFT_INFO[result.type as NftType].name}</span>
-                      <Button variant="link" size="sm" asChild>
-                        <a href={`${CHAINS[selectedChain].explorer}/tx/${result.txHash}`} target="_blank" rel="noopener noreferrer">
-                          View Transaction
-                        </a>
-                      </Button>
+                    <div key={index} className="space-y-1">
+                      <div className="flex items-center justify-between text-sm">
+                        <span>{result.quantity}x {NFT_INFO[result.type as NftType].name}</span>
+                        <Button variant="link" size="sm" asChild>
+                          <a href={`${CHAINS[selectedChain].explorer}/tx/${result.txHash}`} target="_blank" rel="noopener noreferrer">
+                            View Transaction
+                          </a>
+                        </Button>
+                      </div>
+                      {result.kolId && (
+                        <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                          <Shield className="h-3 w-3" />
+                          <span>Referred by: {result.kolId}</span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
