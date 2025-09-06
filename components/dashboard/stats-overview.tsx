@@ -28,7 +28,7 @@ interface StatsOverviewProps {
 
 export function StatsOverview({ stats, className }: StatsOverviewProps) {
   return (
-    <div className={`grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 ${className}`}>
+    <div className={`grid gap-4 md:grid-cols-2 lg:grid-cols-3 ${className}`}>
       <StatCard
         title="Total KOLs"
         value={stats.totalKols}

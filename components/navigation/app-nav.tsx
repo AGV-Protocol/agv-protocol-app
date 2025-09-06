@@ -17,15 +17,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { WalletConnect } from "@/components/wallet/wallet-connect"
 import { 
-  LayoutDashboard, 
-  Users, 
-  BarChart3, 
-  Settings, 
   LogOut, 
   User,
   Wallet,
   Menu,
-  X
+  X,
+  Settings
 } from "lucide-react"
 import Image from "next/image"
 
@@ -36,28 +33,7 @@ interface NavItem {
   badge?: string
 }
 
-const navigation: NavItem[] = [
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "KOLs",
-    href: "/dashboard?tab=kols",
-    icon: Users,
-  },
-  {
-    title: "Analytics",
-    href: "/dashboard?tab=analytics", 
-    icon: BarChart3,
-  },
-  {
-    title: "Settings",
-    href: "/dashboard?tab=settings",
-    icon: Settings,
-  },
-]
+const navigation: NavItem[] = []
 
 interface AppNavProps {
   user?: {

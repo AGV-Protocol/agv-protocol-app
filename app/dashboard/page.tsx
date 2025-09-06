@@ -10,7 +10,7 @@ import { Footer } from "@/components/layout/footer";
 
 // Lazy load heavy dashboard components
 const StatsOverview = lazy(() => import("@/components/dashboard/stats-overview").then(m => ({ default: m.StatsOverview })));
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { 
@@ -234,9 +234,6 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
-      
-      {/* Footer */}
-      <Footer />
     </DashboardLayout>
   );
 }
