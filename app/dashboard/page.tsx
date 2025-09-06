@@ -4,12 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { toast } from "sonner";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { Footer } from "@/components/layout/footer";
-
-// Lazy load heavy dashboard components
-const StatsOverview = lazy(() => import("@/components/dashboard/stats-overview").then(m => ({ default: m.StatsOverview })));
+import { StatsOverview } from "@/components/dashboard/stats-overview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { EmptyState } from "@/components/ui/empty-state";
