@@ -116,12 +116,6 @@ export function KOLManagement({
     <div className={cn("space-y-6", className)}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">KOL Management</h2>
-          <p className="text-muted-foreground">
-            Manage Key Opinion Leaders and their referral links
-          </p>
-        </div>
         {canCreateKOL && (
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
