@@ -20,7 +20,7 @@ export default function Page() {
       <FeaturesSection />
       
       {/* Minting Interface */}
-      <section className="py-24 lg:py-32 bg-muted/30">
+      <section id="minting" className="py-24 lg:py-32 bg-muted/30">
         <div className="container">
           <div className="text-center space-y-4 mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold">

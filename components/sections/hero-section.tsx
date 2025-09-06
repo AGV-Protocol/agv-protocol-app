@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { FastLink } from "@/components/ui/fast-link"
 import { 
   ArrowRight, 
   Shield, 
@@ -50,12 +51,16 @@ export function HeroSection({ className }: HeroSectionProps) {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="group">
-                Start Minting
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <Button size="lg" className="group" asChild>
+                <FastLink href="#minting">
+                  Start Minting
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </FastLink>
               </Button>
-              <Button variant="outline" size="lg">
-                View Dashboard
+              <Button variant="outline" size="lg" asChild>
+                <FastLink href="/dashboard">
+                  View Dashboard
+                </FastLink>
               </Button>
             </div>
 
