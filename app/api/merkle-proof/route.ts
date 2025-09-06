@@ -6,7 +6,7 @@ export const revalidate = 0;
 import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
-import { isAddress, solidityPackedKeccak256, getAddress } from "ethers";
+import { utils } from "ethers";
 
 /**
  * CONFIG
@@ -107,13 +107,13 @@ export async function GET(req: NextRequest) {
   const addrParam = (url.searchParams.get("address") || "").trim();
 
   // Basic validation
-  if (!isAddress(addrParam)) {
+  if (!utils.isAddress(addrParam)) {
     return NextResponse.json({ error: "Invalid address" }, { status: 400 });
   }
 
   // We accept any checksum, but look up by lowercase
   const addressLc = addrParam.toLowerCase();
-  const checksum = getAddress(addrParam); // canonical checksum for display
+  const checksum = utils.getAddress(addrParam); // canonical checksum for display
 
   try {
     const { root, proofsLc } = await loadProofs();
@@ -127,7 +127,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Optional: include the leaf so clients can precheck on the front end
-    const leaf = solidityPackedKeccak256(["address"], [addressLc]);
+    const leaf = utils.keccak256(utils.solidityPack(["address"], [addressLc]));
 
     return NextResponse.json({
       whitelisted: true,

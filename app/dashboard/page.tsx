@@ -7,6 +7,10 @@ import { toast } from "sonner";
 import { Suspense } from "react";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { StatsOverview } from "@/components/dashboard/stats-overview";
+import { Leaderboard } from "@/components/dashboard/leaderboard";
+import { RecentActivity } from "@/components/dashboard/recent-activity";
+import { PerformanceCharts } from "@/components/dashboard/performance-charts";
+import { RealTimeRefresh } from "@/components/dashboard/real-time-refresh";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -60,6 +64,8 @@ export default function DashboardPage() {
   const [kols, setKols] = useState<KOL[]>([]);
   const [mintDocs, setMintDocs] = useState<MintDoc[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
   // Chart state
   const [rangeMode, setRangeMode] = useState<RangeMode>("THIS_WEEK");
@@ -112,6 +118,7 @@ export default function DashboardPage() {
       toast.error("Failed to load data");
     } finally {
       setLoading(false);
+      setLastUpdated(new Date());
     }
   };
 
@@ -186,50 +193,55 @@ export default function DashboardPage() {
       onSignOut={doSignOut}
     >
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard Overview</h1>
-          <p className="text-muted-foreground">
-            Welcome to the AGV Protocol admin dashboard
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+            <p className="text-muted-foreground">
+              Welcome to the AGV Protocol admin dashboard
+            </p>
+          </div>
+          
+          <RealTimeRefresh
+            onRefresh={refreshData}
+            isRefreshing={loading}
+            lastUpdated={lastUpdated || undefined}
+            autoRefresh={autoRefresh}
+            onToggleAutoRefresh={setAutoRefresh}
+          />
         </div>
 
         <Suspense fallback={<LoadingSpinner size="lg" text="Loading stats..." />}>
           <StatsOverview stats={stats} />
         </Suspense>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Activity className="h-5 w-5" />
-                <span>Recent Activity</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <EmptyState
-                icon={Activity}
-                title="No recent activity"
-                description="Activity will appear here as users interact with the platform"
-              />
-            </CardContent>
-          </Card>
+        {/* Main Content Grid */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Left Column - Leaderboard */}
+          <div className="order-2 lg:order-1 lg:col-span-1">
+            <Suspense fallback={<LoadingSpinner size="lg" text="Loading leaderboard..." />}>
+              <Leaderboard kols={kols} />
+            </Suspense>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5" />
-                <span>Performance</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <EmptyState
-                icon={TrendingUp}
-                title="Performance metrics"
-                description="Performance charts and metrics will be displayed here"
+          {/* Right Column - Recent Activity */}
+          <div className="order-1 lg:order-2 lg:col-span-1">
+            <Suspense fallback={<LoadingSpinner size="lg" text="Loading activity..." />}>
+              <RecentActivity
+                mintEvents={mintDocs.flatMap(doc => doc.events || [])}
+                kols={kols}
               />
-            </CardContent>
-          </Card>
+            </Suspense>
+          </div>
         </div>
+
+
+        {/* Performance Charts */}
+        <Suspense fallback={<LoadingSpinner size="lg" text="Loading performance charts..." />}>
+          <PerformanceCharts 
+            kols={kols} 
+            mintEvents={mintDocs.flatMap(doc => doc.events || [])}
+          />
+        </Suspense>
       </div>
     </DashboardLayout>
   );

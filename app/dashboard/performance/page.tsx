@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { collection, getDocs } from "firebase/firestore";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { EmptyState } from "@/components/ui/empty-state";
+import { PerformanceCharts } from "@/components/dashboard/performance-charts";
+import { Leaderboard } from "@/components/dashboard/leaderboard";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { TrendingUp } from "lucide-react";
 
 type WhoAmI = {
@@ -13,6 +17,41 @@ type WhoAmI = {
   isSuperAdmin: boolean;
 };
 
+// Types
+interface KOL {
+  kolId: string;
+  name: string;
+  walletAddress: string;
+  email?: string | null;
+  target?: number;
+  seed?: number;
+  tree?: number;
+  solar?: number;
+  compute?: number;
+  updatedAt?: any;
+}
+
+interface MintEventItem {
+  address: string;
+  nftType: "seed" | "tree" | "solar" | "compute";
+  quantity: number;
+  chainId: string;
+  txHash?: string | null;
+  timestamp: any;
+  mintType?: "public" | "agent";
+}
+
+interface MintDoc {
+  kolId: string;
+  seed?: number;
+  tree?: number;
+  solar?: number;
+  compute?: number;
+  perChain?: Record<string, { seed?: number; tree?: number; solar?: number; compute?: number }>;
+  events?: MintEventItem[];
+  updatedAt?: any;
+}
+
 export default function PerformancePage() {
   const [who, setWho] = useState<WhoAmI>({
     authed: false,
@@ -20,6 +59,10 @@ export default function PerformancePage() {
     isAdmin: false,
     isSuperAdmin: false,
   });
+  
+  const [kols, setKols] = useState<KOL[]>([]);
+  const [mintDocs, setMintDocs] = useState<MintDoc[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Fetch server-verified role
   useEffect(() => {
@@ -42,9 +85,79 @@ export default function PerformancePage() {
     })();
   }, []);
 
+  // Data loading
+  const refreshData = async () => {
+    try {
+      setLoading(true);
+      const [ks, ms] = await Promise.all([
+        getDocs(collection(db, "kols")),
+        getDocs(collection(db, "mintEvents")),
+      ]);
+      
+      setKols(
+        ks.docs.map((d) => {
+          const v = d.data() as any;
+          return {
+            kolId: v.kolId,
+            name: v.name ?? "",
+            walletAddress: v.walletAddress ?? "",
+            email: v.email ?? null,
+            target: Number(v.target ?? 0),
+            seed: Number(v.seed ?? 0),
+            tree: Number(v.tree ?? 0),
+            solar: Number(v.solar ?? 0),
+            compute: Number(v.compute ?? 0),
+            updatedAt: v.updatedAt ?? null,
+          } as KOL;
+        })
+      );
+      
+      setMintDocs(
+        ms.docs.map((d) => {
+          const v = d.data() as any;
+          return {
+            kolId: d.id,
+            seed: Number(v.seed ?? 0),
+            tree: Number(v.tree ?? 0),
+            solar: Number(v.solar ?? 0),
+            compute: Number(v.compute ?? 0),
+            perChain: v.perChain ?? {},
+            events: Array.isArray(v.events) ? v.events : [],
+            updatedAt: v.updatedAt ?? null,
+          } as MintDoc;
+        })
+      );
+    } catch (error) {
+      console.error("Error loading data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshData();
+  }, []);
+
   const doSignOut = async () => {
     await auth.signOut();
   };
+
+  if (loading) {
+    return (
+      <DashboardLayout 
+        user={{
+          email: auth.currentUser?.email,
+          name: auth.currentUser?.displayName,
+          avatar: auth.currentUser?.photoURL
+        }}
+        onSignOut={doSignOut}
+      >
+        <div className="flex items-center justify-center min-h-[400px]">
+          <LoadingSpinner size="lg" text="Loading performance data..." />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout 
@@ -59,15 +172,18 @@ export default function PerformancePage() {
         <div>
           <h1 className="text-3xl font-bold">Performance</h1>
           <p className="text-muted-foreground">
-            System performance and metrics monitoring
+            Performance metrics and insights for your platform
           </p>
         </div>
         
-        <EmptyState
-          icon={TrendingUp}
-          title="Performance Metrics"
-          description="Performance monitoring and optimization tools will be available here"
+        {/* Performance Charts */}
+        <PerformanceCharts 
+          kols={kols} 
+          mintEvents={mintDocs.flatMap(doc => doc.events || [])}
         />
+
+        {/* Top Performers Leaderboard */}
+        <Leaderboard kols={kols} />
       </div>
     </DashboardLayout>
   );
