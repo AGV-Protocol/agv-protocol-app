@@ -272,6 +272,11 @@
     background-size: 20px 20px;
   }
 
+  /* Radial Gradient */
+  .bg-radial-gradient {
+    background: radial-gradient(circle at center, var(--tw-gradient-stops));
+  }
+
   /* Glass morphism */
   .glass {
     background: rgba(255, 255, 255, 0.1);

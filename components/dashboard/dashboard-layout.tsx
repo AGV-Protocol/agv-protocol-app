@@ -55,21 +55,16 @@ const navigation = [
     href: "/dashboard/analytics",
     icon: BarChart3,
   },
-  {
-    title: "Performance",
-    href: "/dashboard/performance",
-    icon: TrendingUp,
-  },
-  {
-    title: "Activity",
-    href: "/dashboard/activity",
-    icon: Activity,
-  },
-  {
-    title: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
-  },
+  // {
+  //   title: "Activity",
+  //   href: "/dashboard/activity",
+  //   icon: Activity,
+  // },
+  // {
+  //   title: "Settings",
+  //   href: "/dashboard/settings",
+  //   icon: Settings,
+  // },
 ]
 
 export function DashboardLayout({ 

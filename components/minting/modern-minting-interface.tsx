@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
-import { Moon, Sun, AlertTriangle, CheckCircle, X, Loader2, ExternalLink, Copy, Wallet, Zap, Shield, Globe, Lock } from "lucide-react";
+import { CheckCircle, X, Loader2, ExternalLink, Copy, Wallet, Zap, Shield, Globe, Lock, AlertTriangle } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import Image from "next/image";
-import { WalletConnect, WalletStatus } from "@/components/wallet/wallet-connect";
-import { useWallet } from "@/components/wallet/wallet-provider";
+import { thirdwebClient, WalletConnect, WalletStatus } from "@/components/wallet/wallet-connect";
+import { useActiveAccount } from "thirdweb/react";
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +21,9 @@ import { Separator } from "@/components/ui/separator";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
+import { useWalletBalance } from "thirdweb/react";
+import { NFT_CONTRACTS, USDT_ADDRESSES } from "@/lib/contracts";
+import { createThirdwebClient, defineChain } from "thirdweb";
 
 /** ---------------- Types ---------------- **/
 type ChainId = "56" | "137" | "42161";
@@ -28,11 +31,27 @@ type NftType = "seed" | "tree" | "solar" | "compute";
 type MintMode = "public" | "agent";
 
 /** ---------------- Constants ---------------- **/
-const CHAINS = {
-  "56": { name: "BSC", symbol: "BNB", explorer: "https://bscscan.com" },
-  "137": { name: "Polygon", symbol: "MATIC", explorer: "https://polygonscan.com" },
-  "42161": { name: "Arbitrum", symbol: "ETH", explorer: "https://arbiscan.io" },
-} as const;
+export const CHAINS = {
+  "56": {
+    chainId: "56",
+    name: "Binance Smart Chain",
+    symbol: "BNB",
+    chain: defineChain(56),
+  },
+  "137": {
+    chainId: "137",
+    name: "Polygon",
+    symbol: "MATIC",
+    chain: defineChain(137),
+  },
+  "42161": {
+    chainId: "42161",
+    name: "Arbitrum One",
+    symbol: "ETH",
+    chain: defineChain(42161),
+  },
+};
+
 
 const PASS_PRICES = {
   seed: 29,
@@ -63,10 +82,11 @@ const MAX_PER_WALLET: Record<NftType, Record<ChainId, number>> = {
 } as const;
 
 export default function ModernMintingInterface() {
-  const { theme, setTheme } = useTheme();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { isConnected, address, chainId } = useWallet();
+  const account = useActiveAccount();
+  const isConnected = !!account;
+  const chainId = (account as any)?.chain?.id?.toString() || "56";
 
   // KOL Referral State
   const [kolDigits, setKolDigits] = useState(""); // 0-6 digits only
@@ -90,6 +110,7 @@ export default function ModernMintingInterface() {
   const [currentStep, setCurrentStep] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [mintResults, setMintResults] = useState<any[]>([]);
+  const [hasInsufficientGas, setHasInsufficientGas] = useState(false);
 
   // Computed values
   const totalCost = useMemo(() => {
@@ -103,14 +124,14 @@ export default function ModernMintingInterface() {
   }, [quantities]);
 
   const canMint = useMemo(() => {
-    return totalQuantity > 0 && totalCost > 0 && isConnected;
-  }, [totalQuantity, totalCost, isConnected]);
+    return totalQuantity > 0 && totalCost > 0 && isConnected && !hasInsufficientGas;
+  }, [totalQuantity, totalCost, isConnected, hasInsufficientGas]);
 
   // Handlers
   const handleQuantityChange = (type: NftType, value: number) => {
     const maxAllowed = MAX_PER_WALLET[type][selectedChain];
     const newValue = Math.max(0, Math.min(value, maxAllowed));
-    
+
     setQuantities(prev => ({
       ...prev,
       [type]: newValue
@@ -192,6 +213,60 @@ export default function ModernMintingInterface() {
     toast.success("Referral link copied to clipboard");
   };
 
+  // Gas balance calculations
+  
+  const chainInfo = CHAINS[(chainId ?? "56") as ChainId];
+  const contractAddr = NFT_CONTRACTS[selectedChain]?.["seed"];
+  const usdtAddr = USDT_ADDRESSES[(chainId ?? "56") as ChainId];
+  
+  // Wallet balance hooks
+  const { data: usdtData } = useWalletBalance({
+    client: thirdwebClient,
+    chain: chainInfo.chain,
+    address: account?.address,
+    tokenAddress: usdtAddr,
+  });
+  
+  const { data: nativeData } = useWalletBalance({
+    client: thirdwebClient,
+    chain: chainInfo.chain,
+    address: account?.address,
+  });
+
+  // Gas thresholds for different chains
+  const GAS_THRESHOLDS: Record<ChainId, number> = {
+    "56": 0.005,    // BSC
+    "137": 0.01,    // Polygon
+    "42161": 0.001, // Arbitrum
+  } as const;
+
+  // Memoized gas calculations
+  const gasInfo = useMemo(() => {
+    if (!nativeData?.displayValue) {
+      return {
+        currentGas: 0,
+        minRequired: GAS_THRESHOLDS[(chainId ?? "56") as ChainId],
+        isInsufficient: false,
+        symbol: chainInfo.symbol,
+      };
+    }
+
+    const currentGas = parseFloat(nativeData.displayValue);
+    const minRequired = GAS_THRESHOLDS[(chainId ?? "56") as ChainId];
+    const isInsufficient = currentGas < minRequired;
+
+    return {
+      currentGas,
+      minRequired,
+      isInsufficient,
+      symbol: chainInfo.symbol,
+    };
+  }, [nativeData?.displayValue, chainId, chainInfo.symbol]);
+
+  // Update insufficient gas state when gas info changes
+  useEffect(() => {
+    setHasInsufficientGas(gasInfo.isInsufficient);
+  }, [gasInfo.isInsufficient]);
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Header */}
@@ -306,7 +381,7 @@ export default function ModernMintingInterface() {
                 const nftType = type as NftType;
                 const maxAllowed = MAX_PER_WALLET[nftType][selectedChain];
                 const isAvailable = PUBLIC_MINT_CAPS[nftType][selectedChain] > 0;
-                
+
                 return (
                   <div key={type} className="space-y-3">
                     <div className="flex items-center justify-between">
@@ -322,7 +397,7 @@ export default function ModernMintingInterface() {
                         <p className="text-sm text-muted-foreground">Max: {maxAllowed}</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-4">
                       <Button
                         variant="outline"
@@ -364,23 +439,20 @@ export default function ModernMintingInterface() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Shield className="h-5 w-5" />
-                <span>KOL Referral ID</span>
+                <span>Referral ID</span>
               </CardTitle>
               <CardDescription>
-                Enter a 6-digit KOL ID if you were referred by a Key Opinion Leader
+                ID (6 digits, Optional - "Only input an ID if you were given one"){" "}
+                {kolLocked && (
+                  <span className="text-muted-foreground text-xs">
+                    <Lock className="inline h-3 w-3 mr-1" />
+                    Locked from referral link
+                  </span>
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <Label htmlFor="kolDigits" className="text-sm font-medium">
-                  ID (6 digits, Optional - "Only input an ID if you were given one"){" "}
-                  {kolLocked && (
-                    <span className="text-muted-foreground text-xs">
-                      <Lock className="inline h-3 w-3 mr-1" />
-                      Locked from referral link
-                    </span>
-                  )}
-                </Label>
                 <Input
                   id="kolDigits"
                   inputMode="numeric"
@@ -408,6 +480,75 @@ export default function ModernMintingInterface() {
             </CardContent>
           </Card>
 
+          {/* Order Summary */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <span>Summary</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {Object.entries(quantities).map(([type, qty]) => {
+                if (qty === 0) return null;
+                const nftType = type as NftType;
+                return (
+                  <div key={type} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-3 h-3 rounded-full ${NFT_INFO[nftType].color}`} />
+                      <span className="text-sm">{NFT_INFO[nftType].name}</span>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium">{qty} × ${PASS_PRICES[nftType]}</p>
+                      <p className="text-xs text-muted-foreground">
+                        ${(qty * PASS_PRICES[nftType]).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {totalQuantity === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-2">
+                  No items selected yet
+                </p>
+              )}
+
+              {totalQuantity > 0 && (
+                <>
+                  <Separator />
+                  <div className="flex items-center justify-between font-semibold">
+                    <span>Total</span>
+                    <span>${totalCost.toLocaleString()}</span>
+                  </div>
+                </>
+              )}
+
+              {isConnected && (
+                <p className="text-xs text-muted-foreground text-center">
+                  Payment will be processed in {CHAINS[selectedChain].symbol} (USDT equivalent)
+                </p>
+              )}
+              {account && usdtData?.displayValue && (
+                <p className="text-xs text-muted-foreground">
+                  Your USDT: {usdtData.displayValue} {usdtData.symbol}
+                </p>
+              )}
+              
+              {account && nativeData && (
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">
+                    Your {gasInfo.symbol}: {gasInfo.currentGas.toFixed(6)} {gasInfo.symbol}
+                  </p>
+                  {gasInfo.isInsufficient && (
+                    <p className="text-xs text-amber-600">
+                      ⚠️ Insufficient gas. Minimum required: {gasInfo.minRequired} {gasInfo.symbol}
+                    </p>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Wallet Connection & Minting */}
           <Card>
             <CardHeader>
@@ -419,7 +560,7 @@ export default function ModernMintingInterface() {
             <CardContent className="space-y-4">
               {/* Wallet Status */}
               <WalletStatus />
-              
+
               {/* Wallet Connect Button */}
               <div className="flex justify-center">
                 <WalletConnect />
@@ -435,6 +576,20 @@ export default function ModernMintingInterface() {
                 </div>
               )}
 
+              {hasInsufficientGas && (
+                <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+                  <div className="flex items-start space-x-2">
+                    <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm">
+                      <p className="font-medium text-amber-800">Insufficient Gas Balance</p>
+                      <p className="text-amber-700">
+                        You need at least {gasInfo.minRequired} {gasInfo.symbol} to cover transaction fees.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <Button
                 onClick={handleMint}
                 disabled={!canMint || isMinting}
@@ -446,6 +601,11 @@ export default function ModernMintingInterface() {
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Minting...
                   </>
+                ) : hasInsufficientGas ? (
+                  <>
+                    <AlertTriangle className="mr-2 h-4 w-4" />
+                    Insufficient Gas
+                  </>
                 ) : (
                   <>
                     <Zap className="mr-2 h-4 w-4" />
@@ -455,115 +615,6 @@ export default function ModernMintingInterface() {
               </Button>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Summary Sidebar */}
-        <div className="space-y-6">
-          {/* Order Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {Object.entries(quantities).map(([type, qty]) => {
-                if (qty === 0) return null;
-                const nftType = type as NftType;
-                return (
-                  <div key={type} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-3 h-3 rounded-full ${NFT_INFO[nftType].color}`} />
-                      <span className="text-sm">{NFT_INFO[nftType].name}</span>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium">{qty} × ${PASS_PRICES[nftType]}</p>
-                      <p className="text-sm text-muted-foreground">${(qty * PASS_PRICES[nftType]).toLocaleString()}</p>
-                    </div>
-                  </div>
-                );
-              })}
-              
-              {totalQuantity === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  No items selected
-                </p>
-              )}
-              
-              {totalQuantity > 0 && (
-                <>
-                  <Separator />
-                  <div className="flex items-center justify-between font-semibold">
-                    <span>Total</span>
-                    <span>${totalCost.toLocaleString()}</span>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Network Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Network Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Network</span>
-                <span className="text-sm font-medium">{CHAINS[selectedChain].name}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Currency</span>
-                <span className="text-sm font-medium">{CHAINS[selectedChain].symbol}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Explorer</span>
-                <Button variant="link" size="sm" asChild>
-                  <a href={CHAINS[selectedChain].explorer} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Success Modal */}
-          {showSuccess && (
-            <Card className="border-green-200 bg-green-50">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-3 mb-4">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
-                  <h3 className="font-semibold text-green-800">Minting Successful!</h3>
-                </div>
-                <div className="space-y-2">
-                  {mintResults.map((result, index) => (
-                    <div key={index} className="space-y-1">
-                      <div className="flex items-center justify-between text-sm">
-                        <span>{result.quantity}x {NFT_INFO[result.type as NftType].name}</span>
-                        <Button variant="link" size="sm" asChild>
-                          <a href={`${CHAINS[selectedChain].explorer}/tx/${result.txHash}`} target="_blank" rel="noopener noreferrer">
-                            View Transaction
-                          </a>
-                        </Button>
-                      </div>
-                      {result.kolId && (
-                        <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                          <Shield className="h-3 w-3" />
-                          <span>Referred by: {result.kolId}</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowSuccess(false)}
-                  className="w-full mt-4"
-                >
-                  Close
-                </Button>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </div>

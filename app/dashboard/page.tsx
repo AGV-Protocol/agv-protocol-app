@@ -10,6 +10,10 @@ import { StatsOverview } from "@/components/dashboard/stats-overview";
 import { Leaderboard } from "@/components/dashboard/leaderboard";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { PerformanceCharts } from "@/components/dashboard/performance-charts";
+import { OverviewChart } from "@/components/dashboard/charts/overview-chart";
+import { PerformanceChart } from "@/components/dashboard/charts/performance-chart";
+import { DistributionChart } from "@/components/dashboard/charts/distribution-chart";
+import { TrendsChart } from "@/components/dashboard/charts/trends-chart";
 import { RealTimeRefresh } from "@/components/dashboard/real-time-refresh";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -216,21 +220,59 @@ export default function DashboardPage() {
 
         {/* Main Content Grid */}
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Left Column - Leaderboard */}
-          <div className="order-2 lg:order-1 lg:col-span-1">
+          {/* Left Column - Traditional Leaderboard */}
+          <div className="order-2 lg:order-1">
             <Suspense fallback={<LoadingSpinner size="lg" text="Loading leaderboard..." />}>
               <Leaderboard kols={kols} />
             </Suspense>
           </div>
 
           {/* Right Column - Recent Activity */}
-          <div className="order-1 lg:order-2 lg:col-span-1">
+          <div className="order-1 lg:order-2">
             <Suspense fallback={<LoadingSpinner size="lg" text="Loading activity..." />}>
               <RecentActivity
                 mintEvents={mintDocs.flatMap(doc => doc.events || [])}
                 kols={kols}
               />
             </Suspense>
+          </div>
+        </div>
+
+        {/* Analytics Charts Row */}
+        <div className="space-y-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2">Performance Analytics</h2>
+            <p className="text-muted-foreground">
+              Detailed insights and visualizations of KOL performance
+            </p>
+          </div>
+          
+          <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+            {/* Overview Chart */}
+            <div className="order-1">
+              <Suspense fallback={<LoadingSpinner size="sm" text="Loading overview..." />}>
+                <OverviewChart kols={kols} />
+              </Suspense>
+            </div>
+
+            {/* Distribution Chart */}
+            <div className="order-2">
+              <Suspense fallback={<LoadingSpinner size="sm" text="Loading distribution..." />}>
+                <DistributionChart kols={kols} />
+              </Suspense>
+            </div>
+            {/* Performance Chart */}
+            <div className="order-3">
+              <Suspense fallback={<LoadingSpinner size="sm" text="Loading performance..." />}>
+                <PerformanceChart kols={kols} />
+              </Suspense>
+            </div>
+            {/* Trends Chart */}
+            <div className="order-4">
+              <Suspense fallback={<LoadingSpinner size="sm" text="Loading trends..." />}>
+                <TrendsChart kols={kols} />
+              </Suspense>
+            </div>
           </div>
         </div>
 

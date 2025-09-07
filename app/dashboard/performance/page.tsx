@@ -7,6 +7,10 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PerformanceCharts } from "@/components/dashboard/performance-charts";
 import { Leaderboard } from "@/components/dashboard/leaderboard";
+import { OverviewChart } from "@/components/dashboard/charts/overview-chart";
+import { PerformanceChart } from "@/components/dashboard/charts/performance-chart";
+import { DistributionChart } from "@/components/dashboard/charts/distribution-chart";
+import { TrendsChart } from "@/components/dashboard/charts/trends-chart";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { TrendingUp } from "lucide-react";
 
@@ -182,7 +186,24 @@ export default function PerformancePage() {
           mintEvents={mintDocs.flatMap(doc => doc.events || [])}
         />
 
-        {/* Top Performers Leaderboard */}
+        {/* Individual Chart Components */}
+        <div className="space-y-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2">Detailed Analytics</h2>
+            <p className="text-muted-foreground">
+              Comprehensive performance insights and visualizations
+            </p>
+          </div>
+          
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <OverviewChart kols={kols} />
+            <PerformanceChart kols={kols} />
+            <DistributionChart kols={kols} />
+            <TrendsChart kols={kols} />
+          </div>
+        </div>
+
+        {/* Traditional Leaderboard */}
         <Leaderboard kols={kols} />
       </div>
     </DashboardLayout>
