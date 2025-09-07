@@ -13,6 +13,20 @@ import {
   ExternalLink,
   Copy,
   Lock,
+  Sparkles,
+  Zap,
+  Shield,
+  TrendingUp,
+  Users,
+  Globe,
+  Coins,
+  Gift,
+  Star,
+  ArrowRight,
+  Info,
+  ChevronDown,
+  Wallet,
+  CreditCard,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
@@ -191,154 +205,223 @@ export default function MintingContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-md mx-auto flex flex-col items-center">
-        <div className="w-full bg-card rounded-xl overflow-hidden shadow-lg">
-          {/* Header */}
-          <div className="flex justify-between items-center p-4 border-b">
-            <Image src="/logo.svg" alt="AGV Protocol Logo" height={32} width={32} />
-            <h2 className="text-xl font-bold text-foreground">
-              AGV NFT Mint
-            </h2>
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="border border-border rounded-full p-1 hover:bg-muted transition-colors"
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </button>
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4">
+        {/* Background Pattern */}
+        <div className="fixed inset-0 opacity-5 dark:opacity-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]" />
+        </div>
+
+      <div className="relative max-w-lg mx-auto">
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
+            <Sparkles className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            AGV Protocol
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Mint Your Exclusive NFT Pass
+          </p>
+        </div>
+
+        {/* Main Card */}
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/50 overflow-hidden">
+          {/* Card Header */}
+          <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-500/20 dark:to-purple-500/20 p-6 border-b border-slate-200/50 dark:border-slate-700/50">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                  <Zap className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">
+                    {nftType.charAt(0).toUpperCase() + nftType.slice(1)}Pass
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {contractMode === "public" ? "Public" : "Whitelist"} Mint
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-muted-foreground">Network</div>
+                <div className="font-medium text-foreground">{networkLabel(chainId)}</div>
+              </div>
+            </div>
+
+            {/* Supply Progress */}
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Supply Progress</span>
+                <span className="font-medium text-foreground">
+                  {currentSupply.toLocaleString()} / {capForMode.toLocaleString()}
+                </span>
+              </div>
+              <div className="relative">
+                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 h-full transition-all duration-500 ease-out rounded-full"
+                    style={{ width: `${progressPct}%` }}
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse rounded-full" />
+              </div>
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>{displayRemaining} remaining</span>
+                <span>{progressPct.toFixed(1)}% minted</span>
+              </div>
+            </div>
           </div>
 
           <div className="p-6 space-y-6">
-            {/* Connect Wallet */}
+            {/* Connect Wallet Section */}
             <div className="text-center">
-              <ConnectButton client={thirdwebClient} />
+              <div className="mb-4">
+                <ConnectButton client={thirdwebClient} />
+              </div>
               {isMobile && !account && (
-                <div className="mt-3">
-                  <button
-                    onClick={() => setShowMobileWalletOptions(true)}
-                    className="px-4 py-2 bg-muted text-muted-foreground border border-border rounded-lg text-sm hover:bg-muted/80 transition-colors"
-                  >
-                    Having trouble? Open in mobile wallet
-                  </button>
-                </div>
+                <button
+                  onClick={() => setShowMobileWalletOptions(true)}
+                  className="inline-flex items-center space-x-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 rounded-xl text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-200"
+                >
+                  <Wallet className="h-4 w-4" />
+                  <span>Open in mobile wallet</span>
+                </button>
               )}
             </div>
 
-            {/* Supply/Cap Info */}
-            <div className="bg-blue-50 dark:bg-blue-950/20 p-4 border border-blue-200 dark:border-blue-800 rounded-lg">
-              <div className="flex justify-between text-sm text-blue-700 dark:text-blue-300 mb-2">
-                <span>
-                  {nftType.charAt(0).toUpperCase() + nftType.slice(1)}Pass {contractMode === "public" ? "Public" : "Whitelist"} Mint
-                </span>
-                <span>{`Cap (${networkLabel(chainId)} / ${
-                  contractMode === "public" ? "Public" : "Whitelist"
-                }): ${capForMode}`}</span>
+            {/* Configuration Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-foreground flex items-center space-x-2">
+                <Shield className="h-5 w-5 text-blue-500" />
+                <span>Configuration</span>
+              </h3>
+
+              {/* Network Selection */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground flex items-center space-x-2">
+                  <Globe className="h-4 w-4 text-blue-500" />
+                  <span>Network</span>
+                </label>
+                <div className="relative">
+                  <select
+                    value={chainId}
+                    onChange={(e) => setChainId(e.target.value as ChainId)}
+                    className="w-full p-4 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer"
+                  >
+                    {Object.entries(CHAINS).map(([id, chain]) => (
+                      <option key={id} value={id}>
+                        {chain.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                </div>
               </div>
-              <div className="flex justify-end text-sm text-blue-700 dark:text-blue-300">
-                <span>Available: {displayRemaining}</span>
+
+              {/* NFT Type Selection */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground flex items-center space-x-2">
+                  <Star className="h-4 w-4 text-purple-500" />
+                  <span>NFT Type</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {["seed", "tree", "solar", "compute"].map((type) => (
+                    <button
+                      key={type}
+                      onClick={() => setNftType(type as NftType)}
+                      className={`p-3 rounded-xl border-2 transition-all duration-200 ${
+                        nftType === type
+                          ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300"
+                          : "border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-500"
+                      }`}
+                    >
+                      <div className="text-sm font-medium">
+                        {type.charAt(0).toUpperCase() + type.slice(1)}Pass
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        ${PASS_PRICES[type as NftType]?.usd ?? 59}
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="w-full bg-blue-100 dark:bg-blue-900/30 rounded-full h-2 mt-2 overflow-hidden">
-                <div
-                  className="bg-blue-500 h-full transition-all duration-300"
-                  style={{ width: `${progressPct}%` }}
-                />
+
+              {/* Quantity Input */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground flex items-center space-x-2">
+                  <Users className="h-4 w-4 text-green-500" />
+                  <span>Quantity</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="1"
+                    max={maxPer}
+                    value={quantity}
+                    onChange={(e) => handleQuantityChange(e.target.value)}
+                    className="w-full p-4 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  />
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">
+                    Max {maxPer}
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* Network Selection */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Network</label>
-              <select
-                value={chainId}
-                onChange={(e) => setChainId(e.target.value as ChainId)}
-                className="w-full p-3 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                {Object.entries(CHAINS).map(([id, chain]) => (
-                  <option key={id} value={id}>
-                    {chain.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* NFT Type Selection */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">NFT Type</label>
-              <select
-                value={nftType}
-                onChange={(e) => setNftType(e.target.value as NftType)}
-                className="w-full p-3 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                {["seed", "tree", "solar", "compute"].map((type) => (
-                  <option key={type} value={type}>
-                    {type.charAt(0).toUpperCase() + type.slice(1)}Pass
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Quantity Input */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Quantity</label>
-              <input
-                type="number"
-                min="1"
-                max={maxPer}
-                value={quantity}
-                onChange={(e) => handleQuantityChange(e.target.value)}
-                className="w-full p-3 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-              <p className="text-xs text-muted-foreground">
-                Max {maxPer} per wallet
-              </p>
-            </div>
-
-            {/* KOL Referral ID */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">ID</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="6 digits (Optional - Only input an ID if you were given one)"
-                  value={kolDigits}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
-                    setKolDigits(value);
-                  }}
-                  readOnly={kolLocked}
-                  className={`w-full p-3 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent ${
-                    kolLocked ? "bg-muted cursor-not-allowed" : ""
-                  }`}
-                />
+              {/* KOL Referral ID */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground flex items-center space-x-2">
+                  <Gift className="h-4 w-4 text-orange-500" />
+                  <span>Referral ID (Optional)</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Enter 6-digit referral code"
+                    value={kolDigits}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, "").slice(0, 6);
+                      setKolDigits(value);
+                    }}
+                    readOnly={kolLocked}
+                    className={`w-full p-4 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      kolLocked ? "bg-slate-100 dark:bg-slate-600 cursor-not-allowed" : ""
+                    }`}
+                  />
+                  {kolLocked && (
+                    <Lock className="absolute right-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  )}
+                </div>
                 {kolLocked && (
-                  <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <p className="text-xs text-muted-foreground flex items-center space-x-1">
+                    <Info className="h-3 w-3" />
+                    <span>ID locked from referral link</span>
+                  </p>
                 )}
               </div>
-              {kolLocked && (
-                <p className="text-xs text-muted-foreground">
-                  ID locked from referral link
-                </p>
-              )}
             </div>
 
             {/* KOL Referral Banner */}
             {fullKolId && (
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <div className="h-2 w-2 bg-purple-500 rounded-full animate-pulse" />
-                    <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
-                      Referred by: {fullKolId}
-                    </span>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                      <Gift className="h-4 w-4 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                        Referred by: {fullKolId}
+                      </div>
+                      <div className="text-xs text-purple-600 dark:text-purple-400">
+                        You'll receive referral benefits
+                      </div>
+                    </div>
                   </div>
                   <button
                     onClick={handleCopyReferralLink}
-                    className="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 transition-colors"
+                    className="p-2 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 hover:bg-purple-100 dark:hover:bg-purple-900/20 rounded-lg transition-all duration-200"
                   >
                     <Copy className="h-4 w-4" />
                   </button>
@@ -347,21 +430,31 @@ export default function MintingContent() {
             )}
 
             {/* Price Summary */}
-            <div className="space-y-1 text-sm text-muted-foreground">
-              <p>Unit Price: ${unitPrice} USDT</p>
-              <p className="font-semibold text-foreground">
-                Total: {(unitPrice * Number(quantity || 0)).toFixed(2)} USDT
-              </p>
-              {account && (
-                <p className="text-xs text-muted-foreground">
-                  Payment will be processed in USDT only
-                </p>
-              )}
-              {account && (
-                <p className="text-xs text-muted-foreground">
-                  Your USDT: {usdtBalance} USDT
-                </p>
-              )}
+            <div className="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-700 dark:to-slate-600 rounded-xl p-4 border border-slate-200 dark:border-slate-600">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Unit Price</span>
+                  <span className="font-medium text-foreground">${unitPrice} USDT</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Quantity</span>
+                  <span className="font-medium text-foreground">{quantity}</span>
+                </div>
+                <div className="border-t border-slate-200 dark:border-slate-500 pt-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-semibold text-foreground">Total</span>
+                    <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                      ${(unitPrice * Number(quantity || 0)).toFixed(2)} USDT
+                    </span>
+                  </div>
+                </div>
+                {account && (
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>Your USDT Balance</span>
+                    <span>{usdtBalance} USDT</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Mint Button */}
@@ -375,59 +468,103 @@ export default function MintingContent() {
                 !configAvailable ||
                 !mintingActiveUi
               }
-              className="w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+              className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-slate-300 disabled:to-slate-400 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl disabled:shadow-none disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center space-x-3 group"
             >
               {isMinting ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Minting...</span>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>Minting Your NFT...</span>
                 </>
               ) : (
-                <span>Mint {quantity} {nftType.charAt(0).toUpperCase() + nftType.slice(1)}Pass</span>
+                <>
+                  <span>Mint {quantity} {nftType.charAt(0).toUpperCase() + nftType.slice(1)}Pass</span>
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" />
+                </>
               )}
             </button>
+
+            {/* Security Notice */}
+            <div className="flex items-start space-x-3 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-xl">
+              <Shield className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-green-700 dark:text-green-300">
+                <div className="font-medium mb-1">Secure Transaction</div>
+                <div>Your payment is processed securely through USDT on the blockchain. No personal data is stored.</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Success Modal */}
       {showSuccessModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-card rounded-lg p-6 max-w-md w-full">
-            <div className="text-center space-y-4">
-              <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
-              <h3 className="text-lg font-semibold text-foreground">Mint Successful!</h3>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/50 p-8 max-w-md w-full">
+            <div className="text-center space-y-6">
+              {/* Success Icon */}
+              <div className="relative">
+                <div className="w-20 h-20 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                  <CheckCircle className="h-10 w-10 text-white" />
+                </div>
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                  <Sparkles className="h-3 w-3 text-white" />
+                </div>
+              </div>
+
+              {/* Success Message */}
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-foreground">Mint Successful!</h3>
+                <p className="text-muted-foreground">
+                  Your NFT has been minted and added to your wallet
+                </p>
+              </div>
+
+              {/* Transaction Details */}
               {mintResults.map((result, index) => (
-                <div key={index} className="space-y-2 text-sm">
-                  <p className="text-muted-foreground">
-                    Successfully minted {result.quantity} {result.nftType.charAt(0).toUpperCase() + result.nftType.slice(1)}Pass
-                  </p>
-                  {result.kolId && (
-                    <p className="text-muted-foreground">
-                      Referred by: {result.kolId}
-                    </p>
-                  )}
-                  <a
-                    href={`${chainInfo.explorer}/tx/${result.hash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center space-x-1 text-primary hover:text-primary/80 transition-colors"
-                  >
-                    <span>View Transaction</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
+                <div key={index} className="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-700 dark:to-slate-600 rounded-xl p-4 border border-slate-200 dark:border-slate-600">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">NFT Type</span>
+                      <span className="font-medium text-foreground">
+                        {result.quantity}x {result.nftType.charAt(0).toUpperCase() + result.nftType.slice(1)}Pass
+                      </span>
+                    </div>
+                    {result.kolId && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Referral</span>
+                        <span className="font-medium text-foreground">{result.kolId}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Network</span>
+                      <span className="font-medium text-foreground">{networkLabel(result.chainId)}</span>
+                    </div>
+                  </div>
                 </div>
               ))}
-              <button
-                onClick={() => setShowSuccessModal(false)}
-                className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                Close
-              </button>
+
+              {/* Action Buttons */}
+              <div className="space-y-3">
+                <a
+                  href={`${chainInfo.explorer}/tx/${mintResults[0]?.hash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  <span>View on Explorer</span>
+                </a>
+                <button
+                  onClick={() => setShowSuccessModal(false)}
+                  className="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-200"
+                >
+                  Continue
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
