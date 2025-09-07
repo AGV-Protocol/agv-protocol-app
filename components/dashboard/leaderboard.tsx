@@ -96,7 +96,7 @@ export function Leaderboard({ kols, className }: LeaderboardProps) {
   const topPerformers = kolPerformance.slice(0, 10);
 
   return (
-    <Card className={cn("h-fit", className)}>
+    <Card className={cn("h-fit w-full overflow-hidden", className)}>
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center space-x-2">
           <Trophy className="h-5 w-5 text-yellow-500" />
@@ -106,8 +106,8 @@ export function Leaderboard({ kols, className }: LeaderboardProps) {
           Top performing KOLs ranked by performance
         </CardDescription>
       </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-3">
+      <CardContent className="pt-0 w-full overflow-hidden">
+        <div className="space-y-3 w-full">
           {topPerformers.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -119,7 +119,7 @@ export function Leaderboard({ kols, className }: LeaderboardProps) {
               <div
                 key={kol.kolId}
                 className={cn(
-                  "flex items-center space-x-3 p-3 rounded-lg border transition-all duration-200",
+                  "flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 p-3 rounded-lg border transition-all duration-200 w-full min-w-0",
                   "hover:bg-muted/50 hover:shadow-sm",
                   {
                     "bg-gradient-to-r from-yellow-50 to-yellow-100/50 border-yellow-200 shadow-sm": index === 0,
@@ -129,48 +129,45 @@ export function Leaderboard({ kols, className }: LeaderboardProps) {
                   }
                 )}
               >
-                {/* Rank */}
-                <div className="flex-shrink-0 w-6">
-                  {getRankIcon(index)}
-                </div>
-
-                {/* Avatar */}
-                <Avatar className="h-8 w-8 flex-shrink-0">
-                  <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${kol.name}`} />
-                  <AvatarFallback className="text-xs">
-                    {kol.name.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-
-                {/* KOL Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <h3 className="font-semibold text-sm truncate">{kol.name}</h3>
-                    {index < 3 && (
-                      <div className="flex-shrink-0">
-                        {getRankBadge(index)}
-                      </div>
-                    )}
+                {/* Top row - Rank, Avatar, and KOL Info */}
+                <div className="flex items-center space-x-3 flex-1 min-w-0">
+                  {/* Rank */}
+                  <div className="flex-shrink-0 w-6">
+                    {getRankIcon(index)}
                   </div>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {kol.kolId}
-                  </p>
+
+                  {/* Avatar */}
+                  <Avatar className="h-8 w-8 flex-shrink-0">
+                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${kol.name}`} />
+                    <AvatarFallback className="text-xs">
+                      {kol.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  {/* KOL Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <h3 className="font-semibold text-sm truncate">{kol.name}</h3>
+                      {index < 3 && (
+                        <div className="flex-shrink-0">
+                          {getRankBadge(index)}
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {kol.kolId}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Performance Metrics - Stacked for better mobile view */}
-                <div className="flex-shrink-0 text-right">
-                  <div className="space-y-1">
-                    <div>
-                      <div className="font-semibold text-primary text-sm">
-                        {kol.totalMints}
-                      </div>
-                      <div className="text-xs text-muted-foreground">Mints</div>
+                {/* Bottom row - Performance Metrics */}
+                <div className="flex items-center justify-between sm:justify-end sm:space-x-4">
+                  <div className="text-left sm:text-right">
+                    <div className="font-semibold text-primary text-sm">
+                      {kol.totalMints} mints
                     </div>
-                    <div>
-                      <div className="font-semibold text-green-600 text-sm">
-                        ${kol.totalValue.toLocaleString()}
-                      </div>
-                      <div className="text-xs text-muted-foreground">Value</div>
+                    <div className="text-xs text-muted-foreground">
+                      ${kol.totalValue.toLocaleString()} value
                     </div>
                   </div>
                 </div>
@@ -182,7 +179,7 @@ export function Leaderboard({ kols, className }: LeaderboardProps) {
         {/* Summary Stats */}
         {topPerformers.length > 0 && (
           <div className="mt-4 pt-4 border-t">
-            <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
               <div>
                 <div className="text-lg font-bold text-primary">
                   {topPerformers.reduce((sum, kol) => sum + kol.totalMints, 0)}

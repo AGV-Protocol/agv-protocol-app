@@ -196,22 +196,24 @@ export default function DashboardPage() {
       }}
       onSignOut={doSignOut}
     >
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Dashboard Overview</h1>
-            <p className="text-muted-foreground">
+      <div className="space-y-6 w-full min-w-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold">Dashboard Overview</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">
               Welcome to the AGV Protocol admin dashboard
             </p>
           </div>
           
-          <RealTimeRefresh
-            onRefresh={refreshData}
-            isRefreshing={loading}
-            lastUpdated={lastUpdated || undefined}
-            autoRefresh={autoRefresh}
-            onToggleAutoRefresh={setAutoRefresh}
-          />
+          <div className="flex-shrink-0">
+            <RealTimeRefresh
+              onRefresh={refreshData}
+              isRefreshing={loading}
+              lastUpdated={lastUpdated || undefined}
+              autoRefresh={autoRefresh}
+              onToggleAutoRefresh={setAutoRefresh}
+            />
+          </div>
         </div>
 
         <Suspense fallback={<LoadingSpinner size="lg" text="Loading stats..." />}>
@@ -219,16 +221,16 @@ export default function DashboardPage() {
         </Suspense>
 
         {/* Main Content Grid */}
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2 w-full">
           {/* Left Column - Traditional Leaderboard */}
-          <div className="order-2 lg:order-1">
+          <div className="order-2 lg:order-1 w-full min-w-0">
             <Suspense fallback={<LoadingSpinner size="lg" text="Loading leaderboard..." />}>
               <Leaderboard kols={kols} />
             </Suspense>
           </div>
 
           {/* Right Column - Recent Activity */}
-          <div className="order-1 lg:order-2">
+          <div className="order-1 lg:order-2 w-full min-w-0">
             <Suspense fallback={<LoadingSpinner size="lg" text="Loading activity..." />}>
               <RecentActivity
                 mintEvents={mintDocs.flatMap(doc => doc.events || [])}

@@ -66,7 +66,7 @@ export function Footer() {
   return (
     <footer className="bg-background border-t">
       {/* Newsletter Section */}
-      <div className="border-b bg-muted/30">
+      {/* <div className="border-b bg-muted/30">
         <div className="container py-8 md:py-12">
           <div className="max-w-4xl mx-auto text-center space-y-4 md:space-y-6">
             <div className="space-y-2">
@@ -93,7 +93,7 @@ export function Footer() {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Footer Content */}
       <div className="container py-8 md:py-16">

@@ -22,7 +22,7 @@ interface HeroSectionProps {
 export function HeroSection({ className }: HeroSectionProps) {
   return (
     <section className={cn(
-      "relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5",
+      "relative overflow-hidden bg-gradient-to-br from-secondary via-background to-primary",
       className
     )}>
       {/* Enhanced Background Elements */}
@@ -31,21 +31,31 @@ export function HeroSection({ className }: HeroSectionProps) {
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
         
         {/* Animated Gradient Orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-pulse delay-2000" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-glow" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-glow delay-1000" />
+        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-glow delay-2000" />
+        <div className="absolute top-3/4 left-1/3 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-glow delay-3000" />
         
         {/* Floating Geometric Shapes */}
-        <div className="absolute top-20 left-10 w-4 h-4 bg-primary/20 rotate-45 animate-bounce delay-300" />
-        <div className="absolute top-40 right-20 w-6 h-6 bg-secondary/20 rounded-full animate-bounce delay-700" />
-        <div className="absolute bottom-32 left-1/4 w-3 h-3 bg-accent/20 rotate-12 animate-bounce delay-1000" />
-        <div className="absolute bottom-20 right-1/3 w-5 h-5 bg-primary/20 rounded-full animate-bounce delay-500" />
+        <div className="absolute top-20 left-10 w-4 h-4 bg-primary/20 rotate-45 animate-float delay-300" />
+        <div className="absolute top-40 right-20 w-6 h-6 bg-secondary/20 rounded-full animate-drift delay-700" />
+        <div className="absolute bottom-32 left-1/4 w-3 h-3 bg-accent/20 rotate-12 animate-float delay-1000" />
+        <div className="absolute bottom-20 right-1/3 w-5 h-5 bg-primary/20 rounded-full animate-drift delay-500" />
+        <div className="absolute top-1/3 right-10 w-2 h-2 bg-secondary/30 rotate-45 animate-float delay-1500" />
+        <div className="absolute bottom-1/3 left-20 w-4 h-4 bg-accent/25 rounded-full animate-drift delay-2000" />
         
         {/* Subtle Mesh Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-primary/3 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-secondary/2 to-transparent" />
         
         {/* Radial Gradient from Center */}
         <div className="absolute inset-0 bg-radial-gradient from-primary/5 via-transparent to-transparent" />
+        
+        {/* Additional Depth Layers */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-background/5 to-transparent" />
+        
+        {/* Subtle Noise Texture */}
+        <div className="absolute inset-0 opacity-[0.02] bg-[url('data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E')]" />
       </div>
       
       <div className="container relative py-24 lg:py-32">

@@ -125,7 +125,7 @@ export function RecentActivity({ mintEvents, kols, className }: RecentActivityPr
   };
 
   return (
-    <Card className={cn("", className)}>
+    <Card className={cn("w-full overflow-hidden", className)}>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <Activity className="h-5 w-5 text-blue-500" />
@@ -135,8 +135,8 @@ export function RecentActivity({ mintEvents, kols, className }: RecentActivityPr
           Latest NFT minting activity across all KOLs and networks
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
+      <CardContent className="w-full overflow-hidden">
+        <div className="space-y-3 w-full">
           {recentEvents.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -151,51 +151,54 @@ export function RecentActivity({ mintEvents, kols, className }: RecentActivityPr
               return (
                 <div
                   key={`${event.txHash}-${index}`}
-                  className="flex items-center space-x-3 p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
+                  className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors w-full min-w-0"
                 >
-                  {/* NFT Type Indicator */}
-                  <div className="flex-shrink-0">
-                    <div className={cn(
-                      "w-3 h-3 rounded-full",
-                      getNFTTypeColor(event.nftType)
-                    )} />
+                  {/* Top row - NFT Type, Avatar, and KOL Info */}
+                  <div className="flex items-center space-x-3 flex-1 min-w-0">
+                    {/* NFT Type Indicator */}
+                    <div className="flex-shrink-0">
+                      <div className={cn(
+                        "w-3 h-3 rounded-full",
+                        getNFTTypeColor(event.nftType)
+                      )} />
+                    </div>
+
+                    {/* KOL Avatar */}
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage 
+                        src={kol ? `https://api.dicebear.com/7.x/initials/svg?seed=${kol.name}` : undefined} 
+                      />
+                      <AvatarFallback className="text-xs">
+                        {kol ? kol.name.charAt(0).toUpperCase() : "?"}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    {/* Activity Details */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <p className="text-sm font-medium truncate">
+                          {kol ? kol.name : "Unknown KOL"}
+                        </p>
+                        <Badge variant="outline" className="text-xs">
+                          {getNFTTypeName(event.nftType)}
+                        </Badge>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+                        <span className="whitespace-nowrap">Minted {event.quantity}x</span>
+                        <span>•</span>
+                        <span className="whitespace-nowrap">${totalValue.toLocaleString()}</span>
+                        <span>•</span>
+                        <span className="flex items-center space-x-1 whitespace-nowrap">
+                          <span>{getChainIcon(event.chainId)}</span>
+                          <span>{CHAIN_NAMES[event.chainId as keyof typeof CHAIN_NAMES] || event.chainId}</span>
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* KOL Avatar */}
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage 
-                      src={kol ? `https://api.dicebear.com/7.x/initials/svg?seed=${kol.name}` : undefined} 
-                    />
-                    <AvatarFallback className="text-xs">
-                      {kol ? kol.name.charAt(0).toUpperCase() : "?"}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  {/* Activity Details */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2">
-                      <p className="text-sm font-medium truncate">
-                        {kol ? kol.name : "Unknown KOL"}
-                      </p>
-                      <Badge variant="outline" className="text-xs">
-                        {getNFTTypeName(event.nftType)}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                      <span>Minted {event.quantity}x</span>
-                      <span>•</span>
-                      <span>${totalValue.toLocaleString()}</span>
-                      <span>•</span>
-                      <span className="flex items-center space-x-1">
-                        <span>{getChainIcon(event.chainId)}</span>
-                        <span>{CHAIN_NAMES[event.chainId as keyof typeof CHAIN_NAMES] || event.chainId}</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Time and Actions */}
-                  <div className="flex items-center space-x-2">
-                    <div className="text-right">
+                  {/* Bottom row - Time and Actions */}
+                  <div className="flex items-center justify-between sm:justify-end sm:space-x-2">
+                    <div className="text-left sm:text-right">
                       <div className="text-xs text-muted-foreground flex items-center space-x-1">
                         <Clock className="h-3 w-3" />
                         <span>{formatTimeAgo(event.timestamp)}</span>
@@ -228,7 +231,7 @@ export function RecentActivity({ mintEvents, kols, className }: RecentActivityPr
         {/* Activity Summary */}
         {recentEvents.length > 0 && (
           <div className="mt-6 pt-4 border-t">
-            <div className="grid grid-cols-4 gap-4 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
               <div>
                 <div className="text-lg font-bold text-primary">
                   {recentEvents.length}
