@@ -470,12 +470,7 @@ export default function ModernMintingInterface() {
                     kolLocked && "bg-muted cursor-not-allowed"
                   )}
                 />
-                {fullKolId && (
-                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                    <Shield className="h-4 w-4" />
-                    <span>Full KOL ID: {fullKolId}</span>
-                  </div>
-                )}
+                
               </div>
             </CardContent>
           </Card>
