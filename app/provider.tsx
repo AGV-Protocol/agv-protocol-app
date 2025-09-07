@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { ThirdwebProvider } from "thirdweb/react";
 import { createThirdwebClient } from "thirdweb";
-import { WalletProvider } from "@/components/wallet/wallet-provider";
 
 // Create QueryClient instance
 const queryClient = new QueryClient({
@@ -23,11 +22,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThirdwebProvider client={thirdwebClient}>
-        <WalletProvider>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-            {children}
-          </ThemeProvider>
-        </WalletProvider>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          {children}
+        </ThemeProvider>
       </ThirdwebProvider>
     </QueryClientProvider>
   );

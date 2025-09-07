@@ -27,6 +27,7 @@ import {
   ChevronDown,
   Wallet,
   CreditCard,
+  LogOut,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
@@ -68,7 +69,7 @@ export default function MintingContent() {
   const account = useActiveAccount();
 
   // State
-  const [chainId, setChainId] = useState<ChainId>("56");
+  const [selectedChainId, setSelectedChainId] = useState<ChainId>("56");
   const [nftType, setNftType] = useState<NftType>("seed");
   const [quantity, setQuantity] = useState("1");
   const [kolDigits, setKolDigits] = useState("");
@@ -82,12 +83,24 @@ export default function MintingContent() {
   const [usdtBalance, setUsdtBalance] = useState<string>("0");
 
   // Derived state
-  const chainInfo = CHAINS[chainId];
-  const contractAddr = NFT_CONTRACTS[chainId]?.[nftType];
-  const usdtAddr = USDT_ADDRESSES[chainId];
+  const chainInfo = CHAINS[selectedChainId];
+  const contractAddr = NFT_CONTRACTS[selectedChainId]?.[nftType];
+  const usdtAddr = USDT_ADDRESSES[selectedChainId];
   const contractMode: "public" | "whitelist" = "public"; // Simplified for now
   const capForMode = 10000; // Simplified for now
-  const maxPer = 10; // Simplified for now
+  
+  // Max quantities per NFT type
+  const getMaxQuantity = (nftType: NftType): number => {
+    switch (nftType) {
+      case "seed": return 3;
+      case "tree": return 2;
+      case "solar": return 2;
+      case "compute": return 1;
+      default: return 1;
+    }
+  };
+  
+  const maxPer = getMaxQuantity(nftType);
 
   // Memoized KOL ID
   const fullKolId = useMemo(() => {
@@ -146,6 +159,14 @@ export default function MintingContent() {
     setQuantity(String(numValue));
   };
 
+  // Auto-adjust quantity when NFT type changes
+  useEffect(() => {
+    const currentQuantity = parseInt(quantity) || 1;
+    if (currentQuantity > maxPer) {
+      setQuantity(String(maxPer));
+    }
+  }, [nftType, maxPer, quantity]);
+
   const handleCopyReferralLink = async () => {
     if (!fullKolId) return;
     const url = `${window.location.origin}/${kolDigits}`;
@@ -172,7 +193,7 @@ export default function MintingContent() {
         hash: "0x" + Math.random().toString(16).substr(2, 64),
         quantity: Number(quantity),
         nftType,
-        chainId,
+        chainId: selectedChainId,
         kolId: fullKolId || null,
       };
 
@@ -244,10 +265,10 @@ export default function MintingContent() {
                   </p>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-sm text-muted-foreground">Network</div>
-                <div className="font-medium text-foreground">{networkLabel(chainId)}</div>
-              </div>
+                <div className="text-right">
+                  <div className="text-sm text-muted-foreground">Network</div>
+                  <div className="font-medium text-foreground">{networkLabel(selectedChainId)}</div>
+                </div>
             </div>
 
             {/* Supply Progress */}
@@ -306,8 +327,8 @@ export default function MintingContent() {
                 </label>
                 <div className="relative">
                   <select
-                    value={chainId}
-                    onChange={(e) => setChainId(e.target.value as ChainId)}
+                    value={selectedChainId}
+                    onChange={(e) => setSelectedChainId(e.target.value as ChainId)}
                     className="w-full p-4 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer"
                   >
                     {Object.entries(CHAINS).map(([id, chain]) => (
@@ -327,24 +348,28 @@ export default function MintingContent() {
                   <span>NFT Type</span>
                 </label>
                 <div className="grid grid-cols-2 gap-2">
-                  {["seed", "tree", "solar", "compute"].map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => setNftType(type as NftType)}
-                      className={`p-3 rounded-xl border-2 transition-all duration-200 ${
-                        nftType === type
-                          ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300"
-                          : "border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-500"
-                      }`}
-                    >
-                      <div className="text-sm font-medium">
-                        {type.charAt(0).toUpperCase() + type.slice(1)}Pass
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        ${PASS_PRICES[type as NftType]?.usd ?? 59}
-                      </div>
-                    </button>
-                  ))}
+                  {["seed", "tree", "solar", "compute"].map((type) => {
+                    const typeKey = type as NftType;
+                    const maxQty = getMaxQuantity(typeKey);
+                    return (
+                      <button
+                        key={type}
+                        onClick={() => setNftType(typeKey)}
+                        className={`p-3 rounded-xl border-2 transition-all duration-200 ${
+                          nftType === type
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300"
+                            : "border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-500"
+                        }`}
+                      >
+                        <div className="text-sm font-medium">
+                          {type.charAt(0).toUpperCase() + type.slice(1)}Pass
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          ${PASS_PRICES[typeKey]?.usd ?? 59} • Max {maxQty}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -367,6 +392,9 @@ export default function MintingContent() {
                     Max {maxPer}
                   </div>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Maximum {maxPer} {nftType.charAt(0).toUpperCase() + nftType.slice(1)}Pass per wallet
+                </p>
               </div>
 
               {/* KOL Referral ID */}

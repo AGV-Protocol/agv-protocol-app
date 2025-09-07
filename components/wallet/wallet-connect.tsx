@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { useWallet } from "./wallet-provider";
+import { useActiveAccount, useDisconnect } from "thirdweb/react";
 import { toast } from "sonner";
 
 const CHAINS = {
@@ -22,29 +22,28 @@ const CHAINS = {
 } as const;
 
 export function WalletConnect() {
-  const { isConnected, address, chainId, connectWallet, disconnectWallet, switchChain, isLoading } = useWallet();
+  const account = useActiveAccount();
+  const { disconnect } = useDisconnect();
   const [isSwitching, setIsSwitching] = useState(false);
 
-  const handleConnect = async () => {
-    await connectWallet();
-  };
-
   const handleDisconnect = () => {
-    disconnectWallet();
+    disconnect();
+    toast.success("Wallet disconnected");
   };
 
   const handleCopyAddress = () => {
-    if (address) {
-      navigator.clipboard.writeText(address);
+    if (account?.address) {
+      navigator.clipboard.writeText(account.address);
       toast.success("Address copied to clipboard");
     }
   };
 
   const handleViewExplorer = () => {
-    if (address && chainId) {
-      const chain = CHAINS[chainId as keyof typeof CHAINS];
+    if (account?.address && account?.chain) {
+      const chainId = account.chain.id.toString(16);
+      const chain = CHAINS[`0x${chainId}` as keyof typeof CHAINS];
       if (chain) {
-        window.open(`${chain.explorer}/address/${address}`, "_blank");
+        window.open(`${chain.explorer}/address/${account.address}`, "_blank");
       }
     }
   };
@@ -52,27 +51,31 @@ export function WalletConnect() {
   const handleSwitchChain = async (targetChainId: string) => {
     setIsSwitching(true);
     try {
-      await switchChain(targetChainId);
+      // For now, we'll just show a message since thirdweb handles chain switching differently
+      toast.info("Chain switching is handled by the wallet");
     } finally {
       setIsSwitching(false);
     }
   };
 
-  if (!isConnected) {
+  if (!account) {
     return (
       <Button
-        onClick={handleConnect}
-        disabled={isLoading}
+        onClick={() => {
+          // This will be handled by the ConnectButton in the minting page
+          toast.info("Please connect your wallet in the minting interface");
+        }}
         className="gap-2"
       >
         <Wallet className="h-4 w-4" />
-        {isLoading ? "Connecting..." : "Connect Wallet"}
+        Connect Wallet
       </Button>
     );
   }
 
-  const currentChain = chainId ? CHAINS[chainId as keyof typeof CHAINS] : null;
-  const shortAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "";
+  const chainId = account.chain?.id.toString(16);
+  const currentChain = chainId ? CHAINS[`0x${chainId}` as keyof typeof CHAINS] : null;
+  const shortAddress = account.address ? `${account.address.slice(0, 6)}...${account.address.slice(-4)}` : "";
 
   return (
     <div className="flex items-center gap-3">
@@ -96,7 +99,7 @@ export function WalletConnect() {
           <CardHeader className="p-4 pb-2">
             <CardTitle className="text-sm">Connected Wallet</CardTitle>
             <CardDescription className="text-xs">
-              {address}
+              {account.address}
             </CardDescription>
           </CardHeader>
           
@@ -134,10 +137,10 @@ export function WalletConnect() {
                   size="sm"
                   className="w-full justify-start h-8 text-xs"
                   onClick={() => handleSwitchChain(chainId)}
-                  disabled={isSwitching || chainId === chainId}
+                  disabled={isSwitching}
                 >
                   {chain.name}
-                  {chainId === chainId && (
+                  {chainId === `0x${account.chain?.id.toString(16)}` && (
                     <Badge variant="secondary" className="ml-auto text-xs">
                       Current
                     </Badge>
@@ -161,9 +164,9 @@ export function WalletConnect() {
 }
 
 export function WalletStatus() {
-  const { isConnected, address, chainId } = useWallet();
+  const account = useActiveAccount();
 
-  if (!isConnected) {
+  if (!account) {
     return (
       <Card className="border-amber-200 bg-amber-50">
         <CardContent className="p-4">
@@ -181,7 +184,8 @@ export function WalletStatus() {
     );
   }
 
-  const currentChain = chainId ? CHAINS[chainId as keyof typeof CHAINS] : null;
+  const chainId = account.chain?.id.toString(16);
+  const currentChain = chainId ? CHAINS[`0x${chainId}` as keyof typeof CHAINS] : null;
 
   return (
     <Card className="border-green-200 bg-green-50">
@@ -191,7 +195,7 @@ export function WalletStatus() {
           <div>
             <p className="font-medium text-green-800">Wallet Connected</p>
             <p className="text-sm text-green-700">
-              {address?.slice(0, 6)}...{address?.slice(-4)} on {currentChain?.name}
+              {account.address?.slice(0, 6)}...{account.address?.slice(-4)} on {currentChain?.name}
             </p>
           </div>
         </div>
