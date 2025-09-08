@@ -20,7 +20,9 @@ import {
   Star,
   TrendingUp,
   Lock,
-  Settings
+  Settings,
+  MessageCircle,
+  Send
 } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
@@ -54,22 +56,28 @@ export default function HomePage() {
 
   const socialLinks = [
     {
+      name: "GitHub",
+      icon: <Github className="h-5 w-5" />,
+      url: "https://github.com/AGV-Protocol/",
+      stars: "2.1K"
+    },
+    {
       name: "Twitter",
       icon: <Twitter className="h-5 w-5" />,
-      url: "https://twitter.com/agvprotocol",
+      url: "https://x.com/agv_partners",
       followers: "12.5K"
     },
     {
       name: "Discord",
-      icon: <Globe className="h-5 w-5" />,
-      url: "https://discord.gg/agvprotocol",
+      icon: <MessageCircle className="h-5 w-5" />,
+      url: "https://discord.gg/JP9RtzM2SC",
       members: "8.2K"
     },
     {
-      name: "GitHub",
-      icon: <Github className="h-5 w-5" />,
-      url: "https://github.com/agvprotocol",
-      stars: "2.1K"
+      name: "Telegram",
+      icon: <Send className="h-5 w-5" />,
+      url: "https://t.me/agvprotocol",
+      members: "5.8K"
     }
   ];
 
@@ -340,7 +348,7 @@ export default function HomePage() {
             <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
             Community
           </h3>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {socialLinks.map((social, index) => (
               <div key={index} className="bg-white border border-gray-200 rounded-2xl p-6 group hover:shadow-lg transition-all duration-300">
                 <div className="flex items-center space-x-3 mb-3">

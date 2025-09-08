@@ -125,22 +125,67 @@ async function fetchOwnedTokenIdsRobust(nftContract: any, owner: string): Promis
 }
 
 // ---------- Firestore helpers (optional) ----------
-async function logStake(address: string, chainKey: ChainKey, collectionType: "seed" | "tree" | "solar" | "compute", tokenIds: bigint[]) {
+async function logStake(address: string, chainKey: ChainKey, collectionType: "seed" | "tree" | "solar" | "compute", tokenIds: bigint[], duration: number) {
   try {
+    const stakedAt = Math.floor(Date.now() / 1000);
+    const unlockTime = stakedAt + (duration * 24 * 60 * 60); // Convert days to seconds
+    
+    // Store individual token staking info
+    for (const tokenId of tokenIds) {
+      await addDoc(collection(db, "staking_positions"), {
+        address,
+        chain: chainKey,
+        collection: collectionType,
+        tokenId: tokenId.toString(),
+        stakedAt: Timestamp.fromMillis(stakedAt * 1000),
+        duration, // in days
+        unlockTime: Timestamp.fromMillis(unlockTime * 1000),
+        nft: NFT_CONTRACTS[chainKey][collectionType],
+        stakeContract: STAKE_CONTRACTS[chainKey][collectionType],
+        status: "active", // active, withdrawn
+      });
+    }
+    
+    // Also keep the original logging for backward compatibility
     await addDoc(collection(db, "stakes_v1"), {
       address,
       chain: chainKey,
       collection: collectionType,
       tokenIds: tokenIds.map((t) => t.toString()),
       at: Timestamp.now(),
+      duration,
+      unlockTime: Timestamp.fromMillis(unlockTime * 1000),
       nft: NFT_CONTRACTS[chainKey][collectionType],
       stakeContract: STAKE_CONTRACTS[chainKey][collectionType],
     });
-  } catch {}
+  } catch (error) {
+    console.error("Error logging stake to Firebase:", error);
+  }
 }
 async function logWithdraw(address: string, chainKey: ChainKey, collectionType: "seed" | "tree" | "solar" | "compute", tokenIds: bigint[]) {
   try {
-    // delete matching stake docs (simple: best-effort)
+    // Update staking_positions to mark as withdrawn
+    const positionsQuery = query(
+      collection(db, "staking_positions"),
+      where("address", "==", address),
+      where("chain", "==", chainKey),
+      where("collection", "==", collectionType),
+      where("status", "==", "active")
+    );
+    const positionsSnap = await getDocs(positionsQuery);
+    
+    for (const docSnap of positionsSnap.docs) {
+      const data = docSnap.data();
+      if (tokenIds.map(String).includes(data.tokenId)) {
+        await addDoc(collection(db, "staking_positions"), {
+          ...data,
+          status: "withdrawn",
+          withdrawnAt: Timestamp.now(),
+        });
+      }
+    }
+    
+    // Also keep the original logging for backward compatibility
     const q = query(
       collection(db, "stakes_v1"),
       where("address", "==", address),
@@ -155,7 +200,9 @@ async function logWithdraw(address: string, chainKey: ChainKey, collectionType: 
       if (overlap) toRemove.push(d.id);
     });
     await Promise.all(toRemove.map((id) => deleteDoc(doc(db, "stakes_v1", id))));
-  } catch {}
+  } catch (error) {
+    console.error("Error logging withdraw to Firebase:", error);
+  }
 }
 
 // ---------- Main Page ----------
@@ -180,6 +227,10 @@ export default function StakingPage() {
   const [pendingRewards, setPendingRewards] = useState<bigint>(BigInt(0));
   const [timeUnit, setTimeUnit] = useState<bigint>(BigInt(86400));
   const [rewardsPerUnit, setRewardsPerUnit] = useState<bigint>(BigInt(0));
+
+  // Staking duration state
+  const [stakingDuration, setStakingDuration] = useState<number>(1); // Minimum 1 day
+  const [stakedTokensInfo, setStakedTokensInfo] = useState<Record<string, { stakedAt: number; duration: number }>>({});
 
   // Ensure wallet chain matches tab
   useEffect(() => {
@@ -241,8 +292,108 @@ export default function StakingPage() {
 
       setTimeUnit(tu);
       setRewardsPerUnit(rpu);
+
+      // Fetch staked tokens information
+      await refreshStakedTokensInfo();
     } catch (err) {
       // ignore on fresh deploy with 0s
+    }
+  }
+
+  async function refreshStakedTokensInfo() {
+    if (!account?.address) return;
+    try {
+      const stakedTokens = (await readContract({
+        contract: stake,
+        method: "getStakedTokens",
+        params: [account.address],
+      })) as bigint[];
+
+      // Fetch staking info from Firebase
+      const positionsQuery = query(
+        collection(db, "staking_positions"),
+        where("address", "==", account.address),
+        where("chain", "==", chainKey),
+        where("collection", "==", selectedCollection),
+        where("status", "==", "active")
+      );
+      
+      const positionsSnap = await getDocs(positionsQuery);
+      const stakingInfo: Record<string, { stakedAt: number; duration: number }> = {};
+      
+      positionsSnap.forEach((doc) => {
+        const data = doc.data();
+        const tokenId = data.tokenId;
+        const stakedAt = data.stakedAt.toMillis() / 1000; // Convert to seconds
+        const duration = data.duration;
+        
+        stakingInfo[tokenId] = {
+          stakedAt,
+          duration
+        };
+      });
+      
+      // If no Firebase data found, try to migrate from localStorage (one-time migration)
+      if (Object.keys(stakingInfo).length === 0) {
+        await migrateFromLocalStorage();
+        // Retry fetching from Firebase after migration
+        const retrySnap = await getDocs(positionsQuery);
+        retrySnap.forEach((doc) => {
+          const data = doc.data();
+          const tokenId = data.tokenId;
+          const stakedAt = data.stakedAt.toMillis() / 1000;
+          const duration = data.duration;
+          
+          stakingInfo[tokenId] = {
+            stakedAt,
+            duration
+          };
+        });
+      }
+      
+      setStakedTokensInfo(stakingInfo);
+    } catch (err) {
+      console.error("Error fetching staked tokens info:", err);
+    }
+  }
+
+  // One-time migration function from localStorage to Firebase
+  async function migrateFromLocalStorage() {
+    if (!account?.address) return;
+    
+    try {
+      const storageKey = `staking_info_${account.address}_${chainKey}_${selectedCollection}`;
+      const storedInfo = localStorage.getItem(storageKey);
+      
+      if (storedInfo) {
+        const localStakingInfo = JSON.parse(storedInfo);
+        
+        // Migrate each token to Firebase
+        for (const [tokenId, info] of Object.entries(localStakingInfo)) {
+          const { stakedAt, duration } = info as { stakedAt: number; duration: number };
+          const unlockTime = stakedAt + (duration * 24 * 60 * 60);
+          
+          await addDoc(collection(db, "staking_positions"), {
+            address: account.address,
+            chain: chainKey,
+            collection: selectedCollection,
+            tokenId,
+            stakedAt: Timestamp.fromMillis(stakedAt * 1000),
+            duration,
+            unlockTime: Timestamp.fromMillis(unlockTime * 1000),
+            nft: NFT_CONTRACTS[chainKey][selectedCollection],
+            stakeContract: STAKE_CONTRACTS[chainKey][selectedCollection],
+            status: "active",
+            migrated: true, // Flag to indicate this was migrated
+          });
+        }
+        
+        // Clear localStorage after successful migration
+        localStorage.removeItem(storageKey);
+        console.log("Successfully migrated staking data from localStorage to Firebase");
+      }
+    } catch (error) {
+      console.error("Error migrating from localStorage:", error);
     }
   }
 
@@ -274,6 +425,7 @@ export default function StakingPage() {
   async function handleStake(tokenIds: bigint[]) {
     if (!account?.address) return toast.error("Connect wallet first");
     if (tokenIds.length === 0) return toast.error("Select or input at least one tokenId");
+    if (stakingDuration < 1) return toast.error("Staking duration must be at least 1 day");
 
     try {
       await ensureChain();
@@ -289,8 +441,10 @@ export default function StakingPage() {
       });
       await sendAndConfirmTransaction({ transaction: tx, account: account! });
       toast.dismiss();
-      toast.success("Staked!");
-      await logStake(account.address, chainKey, selectedCollection, tokenIds);
+      toast.success(`Staked for ${stakingDuration} day${stakingDuration > 1 ? 's' : ''}!`);
+      
+      // Store staking information in Firebase
+      await logStake(account.address, chainKey, selectedCollection, tokenIds, stakingDuration);
       setOwnedIds((prev) => prev.filter((id) => !tokenIds.includes(id)));
       setManualTokenId("");
       refreshStats();
@@ -306,6 +460,30 @@ export default function StakingPage() {
     if (!account?.address) return toast.error("Connect wallet first");
     if (tokenIds.length === 0) return toast.error("Provide tokenId(s) to withdraw");
 
+    // Check if staking duration has elapsed for all tokens using Firebase data
+    const currentTime = Math.floor(Date.now() / 1000);
+    const lockedTokens: string[] = [];
+    
+    // Check each token against Firebase staking info
+    for (const tokenId of tokenIds) {
+      const tokenInfo = stakedTokensInfo[tokenId.toString()];
+      if (tokenInfo) {
+        const elapsedTime = currentTime - tokenInfo.stakedAt;
+        const requiredTime = tokenInfo.duration * 24 * 60 * 60; // Convert days to seconds
+        
+        if (elapsedTime < requiredTime) {
+          const remainingTime = requiredTime - elapsedTime;
+          const remainingDays = Math.ceil(remainingTime / (24 * 60 * 60));
+          lockedTokens.push(`${tokenId.toString()} (${remainingDays} day${remainingDays > 1 ? 's' : ''} remaining)`);
+        }
+      }
+    }
+    
+    if (lockedTokens.length > 0) {
+      toast.error(`Cannot withdraw tokens: ${lockedTokens.join(', ')}. Staking duration not yet completed.`);
+      return;
+    }
+
     try {
       await ensureChain();
       setWithdrawing(true);
@@ -318,6 +496,8 @@ export default function StakingPage() {
       await sendAndConfirmTransaction({ transaction: tx, account: account! });
       toast.dismiss();
       toast.success("Withdrawn!");
+      
+      // Update Firebase to mark tokens as withdrawn
       await logWithdraw(account.address, chainKey, selectedCollection, tokenIds);
       refreshStats();
       // You may also push IDs back to owned list
@@ -356,7 +536,7 @@ export default function StakingPage() {
                 <p className="text-sm sm:text-base md:text-lg text-white/80 max-w-2xl">
                   Stake your <span className="font-semibold text-cyan-300">{selectedCollection.charAt(0).toUpperCase() + selectedCollection.slice(1)}</span> NFTs on{" "}
                   <span className="font-semibold text-blue-300">{CHAIN_CONFIG[chainKey].label}</span> to earn rewards. 
-                  No lock-up period - withdraw anytime.
+                  Set your staking duration (minimum 1 day) - tokens are locked until the period expires.
                 </p>
                 <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 sm:mt-4">
                   <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30 backdrop-blur-sm">
@@ -456,6 +636,40 @@ export default function StakingPage() {
             </div>
                   </div>
                 </div>
+
+        {/* Staking Duration Selection */}
+        <div className="mt-6 bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
+          <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
+            <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+            Select Staking Duration
+          </h3>
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <label htmlFor="duration" className="text-white/80 text-sm font-medium">
+                Duration (days):
+              </label>
+              <input
+                id="duration"
+                type="number"
+                min="1"
+                max="365"
+                value={stakingDuration}
+                onChange={(e) => setStakingDuration(Math.max(1, parseInt(e.target.value) || 1))}
+                className="w-20 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-center"
+              />
+            </div>
+            <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Lock className="w-4 h-4 text-purple-300" />
+                <span className="text-purple-300 text-sm font-medium">Lock Period</span>
+              </div>
+              <p className="text-white/70 text-xs">
+                Your NFTs will be locked for <span className="font-semibold text-purple-300">{stakingDuration} day{stakingDuration > 1 ? 's' : ''}</span>. 
+                You cannot withdraw them until this period expires.
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* Stats Dashboard */}
         <div className="mt-8">
@@ -593,6 +807,10 @@ export default function StakingPage() {
           <WithdrawBox
             withdrawing={withdrawing}
             onWithdraw={async (ids) => { await handleWithdraw(ids); }}
+            stakedTokensInfo={stakedTokensInfo}
+            chainKey={chainKey}
+            selectedCollection={selectedCollection}
+            account={account}
           />
         </div>
 
@@ -737,9 +955,17 @@ function OwnedTokensList({
 function WithdrawBox({
   withdrawing,
   onWithdraw,
+  stakedTokensInfo,
+  chainKey,
+  selectedCollection,
+  account,
 }: {
   withdrawing: boolean;
   onWithdraw: (ids: bigint[]) => Promise<void>;
+  stakedTokensInfo: Record<string, { stakedAt: number; duration: number }>;
+  chainKey: ChainKey;
+  selectedCollection: "seed" | "tree" | "solar" | "compute";
+  account: any;
 }) {
   const [raw, setRaw] = useState("");
 
@@ -753,6 +979,34 @@ function WithdrawBox({
 
   const ids = parseIds(raw);
 
+  // Check staking status for each token
+  const getTokenStatus = (tokenId: bigint) => {
+    const tokenInfo = stakedTokensInfo[tokenId.toString()];
+    if (!tokenInfo) return null;
+    
+    const currentTime = Math.floor(Date.now() / 1000);
+    const elapsedTime = currentTime - tokenInfo.stakedAt;
+    const requiredTime = tokenInfo.duration * 24 * 60 * 60;
+    const remainingTime = requiredTime - elapsedTime;
+    
+    if (remainingTime > 0) {
+      const remainingDays = Math.ceil(remainingTime / (24 * 60 * 60));
+      return { locked: true, remainingDays };
+    }
+    
+    return { locked: false, remainingDays: 0 };
+  };
+
+  const lockedTokens = ids.filter(id => {
+    const status = getTokenStatus(id);
+    return status?.locked;
+  });
+
+  const availableTokens = ids.filter(id => {
+    const status = getTokenStatus(id);
+    return !status?.locked;
+  });
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-3">
@@ -763,9 +1017,9 @@ function WithdrawBox({
           className="flex-1 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-500/50"
         />
         <button
-          onClick={() => onWithdraw(ids)}
+          onClick={() => onWithdraw(availableTokens)}
           className="px-4 sm:px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-          disabled={withdrawing || ids.length === 0}
+          disabled={withdrawing || availableTokens.length === 0}
         >
           {withdrawing ? (
             <div className="flex items-center gap-2">
@@ -775,20 +1029,45 @@ function WithdrawBox({
           ) : (
             <div className="flex items-center gap-2">
               <Unlock className="w-4 h-4" />
-              Withdraw
+              Withdraw Available
             </div>
           )}
         </button>
       </div>
       
       {ids.length > 0 && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-            <span className="text-red-300 text-sm font-medium">
-              {ids.length} token ID{ids.length > 1 ? 's' : ''} ready to withdraw: {ids.map(id => id.toString()).join(', ')}
-            </span>
-          </div>
+        <div className="space-y-3">
+          {availableTokens.length > 0 && (
+            <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-400" />
+                <span className="text-green-300 text-sm font-medium">
+                  {availableTokens.length} token{availableTokens.length > 1 ? 's' : ''} ready to withdraw: {availableTokens.map(id => id.toString()).join(', ')}
+                </span>
+              </div>
+            </div>
+          )}
+          
+          {lockedTokens.length > 0 && (
+            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Lock className="w-4 h-4 text-yellow-400" />
+                <span className="text-yellow-300 text-sm font-medium">
+                  {lockedTokens.length} token{lockedTokens.length > 1 ? 's' : ''} still locked
+                </span>
+              </div>
+              <div className="space-y-1">
+                {lockedTokens.map(tokenId => {
+                  const status = getTokenStatus(tokenId);
+                  return (
+                    <div key={tokenId.toString()} className="text-yellow-200 text-xs">
+                      Token {tokenId.toString()}: {status?.remainingDays} day{status?.remainingDays && status.remainingDays > 1 ? 's' : ''} remaining
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

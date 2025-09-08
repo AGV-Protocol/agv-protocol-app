@@ -13,7 +13,9 @@ import {
   Shield,
   Zap,
   Globe,
-  Heart
+  Heart,
+  MessageCircle,
+  Send
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,10 +53,10 @@ export function Footer() {
   };
 
   const socialLinks = [
-    { name: "Twitter", href: "https://twitter.com/agvprotocol", icon: Twitter },
-    { name: "GitHub", href: "https://github.com/agvprotocol", icon: Github },
-    { name: "LinkedIn", href: "https://linkedin.com/company/agvprotocol", icon: Linkedin },
-    { name: "Email", href: "mailto:contact@agvprotocol.com", icon: Mail },
+    { name: "GitHub", href: "https://github.com/AGV-Protocol/", icon: Github },
+    { name: "Twitter", href: "https://x.com/agv_partners", icon: Twitter },
+    { name: "Discord", href: "https://discord.gg/JP9RtzM2SC", icon: MessageCircle },
+    { name: "Telegram", href: "https://t.me/agvprotocol", icon: Send },
   ];
 
   const features = [
