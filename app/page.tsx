@@ -13,7 +13,6 @@ import {
   Users, 
   Globe,
   Twitter,
-  Discord,
   Github,
   FileText,
   ExternalLink,
@@ -56,7 +55,7 @@ export default function HomePage() {
     },
     {
       name: "Discord",
-      icon: <Discord className="h-5 w-5" />,
+      icon: <Globe className="h-5 w-5" />,
       url: "https://discord.gg/agvprotocol",
       members: "8.2K"
     },
