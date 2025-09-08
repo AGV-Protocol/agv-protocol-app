@@ -26,43 +26,43 @@ export default function AdminPage() {
 
   const adminFeatures = [
     {
-      title: "User Management",
-      description: "Manage user roles, permissions, and access controls",
+      title: "User Analytics",
+      description: "Track user engagement, growth metrics, and platform adoption",
       icon: <Users className="h-8 w-8" />,
       color: "bg-blue-500",
       href: "/dashboard"
     },
     {
-      title: "Analytics Dashboard",
-      description: "View platform metrics, user activity, and performance data",
+      title: "Performance Analytics",
+      description: "Monitor platform performance, response times, and system health",
       icon: <BarChart3 className="h-8 w-8" />,
       color: "bg-green-500",
       href: "/dashboard/analytics"
     },
     {
-      title: "KOL Management",
-      description: "Manage Key Opinion Leaders and referral programs",
+      title: "KOL Tracking",
+      description: "Monitor Key Opinion Leader performance and referral metrics",
       icon: <UserCheck className="h-8 w-8" />,
       color: "bg-purple-500",
       href: "/dashboard/kols"
     },
     {
       title: "Activity Monitoring",
-      description: "Monitor user activities and system performance",
+      description: "Real-time tracking of user activities and system events",
       icon: <Activity className="h-8 w-8" />,
       color: "bg-yellow-500",
       href: "/dashboard/activity"
     },
     {
       title: "Performance Metrics",
-      description: "Track platform performance and optimization metrics",
+      description: "Track minting, staking, and token performance across all chains",
       icon: <TrendingUp className="h-8 w-8" />,
       color: "bg-cyan-500",
       href: "/dashboard/performance"
     },
     {
-      title: "System Settings",
-      description: "Configure platform settings and system parameters",
+      title: "System Monitoring",
+      description: "Monitor system configuration and operational parameters",
       icon: <Settings className="h-8 w-8" />,
       color: "bg-orange-500",
       href: "/dashboard/settings"
@@ -71,30 +71,30 @@ export default function AdminPage() {
 
   const quickStats = [
     {
-      title: "Total Users",
+      title: "Active Users",
       value: "2,847",
       change: "+12%",
       icon: <Users className="h-5 w-5" />,
       color: "text-blue-600"
     },
     {
-      title: "Active Sessions",
+      title: "Minting Activity",
       value: "1,234",
       change: "+8%",
-      icon: <Activity className="h-5 w-5" />,
+      icon: <Coins className="h-5 w-5" />,
       color: "text-green-600"
     },
     {
-      title: "Total Revenue",
-      value: "$45,678",
+      title: "Staking Volume",
+      value: "5,678",
       change: "+15%",
-      icon: <Coins className="h-5 w-5" />,
+      icon: <Zap className="h-5 w-5" />,
       color: "text-purple-600"
     },
     {
-      title: "System Health",
-      value: "98%",
-      change: "+2%",
+      title: "System Uptime",
+      value: "99.8%",
+      change: "+0.2%",
       icon: <Shield className="h-5 w-5" />,
       color: "text-green-600"
     }
@@ -109,10 +109,10 @@ export default function AdminPage() {
           <div className="relative z-10 text-center space-y-6">
             <div className="space-y-4">
               <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700 bg-clip-text text-transparent">
-                Admin Panel
+                System Dashboard
               </h1>
               <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-                Manage and monitor the AGV Protocol platform. Access comprehensive tools for user management, analytics, and system configuration.
+                Monitor and track all AGV Protocol functionalities. Real-time analytics, performance metrics, and system health monitoring.
               </p>
             </div>
             <div className="flex justify-center gap-4">
@@ -158,11 +158,11 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Admin Features */}
+        {/* Functionality Tracking */}
         <div className="mb-8">
           <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            Admin Tools
+            Functionality Monitoring
           </h3>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {adminFeatures.map((feature, index) => (
@@ -176,7 +176,7 @@ export default function AdminPage() {
                 <p className="text-gray-600 text-sm mb-4">{feature.description}</p>
                 <Link href={feature.href}>
                   <Button className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white">
-                    Access Tool
+                    View Metrics
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
@@ -185,11 +185,11 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Access */}
         <div className="mb-8">
           <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
             <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-            Quick Actions
+            Quick Access
           </h3>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Link href="/dashboard">
@@ -242,18 +242,18 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Security Notice */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6">
+        {/* System Status */}
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
           <div className="flex items-start space-x-3">
-            <div className="p-2 rounded-lg bg-yellow-100">
-              <Shield className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 rounded-lg bg-blue-100">
+              <Shield className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <h4 className="font-semibold text-yellow-800 mb-2">Security Notice</h4>
-              <p className="text-yellow-700 text-sm">
-                This admin panel contains sensitive system information and controls. 
-                Please ensure you have proper authorization before making any changes. 
-                All actions are logged and monitored for security purposes.
+              <h4 className="font-semibold text-blue-800 mb-2">System Status</h4>
+              <p className="text-blue-700 text-sm">
+                This dashboard provides real-time monitoring of all AGV Protocol functionalities. 
+                All metrics are updated automatically and provide insights into platform performance, 
+                user activity, and system health across all features.
               </p>
             </div>
           </div>

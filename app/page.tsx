@@ -212,7 +212,7 @@ export default function HomePage() {
             <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
             Get Started
           </h3>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-3">
             <div className="bg-white border border-gray-200 rounded-2xl p-6 group hover:shadow-lg transition-all duration-300">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
@@ -256,22 +256,6 @@ export default function HomePage() {
               <Link href="/token">
                 <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
                   View Details
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 group hover:shadow-lg transition-all duration-300">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 shadow-lg">
-                  <Settings className="h-6 w-6 text-white" />
-                </div>
-                <h4 className="text-lg font-semibold text-gray-800">Admin Panel</h4>
-              </div>
-              <p className="text-gray-600 text-sm mb-4">Manage platform settings and user roles</p>
-              <Link href="/admin">
-                <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white">
-                  Access Admin
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
