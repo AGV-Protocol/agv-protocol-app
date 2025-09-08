@@ -1,5 +1,6 @@
 // app/page.tsx (Server Component)
 import { Suspense, lazy } from "react";
+import Image from "next/image";
 import { HeroSection } from "@/components/sections/hero-section";
 import { FeaturesSection } from "@/components/sections/features-section";
 import { AppNav } from "@/components/navigation/app-nav";
@@ -22,14 +23,24 @@ export default function Page() {
       {/* Minting Interface */}
       <section id="minting" className="py-24 lg:py-32 bg-muted/30">
         <div className="container">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold">
-              Start Minting NFTs
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Connect your wallet and begin minting AGV NFTs across multiple blockchain networks.
-            </p>
-          </div>
+          <div className="text-center space-y-4">
+                  <div className="flex items-center justify-center space-x-2">
+                    <Image
+                      src="/logo.svg"
+                      alt="AGV Protocol"
+                      width={48}
+                      height={48}
+                      className="h-12 w-12"
+                    />
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                      AGV Protocol
+                    </h1>
+                  </div>
+                  <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Mint exclusive NFTs and join the future of decentralized computing. Connect your wallet and begin minting AGV NFTs across multiple blockchain networks.
+
+                  </p>
+                </div>
           
           <div className="max-w-4xl mx-auto">
             <Suspense

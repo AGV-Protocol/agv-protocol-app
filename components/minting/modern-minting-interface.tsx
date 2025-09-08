@@ -29,8 +29,8 @@ import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 /** ---------------- Types ---------------- **/
-type ChainId = "56" | "137" | "42161" | "11155111";
-type NftType = "seed" | "tree" | "solar" | "compute" | "sepolia";
+type ChainId = "56" | "137" | "42161" ;
+type NftType = "seed" | "tree" | "solar" | "compute";
 type MintMode = "public" | "agent";
 
 /** ---------------- UI: Spending Cap Modal ---------------- **/
@@ -162,7 +162,6 @@ const TransactionProgressModal = ({
     "56": "https://bscscan.io",
     "137": "https://polscan.io",
     "42161": "https://arbiscan.io",
-    "11155111": "https://sepolia.etherscan.io",
   };
 
   const explorerBase = EXPLORERS[chainId] ?? "";
@@ -355,7 +354,6 @@ const PASS_PRICES = {
   tree: 59,
   solar: 299,
   compute: 899,
-  sepolia: 0, // Free for testing
 } as const;
 
 const NFT_INFO = {
@@ -363,24 +361,21 @@ const NFT_INFO = {
   tree: { name: "TreePass", description: "Enhanced capabilities", color: "bg-green-500" },
   solar: { name: "SolarPass", description: "Premium features", color: "bg-yellow-500" },
   compute: { name: "ComputePass", description: "Full platform access", color: "bg-purple-500" },
-  sepolia: { name: "SepoliaPass", description: "Full sepolia access", color: "bg-purple-500" },
 
 } as const;
 
 const PUBLIC_MINT_CAPS: Record<NftType, Record<ChainId, number>> = {
-  seed: { "56": 400, "137": 400, "42161": 400, "11155111": 100 },
-  tree: { "56": 200, "137": 200, "42161": 200, "11155111": 50 },
-  solar: { "56": 0, "137": 0, "42161": 0, "11155111": 0 },
-  compute: { "56": 0, "137": 0, "42161": 0, "11155111": 0 },
-  sepolia: { "56": 0, "137": 0, "42161": 0, "11155111": 100 },
+  seed: { "56": 400, "137": 400, "42161": 400},
+  tree: { "56": 200, "137": 200, "42161": 200},
+  solar: { "56": 0, "137": 0, "42161": 0},
+  compute: { "56": 0, "137": 0, "42161": 0},
 } as const;
 
 const MAX_PER_WALLET: Record<NftType, Record<ChainId, number>> = {
-  seed: { "56": 3, "137": 3, "42161": 3, "11155111": 3 },
-  tree: { "56": 2, "137": 2, "42161": 2, "11155111": 2 },
-  solar: { "56": 1, "137": 1, "42161": 1, "11155111": 1 },
-  compute: { "56": 1, "137": 1, "42161": 1, "11155111": 1 },
-  sepolia: { "56": 0, "137": 0, "42161": 0, "11155111": 1 },
+  seed: { "56": 3, "137": 3, "42161": 3},
+  tree: { "56": 2, "137": 2, "42161": 2},
+  solar: { "56": 1, "137": 1, "42161": 1},
+  compute: { "56": 1, "137": 1, "42161": 1},
 } as const;
 
 export default function ModernMintingInterface() {
@@ -411,12 +406,6 @@ export default function ModernMintingInterface() {
       symbol: "ETH",
       chain: defineChain(42161),
     },
-    "11155111": {
-      chainId: "11155111",
-      name: "Sepolia Testnet",
-      symbol: "ETH",
-      chain: defineChain(11155111),
-    },
   }), []);
 
   // KOL Referral State
@@ -435,7 +424,6 @@ export default function ModernMintingInterface() {
     tree: 0,
     solar: 0,
     compute: 0,
-    sepolia: 0,
   });
   const [isMinting, setIsMinting] = useState(false);
   const [mintProgress, setMintProgress] = useState(0);
@@ -466,7 +454,6 @@ export default function ModernMintingInterface() {
   }, [quantities]);
 
   const canMint = useMemo(() => {
-    console.log({totalQuantity, totalCost, isConnected, hasInsufficientGas});
     return totalQuantity > 0 && totalCost > 0 && isConnected && !hasInsufficientGas;
   }, [totalQuantity, totalCost, isConnected, hasInsufficientGas]);
 
@@ -483,54 +470,193 @@ export default function ModernMintingInterface() {
 
   // Remove the old handleConnectWallet function since we're using the wallet provider
 
-  const handleMint = async () => {
-    toast.success("NFTs minted successfully!");
-    if (!canMint) return;
+  const prepareTransactions = async () => {
+    if (!account?.address) {
+      toast.error("Please connect your wallet to proceed with minting.");
+      throw new Error("Wallet not connected");
+    }
+    if (!canMint) {
+      toast.error("Please check your minting eligibility.");
+      throw new Error("Not eligible for minting");
+    }
+    if (!nftContract || !usdtContract || !contractAddr) {
+      toast.error("Contracts not loaded for the selected network.");
+      throw new Error("Contracts not loaded");
+    }
 
     setIsMinting(true);
-    setMintProgress(0);
-    setCurrentStep("Preparing transaction...");
+    setCurrentStep("Preparing transaction…");
+
+    // Optional KOL attribution (non-blocking here)
+    if (fullKolId) {
+      const q = query(collection(db, "kols"), where("kolId", "==", fullKolId));
+      await getDocs(q).catch(() => void 0);
+    }
+
+    // Calculate total quantity and cost
+    const totalQty = totalQuantity;
+    const totalCostUsd = totalCost;
+
+    if (totalQty < 1) {
+      setIsMinting(false);
+      throw new Error("Quantity must be at least 1");
+    }
+    console.log("Preparing to useReadContractttttttttttttttttttttttttttttttttttt")
+    // Get USDT decimals
+    console.log({usdtContract})
+    const { data: usdtDecimalsData } = useReadContract({
+      contract: usdtContract!,
+      method: "decimals",
+      params: [],
+      queryOptions: { enabled: !!usdtContract },
+    });
+
+    const decimals = Number(usdtDecimalsData ?? 6);
+    const unitAmount = parseUnits(String(totalCostUsd), decimals);
+    const amountToApprove = unitAmount;
+    console.log("Preparing to minnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+    const approveTx = prepareContractCall({
+      contract: usdtContract,
+      method: "approve",
+      params: [contractAddr, amountToApprove],
+    });
+
+    // For now, we'll mint seed NFTs only (can be extended)
+    const mintTx = prepareContractCall({
+      contract: nftContract,
+      method: "mint",
+      params: [BigInt(totalQty), []], // Empty proof array for public mint
+    });
+
+    setPendingApprovalTx(approveTx);
+    setPendingMintTx(mintTx);
+
+    setShowSpendingModal(true);
+    setCurrentStep("Review and confirm the spending cap to continue…");
+  };
+
+  const handleSpendingCapConfirm = async () => {
+    try {
+      setShowSpendingModal(false);
+      setShowProgressModal(true);
+      setProgressStage("approval");
+      setCurrentStep("Approving USDT spending…");
+      toast.success("Please approve USDT spending in your wallet.");
+
+      const approveRes = await sendTransaction({
+        transaction: pendingApprovalTx,
+        account: account!,
+      });
+
+      if (approveRes?.transactionHash) setTxHash(approveRes.transactionHash);
+
+      const approveReceipt = await waitForReceipt({
+        client: thirdwebClient,
+        chain: chainInfo.chain,
+        transactionHash: approveRes.transactionHash,
+      });
+      if (approveReceipt.status !== "success")
+        throw new Error("Approval failed on-chain");
+
+      toast.success("USDT spending approved. Proceeding with mint…");
+
+      setProgressStage("mint");
+      setCurrentStep("Executing mint transaction…");
+      const receipt = await sendAndConfirmTransaction({
+        transaction: pendingMintTx,
+        account: account!,
+      });
+
+      setProgressStage("confirming");
+      if (receipt?.transactionHash) setTxHash(receipt.transactionHash);
+
+      await handleTransactionSuccess(receipt);
+    } catch (error) {
+      handleTransactionError(error);
+    }
+  };
+
+  const handleSpendingCapClose = () => {
+    setShowSpendingModal(false);
+    setIsMinting(false);
+    setCurrentStep("");
+    setPendingApprovalTx(null);
+    setPendingMintTx(null);
+  };
+
+  const handleProgressClose = () => {
+    setShowProgressModal(false);
+    setProgressStage("approval");
+    setTxHash("");
+    setIsMinting(false);
+    setCurrentStep("");
+  };
+
+  const handleVerifyWallet = () => {
+    toast.success("Please check your connected wallet's NFT collection to verify if the mint was successful");
+    setTimeout(() => window.location.reload(), 2000);
+  };
+
+  const handleTransactionSuccess = async (receipt: any) => {
+    setProgressStage("success");
+    setCurrentStep("Minted successfully!");
+    setIsMinting(false);
+
+    toast.success(`Successfully minted ${totalQuantity} NFT${totalQuantity > 1 ? "s" : ""}`);
 
     try {
-      // Simulate minting process
-      const steps = [
-        "Preparing transaction...",
-        "Approving USDT...",
-        "Minting NFTs...",
-        "Confirming transaction...",
-        "Finalizing..."
-      ];
-
-      for (let i = 0; i < steps.length; i++) {
-        setCurrentStep(steps[i]);
-        setMintProgress((i + 1) * 20);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-
-      // Simulate successful mint
+      // Record the successful mint
       const results = Object.entries(quantities)
         .filter(([_, qty]) => qty > 0)
         .map(([type, qty]) => ({
           type,
           quantity: qty,
-          txHash: `0x${Math.random().toString(16).substr(2, 64)}`,
+          txHash: receipt?.transactionHash || txHash,
           cost: qty * PASS_PRICES[type as NftType],
           kolId: fullKolId || null
         }));
 
       setMintResults(results);
       setShowSuccess(true);
-      toast.success("NFTs minted successfully!");
 
-      // Reset quantities
-      setQuantities({ seed: 0, tree: 0, solar: 0, compute: 0, sepolia: 0 });
+      await recordSuccessfulMintStrict(db, fullKolId, {
+        address: account?.address!,
+        nftType: "seed", // For now, only seed
+        quantity: totalQuantity,
+        chainId: selectedChain as any,
+        txHash: receipt?.transactionHash || txHash,
+        timestamp: new Date(),
+        mintType: "public",
+      });
 
+      toast.success("Mint recorded successfully");
     } catch (error) {
-      toast.error("Minting failed. Please try again.");
-    } finally {
-      setIsMinting(false);
-      setMintProgress(0);
-      setCurrentStep("");
+      console.error("Error recording mint:", error);
+      toast.error("NFT minted successfully but failed to update records (non-critical)");
+    }
+
+    // Reset quantities
+    setQuantities({ seed: 0, tree: 0, solar: 0, compute: 0});
+
+    setTimeout(() => window.location.reload(), 5000);
+  };
+
+  const handleTransactionError = (err: any) => {
+    const errorMessage = normalizeError(err);
+    console.error("Transaction error:", err);
+
+    setCurrentStep(`Error: ${errorMessage}`);
+    setIsMinting(false);
+    setProgressStage("error");
+
+    toast.error(`Transaction failed: ${errorMessage}`);
+  };
+
+  const handleMint = async () => {
+    try {
+      await prepareTransactions();
+    } catch (e) {
+      toast.error(`Unable to proceed: ${normalizeError(e)}`);
     }
   };
 
@@ -562,6 +688,52 @@ export default function ModernMintingInterface() {
   const chainInfo = CHAINS[selectedChain];
   const contractAddr = NFT_CONTRACTS[selectedChain]?.["seed"];
   const usdtAddr = USDT_ADDRESSES[selectedChain];
+
+  // Contract instances
+  const nftContract = useMemo(
+    () =>
+      contractAddr
+        ? getContract({
+            client: thirdwebClient,
+            address: contractAddr,
+            chain: chainInfo.chain,
+            abi: NFT_ABI.seed as any,
+          })
+        : null,
+    [contractAddr, chainInfo.chain]
+  );
+
+  const usdtContract = useMemo(
+    () =>
+      usdtAddr
+        ? getContract({
+            client: thirdwebClient,
+            address: usdtAddr,
+            chain: chainInfo.chain,
+            abi: USDT_ABI,
+          })
+        : null,
+    [usdtAddr, chainInfo.chain]
+  );
+
+  // Helper functions
+  const normalizeError = (e: unknown) => {
+    if (!e) return "Unknown error";
+    if (typeof e === "string") return e;
+    if (e instanceof Error && e.message) return e.message;
+    try {
+      const any = e as any;
+      return (
+        any?.shortMessage ||
+        any?.reason ||
+        any?.error?.message ||
+        any?.message ||
+        JSON.stringify(any)
+      );
+    } catch {
+      return String(e);
+    }
+  };
   
   // Wallet balance hooks - use selected chain for balance checking
   const usdtBalanceResult = useWalletBalance({
@@ -584,12 +756,10 @@ export default function ModernMintingInterface() {
     "56": 0.005,    // BSC
     "137": 0.01,    // Polygon
     "42161": 0.001, // Arbitrum
-    "11155111": 0.000, // Sepolia
   } as const;
 
   // Memoized gas calculations
   const gasInfo = useMemo(() => {
-    console.log({ nativeData, selectedChain, chainId });
     if (!nativeData?.displayValue) {
       return {
         currentGas: 0,
@@ -616,28 +786,10 @@ export default function ModernMintingInterface() {
   }, [gasInfo.isInsufficient]);
   return (
     <div className="max-w-6xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <div className="flex items-center justify-center space-x-2">
-          <Image
-            src="/logo.svg"
-            alt="AGV Protocol"
-            width={48}
-            height={48}
-            className="h-12 w-12"
-          />
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            AGV Protocol
-          </h1>
-        </div>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Mint exclusive NFTs and join the future of decentralized computing
-        </p>
-      </div>
-      {/* Main Content */}
-      <div className="grid gap-8 lg:grid-cols-3">
-        {/* Minting Interface */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Main Content */}
+        <div className="grid gap-8">
+          {/* Minting Interface */}
+          <div className="lg:col-span-2 space-y-6 bg-blue-50 dark:bg-blue-950/20 p-6 rounded-xl border border-blue-200 dark:border-blue-800">
           {/* Chain Selection */}
           <Card>
             <CardHeader>
@@ -935,6 +1087,29 @@ export default function ModernMintingInterface() {
           </Card>
         </div>
       </div>
+
+      {/* Spending Cap Modal */}
+      <SpendingCapModal
+        isOpen={showSpendingModal}
+        onClose={handleSpendingCapClose}
+        onConfirm={handleSpendingCapConfirm}
+        spender={contractAddr ? `${contractAddr.slice(0, 6)}...${contractAddr.slice(-4)}` : ""}
+        requestFrom="agv-nft.com"
+        spendingCap={totalCost.toFixed(2)}
+        tokenSymbol="USDT"
+        networkFee="~"
+      />
+
+      {/* Transaction Progress Modal */}
+      <TransactionProgressModal
+        isOpen={showProgressModal}
+        onClose={handleProgressClose}
+        status={currentStep}
+        txHash={txHash}
+        chainId={selectedChain}
+        stage={progressStage}
+        onVerifyWallet={handleVerifyWallet}
+      />
     </div>
   );
 }
