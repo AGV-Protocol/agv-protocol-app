@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import { CheckCircle, X, Loader2, ExternalLink, Copy, Wallet, Zap, Shield, Globe, Lock, AlertTriangle } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -367,14 +367,14 @@ const NFT_INFO = {
 const PUBLIC_MINT_CAPS: Record<NftType, Record<ChainId, number>> = {
   seed: { "56": 400, "137": 400, "42161": 400},
   tree: { "56": 200, "137": 200, "42161": 200},
-  solar: { "56": 0, "137": 0, "42161": 0},
-  compute: { "56": 0, "137": 0, "42161": 0},
+  solar: { "56": 100, "137": 50, "42161": 50},
+  compute: { "56": 50, "137": 20, "42161": 20},
 } as const;
 
 const MAX_PER_WALLET: Record<NftType, Record<ChainId, number>> = {
   seed: { "56": 3, "137": 3, "42161": 3},
   tree: { "56": 2, "137": 2, "42161": 2},
-  solar: { "56": 1, "137": 1, "42161": 1},
+  solar: { "56": 2, "137": 2, "42161": 2},
   compute: { "56": 1, "137": 1, "42161": 1},
 } as const;
 
@@ -432,6 +432,11 @@ export default function ModernMintingInterface() {
   const [mintResults, setMintResults] = useState<any[]>([]);
   const [hasInsufficientGas, setHasInsufficientGas] = useState(false);
 
+  // Whitelist gating state
+  const [wlEligible, setWlEligible] = useState(false);
+  const [checkingWl, setCheckingWl] = useState(false);
+  const wlCheckedAddressRef = useRef<string | null>(null);
+
   // New state for real minting
   const [showSpendingModal, setShowSpendingModal] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
@@ -454,8 +459,12 @@ export default function ModernMintingInterface() {
   }, [quantities]);
 
   const canMint = useMemo(() => {
-    return totalQuantity > 0 && totalCost > 0 && isConnected && !hasInsufficientGas;
-  }, [totalQuantity, totalCost, isConnected, hasInsufficientGas]);
+    // Check if any premium NFTs are selected and user is not whitelisted
+    const hasPremiumNFTs = quantities.solar > 0 || quantities.compute > 0;
+    const isWhitelistBlocked = hasPremiumNFTs && !wlEligible && account?.address;
+    
+    return totalQuantity > 0 && totalCost > 0 && isConnected && !hasInsufficientGas && !isWhitelistBlocked;
+  }, [totalQuantity, totalCost, isConnected, hasInsufficientGas, quantities, wlEligible, account?.address]);
 
   // Handlers
   const handleQuantityChange = (type: NftType, value: number) => {
@@ -521,7 +530,7 @@ export default function ModernMintingInterface() {
       params: [contractAddr, amountToApprove],
     });
 
-    // For now, we'll mint seed NFTs only (can be extended)
+    // Mint NFTs based on selected type
     const mintTx = prepareContractCall({
       contract: nftContract,
       method: "mint",
@@ -621,7 +630,7 @@ export default function ModernMintingInterface() {
 
       await recordSuccessfulMintStrict(db, fullKolId, {
         address: account?.address!,
-        nftType: "seed", // For now, only seed
+        nftType: "seed", // This will be updated to support all types
         quantity: totalQuantity,
         chainId: selectedChain as any,
         txHash: receipt?.transactionHash || txHash,
@@ -686,7 +695,7 @@ export default function ModernMintingInterface() {
   // Gas balance calculations
   
   const chainInfo = CHAINS[selectedChain];
-  const contractAddr = NFT_CONTRACTS[selectedChain]?.["seed"];
+  const contractAddr = NFT_CONTRACTS[selectedChain]?.["seed"]; // For now, using seed contract for all types
   const usdtAddr = USDT_ADDRESSES[selectedChain];
 
   // Contract instances
@@ -784,6 +793,43 @@ export default function ModernMintingInterface() {
   useEffect(() => {
     setHasInsufficientGas(gasInfo.isInsufficient);
   }, [gasInfo.isInsufficient]);
+
+  // Whitelist check (ONE-TIME per wallet connection)
+  useEffect(() => {
+    const run = async () => {
+      // Reset on disconnect
+      if (!account?.address) {
+        setWlEligible(false);
+        wlCheckedAddressRef.current = null;
+        return;
+      }
+
+      // Already checked this address during this connection session
+      if (wlCheckedAddressRef.current === account.address) return;
+
+      try {
+        setCheckingWl(true);
+        const res = await fetch(`/api/merkle-proof?address=${account.address}`, {
+          cache: "no-store",
+        });
+
+        let whitelisted = false;
+        if (res.ok) {
+          const data = await res.json();
+          whitelisted = !!data?.whitelisted;
+        }
+
+        setWlEligible(whitelisted);
+      } catch {
+        setWlEligible(false);
+      } finally {
+        setCheckingWl(false);
+        // Mark this address as checked so we don't re-call until wallet changes
+        wlCheckedAddressRef.current = account.address;
+      }
+    };
+    run();
+  }, [account?.address]);
   return (
     <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
         {/* Main Content */}
@@ -880,6 +926,10 @@ export default function ModernMintingInterface() {
                 const nftType = type as NftType;
                 const maxAllowed = MAX_PER_WALLET[nftType][selectedChain];
                 const isAvailable = PUBLIC_MINT_CAPS[nftType][selectedChain] > 0;
+                
+                // Check if this is a premium NFT that requires whitelist
+                const isPremiumNFT = nftType === "solar" || nftType === "compute";
+                const isWhitelistRequired = isPremiumNFT && !wlEligible && account?.address;
 
                 return (
                   <div key={type} className="space-y-3 bg-white/5 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/10">
@@ -906,7 +956,7 @@ export default function ModernMintingInterface() {
                     <div className="flex items-center justify-center sm:justify-start space-x-3 sm:space-x-4">
                       <button
                         onClick={() => handleQuantityChange(nftType, quantities[nftType] - 1)}
-                        disabled={quantities[nftType] <= 0 || !isAvailable}
+                        disabled={quantities[nftType] <= 0 || !isAvailable || !!isWhitelistRequired}
                         className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                       >
                         -
@@ -918,11 +968,11 @@ export default function ModernMintingInterface() {
                         value={quantities[nftType]}
                         onChange={(e) => handleQuantityChange(nftType, parseInt(e.target.value) || 0)}
                         className="w-16 sm:w-20 text-center rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 px-2 sm:px-3 py-2 text-sm sm:text-base"
-                        disabled={!isAvailable}
+                        disabled={!isAvailable || !!isWhitelistRequired}
                       />
                       <button
                         onClick={() => handleQuantityChange(nftType, quantities[nftType] + 1)}
-                        disabled={quantities[nftType] >= maxAllowed || !isAvailable}
+                        disabled={quantities[nftType] >= maxAllowed || !isAvailable || !!isWhitelistRequired}
                         className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                       >
                         +
@@ -930,6 +980,11 @@ export default function ModernMintingInterface() {
                       {!isAvailable && (
                         <span className="px-2 sm:px-3 py-1 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-yellow-300 text-xs sm:text-sm">
                           Coming Soon
+                        </span>
+                      )}
+                      {isWhitelistRequired && (
+                        <span className="px-2 sm:px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-300 text-xs sm:text-sm">
+                          Whitelist Required
                         </span>
                       )}
                     </div>
@@ -1072,6 +1127,36 @@ export default function ModernMintingInterface() {
                 <WalletConnect />
               </div>
 
+              {/* Whitelist Status */}
+              {account && (
+                <div className="mt-4 p-3 rounded-lg border">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Whitelist Status:</span>
+                    {checkingWl ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span className="text-sm text-gray-500">Checking...</span>
+                      </div>
+                    ) : wlEligible ? (
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                        <span className="text-sm text-green-600 font-medium">Whitelisted</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <X className="h-4 w-4 text-red-500" />
+                        <span className="text-sm text-red-600 font-medium">Not Whitelisted</span>
+                      </div>
+                    )}
+                  </div>
+                  {!wlEligible && account && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      SolarPass and ComputePass require whitelist access. Only SeedPass and TreePass are available for public minting.
+                    </p>
+                  )}
+                </div>
+              )}
+
               {isMinting && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-sm">
@@ -1111,6 +1196,11 @@ export default function ModernMintingInterface() {
                   <>
                     <AlertTriangle className="mr-2 h-4 w-4" />
                     Insufficient Gas
+                  </>
+                ) : (quantities.solar > 0 || quantities.compute > 0) && !wlEligible && account?.address ? (
+                  <>
+                    <Lock className="mr-2 h-4 w-4" />
+                    Whitelist Required
                   </>
                 ) : (
                   <>
