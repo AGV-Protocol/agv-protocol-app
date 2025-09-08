@@ -20,12 +20,19 @@ export const CHAINS = {
     symbol: "ETH",
     explorer: "https://arbiscan.io",
   },
+  "11155111": {
+    chainId: "11155111",
+    name: "Sepolia Testnet",
+    symbol: "ETH",
+    explorer: "https://sepolia.etherscan.io",
+  },
 } as const;
 
 export const USDT_ADDRESSES = {
   "56": "0x55d398326f99059fF775485246999027B3197955", // BSC USDT
   "137": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", // Polygon USDT
   "42161": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", // Arbitrum USDT
+  "11155111": "0x7169D38820dfd117C3FA1f22a697dBA58d90BA06", // Sepolia USDT (testnet)
 } as const;
 
 export const NFT_CONTRACTS = {
@@ -34,18 +41,28 @@ export const NFT_CONTRACTS = {
     tree: "0x1234567890123456789012345678901234567890", // Placeholder
     solar: "0x1234567890123456789012345678901234567890", // Placeholder
     compute: "0x1234567890123456789012345678901234567890", // Placeholder
+    sepolia: "0x1234567890123456789012345678901234567890", // Placeholder
   },
   "137": {
     seed: "0x1234567890123456789012345678901234567890", // Placeholder
     tree: "0x1234567890123456789012345678901234567890", // Placeholder
     solar: "0x1234567890123456789012345678901234567890", // Placeholder
     compute: "0x1234567890123456789012345678901234567890", // Placeholder
+    sepolia: "0x1234567890123456789012345678901234567890", // Placeholder
   },
   "42161": {
     seed: "0x1234567890123456789012345678901234567890", // Placeholder
     tree: "0x1234567890123456789012345678901234567890", // Placeholder
     solar: "0x1234567890123456789012345678901234567890", // Placeholder
     compute: "0x1234567890123456789012345678901234567890", // Placeholder
+    sepolia: "0x1234567890123456789012345678901234567890", // Placeholder
+  },
+  "11155111": {
+    seed: "0x1234567890123456789012345678901234567890", // Placeholder
+    tree: "0x1234567890123456789012345678901234567890", // Placeholder
+    solar: "0x1234567890123456789012345678901234567890", // Placeholder
+    compute: "0x1234567890123456789012345678901234567890", // Placeholder
+    sepolia: "0x1234567890123456789012345678901234567890", // Placeholder
   },
 } as const;
 

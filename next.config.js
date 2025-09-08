@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
-  transpilePackages: ['@thirdweb-dev/react', '@thirdweb-dev/sdk'],
+  transpilePackages: ['thirdweb'],
   
   // Performance optimizations
   experimental: {
