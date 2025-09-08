@@ -789,125 +789,149 @@ export default function ModernMintingInterface() {
         {/* Main Content */}
         <div className="grid gap-8">
           {/* Minting Interface */}
-          <div className="lg:col-span-2 space-y-6 bg-blue-50 dark:bg-blue-950/20 p-6 rounded-xl border border-blue-200 dark:border-blue-800">
+          <div className="lg:col-span-2 space-y-6">
           {/* Chain Selection */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Globe className="h-5 w-5" />
-                <span>Select Network</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-3 md:grid-cols-3">
-                {Object.entries(CHAINS).map(([chainId, chain]) => (
-                  <Button
-                    key={chainId}
-                    variant={selectedChain === chainId ? "default" : "outline"}
-                    onClick={() => setSelectedChain(chainId as ChainId)}
-                    className="h-auto p-4 flex flex-col space-y-2"
-                  >
-                    <span className="font-semibold">{chain.name}</span>
-                    <span className="text-sm text-muted-foreground">{chain.symbol}</span>
-                  </Button>
-                ))}
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
+                <Globe className="h-6 w-6 text-white" />
               </div>
-            </CardContent>
-          </Card>
+              <h3 className="text-xl font-semibold text-white">Select Network</h3>
+            </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              {Object.entries(CHAINS).map(([chainId, chain]) => (
+                <button
+                  key={chainId}
+                  onClick={() => setSelectedChain(chainId as ChainId)}
+                  className={`group relative overflow-hidden rounded-xl p-4 transition-all duration-300 ${
+                    selectedChain === chainId 
+                      ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25" 
+                      : "bg-white/5 hover:bg-white/10 border border-white/10"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <div className="font-semibold">{chain.name}</div>
+                      <div className="text-xs opacity-70">{chain.symbol}</div>
+                    </div>
+                    {selectedChain === chainId && (
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    )}
+                  </div>
+                  {selectedChain === chainId && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 animate-pulse"></div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Minting Mode */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Zap className="h-5 w-5" />
-                <span>Minting Mode</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="p-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 shadow-lg">
+                <Zap className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-white">Minting Mode</h3>
+            </div>
+            <div className="bg-white/5 rounded-xl p-2">
               <Tabs value={mintMode} onValueChange={(value: string) => setMintMode(value as MintMode)}>
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="public">Public Mint</TabsTrigger>
-                  <TabsTrigger value="agent">Agent Mint</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 bg-transparent">
+                  <TabsTrigger 
+                    value="public" 
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-xl"
+                  >
+                    Public Mint
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="agent"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-orange-500 data-[state=active]:text-white rounded-xl"
+                  >
+                    Agent Mint
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="public" className="mt-4">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white/70">
                     Mint NFTs directly from the public collection
                   </p>
                 </TabsContent>
                 <TabsContent value="agent" className="mt-4">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white/70">
                     Mint through an authorized agent (coming soon)
                   </p>
                 </TabsContent>
               </Tabs>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* NFT Selection */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Select NFTs to Mint</CardTitle>
-              <CardDescription>
-                Choose the quantity for each NFT type
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg">
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-white">Select NFTs to Mint</h3>
+                <p className="text-white/60 text-sm">Choose the quantity for each NFT type</p>
+              </div>
+            </div>
+            <div className="space-y-6">
               {Object.entries(NFT_INFO).map(([type, info]) => {
                 const nftType = type as NftType;
                 const maxAllowed = MAX_PER_WALLET[nftType][selectedChain];
                 const isAvailable = PUBLIC_MINT_CAPS[nftType][selectedChain] > 0;
 
                 return (
-                  <div key={type} className="space-y-3">
+                  <div key={type} className="space-y-3 bg-white/5 rounded-xl p-4 border border-white/10">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div className={`w-4 h-4 rounded-full ${info.color}`} />
                         <div>
-                          <h3 className="font-semibold">{info.name}</h3>
-                          <p className="text-sm text-muted-foreground">{info.description}</p>
+                          <h3 className="font-semibold text-white">{info.name}</h3>
+                          <p className="text-sm text-white/70">{info.description}</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">${PASS_PRICES[nftType]}</p>
-                        <p className="text-sm text-muted-foreground">Max: {maxAllowed}</p>
+                        <p className="font-semibold text-white">${PASS_PRICES[nftType]}</p>
+                        <p className="text-sm text-white/60">Max: {maxAllowed}</p>
                       </div>
                     </div>
 
                     <div className="flex items-center space-x-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
+                      <button
                         onClick={() => handleQuantityChange(nftType, quantities[nftType] - 1)}
                         disabled={quantities[nftType] <= 0 || !isAvailable}
+                        className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                       >
                         -
-                      </Button>
-                      <Input
+                      </button>
+                      <input
                         type="number"
                         min="0"
                         max={maxAllowed}
                         value={quantities[nftType]}
                         onChange={(e) => handleQuantityChange(nftType, parseInt(e.target.value) || 0)}
-                        className="w-20 text-center"
+                        className="w-20 text-center rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 px-3 py-2"
                         disabled={!isAvailable}
                       />
-                      <Button
-                        variant="outline"
-                        size="sm"
+                      <button
                         onClick={() => handleQuantityChange(nftType, quantities[nftType] + 1)}
                         disabled={quantities[nftType] >= maxAllowed || !isAvailable}
+                        className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                       >
                         +
-                      </Button>
+                      </button>
                       {!isAvailable && (
-                        <Badge variant="secondary">Coming Soon</Badge>
+                        <span className="px-3 py-1 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-yellow-300 text-sm">
+                          Coming Soon
+                        </span>
                       )}
                     </div>
                   </div>
                 );
               })}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* KOL ID Input */}
           <Card>
