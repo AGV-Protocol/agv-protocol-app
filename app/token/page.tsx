@@ -56,7 +56,7 @@ export default function TokenPage() {
 
   const articles = [
     {
-      title: "Seedpass Staking Guide",
+      title: "Staking Guide",
       description: "Learn how to stake your Seedpass NFTs and earn rewards",
       url: "#",
       date: "2024-01-15"
