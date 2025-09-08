@@ -145,14 +145,7 @@ export function AppNav({ user, onSignOut, className }: AppNavProps) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
-            <Button asChild size="sm" className="hidden sm:flex">
-              <FastLink href="/dashboard">
-                <Wallet className="mr-2 h-4 w-4" />
-                Sign In
-              </FastLink>
-            </Button>
-          )}
+          ) : null}
 
           {/* Mobile Menu Button */}
           <Button
@@ -179,15 +172,6 @@ export function AppNav({ user, onSignOut, className }: AppNavProps) {
               <WalletConnect />
             </div>
             
-            {/* Mobile Sign In Button */}
-            {!user && (
-              <Button asChild className="w-full sm:hidden">
-                <FastLink href="/dashboard">
-                  <Wallet className="mr-2 h-4 w-4" />
-                  Sign In
-                </FastLink>
-              </Button>
-            )}
             
             {/* Navigation Links */}
             <div className="space-y-2">

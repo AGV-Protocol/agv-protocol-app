@@ -24,6 +24,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout";
+import { HeroSection } from "@/components/sections/hero-section";
+import { AppNav } from "@/components/navigation/app-nav";
 
 export default function HomePage() {
   const [activeFeature, setActiveFeature] = useState(0);
@@ -93,21 +96,83 @@ export default function HomePage() {
 
   return (
     <>
-    <div className="min-h-screen bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-8">
+      {/* Header */}
+      {/* <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">AGV</span>
+                </div>
+                <span className="text-xl font-bold text-gray-900">AGV Protocol</span>
+              </div>
+            </div>
+            <nav className="hidden md:flex items-center space-x-8">
+              <Link href="/mint" className="text-gray-600 hover:text-blue-600 transition-colors">
+                Mint
+              </Link>
+              <Link href="/staking" className="text-gray-600 hover:text-blue-600 transition-colors">
+                Staking
+              </Link>
+              <Link href="/token" className="text-gray-600 hover:text-blue-600 transition-colors">
+                Token
+              </Link>
+            </nav>
+            <div className="flex items-center space-x-4">
+              <Button variant="outline" size="sm" className="hidden sm:inline-flex">
+                Connect Wallet
+              </Button>
+              <Button size="sm" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600">
+                Get Started
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header> */}
+      <AppNav/>
+      <HeroSection />
+      <div className="min-h-screen bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-8">
         {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600/10 via-blue-500/10 to-blue-700/10 border border-blue-200 p-8 mb-8 shadow-xl">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-blue-500/5 to-blue-700/5"></div>
-          <div className="relative z-10 text-center space-y-6">
-            <div className="space-y-4">
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700 bg-clip-text text-transparent">
+        {/* <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-50 via-white to-cyan-50 border border-blue-200 p-12 mb-12 shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-blue-500/5 to-cyan-600/5"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-cyan-400/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-blue-300/10 to-cyan-300/10 rounded-full blur-3xl"></div>
+          
+          <div className="relative z-10 text-center space-y-8">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-200 mb-4">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-blue-700 font-medium">🚀 Now Live on Multiple Chains</span>
+              </div>
+              
+              <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-600 bg-clip-text text-transparent leading-tight">
                 AGV Protocol
               </h1>
-              <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-                The complete NFT ecosystem for decentralized computing. Mint, stake, and earn rewards across multiple blockchain networks.
+              
+              <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
+                The complete NFT ecosystem for decentralized computing. 
+                <span className="font-semibold text-blue-600">Mint, stake, and earn rewards</span> across multiple blockchain networks.
               </p>
             </div>
-            <div className="flex justify-center gap-4">
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+              <Link href="/mint">
+                <Button size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                  <Coins className="mr-2 h-5 w-5" />
+                  Start Minting
+                </Button>
+              </Link>
+              <Link href="/staking">
+                <Button size="lg" variant="outline" className="border-2 border-blue-200 text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg font-semibold transition-all duration-300">
+                  <Zap className="mr-2 h-5 w-5" />
+                  View Staking
+                </Button>
+              </Link>
+            </div>
+            
+            <div className="flex flex-wrap justify-center gap-4 pt-6">
               <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 border border-green-200">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-sm text-green-700 font-medium">Live Platform</span>
@@ -120,9 +185,15 @@ export default function HomePage() {
                 <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></div>
                 <span className="text-sm text-cyan-700 font-medium">Secure</span>
               </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 border border-purple-200">
+                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-purple-700 font-medium">No Lock-up</span>
+              </div>
             </div>
           </div>
-        </div>
+        </div> */}
+
+        
 
         {/* Quick Stats */}
         <div className="mb-8">

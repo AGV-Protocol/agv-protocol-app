@@ -785,25 +785,25 @@ export default function ModernMintingInterface() {
     setHasInsufficientGas(gasInfo.isInsufficient);
   }, [gasInfo.isInsufficient]);
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
         {/* Main Content */}
-        <div className="grid gap-8">
+        <div className="grid gap-4 sm:gap-8">
           {/* Minting Interface */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Chain Selection */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
-                <Globe className="h-6 w-6 text-white" />
+          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
+            <div className="flex items-center space-x-3 mb-4 sm:mb-6">
+              <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
+                <Globe className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-white">Select Network</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-white">Select Network</h3>
             </div>
-            <div className="grid gap-3 md:grid-cols-3">
+            <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-3">
               {Object.entries(CHAINS).map(([chainId, chain]) => (
                 <button
                   key={chainId}
                   onClick={() => setSelectedChain(chainId as ChainId)}
-                  className={`group relative overflow-hidden rounded-xl p-4 transition-all duration-300 ${
+                  className={`group relative overflow-hidden rounded-lg sm:rounded-xl p-3 sm:p-4 transition-all duration-300 ${
                     selectedChain === chainId 
                       ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25" 
                       : "bg-white/5 hover:bg-white/10 border border-white/10"
@@ -827,25 +827,25 @@ export default function ModernMintingInterface() {
           </div>
 
           {/* Minting Mode */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="p-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 shadow-lg">
-                <Zap className="h-6 w-6 text-white" />
+          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
+            <div className="flex items-center space-x-3 mb-4 sm:mb-6">
+              <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 shadow-lg">
+                <Zap className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-white">Minting Mode</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-white">Minting Mode</h3>
             </div>
-            <div className="bg-white/5 rounded-xl p-2">
+            <div className="bg-white/5 rounded-lg sm:rounded-xl p-1 sm:p-2">
               <Tabs value={mintMode} onValueChange={(value: string) => setMintMode(value as MintMode)}>
-                <TabsList className="grid w-full grid-cols-2 bg-transparent">
+                <TabsList className="grid w-full grid-cols-2 bg-transparent h-auto">
                   <TabsTrigger 
                     value="public" 
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-xl"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-lg sm:rounded-xl text-xs sm:text-sm py-2 sm:py-3"
                   >
                     Public Mint
                   </TabsTrigger>
                   <TabsTrigger 
                     value="agent"
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-orange-500 data-[state=active]:text-white rounded-xl"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-orange-500 data-[state=active]:text-white rounded-lg sm:rounded-xl text-xs sm:text-sm py-2 sm:py-3"
                   >
                     Agent Mint
                   </TabsTrigger>
@@ -865,39 +865,45 @@ export default function ModernMintingInterface() {
           </div>
 
           {/* NFT Selection */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg">
-                <Shield className="h-6 w-6 text-white" />
+          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
+            <div className="flex items-center space-x-3 mb-4 sm:mb-6">
+              <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg">
+                <Shield className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-white">Select NFTs to Mint</h3>
-                <p className="text-white/60 text-sm">Choose the quantity for each NFT type</p>
+                <h3 className="text-lg sm:text-xl font-semibold text-white">Select NFTs to Mint</h3>
+                <p className="text-white/60 text-xs sm:text-sm">Choose the quantity for each NFT type</p>
               </div>
             </div>
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {Object.entries(NFT_INFO).map(([type, info]) => {
                 const nftType = type as NftType;
                 const maxAllowed = MAX_PER_WALLET[nftType][selectedChain];
                 const isAvailable = PUBLIC_MINT_CAPS[nftType][selectedChain] > 0;
 
                 return (
-                  <div key={type} className="space-y-3 bg-white/5 rounded-xl p-4 border border-white/10">
-                    <div className="flex items-center justify-between">
+                  <div key={type} className="space-y-3 bg-white/5 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/10">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-center space-x-3">
-                        <div className={`w-4 h-4 rounded-full ${info.color}`} />
+                        <div className="w-8 h-8 rounded-lg overflow-hidden bg-white/10 flex-shrink-0">
+                          <img 
+                            src={`/${type}pass.jpg`}
+                            alt={`${info.name} NFT`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                         <div>
-                          <h3 className="font-semibold text-white">{info.name}</h3>
-                          <p className="text-sm text-white/70">{info.description}</p>
+                          <h3 className="font-semibold text-white text-sm sm:text-base">{info.name}</h3>
+                          <p className="text-xs sm:text-sm text-white/70">{info.description}</p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-white">${PASS_PRICES[nftType]}</p>
-                        <p className="text-sm text-white/60">Max: {maxAllowed}</p>
+                      <div className="text-left sm:text-right">
+                        <p className="font-semibold text-white text-sm sm:text-base">${PASS_PRICES[nftType]}</p>
+                        <p className="text-xs sm:text-sm text-white/60">Max: {maxAllowed}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-center sm:justify-start space-x-3 sm:space-x-4">
                       <button
                         onClick={() => handleQuantityChange(nftType, quantities[nftType] - 1)}
                         disabled={quantities[nftType] <= 0 || !isAvailable}
@@ -911,7 +917,7 @@ export default function ModernMintingInterface() {
                         max={maxAllowed}
                         value={quantities[nftType]}
                         onChange={(e) => handleQuantityChange(nftType, parseInt(e.target.value) || 0)}
-                        className="w-20 text-center rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 px-3 py-2"
+                        className="w-16 sm:w-20 text-center rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 px-2 sm:px-3 py-2 text-sm sm:text-base"
                         disabled={!isAvailable}
                       />
                       <button
@@ -922,7 +928,7 @@ export default function ModernMintingInterface() {
                         +
                       </button>
                       {!isAvailable && (
-                        <span className="px-3 py-1 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-yellow-300 text-sm">
+                        <span className="px-2 sm:px-3 py-1 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-yellow-300 text-xs sm:text-sm">
                           Coming Soon
                         </span>
                       )}
@@ -988,7 +994,13 @@ export default function ModernMintingInterface() {
                 return (
                   <div key={type} className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <div className={`w-3 h-3 rounded-full ${NFT_INFO[nftType].color}`} />
+                      <div className="w-6 h-6 rounded overflow-hidden bg-white/10 flex-shrink-0">
+                        <img 
+                          src={`/${type}pass.jpg`}
+                          alt={`${NFT_INFO[nftType].name} NFT`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                       <span className="text-sm">{NFT_INFO[nftType].name}</span>
                     </div>
                     <div className="text-right">

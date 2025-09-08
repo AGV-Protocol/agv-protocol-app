@@ -342,23 +342,23 @@ export default function StakingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-      <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600/20 via-cyan-600/20 to-blue-800/20 backdrop-blur-xl border border-white/10 p-8 mb-8 shadow-2xl shadow-blue-500/10">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-600/20 via-cyan-600/20 to-blue-800/20 backdrop-blur-xl border border-white/10 p-4 sm:p-8 mb-6 sm:mb-8 shadow-2xl shadow-blue-500/10">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-cyan-600/10 to-blue-800/10 animate-pulse"></div>
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent via-blue-500/5 to-transparent"></div>
           <div className="relative z-10">
-            <header className="flex items-center justify-between gap-4">
-              <div className="space-y-2">
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-300 bg-clip-text text-transparent">
+            <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="space-y-2 flex-1">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-300 bg-clip-text text-transparent">
                   AGV Protocol Staking
-                </h1>
-                <p className="text-lg text-white/80 max-w-2xl">
+        </h1>
+                <p className="text-sm sm:text-base md:text-lg text-white/80 max-w-2xl">
                   Stake your <span className="font-semibold text-cyan-300">{selectedCollection.charAt(0).toUpperCase() + selectedCollection.slice(1)}</span> NFTs on{" "}
                   <span className="font-semibold text-blue-300">{CHAIN_CONFIG[chainKey].label}</span> to earn rewards. 
                   No lock-up period - withdraw anytime.
                 </p>
-                <div className="flex items-center gap-4 mt-4">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 sm:mt-4">
                   <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30 backdrop-blur-sm">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                     <span className="text-sm text-green-300 font-medium">Live Staking</span>
@@ -373,27 +373,27 @@ export default function StakingPage() {
                   </div>
                 </div>
               </div>
-              <div className="hidden md:block">
+              <div className="hidden sm:block">
                 <ConnectButton client={client} />
               </div>
             </header>
           </div>
-        </div>
+      </div>
 
         {/* Chain and Collection Selector */}
-        <div className="space-y-6">
-          {/* Chain Selection */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        <div className="space-y-4 sm:space-y-6">
+      {/* Chain Selection */}
+          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
               Select Network
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
               {(["56", "42161", "137"] as ChainKey[]).map((k) => (
                 <button
                   key={k}
                   onClick={() => setChainKey(k)}
-                  className={`group relative overflow-hidden rounded-xl p-4 transition-all duration-300 ${
+                  className={`group relative overflow-hidden rounded-lg sm:rounded-xl p-3 sm:p-4 transition-all duration-300 ${
                     chainKey === k 
                       ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25" 
                       : "bg-white/5 hover:bg-white/10 border border-white/10"
@@ -420,28 +420,29 @@ export default function StakingPage() {
           </div>
           
           {/* Collection Selection */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
               <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
               Select NFT Collection
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
               {(["seed", "tree", "solar", "compute"] as const).map((collection) => (
                 <button
                   key={collection}
                   onClick={() => setSelectedCollection(collection)}
-                  className={`group relative overflow-hidden rounded-xl p-4 transition-all duration-300 ${
+                  className={`group relative overflow-hidden rounded-lg sm:rounded-xl p-3 sm:p-4 transition-all duration-300 ${
                     selectedCollection === collection 
                       ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25" 
                       : "bg-white/5 hover:bg-white/10 border border-white/10"
                   }`}
                 >
                   <div className="text-center">
-                    <div className="text-2xl mb-2">
-                      {collection === "seed" && "🌱"}
-                      {collection === "tree" && "🌳"}
-                      {collection === "solar" && "☀️"}
-                      {collection === "compute" && "💻"}
+                    <div className="w-10 h-10 mx-auto mb-2 rounded-lg overflow-hidden bg-white/10">
+                      <img 
+                        src={`/${collection}pass.jpg`}
+                        alt={`${collection}Pass NFT`}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <div className="font-semibold text-sm">
                       {collection.charAt(0).toUpperCase() + collection.slice(1)}
@@ -453,8 +454,8 @@ export default function StakingPage() {
                 </button>
               ))}
             </div>
-          </div>
-        </div>
+                  </div>
+                </div>
 
         {/* Stats Dashboard */}
         <div className="mt-8">
@@ -698,12 +699,12 @@ function OwnedTokensList({
               {isOn && (
                 <div className="absolute top-2 right-2">
                   <CheckCircle className="w-5 h-5 text-white" />
-                </div>
+                  </div>
               )}
             </button>
           );
         })}
-      </div>
+                  </div>
 
       {picked.length > 0 && (
         <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 rounded-xl p-4">
@@ -711,7 +712,7 @@ function OwnedTokensList({
             <div>
               <h4 className="text-white font-medium">Selected for Staking</h4>
               <p className="text-white/60 text-sm">{picked.length} NFT{picked.length > 1 ? 's' : ''} selected</p>
-            </div>
+                  </div>
             <button
               onClick={() => onStake(picked)}
               className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -754,7 +755,7 @@ function WithdrawBox({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <input
           value={raw}
           onChange={(e) => setRaw(e.target.value)}
@@ -763,7 +764,7 @@ function WithdrawBox({
         />
         <button
           onClick={() => onWithdraw(ids)}
-          className="px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 sm:px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
           disabled={withdrawing || ids.length === 0}
         >
           {withdrawing ? (

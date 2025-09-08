@@ -3,17 +3,15 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { FastLink } from "@/components/ui/fast-link"
 import { 
-  ArrowRight, 
   Shield, 
   Zap, 
-  Globe,
-  TrendingUp,
   Users,
-  Star
+  Star,
+  Coins
 } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 interface HeroSectionProps {
   className?: string
@@ -65,33 +63,34 @@ export function HeroSection({ className }: HeroSectionProps) {
             <div className="space-y-4">
               <Badge variant="secondary" className="w-fit">
                 <Star className="w-3 h-3 mr-1" />
-                Next-Gen NFT Platform
+                Decentralized Computing Platform
               </Badge>
               
               <h1 className="text-4xl lg:text-6xl font-bold tracking-tight">
-                Mint AGV NFTs
-                <span className="text-primary block">Across Chains</span>
+                AGV Protocol
+                <span className="text-primary block">NFT Ecosystem</span>
               </h1>
               
               <p className="text-xl text-muted-foreground max-w-2xl">
-                Experience the future of NFT minting with AGV Protocol. 
-                Seamlessly mint across multiple blockchain networks with 
-                enterprise-grade security and lightning-fast transactions.
+                Mint exclusive SeedPass, TreePass, SolarPass, and ComputePass NFTs. 
+                Stake your NFTs to earn daily rewards with no lock-up period across 
+                BSC, Polygon, and Arbitrum networks.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="group" asChild>
-                <FastLink href="#minting">
+              <Link href="/mint">
+                <Button size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                  <Coins className="mr-2 h-5 w-5" />
                   Start Minting
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </FastLink>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <FastLink href="/dashboard">
-                  View Dashboard
-                </FastLink>
-              </Button>
+                </Button>
+              </Link>
+              <Link href="/staking">
+                <Button size="lg" variant="outline" className="border-2 border-blue-200 text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg font-semibold transition-all duration-300">
+                  <Zap className="mr-2 h-5 w-5" />
+                  View Staking
+                </Button>
+              </Link>
             </div>
 
             {/* Stats */}
@@ -102,11 +101,11 @@ export function HeroSection({ className }: HeroSectionProps) {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">4</div>
-                <div className="text-sm text-muted-foreground">NFT Types</div>
+                <div className="text-sm text-muted-foreground">NFT Collections</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">24/7</div>
-                <div className="text-sm text-muted-foreground">Support</div>
+                <div className="text-2xl font-bold text-primary">50 rGGP</div>
+                <div className="text-sm text-muted-foreground">Daily Rewards</div>
               </div>
             </div>
           </div>

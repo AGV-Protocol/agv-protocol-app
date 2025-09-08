@@ -77,21 +77,21 @@ export default function TokenPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-      <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600/20 via-cyan-600/20 to-blue-800/20 backdrop-blur-xl border border-white/10 p-8 mb-8 shadow-2xl shadow-blue-500/10">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-600/20 via-cyan-600/20 to-blue-800/20 backdrop-blur-xl border border-white/10 p-4 sm:p-8 mb-6 sm:mb-8 shadow-2xl shadow-blue-500/10">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-cyan-600/10 to-blue-800/10 animate-pulse"></div>
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent via-blue-500/5 to-transparent"></div>
-          <div className="relative z-10 text-center space-y-6">
-            <div className="space-y-4">
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-300 bg-clip-text text-transparent">
+          <div className="relative z-10 text-center space-y-4 sm:space-y-6">
+            <div className="space-y-3 sm:space-y-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-300 bg-clip-text text-transparent">
                 Seedpass Token
               </h1>
-              <p className="text-xl text-white/80 max-w-3xl mx-auto">
+              <p className="text-base sm:text-lg md:text-xl text-white/80 max-w-3xl mx-auto px-2">
                 Your gateway to the AGV Protocol ecosystem. Stake your Seedpass NFTs to earn rewards and unlock exclusive benefits.
               </p>
             </div>
-            <div className="flex justify-center gap-4">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
               <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30 backdrop-blur-sm">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-sm text-green-300 font-medium">Live Ecosystem</span>
@@ -109,29 +109,29 @@ export default function TokenPage() {
         </div>
 
         {/* Quick Stats */}
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+        <div className="mb-6 sm:mb-8">
+          <h3 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6 flex items-center gap-2">
             <div className="w-2 h-2 bg-green-400 rounded-full"></div>
             Ecosystem Overview
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 group hover:bg-white/10 transition-all duration-300">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+            <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-3 sm:p-6 group hover:bg-white/10 transition-all duration-300">
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
-                    <Users className="h-6 w-6 text-white" />
+                <div className="flex items-center justify-between mb-2 sm:mb-4">
+                  <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
+                    <Users className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-white">2,847</div>
+                    <div className="text-lg sm:text-2xl font-bold text-white">2,847</div>
                     <div className="text-xs text-white/60">Total Holders</div>
                   </div>
                 </div>
-                <div className="text-white/80 font-medium">Community Size</div>
+                <div className="text-white/80 font-medium text-sm sm:text-base">Community Size</div>
               </div>
             </div>
             
-            <div className="relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 group hover:bg-white/10 transition-all duration-300">
+            <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-3 sm:p-6 group hover:bg-white/10 transition-all duration-300">
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
@@ -147,7 +147,7 @@ export default function TokenPage() {
               </div>
             </div>
             
-            <div className="relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 group hover:bg-white/10 transition-all duration-300">
+            <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-3 sm:p-6 group hover:bg-white/10 transition-all duration-300">
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
@@ -163,7 +163,7 @@ export default function TokenPage() {
               </div>
             </div>
             
-            <div className="relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 group hover:bg-white/10 transition-all duration-300">
+            <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-3 sm:p-6 group hover:bg-white/10 transition-all duration-300">
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
@@ -181,30 +181,30 @@ export default function TokenPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="overview" className="space-y-6">
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-2">
-            <TabsList className="grid w-full grid-cols-4 bg-transparent">
+        <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
+          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-1 sm:p-2">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 bg-transparent h-auto">
               <TabsTrigger 
                 value="overview" 
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-xl"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-lg sm:rounded-xl text-xs sm:text-sm py-2 sm:py-3"
               >
                 Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="contracts"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white rounded-xl"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white rounded-lg sm:rounded-xl text-xs sm:text-sm py-2 sm:py-3"
               >
                 Contracts
               </TabsTrigger>
               <TabsTrigger 
                 value="staking"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-xl"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-lg sm:rounded-xl text-xs sm:text-sm py-2 sm:py-3"
               >
                 Staking
               </TabsTrigger>
               <TabsTrigger 
                 value="resources"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-orange-500 data-[state=active]:text-white rounded-xl"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-orange-500 data-[state=active]:text-white rounded-lg sm:rounded-xl text-xs sm:text-sm py-2 sm:py-3"
               >
                 Resources
               </TabsTrigger>
@@ -217,7 +217,13 @@ export default function TokenPage() {
               <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 group hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg">
-                    <span className="text-2xl">🌱</span>
+                    <div className="w-8 h-8 rounded-lg overflow-hidden bg-white/20">
+                      <img 
+                        src="/seedpass.jpg"
+                        alt="SeedPass NFT"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   </div>
                   <h3 className="text-xl font-semibold text-white">What is Seedpass?</h3>
                 </div>
