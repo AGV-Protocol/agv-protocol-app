@@ -7,18 +7,21 @@ export const CHAINS = {
     name: "Binance Smart Chain",
     symbol: "BNB",
     explorer: "https://bscscan.com",
+    nft: "0xe268e673a220354c70b324C02635620a591651F5"
   },
   "137": {
     chainId: "137",
     name: "Polygon",
     symbol: "MATIC",
     explorer: "https://polygonscan.com",
+    nft: "0xe268e673a220354c70b324C02635620a591651F5"
   },
   "42161": {
     chainId: "42161",
     name: "Arbitrum One",
     symbol: "ETH",
     explorer: "https://arbiscan.io",
+    nft: "0xe268e673a220354c70b324C02635620a591651F5"
   }
 } as const;
 
@@ -527,6 +530,85 @@ export const NFT_ABI = [
     type: "function",
   },
 ] as const;
+
+// Staking contract addresses
+export const STAKE_CONTRACTS = {
+  "56": {
+    seed: "0xe268e673a220354c70b324C02635620a591651F5", // Deployed staking contract for Seedpass on BSC
+    tree: "0xe268e673a220354c70b324C02635620a591651F5", // Same contract for all NFT types on BSC
+    solar: "0xe268e673a220354c70b324C02635620a591651F5", // Same contract for all NFT types on BSC
+    compute: "0xe268e673a220354c70b324C02635620a591651F5", // Same contract for all NFT types on BSC
+  },
+  "137": {
+    seed: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Polygon staking contract
+    tree: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Polygon staking contract
+    solar: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Polygon staking contract
+    compute: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Polygon staking contract
+  },
+  "42161": {
+    seed: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Arbitrum staking contract
+    tree: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Arbitrum staking contract
+    solar: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Arbitrum staking contract
+    compute: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Arbitrum staking contract
+  },
+} as const;
+
+// Staking contract ABI (simplified for StakeERC721)
+export const STAKE_ABI = [
+  {
+    inputs: [{ internalType: "uint256[]", name: "tokenIds", type: "uint256[]" }],
+    name: "stake",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256[]", name: "tokenIds", type: "uint256[]" }],
+    name: "withdraw",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "staker", type: "address" }],
+    name: "getStakeInfo",
+    outputs: [
+      { internalType: "uint256", name: "tokensStaked", type: "uint256" },
+      { internalType: "uint256", name: "rewards", type: "uint256" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "user", type: "address" }],
+    name: "getStakedTokens",
+    outputs: [{ internalType: "uint256[]", name: "", type: "uint256[]" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "timeUnit",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "rewardsPerUnitTime",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
+
+// Reward rates per tier (tokens per day)
+export const REWARD_RATES = {
+  seed: 10,    // 10 tokens per day
+  tree: 25,    // 25 tokens per day
+  solar: 50,   // 50 tokens per day
+  compute: 100, // 100 tokens per day
+} as const;
 
 export type ChainId = keyof typeof CHAINS;
 export type CollectionKey = keyof typeof NFT_CONTRACTS["56"];

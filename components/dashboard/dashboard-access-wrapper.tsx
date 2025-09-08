@@ -148,6 +148,7 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
   // Auth actions
   const signInGoogle = async () => {
     try {
+      console.log("lggggggggggggggggin in")
       await signInWithPopup(auth, new GoogleAuthProvider());
       toast.success("Signed in with Google");
     } catch (e: any) {
