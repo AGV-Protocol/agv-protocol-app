@@ -6,8 +6,7 @@ import { CheckCircle, X, Loader2, ExternalLink, Copy, Wallet, Zap, Shield, Globe
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import Image from "next/image";
-import { thirdwebClient, WalletConnect, WalletStatus } from "@/components/wallet/wallet-connect";
-import { useActiveAccount, useWalletBalance, useReadContract } from "thirdweb/react";
+import { useActiveAccount, useWalletBalance, useReadContract, ConnectButton } from "thirdweb/react";
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,11 +21,16 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import { NFT_CONTRACTS, USDT_ADDRESSES, NFT_ABI, USDT_ABI, SEED_ABI, TREE_ABI, SOLAR_ABI, COMPUTE_ABI } from "@/lib/contracts";
-import { defineChain, getContract, prepareContractCall, sendTransaction, waitForReceipt, sendAndConfirmTransaction } from "thirdweb";
+import { defineChain, getContract, prepareContractCall, sendTransaction, waitForReceipt, sendAndConfirmTransaction, createThirdwebClient } from "thirdweb";
 import { parseUnits } from "viem";
 import { recordSuccessfulMintStrict } from "@/lib/recordMint";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
+
+/** ---------------- Thirdweb client ---------------- **/
+const thirdwebClient = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID!,
+});
 
 /** ---------------- Types ---------------- **/
 type ChainId = "56" | "137" | "42161" ;
@@ -55,17 +59,59 @@ const SpendingCapModal = ({
   tokenSymbol,
   networkFee,
 }: SpendingCapModalProps) => {
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
   return (
     <div
       style={{
         position: "fixed",
-        inset: 0,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: "100vw",
+        height: "100vh",
         backgroundColor: "rgba(0, 0, 0, 0.5)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         zIndex: 50,
+        overflow: "hidden",
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
       }}
     >
       <div
@@ -308,6 +354,37 @@ const TransactionProgressModal = ({
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [showTimeoutOption, setShowTimeoutOption] = useState(false);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  // Handle escape key (only for success/error/timeout stages)
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && (stage === "success" || stage === "error" || showTimeoutOption)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose, stage, showTimeoutOption]);
+
   const EXPLORERS: Record<ChainId, string> = {
     "56": "https://bscscan.io",
     "137": "https://polscan.io",
@@ -351,12 +428,23 @@ const TransactionProgressModal = ({
     <div
       style={{
         position: "fixed",
-        inset: 0,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: "100vw",
+        height: "100vh",
         backgroundColor: "rgba(0, 0, 0, 0.5)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         zIndex: 60,
+        overflow: "hidden",
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget && (stage === "success" || stage === "error" || showTimeoutOption)) {
+          onClose();
+        }
       }}
     >
       <div
@@ -1494,13 +1582,22 @@ export default function ModernMintingInterface() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Wallet Status */}
-              <WalletStatus />
-
               {/* Wallet Connect Button */}
               <div className="flex justify-center">
-                <WalletConnect />
+                <ConnectButton client={thirdwebClient} />
               </div>
+
+              {/* Wallet Connection Status */}
+              {account && (
+                <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+                  <div className="flex items-center justify-center">
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                    <span className="text-sm text-green-700 font-medium">
+                      Wallet Connected: {account.address.slice(0, 6)}...{account.address.slice(-4)}
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {/* Whitelist Status */}
               {account && (
