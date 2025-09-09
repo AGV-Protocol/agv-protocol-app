@@ -21,7 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
-import { NFT_CONTRACTS, USDT_ADDRESSES, NFT_ABI, USDT_ABI } from "@/lib/contracts";
+import { NFT_CONTRACTS, USDT_ADDRESSES, NFT_ABI, USDT_ABI, SEED_ABI, TREE_ABI, SOLAR_ABI, COMPUTE_ABI } from "@/lib/contracts";
 import { defineChain, getContract, prepareContractCall, sendTransaction, waitForReceipt, sendAndConfirmTransaction } from "thirdweb";
 import { parseUnits } from "viem";
 import { recordSuccessfulMintStrict } from "@/lib/recordMint";
@@ -57,75 +57,225 @@ const SpendingCapModal = ({
 }: SpendingCapModalProps) => {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 text-white rounded-2xl p-6 max-w-md w-[90%] mx-4">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-amber-500 to-red-500 flex items-center justify-center">
-              <span className="text-xs font-bold">!</span>
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 50,
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "#1f2937",
+          color: "#fff",
+          borderRadius: "1rem",
+          padding: "1.5rem",
+          maxWidth: "28rem",
+          width: "90%",
+          margin: "1rem",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "1rem",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <div
+              style={{
+                width: "2rem",
+                height: "2rem",
+                borderRadius: "50%",
+                background: "linear-gradient(45deg, #f59e0b, #ef4444)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <span style={{ fontSize: "0.75rem", fontWeight: "bold" }}>!</span>
             </div>
-            <h3 className="text-lg font-bold">Spending cap request</h3>
+            <h3 style={{ fontSize: "1.125rem", fontWeight: "bold", margin: 0 }}>
+              Spending cap request
+            </h3>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white p-1"
+            style={{
+              background: "none",
+              border: "none",
+              color: "#9ca3af",
+              cursor: "pointer",
+              padding: "0.25rem",
+            }}
             aria-label="Close spending cap modal"
           >
             <X size={20} />
           </button>
         </div>
-        <p className="text-gray-300 mb-6 text-sm">
+        <p
+          style={{
+            color: "#d1d5db",
+            marginBottom: "1.5rem",
+            fontSize: "0.875rem",
+          }}
+        >
           This site wants permission to withdraw your tokens
         </p>
-        <div className="bg-gray-700 rounded-lg p-4 mb-4">
-          <h4 className="text-gray-100 text-sm font-semibold mb-2">Estimated changes</h4>
-          <p className="text-gray-300 text-sm mb-4">
-            You are giving AGV Protocol the permission to spend this amount from your account.
+        <div
+          style={{
+            backgroundColor: "#374151",
+            borderRadius: "0.5rem",
+            padding: "1rem",
+            marginBottom: "1rem",
+          }}
+        >
+          <h4
+            style={{
+              color: "#f3f4f6",
+              fontSize: "0.875rem",
+              fontWeight: "semibold",
+              marginBottom: "0.5rem",
+            }}
+          >
+            Estimated changes
+          </h4>
+          <p
+            style={{
+              color: "#d1d5db",
+              fontSize: "0.875rem",
+              marginBottom: "1rem",
+            }}
+          >
+            You are giving AGV Protocol the permission to spend this amount from
+            your account.
           </p>
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-gray-300 text-sm">Spending cap</span>
-            <div className="flex items-center gap-2">
-              <span className="text-white font-semibold">{spendingCap}</span>
-              <span className="text-green-400 text-sm">{tokenSymbol}</span>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1rem",
+            }}
+          >
+            <span style={{ color: "#d1d5db", fontSize: "0.875rem" }}>
+              Spending cap
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span style={{ color: "#fff", fontWeight: "semibold" }}>
+                {spendingCap}
+              </span>
+              <span style={{ color: "#10b981", fontSize: "0.875rem" }}>
+                {tokenSymbol}
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 mb-6">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400 text-sm">Spender</span>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-red-500" />
-              <span className="text-white text-sm font-mono">{spender}</span>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.75rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <div
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+          >
+            <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>Spender</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <div
+                style={{
+                  width: "1rem",
+                  height: "1rem",
+                  borderRadius: "50%",
+                  backgroundColor: "#ef4444",
+                }}
+              />
+              <span
+                style={{
+                  color: "#fff",
+                  fontSize: "0.875rem",
+                  fontFamily: "monospace",
+                }}
+              >
+                {spender}
+              </span>
             </div>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400 text-sm">Request from</span>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-purple-500" />
-              <span className="text-white text-sm">agv-nft.com</span>
+          <div
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+          >
+            <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>
+              Request from
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <div
+                style={{
+                  width: "1rem",
+                  height: "1rem",
+                  borderRadius: "50%",
+                  backgroundColor: "#8b5cf6",
+                }}
+              />
+              <span style={{ color: "#fff", fontSize: "0.875rem" }}>
+                agv-nft.com
+              </span>
             </div>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400 text-sm">Network fee</span>
-            <div className="flex items-center gap-2">
-              <span className="text-white text-sm">{networkFee}</span>
-              <span className="text-green-400 text-sm">{tokenSymbol}</span>
+          <div
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+          >
+            <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>
+              Network fee
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span style={{ color: "#fff", fontSize: "0.875rem" }}>{networkFee}</span>
+              <span style={{ color: "#10b981", fontSize: "0.875rem" }}>
+                {tokenSymbol}
+              </span>
             </div>
           </div>
-          <p className="text-gray-400 text-xs mt-2">Includes {networkFee} fee</p>
+          <p style={{ color: "#9ca3af", fontSize: "0.75rem", marginTop: "0.5rem" }}>
+            Includes {networkFee} fee
+          </p>
         </div>
 
-        <div className="flex gap-4">
+        <div style={{ display: "flex", gap: "1rem" }}>
           <button
             onClick={onClose}
-            className="flex-1 py-3 bg-transparent text-gray-300 border border-gray-600 rounded-lg font-medium hover:bg-gray-700"
+            style={{
+              flex: 1,
+              padding: "0.75rem",
+              backgroundColor: "transparent",
+              color: "#d1d5db",
+              border: "1px solid #4b5563",
+              borderRadius: "0.5rem",
+              cursor: "pointer",
+              fontWeight: "medium",
+            }}
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 py-3 bg-blue-600 text-white border-none rounded-lg font-medium hover:bg-blue-700"
+            style={{
+              flex: 1,
+              padding: "0.75rem",
+              backgroundColor: "#2563eb",
+              color: "#fff",
+              border: "none",
+              borderRadius: "0.5rem",
+              cursor: "pointer",
+              fontWeight: "medium",
+            }}
           >
             Confirm
           </button>
@@ -198,18 +348,56 @@ const TransactionProgressModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-60">
-      <div className="bg-gray-800 text-white rounded-2xl p-6 max-w-md w-[90%] mx-4">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 60,
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "#1f2937",
+          color: "#fff",
+          borderRadius: "1rem",
+          padding: "1.5rem",
+          maxWidth: "28rem",
+          width: "90%",
+          margin: "1rem",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "1rem",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             {stage === "success" ? (
-              <CheckCircle className="h-6 w-6 text-green-500" />
+              <CheckCircle
+                style={{ height: "1.5rem", width: "1.5rem", color: "#10b981" }}
+              />
             ) : stage === "error" ? (
-              <AlertTriangle className="h-6 w-6 text-red-500" />
+              <AlertTriangle
+                style={{ height: "1.5rem", width: "1.5rem", color: "#ef4444" }}
+              />
             ) : (
-              <Loader2 className="h-6 w-6 text-blue-500 animate-spin" />
+              <Loader2
+                style={{
+                  height: "1.5rem",
+                  width: "1.5rem",
+                  color: "#3b82f6",
+                  animation: "spin 1s linear infinite",
+                }}
+              />
             )}
-            <h3 className="text-lg font-bold">
+            <h3 style={{ fontSize: "1.125rem", fontWeight: "bold", margin: 0 }}>
               {stage === "success"
                 ? "Transaction Successful!"
                 : stage === "error"
@@ -222,7 +410,13 @@ const TransactionProgressModal = ({
           {(stage === "success" || stage === "error" || showTimeoutOption) && (
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white p-1"
+              style={{
+                background: "none",
+                border: "none",
+                color: "#9ca3af",
+                cursor: "pointer",
+                padding: "0.25rem",
+              }}
               aria-label="Close progress modal"
             >
               <X size={20} />
@@ -230,21 +424,71 @@ const TransactionProgressModal = ({
           )}
         </div>
 
-        <div className="mb-4">
-          <p className="text-gray-300 text-sm mb-2">{status}</p>
+        <div style={{ marginBottom: "1rem" }}>
+          <p
+            style={{
+              color: "#d1d5db",
+              fontSize: "0.875rem",
+              marginBottom: "0.5rem",
+            }}
+          >
+            {status}
+          </p>
           {timeElapsed > 0 && stage !== "success" && (
-            <p className="text-gray-400 text-xs">Time elapsed: {formatTime(timeElapsed)}</p>
+            <p style={{ color: "#9ca3af", fontSize: "0.75rem" }}>
+              Time elapsed: {formatTime(timeElapsed)}
+            </p>
           )}
         </div>
 
         {txHash && (
-          <div className="bg-gray-700 rounded-lg p-4 mb-4">
-            <h4 className="text-gray-100 text-sm font-semibold mb-2">Transaction Hash</h4>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-green-400 text-xs font-mono break-all flex-1">{txHash}</span>
+          <div
+            style={{
+              backgroundColor: "#374151",
+              borderRadius: "0.5rem",
+              padding: "1rem",
+              marginBottom: "1rem",
+            }}
+          >
+            <h4
+              style={{
+                color: "#f3f4f6",
+                fontSize: "0.875rem",
+                fontWeight: "semibold",
+                marginBottom: "0.5rem",
+              }}
+            >
+              Transaction Hash
+            </h4>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                marginBottom: "0.5rem",
+              }}
+            >
+              <span
+                style={{
+                  color: "#10b981",
+                  fontSize: "0.75rem",
+                  fontFamily: "monospace",
+                  wordBreak: "break-all",
+                  flex: 1,
+                }}
+              >
+                {txHash}
+              </span>
               <button
                 onClick={copyTxHash}
-                className="border border-gray-600 rounded p-1 text-gray-400 hover:text-white"
+                style={{
+                  background: "none",
+                  border: "1px solid #4b5563",
+                  borderRadius: "0.25rem",
+                  padding: "0.25rem",
+                  color: "#9ca3af",
+                  cursor: "pointer",
+                }}
                 aria-label="Copy tx hash"
               >
                 <Copy size={14} />
@@ -255,7 +499,14 @@ const TransactionProgressModal = ({
                 href={explorerUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-blue-400 text-xs hover:text-blue-300"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  color: "#3b82f6",
+                  fontSize: "0.75rem",
+                  textDecoration: "none",
+                }}
               >
                 View on Explorer
                 <ExternalLink size={12} />
@@ -264,63 +515,106 @@ const TransactionProgressModal = ({
           </div>
         )}
 
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
-              stage === "approval" ? "bg-blue-500" : "bg-green-500"
-            }`}>
+        <div style={{ marginBottom: "1rem" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              marginBottom: "0.5rem",
+            }}
+          >
+            <div
+              style={{
+                width: "1rem",
+                height: "1rem",
+                borderRadius: "50%",
+                backgroundColor: stage === "approval" ? "#3b82f6" : "#10b981",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               {stage === "approval" ? (
-                <Loader2 size={8} className="animate-spin" />
+                <Loader2 size={8} style={{ animation: "spin 1s linear infinite" }} />
               ) : (
                 <CheckCircle size={8} />
               )}
             </div>
-            <span className={`text-xs ${
-              stage === "approval" ? "text-blue-500" : "text-green-500"
-            }`}>
+            <span
+              style={{
+                fontSize: "0.75rem",
+                color: stage === "approval" ? "#3b82f6" : "#10b981",
+              }}
+            >
               USDT Approval
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
-              stage === "mint" || stage === "confirming"
-                ? "bg-blue-500"
-                : stage === "success"
-                ? "bg-green-500"
-                : "bg-gray-500"
-            }`}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <div
+              style={{
+                width: "1rem",
+                height: "1rem",
+                borderRadius: "50%",
+                backgroundColor:
+                  stage === "mint" || stage === "confirming"
+                    ? "#3b82f6"
+                    : stage === "success"
+                    ? "#10b981"
+                    : "#4b5563",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               {stage === "mint" || stage === "confirming" ? (
-                <Loader2 size={8} className="animate-spin" />
+                <Loader2 size={8} style={{ animation: "spin 1s linear infinite" }} />
               ) : stage === "success" ? (
                 <CheckCircle size={8} />
               ) : null}
             </div>
-            <span className={`text-xs ${
-              stage === "mint" || stage === "confirming"
-                ? "text-blue-500"
-                : stage === "success"
-                ? "text-green-500"
-                : "text-gray-400"
-            }`}>
+            <span
+              style={{
+                fontSize: "0.75rem",
+                color:
+                  stage === "mint" || stage === "confirming"
+                    ? "#3b82f6"
+                    : stage === "success"
+                    ? "#10b981"
+                    : "#9ca3af",
+              }}
+            >
               NFT Mint
             </span>
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div style={{ display: "flex", gap: "0.5rem", flexDirection: "column" }}>
           {showTimeoutOption && stage === "confirming" && (
             <>
-              <p className="text-yellow-400 text-xs mb-2">
-                Transaction is taking longer than expected. This may be due to network congestion.
+              <p style={{ color: "#fbbf24", fontSize: "0.75rem", marginBottom: "0.5rem" }}>
+                Transaction is taking longer than expected. This may be due to
+                network congestion.
               </p>
               <button
                 onClick={onVerifyWallet}
-                className="w-full py-3 bg-blue-600 text-white border-none rounded-lg font-medium text-sm hover:bg-blue-700"
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  backgroundColor: "#2563eb",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "0.5rem",
+                  cursor: "pointer",
+                  fontWeight: "medium",
+                  fontSize: "0.875rem",
+                }}
               >
                 Check Wallet for NFTs
               </button>
-              <p className="text-gray-400 text-xs text-center">
-                Please check your connected wallet to verify if the NFT was minted successfully
+              <p style={{ color: "#9ca3af", fontSize: "0.75rem", textAlign: "center" }}>
+                Please check your connected wallet to verify if the NFT was minted
+                successfully
               </p>
             </>
           )}
@@ -328,7 +622,16 @@ const TransactionProgressModal = ({
           {stage === "error" && (
             <button
               onClick={onClose}
-              className="w-full py-3 bg-red-600 text-white border-none rounded-lg font-medium"
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                backgroundColor: "#ef4444",
+                color: "#fff",
+                border: "none",
+                borderRadius: "0.5rem",
+                cursor: "pointer",
+                fontWeight: "medium",
+              }}
             >
               Close
             </button>
@@ -336,7 +639,7 @@ const TransactionProgressModal = ({
         </div>
 
         {stage === "confirming" && !showTimeoutOption && (
-          <p className="text-gray-400 text-xs text-center">
+          <p style={{ color: "#9ca3af", fontSize: "0.75rem", textAlign: "center" }}>
             Please do not refresh or leave the page. This may take a few minutes.
           </p>
         )}
@@ -471,13 +774,25 @@ export default function ModernMintingInterface() {
     const maxAllowed = MAX_PER_WALLET[type][selectedChain];
     const newValue = Math.max(0, Math.min(value, maxAllowed));
 
-    setQuantities(prev => ({
-      ...prev,
-      [type]: newValue
-    }));
+    setQuantities(prev => {
+      // If setting a quantity > 0, reset all other quantities to 0
+      if (newValue > 0) {
+        const newQuantities = { seed: 0, tree: 0, solar: 0, compute: 0 };
+        newQuantities[type] = newValue;
+        return newQuantities;
+      } else {
+        // If setting to 0, just update this type
+        return {
+          ...prev,
+          [type]: newValue
+        };
+      }
+    });
   };
 
   // Remove the old handleConnectWallet function since we're using the wallet provider
+
+  // Get USDT decimals at component level - moved after contract definitions
 
   const prepareTransactions = async () => {
     if (!account?.address) {
@@ -502,28 +817,34 @@ export default function ModernMintingInterface() {
       await getDocs(q).catch(() => void 0);
     }
 
-    // Calculate total quantity and cost
-    const totalQty = totalQuantity;
-    const totalCostUsd = totalCost;
+    // Validate that only one NFT type is selected
+    const selectedTypes = Object.entries(quantities).filter(([_, qty]) => qty > 0);
+    if (selectedTypes.length === 0) {
+      setIsMinting(false);
+      throw new Error("Please select at least one NFT to mint");
+    }
+    if (selectedTypes.length > 1) {
+      setIsMinting(false);
+      throw new Error("Please select only one NFT type at a time");
+    }
 
-    if (totalQty < 1) {
+    // Get the selected NFT type and quantity
+    const [selectedType, selectedQty] = selectedTypes[0];
+    const nftType = selectedType as NftType;
+    const quantity = selectedQty;
+    const unitPrice = PASS_PRICES[nftType];
+    const totalCostUsd = quantity * unitPrice;
+
+    if (quantity < 1) {
       setIsMinting(false);
       throw new Error("Quantity must be at least 1");
     }
-    console.log("Preparing to useReadContractttttttttttttttttttttttttttttttttttt")
-    // Get USDT decimals
-    console.log({usdtContract})
-    const { data: usdtDecimalsData } = useReadContract({
-      contract: usdtContract!,
-      method: "decimals",
-      params: [],
-      queryOptions: { enabled: !!usdtContract },
-    });
 
+    // Get USDT decimals from the hook data
     const decimals = Number(usdtDecimalsData ?? 6);
     const unitAmount = parseUnits(String(totalCostUsd), decimals);
     const amountToApprove = unitAmount;
-    console.log("Preparing to minnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+
     const approveTx = prepareContractCall({
       contract: usdtContract,
       method: "approve",
@@ -531,10 +852,11 @@ export default function ModernMintingInterface() {
     });
 
     // Mint NFTs based on selected type
+    // The contract expects: mint(uint256 amount, bytes32[] merkleProof)
     const mintTx = prepareContractCall({
       contract: nftContract,
       method: "mint",
-      params: [BigInt(totalQty), []], // Empty proof array for public mint
+      params: [BigInt(quantity), []], // amount and empty merkleProof array for public mint
     });
 
     setPendingApprovalTx(approveTx);
@@ -611,7 +933,11 @@ export default function ModernMintingInterface() {
     setCurrentStep("Minted successfully!");
     setIsMinting(false);
 
-    toast.success(`Successfully minted ${totalQuantity} NFT${totalQuantity > 1 ? "s" : ""}`);
+    // Get the current selected NFT type and quantity
+    const currentSelectedType = getSelectedNftType();
+    const currentQuantity = quantities[currentSelectedType];
+
+    toast.success(`Successfully minted ${currentQuantity} ${currentSelectedType}Pass NFT${currentQuantity > 1 ? "s" : ""}`);
 
     try {
       // Record the successful mint
@@ -630,8 +956,8 @@ export default function ModernMintingInterface() {
 
       await recordSuccessfulMintStrict(db, fullKolId, {
         address: account?.address!,
-        nftType: "seed", // This will be updated to support all types
-        quantity: totalQuantity,
+        nftType: currentSelectedType,
+        quantity: currentQuantity,
         chainId: selectedChain as any,
         txHash: receipt?.transactionHash || txHash,
         timestamp: new Date(),
@@ -647,7 +973,13 @@ export default function ModernMintingInterface() {
     // Reset quantities
     setQuantities({ seed: 0, tree: 0, solar: 0, compute: 0});
 
-    setTimeout(() => window.location.reload(), 5000);
+    // Auto-close after 5 seconds
+    setTimeout(() => {
+      setShowProgressModal(false);
+      setProgressStage("approval");
+      setTxHash("");
+      setCurrentStep("");
+    }, 5000);
   };
 
   const handleTransactionError = (err: any) => {
@@ -695,8 +1027,29 @@ export default function ModernMintingInterface() {
   // Gas balance calculations
   
   const chainInfo = CHAINS[selectedChain];
-  const contractAddr = NFT_CONTRACTS[selectedChain]?.["seed"]; // For now, using seed contract for all types
+  
+  // Get the primary selected NFT type (first one with quantity > 0)
+  const getSelectedNftType = (): NftType => {
+    for (const [type, qty] of Object.entries(quantities)) {
+      if (qty > 0) return type as NftType;
+    }
+    return "seed"; // default fallback
+  };
+  
+  const selectedNftType = getSelectedNftType();
+  const contractAddr = NFT_CONTRACTS[selectedChain]?.[selectedNftType];
   const usdtAddr = USDT_ADDRESSES[selectedChain];
+
+  // Get the correct ABI based on NFT type
+  const getNftAbi = (nftType: NftType) => {
+    switch (nftType) {
+      case "seed": return SEED_ABI;
+      case "tree": return TREE_ABI;
+      case "solar": return SOLAR_ABI;
+      case "compute": return COMPUTE_ABI;
+      default: return SEED_ABI;
+    }
+  };
 
   // Contract instances
   const nftContract = useMemo(
@@ -706,10 +1059,10 @@ export default function ModernMintingInterface() {
             client: thirdwebClient,
             address: contractAddr,
             chain: chainInfo.chain,
-            abi: NFT_ABI.seed as any,
+            abi: getNftAbi(selectedNftType) as any,
           })
         : null,
-    [contractAddr, chainInfo.chain]
+    [contractAddr, chainInfo.chain, selectedNftType]
   );
 
   const usdtContract = useMemo(
@@ -724,6 +1077,14 @@ export default function ModernMintingInterface() {
         : null,
     [usdtAddr, chainInfo.chain]
   );
+
+  // Get USDT decimals at component level
+  const { data: usdtDecimalsData } = useReadContract({
+    contract: usdtContract!,
+    method: "decimals",
+    params: [],
+    queryOptions: { enabled: !!usdtContract },
+  });
 
   // Helper functions
   const normalizeError = (e: unknown) => {
@@ -793,6 +1154,20 @@ export default function ModernMintingInterface() {
   useEffect(() => {
     setHasInsufficientGas(gasInfo.isInsufficient);
   }, [gasInfo.isInsufficient]);
+
+  // Timeout mechanism for transactions
+  useEffect(() => {
+    if (!showProgressModal || progressStage === "success" || progressStage === "error") return;
+
+    const timeout = setTimeout(() => {
+      if (progressStage === "confirming") {
+        setProgressStage("timeout");
+        setCurrentStep("Transaction is taking longer than expected. Please check your wallet or try again.");
+      }
+    }, 300000); // 5 minutes timeout
+
+    return () => clearTimeout(timeout);
+  }, [showProgressModal, progressStage]);
 
   // Whitelist check (ONE-TIME per wallet connection)
   useEffect(() => {
