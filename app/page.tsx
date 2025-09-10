@@ -299,7 +299,7 @@ export default function HomePage() {
                 </div>
                 <h4 className="text-lg font-semibold text-gray-800">Mint NFTs</h4>
               </div>
-              <p className="text-gray-600 text-sm mb-4">Create your AGV Protocol NFTs across multiple chains</p>
+              <p className="text-gray-600 text-sm mb-4">Mint AGV Protocol NFTs across multiple chains</p>
               <Link href="/mint">
                 <Button className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white">
                   Start Minting

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { ThirdwebProvider } from "thirdweb/react";
 import { createThirdwebClient } from "thirdweb";
+import { Toaster } from "sonner";
 
 // Create QueryClient instance
 const queryClient = new QueryClient({
@@ -24,6 +25,20 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <ThirdwebProvider client={thirdwebClient}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           {children}
+
+          {/* Global toast portal */}
+          <Toaster
+            position="top-center"
+            richColors
+            closeButton
+            expand
+            duration={6000}
+            toastOptions={{
+              classNames: {
+                toast: "z-[99999]",
+              },
+            }}
+          />
         </ThemeProvider>
       </ThirdwebProvider>
     </QueryClientProvider>

@@ -1,45 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export function PageLoading() {
   const [isLoading, setIsLoading] = useState(false);
   const pathname = usePathname();
+  const timeoutRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
 
+  // Show a brief top loader whenever the URL path changes.
+  // We avoid monkey-patching history.* (which can trigger
+  // "useInsertionEffect must not schedule updates") and instead
+  // defer the state update to the next animation frame.
   useEffect(() => {
-    const handleStart = () => setIsLoading(true);
-    const handleComplete = () => setIsLoading(false);
-
-    // Listen for route changes
-    const originalPushState = history.pushState;
-    const originalReplaceState = history.replaceState;
-
-    history.pushState = function(...args) {
-      handleStart();
-      originalPushState.apply(history, args);
-      setTimeout(handleComplete, 100);
-    };
-
-    history.replaceState = function(...args) {
-      handleStart();
-      originalReplaceState.apply(history, args);
-      setTimeout(handleComplete, 100);
-    };
+    rafRef.current = window.requestAnimationFrame(() => {
+      setIsLoading(true);
+      // keep visible briefly to avoid flicker
+      timeoutRef.current = window.setTimeout(() => {
+        setIsLoading(false);
+        timeoutRef.current = null;
+      }, 400);
+    });
 
     return () => {
-      history.pushState = originalPushState;
-      history.replaceState = originalReplaceState;
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     };
-  }, []);
+  }, [pathname]);
 
   if (!isLoading) return null;
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
       <div className="h-1 bg-primary/20">
-        <div 
+        <div
           className="h-full bg-primary transition-all duration-300 ease-out animate-pulse"
           style={{
             width: "100%",
