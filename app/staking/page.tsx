@@ -565,7 +565,7 @@ export default function StakingPage() {
       {/* Chain Selection */}
           <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
             <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+              <div className="w-2 h-2 bg-white rounded-full"></div>
               Select Network
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
@@ -579,7 +579,7 @@ export default function StakingPage() {
                       : "bg-white/5 hover:bg-white/10 border border-white/10"
                   }`}
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between text-white">
                     <div className="text-left">
                       <div className="font-semibold">{CHAIN_CONFIG[k].label}</div>
                       <div className="text-xs opacity-70">Chain ID: {k}</div>
@@ -594,7 +594,7 @@ export default function StakingPage() {
                 </button>
               ))}
             </div>
-            <div className="mt-4 text-sm text-white/60">
+            <div className="mt-4 text-sm text-white/60 font-extrabold">
               Current wallet chain: <span className="text-blue-300">{activeChain?.name ?? "Not connected"}</span>
             </div>
           </div>
@@ -602,7 +602,7 @@ export default function StakingPage() {
           {/* Collection Selection */}
           <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
             <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
-              <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+              <div className="w-2 h-2 bg-white rounded-full"></div>
               Select NFT Collection
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
@@ -613,7 +613,7 @@ export default function StakingPage() {
                   className={`group relative overflow-hidden rounded-lg sm:rounded-xl p-3 sm:p-4 transition-all duration-300 ${
                     selectedCollection === collection 
                       ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25" 
-                      : "bg-white/5 hover:bg-white/10 border border-white/10"
+                      : "bg-white/5 hover:bg-white/10 border border-white/10 text-white"
                   }`}
                 >
                   <div className="text-center">
@@ -640,7 +640,7 @@ export default function StakingPage() {
         {/* Staking Duration Selection */}
         <div className="mt-6 bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
           <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
-            <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+            <div className="w-2 h-2 bg-white rounded-full"></div>
             Select Staking Duration
           </h3>
           <div className="space-y-4">
@@ -674,7 +674,7 @@ export default function StakingPage() {
         {/* Stats Dashboard */}
         <div className="mt-8">
           <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+            <div className="w-2 h-2 bg-white rounded-full"></div>
             Staking Overview
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -707,7 +707,7 @@ export default function StakingPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-white rounded-full"></div>
                 Your {selectedCollection.charAt(0).toUpperCase() + selectedCollection.slice(1)} NFTs
               </h3>
               <p className="text-white/60 text-sm mt-1">Available for staking on {CHAIN_CONFIG[chainKey].label}</p>
@@ -797,7 +797,7 @@ export default function StakingPage() {
         <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
           <div className="mb-6">
             <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-              <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+              <div className="w-2 h-2 bg-white rounded-full"></div>
               Withdraw Staked NFTs
             </h3>
             <p className="text-white/60 text-sm mt-1">
@@ -815,13 +815,13 @@ export default function StakingPage() {
         </div>
 
         {/* Footer Info */}
-        <div className="mt-8 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+        <div className="mt-8 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4"> 
           <div className="flex items-start gap-3">
             <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center mt-0.5">
-              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+              <div className="w-2 h-2 bg-white rounded-full"></div>
             </div>
             <div>
-              <h4 className="text-blue-300 font-medium mb-1">Important Information</h4>
+              <h4 className="text-white font-medium mb-1">Important Information</h4>
               <p className="text-white/70 text-sm">
                 On-chain rewards may be disabled (rate = 0) during the preview phase. 
                 Your UI can still show off-chain rGGP credits from Firestore logging.
