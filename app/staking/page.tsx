@@ -229,7 +229,7 @@ export default function StakingPage() {
   const [rewardsPerUnit, setRewardsPerUnit] = useState<bigint>(BigInt(0));
 
   // Staking duration state
-  const [stakingDuration, setStakingDuration] = useState<number>(1); // Minimum 1 day
+  const [stakingDuration, setStakingDuration] = useState<number>(7); // Minimum 1 day
   const [stakedTokensInfo, setStakedTokensInfo] = useState<Record<string, { stakedAt: number; duration: number }>>({});
 
   // Ensure wallet chain matches tab
@@ -255,10 +255,12 @@ export default function StakingPage() {
   }
 
   async function refreshOwned() {
+    console.log("owner account ", account?.address)
     if (!account?.address) return;
     setLoadingOwned(true);
     try {
       const ids = await fetchOwnedTokenIdsRobust(nft, account.address);
+      console.log("owner ids", account?.address, ids)
       setOwnedIds(ids);
       if (ids.length === 0) {
         toast.info("Could not enumerate NFTs automatically. You can input a token ID manually.");
@@ -520,6 +522,48 @@ export default function StakingPage() {
     return `${perDay.toFixed(4)} / day (contract)`;
   }, [rewardsPerUnit, timeUnit]);
 
+  const presetDurations = [1, 3, 7, 30, 90]
+
+  const handlePresetClick = (days: number) => {
+    setStakingDuration(days)
+  }
+
+  const [stakes, setStakes] = useState<
+    { tokenId: string; stakedAt: number; duration: number; reward: string }[]
+  >([]);
+
+  // Load stakes from Firebase when wallet connects
+  async function loadStakes() {
+    if (!account?.address) return;
+    const q = query(
+      collection(db, "staking_positions"),
+      where("address", "==", account.address),
+      where("chain", "==", chainKey),
+      where("collection", "==", selectedCollection),
+      where("status", "==", "active")
+    );
+    const snap = await getDocs(q);
+    const list: {
+      tokenId: string;
+      stakedAt: number;
+      duration: number;
+      reward: string;
+    }[] = [];
+    snap.forEach((doc) => {
+      const data = doc.data();
+      list.push({
+        tokenId: data.tokenId,
+        stakedAt: data.stakedAt.toMillis(),
+        duration: data.duration,
+        reward: "+10 AGV/day", // dummy reward
+      });
+    });
+    setStakes(list);
+  }
+
+  useEffect(() => {
+    loadStakes();
+  }, [account?.address, chainKey, selectedCollection]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
@@ -644,6 +688,24 @@ export default function StakingPage() {
             Select Staking Duration
           </h3>
           <div className="space-y-4">
+            <div className="space-y-3">
+              <label className="text-white/80 text-sm font-medium block">Quick Select:</label>
+              <div className="flex flex-wrap gap-2">
+                {presetDurations.map((days) => (
+                  <button
+                    key={days}
+                    onClick={() => handlePresetClick(days)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${stakingDuration === days
+                        ? "bg-purple-500 text-white shadow-lg shadow-purple-500/25"
+                        : "bg-white/10 text-white/80 hover:bg-white/20 border border-white/20"
+                      }`}
+                  >
+                    {days} day{days > 1 ? "s" : ""}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="flex items-center gap-4">
               <label htmlFor="duration" className="text-white/80 text-sm font-medium">
                 Duration (days):
@@ -654,7 +716,7 @@ export default function StakingPage() {
                 min="1"
                 max="365"
                 value={stakingDuration}
-                onChange={(e) => setStakingDuration(Math.max(1, parseInt(e.target.value) || 1))}
+                onChange={(e) => setStakingDuration(Math.max(1, Number.parseInt(e.target.value) || 1))}
                 className="w-20 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-center"
               />
             </div>
@@ -664,8 +726,11 @@ export default function StakingPage() {
                 <span className="text-purple-300 text-sm font-medium">Lock Period</span>
               </div>
               <p className="text-white/70 text-xs">
-                Your NFTs will be locked for <span className="font-semibold text-purple-300">{stakingDuration} day{stakingDuration > 1 ? 's' : ''}</span>. 
-                You cannot withdraw them until this period expires.
+                Your NFTs will be locked for{" "}
+                <span className="font-semibold text-purple-300">
+                  {stakingDuration} day{stakingDuration > 1 ? "s" : ""}
+                </span>
+                . You cannot withdraw them until this period expires.
               </p>
             </div>
           </div>
@@ -792,7 +857,43 @@ export default function StakingPage() {
           </div>
         )}
         </div>
-
+        {account?.address ? (
+          <>
+            {/* Stakes Table */}
+            <div className="mt-8 bg-white/5 rounded-xl border border-white/10 p-6">
+              <h2 className="text-xl text-white font-semibold mb-4">
+                Your Stakes
+              </h2>
+              {stakes.length > 0 ? (
+                <table className="w-full text-sm text-left text-white/80">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="py-2">Token ID</th>
+                      <th className="py-2">Date Staked</th>
+                      <th className="py-2">Duration (days)</th>
+                      <th className="py-2">Reward</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stakes.map((s, i) => (
+                      <tr key={i} className="border-b border-white/10">
+                        <td className="py-2">{s.tokenId}</td>
+                        <td className="py-2">
+                          {new Date(s.stakedAt).toLocaleDateString()}
+                        </td>
+                        <td className="py-2">{s.duration}</td>
+                        <td className="py-2">{s.reward}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="text-white/60">No active stakes found.</p>
+              )}
+            </div>
+          </>
+        ) : ""
+        }
         {/* Withdraw Section */}
         <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
           <div className="mb-6">
@@ -814,21 +915,6 @@ export default function StakingPage() {
           />
         </div>
 
-        {/* Footer Info */}
-        <div className="mt-8 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4"> 
-          <div className="flex items-start gap-3">
-            <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center mt-0.5">
-              <div className="w-2 h-2 bg-white rounded-full"></div>
-            </div>
-            <div>
-              <h4 className="text-white font-medium mb-1">Important Information</h4>
-              <p className="text-white/70 text-sm">
-                On-chain rewards may be disabled (rate = 0) during the preview phase. 
-                Your UI can still show off-chain rGGP credits from Firestore logging.
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
