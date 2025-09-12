@@ -638,7 +638,7 @@ export default function StakingPage() {
                 </button>
               ))}
             </div>
-            <div className="mt-4 text-sm text-white/60 font-extrabold">
+            <div className="mt-4 text-sm tracking-wide text-white/60 font-extrabold">
               Current wallet chain: <span className="text-blue-300">{activeChain?.name ?? "Not connected"}</span>
             </div>
           </div>
@@ -747,21 +747,21 @@ export default function StakingPage() {
               title="Staked NFTs"
               value={stakedCount.toString()}
               subtitle="Currently staked"
-              icon={<Lock className="w-6 h-6" />}
+              icon={<Lock className="w-6 h-6 text-white" />}
               gradient="from-blue-500 to-cyan-500"
             />
             <StatCard
               title="Pending Rewards"
               value={pendingRewards.toString()}
               subtitle="Available to claim"
-              icon={<CheckCircle className="w-6 h-6" />}
-              gradient="from-green-500 to-emerald-500"
+              icon={<CheckCircle className="w-6 h-6 text-white" />}
+              gradient="from-blue-500 to-cyan-500"
             />
             <StatCard
               title="Daily Rewards"
               value={dailyRewardHint}
               subtitle="Per NFT staked"
-              icon={<ArrowRightLeft className="w-6 h-6" />}
+              icon={<ArrowRightLeft className="w-6 h-6 text-white" />}
               gradient="from-blue-500 to-cyan-500"
             />
           </div>
@@ -802,11 +802,11 @@ export default function StakingPage() {
                 staking={staking}
               />
             ) : (
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 flex items-start gap-3">
+              <div className="p-4 flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-yellow-400 mt-0.5" />
                 <div>
                   <h4 className="text-yellow-300 font-medium mb-1">Auto-detection failed</h4>
-                  <p className="text-white/70 text-sm">
+                  <p className="text-yellow-400 text-sm">
                     Could not automatically detect your {selectedCollection.charAt(0).toUpperCase() + selectedCollection.slice(1)} NFTs. 
                     If your contract doesn't implement ERC721Enumerable, enter a token ID manually:
                   </p>
@@ -1104,7 +1104,7 @@ function WithdrawBox({
         />
         <button
           onClick={() => onWithdraw(availableTokens)}
-          className="px-4 sm:px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+          className="px-4 sm:px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
           disabled={withdrawing || availableTokens.length === 0}
         >
           {withdrawing ? (
