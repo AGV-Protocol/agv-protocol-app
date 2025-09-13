@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import ModernMintingInterface from "@/components/minting/modern-minting-interface";
+import { Footer } from "@/components/layout/footer";
 
 function MintingInterfaceWrapper() {
   return <ModernMintingInterface />;
@@ -26,15 +27,15 @@ export default function MintPage() {
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-3 sm:gap-4 lg:gap-6">
-              <div className="flex items-center gap-2 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 rounded-lg bg-[#33563b] border border-[#33563b]">
+              <div className="flex items-center gap-2 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 rounded-lg bg-[#4ade80] border border-[#4ade80]">
                 <div className="w-2 h-2 bg-white rounded-full"></div>
                 <span className="text-white font-medium text-sm sm:text-base">Live Minting</span>
               </div>
-              <div className="flex items-center gap-2 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 rounded-lg bg-[#33563b] border border-[#33563b]">
+              <div className="flex items-center gap-2 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 rounded-lg bg-[#4ade80] border border-[#4ade80]">
                 <div className="w-2 h-2 bg-white rounded-full"></div>
                 <span className="text-white font-medium text-sm sm:text-base">Multi-Chain</span>
               </div>
-              <div className="flex items-center gap-2 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 rounded-lg bg-[#33563b] border border-[#33563b]">
+              <div className="flex items-center gap-2 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 rounded-lg bg-[#4ade80] border border-[#4ade80]">
                 <div className="w-2 h-2 bg-white rounded-full"></div>
                 <span className="text-white font-medium text-sm sm:text-base">USDT Payment</span>
               </div>
@@ -49,6 +50,9 @@ export default function MintPage() {
           </Suspense>
         </div>
       </div>
+      
+      {/* Footer */}
+      <Footer backgroundClass="bg-gradient-to-br from-[#223256] via-[#1a2a4a] to-[#223256]" textColorClass="text-white" />
     </div>
   );
 }
