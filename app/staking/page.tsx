@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-// --- Contracts / ABIs ---
+// Contracts / ABIs
 import {
   NFT_CONTRACTS,
   STAKE_CONTRACTS,
@@ -43,14 +43,14 @@ import {
   REWARD_RATES,
 } from "@/lib/contracts";
 
-// --- Reward helpers ---
+// Rewards (off-chain dashboard)
 import { useOffChainRewards } from "@/hooks/useOffChainRewards";
 import { BASE_DAILY_RRGP, bonusFor } from "@/lib/rewards";
 
-// --- NFT detection hook ---
+// Moralis-backed hook
 import { useStakingView } from "@/hooks/useStakingView";
 
-// --- Firestore ---
+// Firestore
 import { db } from "@/lib/firebase";
 import {
   collection,
@@ -63,33 +63,28 @@ import {
   doc,
 } from "firebase/firestore";
 
-/* ──────────────────────────── Safe image helpers ─────────────────────────── */
+/* ─────────────────────────── Helpers ─────────────────────────── */
 function toGateway(u?: string) {
   if (!u) return undefined;
   if (u.startsWith("ipfs://")) return u.replace(/^ipfs:\/\//, "https://ipfscdn.io/ipfs/");
   return u.replace(/^https?:\/\/ipfs\.io\/ipfs\//i, "https://ipfscdn.io/ipfs/");
 }
-function getImageSrc(nft: any) {
-  const flat =
-    nft?.imageUrl ??
-    (typeof nft?.metadata?.image === "string" ? nft.metadata.image : undefined) ??
-    undefined;
-  return toGateway(flat);
+function getImageSrc(nft: { imageUrl?: string }, fallback?: string) {
+  return toGateway(nft?.imageUrl) || fallback;
 }
 
-/* ─────────────────────────────── Config ─────────────────────────────── */
+/* ─────────────────────────── Config ─────────────────────────── */
 const client = createThirdwebClient({
   clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID!,
 });
 
 type ChainKey = "56" | "42161" | "137";
-const CHAIN_CONFIG: Record<ChainKey, { id: number; label: string; chain: any }> = {
-  "56": { id: 56, label: "BSC", chain: bsc },
-  "42161": { id: 42161, label: "Arbitrum", chain: arbitrum },
-  "137": { id: 137, label: "Polygon", chain: polygon },
+const CHAIN_CONFIG: Record<ChainKey, { id: number; label: string; chain: any; fallbackImg: string }> = {
+  "56": { id: 56, label: "BSC", chain: bsc, fallbackImg: "/seedpass.jpg" },
+  "42161": { id: 42161, label: "Arbitrum", chain: arbitrum, fallbackImg: "/seedpass.jpg" },
+  "137": { id: 137, label: "Polygon", chain: polygon, fallbackImg: "/seedpass.jpg" },
 };
 
-/* ───────────────────── Build contracts for a chain ───────────────────── */
 function useContracts(
   chainKey: ChainKey,
   collectionType: "seed" | "tree" | "solar" | "compute" = "seed"
@@ -130,7 +125,7 @@ function useContracts(
   return { nft, stake, chain };
 }
 
-/* ─────────────────────── Reward calculation (UI) ─────────────────────── */
+/* ───────────── Reward calc (used in tables & claim logs) ───────────── */
 function calculateRewards(
   stakedAt: number,
   duration: number,
@@ -143,17 +138,14 @@ function calculateRewards(
   const totalStakingTime = duration * 24 * 60 * 60;
 
   const dailyRate = REWARD_RATES[collectionType];
-  const elapsedDays = Math.min(
-    elapsedTime / (24 * 60 * 60),
-    totalStakingTime / (24 * 60 * 60)
-  );
+  const elapsedDays = Math.min(elapsedTime / (24 * 60 * 60), totalStakingTime / (24 * 60 * 60));
   const totalRewards = elapsedDays * dailyRate;
 
   const canClaim = elapsedTime >= 24 * 60 * 60; // ≥ 1 day
   return { totalRewards: Math.max(0, totalRewards), dailyRate, canClaim };
 }
 
-/* ─────────────────────── Firestore logging helpers ─────────────────────── */
+/* ───────────── Firestore logging helpers (used) ───────────── */
 async function logStake(
   address: string,
   chainKey: ChainKey,
@@ -314,7 +306,7 @@ async function logWithdraw(
   }
 }
 
-/* ─────────────────────────────── Page ─────────────────────────────── */
+/* ─────────────────────────── Page ─────────────────────────── */
 export default function StakingPage() {
   const account = useActiveAccount();
   const activeChain = useActiveWalletChain();
@@ -330,44 +322,32 @@ export default function StakingPage() {
   const [withdrawing, setWithdrawing] = useState(false);
   const [claiming, setClaiming] = useState(false);
 
-  // Staking duration state
+  // Staking duration + local lock knowledge
   const [stakingDuration, setStakingDuration] = useState<number>(7);
   const [stakedTokensInfo, setStakedTokensInfo] = useState<
     Record<string, { stakedAt: number; duration: number; lastClaimedAt?: number; totalClaimed?: number }>
   >({});
 
-  // Rewards (off-chain dashboard)
+  // Off-chain rewards widget (if you use it)
   const { data: rewardsData } = useOffChainRewards();
 
-  // NFT detection across networks by kind
-  const stakingView = useStakingView(selectedCollection.toUpperCase() as any) as any;
-  const nftLoading: boolean = stakingView?.loading ?? false;
-  const nftError: string | null = stakingView?.error ?? null;
-  const ownedUnstaked: any[] = stakingView?.ownedUnstaked ?? [];
-  const ownedStaked: any[] = stakingView?.ownedStaked ?? [];
-
-  // Filter to currently selected chain
+  // Moralis hook → directly scoped to current chain + collection
   const chainId = CHAIN_CONFIG[chainKey].id;
-  const filteredUnstaked = useMemo(
-    () => (Array.isArray(ownedUnstaked) ? ownedUnstaked : []).filter((n: any) => n?.chainId === chainId),
-    [ownedUnstaked, chainId]
-  );
-  const filteredStaked = useMemo(
-    () => (Array.isArray(ownedStaked) ? ownedStaked : []).filter((n: any) => n?.chainId === chainId),
-    [ownedStaked, chainId]
-  );
+  const { loading: nftLoading, error: nftError, ownedUnstaked, ownedStaked } = useStakingView({
+    chainId,
+    collection: selectedCollection,
+  });
 
   // Chain mismatch hint
   useEffect(() => {
     if (!activeChain?.id) return;
     if (activeChain.id !== chainId) {
-      // optional: show a UI hint
+      // optionally show a banner; we switch when user acts
     }
   }, [activeChain, chainId]);
 
   async function ensureChain() {
-    const want = chainId;
-    if (activeChain?.id !== want) {
+    if (activeChain?.id !== chainId) {
       try {
         await switchChain(CHAIN_CONFIG[chainKey].chain);
         toast.success(`Switched to ${CHAIN_CONFIG[chainKey].label}`);
@@ -390,7 +370,7 @@ export default function StakingPage() {
       setStakedCount(info[0]);
       await refreshStakedTokensInfo();
     } catch {
-      // ignore on fresh deploys
+      // ignore if contract not initialized yet
     }
   }
 
@@ -475,6 +455,7 @@ export default function StakingPage() {
 
       await logStake(account.address, chainKey, selectedCollection, tokenIds, stakingDuration);
 
+      // (Optional) mirror to your own API for off-chain rewards
       try {
         await fetch("/api/stakes", {
           method: "POST",
@@ -575,7 +556,7 @@ export default function StakingPage() {
     }
   }
 
-  // Rewards dashboard helpers
+  // Reward UI helper
   const dailyRewardHint = useMemo(() => {
     const baseRate = BASE_DAILY_RRGP[selectedCollection];
     const bonus = bonusFor(stakingDuration);
@@ -586,7 +567,7 @@ export default function StakingPage() {
   const presetDurations = [7, 14, 30, 90, 180, 365, 730];
   const handlePresetClick = (days: number) => setStakingDuration(days);
 
-  // Firebase histories for table/claim log
+  // Stakes table + claims history from Firestore
   const [stakes, setStakes] = useState<
     {
       tokenId: string;
@@ -674,6 +655,7 @@ export default function StakingPage() {
   useEffect(() => {
     loadStakes();
     loadRewardHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.address, chainKey, selectedCollection]);
 
   return (
@@ -780,26 +762,26 @@ export default function StakingPage() {
           />
         )}
 
-        {/* NFT Detection */}
+        {/* NFTs */}
         {account?.address && (
           <NftPanel
             nftLoading={nftLoading}
             nftError={nftError}
-            ownedUnstaked={filteredUnstaked}
-            ownedStaked={filteredStaked}
+            ownedUnstaked={ownedUnstaked}
+            ownedStaked={ownedStaked}
             selectedCollection={selectedCollection}
             chainKey={chainKey}
           />
         )}
 
-        {/* Legacy Stake Flow */}
+        {/* Legacy Stake Flow (select token IDs) */}
         <LegacyStakeSection
           account={account}
           chainKey={chainKey}
           selectedCollection={selectedCollection}
           nftLoading={nftLoading}
           nftError={nftError}
-          ownedUnstaked={filteredUnstaked}
+          ownedUnstaked={ownedUnstaked}
           staking={staking}
           handleStake={handleStake}
           manualTokenId={manualTokenId}
@@ -831,7 +813,7 @@ export default function StakingPage() {
   );
 }
 
-/* ───────────────────────────── Subcomponents ─────────────────────────── */
+/* ───────────────────────── Subcomponents ───────────────────────── */
 
 function SelectorPanel({
   chainKey,
@@ -1140,6 +1122,7 @@ function NftPanel({
   chainKey: ChainKey;
 }) {
   const noneFound = !nftLoading && !nftError && ownedUnstaked.length === 0 && ownedStaked.length === 0;
+  const fallback = `/${selectedCollection}pass.jpg`;
 
   return (
     <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
@@ -1177,7 +1160,7 @@ function NftPanel({
         </div>
       )}
 
-      {/* Mint CTA when there are none on the selected chain */}
+      {/* Mint CTA when none */}
       {noneFound && (
         <div className="text-center py-10">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
@@ -1208,8 +1191,7 @@ function NftPanel({
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {ownedUnstaked.map((nft) => {
-                  if (!nft) return null;
-                  const img = getImageSrc(nft);
+                  const img = getImageSrc(nft, fallback);
                   return (
                     <div
                       key={`${nft.collection.address}-${nft.tokenId.toString()}`}
@@ -1222,7 +1204,7 @@ function NftPanel({
                         <img
                           className="rounded-lg mb-2 w-full aspect-square object-cover"
                           src={img}
-                          alt={nft?.metadata?.name ?? ""}
+                          alt={nft?.name ?? ""}
                           loading="lazy"
                         />
                       ) : (
@@ -1232,9 +1214,7 @@ function NftPanel({
                         Token #{nft.tokenId.toString()}
                         {"amount" in nft && nft.amount ? ` · x${nft.amount.toString()}` : ""}
                       </div>
-                      <div className="text-xs text-white/60 mt-1">
-                        {nft.metadata?.name ?? "Untitled"}
-                      </div>
+                      <div className="text-xs text-white/60 mt-1">{nft.name ?? "AGV NFT"}</div>
                     </div>
                   );
                 })}
@@ -1251,8 +1231,7 @@ function NftPanel({
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {ownedStaked.map((nft) => {
-                  if (!nft) return null;
-                  const img = getImageSrc(nft);
+                  const img = getImageSrc(nft, fallback);
                   return (
                     <div
                       key={`${nft.collection.address}-${nft.tokenId.toString()}`}
@@ -1265,7 +1244,7 @@ function NftPanel({
                         <img
                           className="rounded-lg mb-2 w-full aspect-square object-cover"
                           src={img}
-                          alt={nft?.metadata?.name ?? ""}
+                          alt={nft?.name ?? ""}
                           loading="lazy"
                         />
                       ) : (
@@ -1275,9 +1254,7 @@ function NftPanel({
                         Token #{nft.tokenId.toString()}
                         {"amount" in nft && nft.amount ? ` · x${nft.amount.toString()}` : ""}
                       </div>
-                      <div className="text-xs text-white/60 mt-1">
-                        {nft.metadata?.name ?? "Untitled"}
-                      </div>
+                      <div className="text-xs text-white/60 mt-1">{nft.name ?? "AGV NFT"}</div>
                       <div className="mt-2 px-2 py-1 rounded-lg bg-blue-500/20 text-xs text-blue-300">
                         Staked
                       </div>
@@ -1330,7 +1307,7 @@ function LegacyStakeSection({
             Available for staking on {CHAIN_CONFIG[chainKey].label}
           </p>
         </div>
-        <div className="text-sm text-white/60">Detected via on-chain scan</div>
+        <div className="text-sm text-white/60">Detected via indexer</div>
       </div>
 
       {account?.address ? (
