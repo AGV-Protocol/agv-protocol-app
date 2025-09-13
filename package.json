@@ -31,6 +31,7 @@
     "googleapis": "^159.0.0",
     "lucide-react": "^0.453.0",
     "merkletreejs": "^0.5.2",
+    "moralis": "^2.27.2",
     "next": "^15.0.1",
     "next-themes": "^0.3.0",
     "pino-pretty": "^11.3.0",

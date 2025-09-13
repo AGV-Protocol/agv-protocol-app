@@ -3,277 +3,173 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
-import {
-  createThirdwebClient,
-  getContract,
-  getContractEvents,
-  readContract,
-  prepareEvent,
-} from "thirdweb";
-import { transferEvent as erc721TransferEvent } from "thirdweb/extensions/erc721";
-import { transferSingleEvent, transferBatchEvent } from "thirdweb/extensions/erc1155";
-
-import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { AGV_COLLECTIONS, type PassKind, type AgvCollection } from "@/lib/agv-config";
+import { db } from "@/lib/firebase";
 
-type OwnedBase = {
+// Your on-chain contract map (must exist)
+import { NFT_CONTRACTS } from "@/lib/contracts";
+
+type ChainKey = "56" | "42161" | "137";
+type Collection = "seed" | "tree" | "solar" | "compute";
+
+export type OwnedNft = {
   chainId: number;
-  collection: AgvCollection;
+  tokenAddress: string; // lowercased
   tokenId: bigint;
-  imageUrl: string;
-  name?: string;
-};
-type Owned721 = OwnedBase & { standard: "ERC721" };
-type Owned1155 = OwnedBase & { standard: "ERC1155"; amount: bigint };
-export type OwnedNft = Owned721 | Owned1155;
-
-const KIND_IMAGE: Record<PassKind, string> = {
-  SEED: "/seedpass.jpg",
-  TREE: "/treepass.jpg",
-  SOLAR: "/solarpass.jpg",
-  COMPUTE: "/computepass.jpg",
+  standard: "ERC721" | "ERC1155";
+  collection: { address: string }; // minimal, the UI uses .address for key
+  imageUrl?: string;
+  name?: string | null;
+  amount?: bigint; // for 1155 (not strictly needed for staking-by-id)
 };
 
-/* --------------------------- helpers --------------------------- */
-
-async function anchorFromInitialized(contract: ReturnType<typeof getContract>) {
-  try {
-    const initializedEvt = prepareEvent({ signature: "event Initialized(uint64)" });
-    const logs = await getContractEvents({
-      contract,
-      events: [initializedEvt],
-      fromBlock: 0n,
-      toBlock: "latest",
-    });
-    if (logs.length) return logs[0].blockNumber as bigint;
-  } catch {}
-  return 0n; // safe fallback, just slower
+function chainIdToKey(chainId: number): ChainKey | null {
+  if (chainId === 56) return "56";
+  if (chainId === 42161) return "42161";
+  if (chainId === 137) return "137";
+  return null;
+}
+function toHexChain(chainId: number) {
+  return "0x" + chainId.toString(16);
+}
+function toGateway(u?: string | null) {
+  if (!u) return undefined;
+  if (u.startsWith("ipfs://")) return u.replace(/^ipfs:\/\//, "https://ipfscdn.io/ipfs/");
+  return u.replace(/^https?:\/\/ipfs\.io\/ipfs\//i, "https://ipfscdn.io/ipfs/");
 }
 
-// 721 — fast path using ERC721Enumerable if present
-async function owned721ViaEnumerable(
-  c: AgvCollection,
-  client: ReturnType<typeof createThirdwebClient>,
-  owner: `0x${string}`
-): Promise<bigint[] | null> {
-  const nft = getContract({ client, chain: c.chain, address: c.address, abi: c.nftAbi });
-  try {
-    const bal = (await readContract({
-      contract: nft,
-      method: "function balanceOf(address) view returns (uint256)",
-      params: [owner],
-    })) as bigint;
-
-    // try tokenOfOwnerByIndex on index 0; if it fails, enumerable not implemented
-    if (bal === 0n) return [];
-    await readContract({
-      contract: nft,
-      method: "function tokenOfOwnerByIndex(address,uint256) view returns(uint256)",
-      params: [owner, 0n],
-    });
-
-    const ids: bigint[] = [];
-    for (let i = 0n; i < bal; i++) {
-      const id = (await readContract({
-        contract: nft,
-        method: "function tokenOfOwnerByIndex(address,uint256) view returns(uint256)",
-        params: [owner, i],
-      })) as bigint;
-      ids.push(id);
-    }
-    return ids;
-  } catch {
-    return null; // not enumerable or call blocked → let caller fall back to events
-  }
-}
-
-// 721 — fallback via Transfer logs
-async function owned721ViaEvents(
-  c: AgvCollection,
-  client: ReturnType<typeof createThirdwebClient>,
-  owner: `0x${string}`
-) {
-  const nft = getContract({ client, chain: c.chain, address: c.address, abi: c.nftAbi });
-  const start = await anchorFromInitialized(nft);
-  const [ins, outs] = await Promise.all([
-    getContractEvents({
-      contract: nft,
-      events: [erc721TransferEvent({ to: owner })],
-      fromBlock: start,
-      toBlock: "latest",
-    }),
-    getContractEvents({
-      contract: nft,
-      events: [erc721TransferEvent({ from: owner })],
-      fromBlock: start,
-      toBlock: "latest",
-    }),
-  ]);
-
-  const set = new Set<string>();
-  for (const e of ins) set.add(e.args.tokenId.toString());
-  for (const e of outs) set.delete(e.args.tokenId.toString());
-  return Array.from(set).map((x) => BigInt(x));
-}
-
-// 1155 — balance netting via TransferSingle/Batch logs
-async function owned1155ViaEvents(
-  c: AgvCollection,
-  client: ReturnType<typeof createThirdwebClient>,
-  owner: `0x${string}`
-) {
-  const nft = getContract({ client, chain: c.chain, address: c.address, abi: c.nftAbi });
-  const start = await anchorFromInitialized(nft);
-  const [inS, inB, outS, outB] = await Promise.all([
-    getContractEvents({ contract: nft, events: [transferSingleEvent({ to: owner })], fromBlock: start, toBlock: "latest" }),
-    getContractEvents({ contract: nft, events: [transferBatchEvent({ to: owner })],   fromBlock: start, toBlock: "latest" }),
-    getContractEvents({ contract: nft, events: [transferSingleEvent({ from: owner })],fromBlock: start, toBlock: "latest" }),
-    getContractEvents({ contract: nft, events: [transferBatchEvent({ from: owner })], fromBlock: start, toBlock: "latest" }),
-  ]);
-
-  const bal = new Map<string, bigint>();
-
-  // incoming
-  for (const e of inS) {
-    const id = BigInt(e.args.id.toString());
-    const v = BigInt(e.args.value.toString());
-    bal.set(id.toString(), (bal.get(id.toString()) ?? 0n) + v);
-  }
-  for (const e of inB) {
-    const ids = e.args.ids.map((x: any) => BigInt(x.toString()));
-    const vs  = e.args.values.map((x: any) => BigInt(x.toString()));
-    for (let i = 0; i < ids.length; i++) {
-      const k = ids[i].toString();
-      bal.set(k, (bal.get(k) ?? 0n) + vs[i]);
-    }
-  }
-
-  // outgoing
-  for (const e of outS) {
-    const id = BigInt(e.args.id.toString());
-    const v = BigInt(e.args.value.toString());
-    bal.set(id.toString(), (bal.get(id.toString()) ?? 0n) - v);
-  }
-  for (const e of outB) {
-    const ids = e.args.ids.map((x: any) => BigInt(x.toString()));
-    const vs  = e.args.values.map((x: any) => BigInt(x.toString()));
-    for (let i = 0; i < ids.length; i++) {
-      const k = ids[i].toString();
-      bal.set(k, (bal.get(k) ?? 0n) - vs[i]);
-    }
-  }
-
-  const result: { tokenId: bigint; amount: bigint }[] = [];
-  for (const [k, v] of bal) if (v > 0n) result.push({ tokenId: BigInt(k), amount: v });
-  return result;
-}
-
-/* ------------------------------ hook ------------------------------ */
-
-export function useStakingView(args: { kind: PassKind; chainId: number }) {
+export function useStakingView(params: { chainId: number; collection: Collection }) {
+  const { chainId, collection } = params;
   const account = useActiveAccount();
 
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const [ownedUnstaked, setOwnedUnstaked] = useState<OwnedNft[]>([]);
-  const [stakedFromDb, setStakedFromDb]   = useState<OwnedNft[]>([]);
-  const [allCombined, setAllCombined]     = useState<OwnedNft[]>([]);
+  const [ownedStaked, setOwnedStaked] = useState<OwnedNft[]>([]);
 
-  const client = useMemo(
-    () => createThirdwebClient({ clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID! }),
-    []
-  );
+  const chainKey = useMemo(() => chainIdToKey(chainId), [chainId]);
 
-  const collectionEntry = useMemo(
-    () => AGV_COLLECTIONS.find((c) => c.kind === args.kind && c.chain.id === args.chainId),
-    [args.kind, args.chainId]
-  );
+  // Resolve the AGV contract address for this chain+collection
+  const agvAddress = useMemo(() => {
+    if (!chainKey) return null;
+    const addr = NFT_CONTRACTS[chainKey]?.[collection];
+    return addr ? addr.toLowerCase() : null;
+  }, [chainKey, collection]);
 
+  // 1) Load wallet NFTs via Moralis → filter to AGV contract
   useEffect(() => {
+    let active = true;
     (async () => {
-      if (!account?.address || !collectionEntry) {
-        setOwnedUnstaked([]); setStakedFromDb([]); setAllCombined([]); setError(null);
+      setError(null);
+      setOwnedUnstaked([]);
+      if (!account?.address || !chainId || !agvAddress) return;
+
+      setLoading(true);
+      try {
+        const url = new URL("/api/wallet-nfts", window.location.origin);
+        url.searchParams.set("address", account.address);
+        url.searchParams.set("chain", toHexChain(chainId)); // e.g., "0x38"
+
+        const res = await fetch(url.toString(), { cache: "no-store" });
+        if (!res.ok) {
+          const txt = await res.text().catch(() => "");
+          throw new Error(txt || `Failed to fetch wallet NFTs (${res.status})`);
+        }
+        const data = (await res.json()) as {
+          items: Array<{
+            tokenAddress: string;
+            tokenIdStr: string;
+            contractType?: "ERC721" | "ERC1155";
+            imageUrl?: string | null;
+            name?: string | null;
+          }>;
+        };
+
+        const items = (data?.items ?? [])
+          .filter((n) => n?.tokenAddress?.toLowerCase() === agvAddress)
+          .map<OwnedNft>((n) => ({
+            chainId,
+            tokenAddress: n.tokenAddress.toLowerCase(),
+            tokenId: BigInt(n.tokenIdStr || "0"),
+            standard: (n.contractType as any) === "ERC1155" ? "ERC1155" : "ERC721",
+            collection: { address: agvAddress },
+            imageUrl: toGateway(n.imageUrl || undefined),
+            name: n.name ?? null,
+          }));
+
+        if (active) setOwnedUnstaked(items);
+      } catch (e: any) {
+        if (active) setError(e?.message || "Failed to load wallet NFTs");
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [account?.address, chainId, agvAddress]);
+
+  // 2) Load currently staked tokens for this wallet from Firestore
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!account?.address || !chainKey || !agvAddress) {
+        setOwnedStaked([]);
         return;
       }
 
-      setLoading(true);
-      setError(null);
-
       try {
-        const c = collectionEntry;
-        const imageUrl = KIND_IMAGE[c.kind];
-
-        // 1) wallet-owned (try enumerable first, then events)
-        let walletOwned: OwnedNft[] = [];
-
-        if (c.standard === "ERC721") {
-          const idsEnumerable = await owned721ViaEnumerable(c, client, account.address);
-          const ids = idsEnumerable ?? (await owned721ViaEvents(c, client, account.address));
-          walletOwned = ids.map<Owned721>((id) => ({
-            standard: "ERC721",
-            chainId: c.chain.id,
-            collection: c,
-            tokenId: id,
-            imageUrl,
-            name: c.kind,
-          }));
-        } else {
-          const pairs = await owned1155ViaEvents(c, client, account.address);
-          walletOwned = pairs.map<Owned1155>(({ tokenId, amount }) => ({
-            standard: "ERC1155",
-            chainId: c.chain.id,
-            collection: c,
-            tokenId,
-            amount,
-            imageUrl,
-            name: c.kind,
-          }));
-        }
-
-        // 2) staked strictly from Firestore `stakes` (one doc per tokenId)
-        const nftTypeLower =
-          c.kind === "SEED" ? "seed" : c.kind === "TREE" ? "tree" : c.kind === "SOLAR" ? "solar" : "compute";
-
+        // We store active stakes per tokenId in `staking_positions`
         const qSnap = await getDocs(
           query(
-            collection(db, "stakes"),
-            where("wallet", "==", account.address.toLowerCase()),
-            where("chainId", "==", args.chainId as any),
-            where("nftType", "==", nftTypeLower),
+            collection(db, "staking_positions"),
+            where("address", "==", account.address),
+            where("chain", "==", chainKey),
+            where("collection", "==", collection),
             where("status", "==", "active")
           )
         );
 
-        const stakedDocs = qSnap.docs.map((d) => d.data() as any);
-        const staked: OwnedNft[] = stakedDocs
-          .map((d) => d.tokenId as string)
-          .filter(Boolean)
-          .map((tid) => ({
-            standard: "ERC721" as const, // UI purposes
-            chainId: c.chain.id,
-            collection: c,
-            tokenId: BigInt(tid),
-            imageUrl,
-            name: c.kind,
-          }));
+        const staked: OwnedNft[] = qSnap.docs.map((d) => {
+          const tokenId = BigInt(String(d.data().tokenId));
+          return {
+            chainId,
+            tokenAddress: agvAddress,
+            tokenId,
+            standard: "ERC721", // UI only needs the id to withdraw/claim
+            collection: { address: agvAddress },
+            imageUrl: undefined,
+            name: collection.toUpperCase(),
+          };
+        });
 
-        // 3) unstaked = walletOwned − staked
-        const stakedSet = new Set(staked.map((x) => x.tokenId.toString()));
-        const unstaked = walletOwned.filter((x) => !stakedSet.has(x.tokenId.toString()));
-
-        setOwnedUnstaked(unstaked);
-        setStakedFromDb(staked);
-        setAllCombined([...staked, ...unstaked]);
-      } catch (e: any) {
-        console.error("useStakingView", e);
-        setError("Failed to load NFTs.");
-      } finally {
-        setLoading(false);
+        if (!cancelled) setOwnedStaked(staked);
+      } catch {
+        if (!cancelled) setOwnedStaked([]);
       }
     })();
-  }, [account?.address, client, collectionEntry, args.chainId]);
 
-  return { loading, error, ownedUnstaked, stakedFromDb, allCombined };
+    return () => {
+      cancelled = true;
+    };
+  }, [account?.address, chainId, chainKey, collection, agvAddress]);
+
+  // 3) Subtract staked from wallet list to get *true* unstaked
+  const stakedSet = useMemo(
+    () => new Set(ownedStaked.map((x) => x.tokenId.toString())),
+    [ownedStaked]
+  );
+  const trueUnstaked = useMemo(
+    () => ownedUnstaked.filter((x) => !stakedSet.has(x.tokenId.toString())),
+    [ownedUnstaked, stakedSet]
+  );
+
+  return {
+    loading,
+    error,
+    ownedUnstaked: trueUnstaked,
+    ownedStaked,
+  };
 }
