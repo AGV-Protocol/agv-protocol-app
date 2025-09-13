@@ -515,7 +515,7 @@ export default function StakingPage() {
     if (!account?.address) return toast.error("Connect wallet first");
     if (tokenIds.length === 0) return toast.error("Provide tokenId(s) to withdraw");
 
-    // Local lock check via Firebase info
+    // Local lock check via Firebase info (still kept as a final guard)
     const currentTime = Math.floor(Date.now() / 1000);
     const lockedTokens: string[] = [];
     for (const tokenId of tokenIds) {
@@ -803,14 +803,16 @@ export default function StakingPage() {
           <RewardHistory history={rewardHistory} selectedCollection={selectedCollection} />
         )}
 
-        {/* Withdraw */}
+        {/* Withdraw (NEW Firestore-driven selection UI) */}
         <WithdrawSection
-          withdrawing={withdrawing}
-          onWithdraw={handleWithdraw}
-          stakedTokensInfo={stakedTokensInfo}
+            accountAddress={account?.address}
+            chainKey={chainKey}
+            selectedCollection={selectedCollection}
+            withdrawing={withdrawing}
+            onWithdraw={handleWithdraw}
         />
       </div>
-      
+
       {/* Footer */}
       <Footer backgroundClass="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900" textColorClass="text-white" />
     </div>
@@ -1528,43 +1530,107 @@ function RewardHistory({
   );
 }
 
+/* ───────────── NEW: Firestore-driven Withdraw Section (card selection) ───────────── */
+
 function WithdrawSection({
+  accountAddress,
+  chainKey,
+  selectedCollection,
   withdrawing,
   onWithdraw,
-  stakedTokensInfo,
 }: {
+  accountAddress?: string;
+  chainKey: ChainKey;
+  selectedCollection: "seed" | "tree" | "solar" | "compute";
   withdrawing: boolean;
   onWithdraw: (ids: bigint[]) => Promise<void>;
-  stakedTokensInfo: Record<string, { stakedAt: number; duration: number }>;
 }) {
-  const [raw, setRaw] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState<string | null>(null);
 
-  function parseIds(input: string): bigint[] {
-    return input
-      .split(/[,\s]+/)
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .map((s) => BigInt(s));
-  }
-
-  const ids = parseIds(raw);
-
-  const getTokenStatus = (tokenId: bigint) => {
-    const tokenInfo = stakedTokensInfo[tokenId.toString()];
-    if (!tokenInfo) return null;
-    const currentTime = Math.floor(Date.now() / 1000);
-    const elapsedTime = currentTime - tokenInfo.stakedAt;
-    const requiredTime = tokenInfo.duration * 24 * 60 * 60;
-    const remainingTime = requiredTime - elapsedTime;
-    if (remainingTime > 0) {
-      const remainingDays = Math.ceil(remainingTime / (24 * 60 * 60));
-      return { locked: true, remainingDays };
-    }
-    return { locked: false, remainingDays: 0 };
+  type StakedCard = {
+    tokenId: string;
+    stakedAtSec: number;
+    durationDays: number;
+    unlockAtSec: number;
+    remainingDays: number;
+    unlocked: boolean;
+    imageUrl: string;
   };
 
-  const lockedTokens = ids.filter((id) => getTokenStatus(id)?.locked);
-  const availableTokens = ids.filter((id) => !getTokenStatus(id)?.locked);
+  const [items, setItems]       = useState<StakedCard[]>([]);
+  const [selected, setSelected] = useState<Record<string, boolean>>({});
+
+  const IMAGE: Record<"seed" | "tree" | "solar" | "compute", string> = {
+    seed: "/seedpass.jpg",
+    tree: "/treepass.jpg",
+    solar: "/solarpass.jpg",
+    compute: "/computepass.jpg",
+  };
+
+  // fetch staked NFTs from Firestore
+  useEffect(() => {
+    (async () => {
+      setItems([]); setError(null); setSelected({});
+      if (!accountAddress) return;
+
+      setLoading(true);
+      try {
+        const qSnap = await getDocs(
+          query(
+            collection(db, "staking_positions"),
+            where("address", "==", accountAddress),
+            where("chain", "==", chainKey),
+            where("collection", "==", selectedCollection),
+            where("status", "==", "active")
+          )
+        );
+
+        const now = Math.floor(Date.now() / 1000);
+        const rows: StakedCard[] = [];
+
+        qSnap.forEach((d) => {
+          const data = d.data() as any;
+          const stakedAtSec   = data.stakedAt.toMillis() / 1000;
+          const durationDays  = Number(data.duration || 0);
+          const unlockAtSec   = stakedAtSec + durationDays * 24 * 60 * 60;
+          const remainingSec  = Math.max(0, unlockAtSec - now);
+          const remainingDays = remainingSec > 0 ? Math.ceil(remainingSec / (24 * 60 * 60)) : 0;
+          const unlocked      = remainingSec === 0;
+
+          rows.push({
+            tokenId: String(data.tokenId),
+            stakedAtSec,
+            durationDays,
+            unlockAtSec,
+            remainingDays,
+            unlocked,
+            imageUrl: IMAGE[selectedCollection],
+          });
+        });
+
+        // sort: unlocked first, then by tokenId asc
+        rows.sort((a, b) => Number(b.unlocked) - Number(a.unlocked) || Number(a.tokenId) - Number(b.tokenId));
+
+        setItems(rows);
+        setSelected(Object.fromEntries(rows.map((r) => [r.tokenId, false])));
+      } catch (e) {
+        console.error("WithdrawSection Firestore load", e);
+        setError("Failed to load staked NFTs.");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [accountAddress, chainKey, selectedCollection]);
+
+  const unlockedItems  = useMemo(() => items.filter((i) => i.unlocked), [items]);
+  const lockedItems    = useMemo(() => items.filter((i) => !i.unlocked), [items]);
+  const pickedUnlocked = useMemo(
+    () => unlockedItems.filter((i) => selected[i.tokenId]).map((i) => BigInt(i.tokenId)),
+    [unlockedItems, selected]
+  );
+
+  const canWithdraw = pickedUnlocked.length > 0 && !withdrawing;
 
   return (
     <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
@@ -1574,75 +1640,132 @@ function WithdrawSection({
           Withdraw Staked NFTs
         </h3>
         <p className="text-white/60 text-sm mt-1">
-          Enter token IDs you previously staked to withdraw them back to your wallet
+          Select your staked NFTs. Only unlocked NFTs can be withdrawn.
         </p>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <input
-            value={raw}
-            onChange={(e) => setRaw(e.target.value)}
-            placeholder="Enter token IDs (e.g., 12, 44, 88)"
-            className="flex-1 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-500/50"
-          />
-          <button
-            onClick={() => onWithdraw(availableTokens)}
-            className="px-4 sm:px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-            disabled={withdrawing || availableTokens.length === 0}
-          >
-            {withdrawing ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Withdrawing...
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Unlock className="w-4 h-4" />
-                Withdraw Available
-              </div>
-            )}
-          </button>
+      {!accountAddress ? (
+        <div className="text-white/60">Connect your wallet to see staked NFTs.</div>
+      ) : loading ? (
+        <div className="text-center py-8">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto text-white/60" />
+          <p className="text-white/60 mt-2">Loading staked NFTs…</p>
         </div>
-
-        {ids.length > 0 && (
-          <div className="space-y-3">
-            {availableTokens.length > 0 && (
-              <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span className="text-green-300 text-sm font-medium">
-                    {availableTokens.length} token{availableTokens.length > 1 ? "s" : ""} ready to
-                    withdraw: {availableTokens.map((id) => id.toString()).join(", ")}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {lockedTokens.length > 0 && (
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <Lock className="w-4 h-4 text-yellow-400" />
-                  <span className="text-yellow-300 text-sm font-medium">
-                    {lockedTokens.length} token{lockedTokens.length > 1 ? "s" : ""} still locked
-                  </span>
-                </div>
-                <div className="space-y-1">
-                  {lockedTokens.map((tokenId) => {
-                    const status = getTokenStatus(tokenId);
-                    return (
-                      <div key={tokenId.toString()} className="text-yellow-200 text-xs">
-                        Token {tokenId.toString()}: {status?.remainingDays} day
-                        {status?.remainingDays && status.remainingDays > 1 ? "s" : ""} remaining
+      ) : error ? (
+        <div className="text-center py-8">
+          <AlertTriangle className="w-8 h-8 mx-auto text-yellow-400" />
+          <p className="text-yellow-300 mt-2">{error}</p>
+        </div>
+      ) : items.length === 0 ? (
+        <div className="text-white/60">No active stakes found.</div>
+      ) : (
+        <>
+          {/* Unlocked */}
+          {unlockedItems.length > 0 && (
+            <>
+              <h4 className="text-white font-medium mb-3">Available to Withdraw</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
+                {unlockedItems.map((it) => {
+                  const on = !!selected[it.tokenId];
+                  return (
+                    <button
+                      key={it.tokenId}
+                      onClick={() =>
+                        setSelected((s) => ({ ...s, [it.tokenId]: !s[it.tokenId] }))
+                      }
+                      className={`group relative overflow-hidden rounded-xl p-3 text-left transition-all duration-300 ${
+                        on
+                          ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25"
+                          : "bg-white/5 hover:bg-white/10 border border-white/10"
+                      }`}
+                    >
+                      <div className="relative">
+                        <img
+                          src={it.imageUrl}
+                          alt={`Token #${it.tokenId}`}
+                          className="w-full aspect-square rounded-lg object-cover"
+                          loading="lazy"
+                        />
+                        {on && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 animate-pulse" />
+                        )}
                       </div>
-                    );
-                  })}
-                </div>
+                      <div className="mt-2 flex items-center justify-between">
+                        <div className="text-white font-semibold">#{it.tokenId}</div>
+                        {on && <CheckCircle className="w-5 h-5 text-white" />}
+                      </div>
+                      <div className="text-xs text-white/70">
+                        Staked {new Date(it.stakedAtSec * 1000).toLocaleDateString()}
+                      </div>
+                      <div className="text-xs text-green-300 mt-1">Unlocked</div>
+                    </button>
+                  );
+                })}
               </div>
-            )}
+            </>
+          )}
+
+          {/* Locked */}
+          {lockedItems.length > 0 && (
+            <>
+              <h4 className="text-white font-medium mb-3">Locked (Not Yet Withdrawable)</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {lockedItems.map((it) => (
+                  <div
+                    key={it.tokenId}
+                    className="relative overflow-hidden rounded-xl p-3 text-left bg-white/5 border border-white/10 opacity-60 cursor-not-allowed"
+                    title={`${it.remainingDays} day${it.remainingDays > 1 ? "s" : ""} remaining`}
+                  >
+                    <div className="relative">
+                      <img
+                        src={it.imageUrl}
+                        alt={`Token #${it.tokenId}`}
+                        className="w-full aspect-square rounded-lg object-cover"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black/30" />
+                    </div>
+                    <div className="mt-2 flex items-center justify-between">
+                      <div className="text-white font-semibold">#{it.tokenId}</div>
+                      <Lock className="w-5 h-5 text-yellow-300" />
+                    </div>
+                    <div className="text-xs text-white/70">
+                      Staked {new Date(it.stakedAtSec * 1000).toLocaleDateString()}
+                    </div>
+                    <div className="text-xs text-yellow-300 mt-1">
+                      {it.remainingDays} day{it.remainingDays > 1 ? "s" : ""} remaining
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Action bar */}
+          <div className="mt-6 flex items-center justify-between">
+            <div className="text-white/70 text-sm">
+              Selected:{" "}
+              <span className="text-white font-medium">
+                {pickedUnlocked.length} NFT{pickedUnlocked.length === 1 ? "" : "s"}
+              </span>
+            </div>
+            <button
+              onClick={() => onWithdraw(pickedUnlocked)}
+              disabled={!canWithdraw}
+              className="px-5 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {withdrawing ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Withdrawing…
+                </span>
+              ) : (
+                `Withdraw ${pickedUnlocked.length || ""}`.trim()
+              )}
+            </button>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }
