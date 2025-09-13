@@ -1,7 +1,7 @@
 "use client";
 
+import ModernMintingInterface from "@/components/minting/ModernMintingInterface";
 import { Suspense } from "react";
-import ModernMintingInterface from "@/components/minting/modern-minting-interface";
 
 function MintingInterfaceWrapper() {
   return <ModernMintingInterface />;
