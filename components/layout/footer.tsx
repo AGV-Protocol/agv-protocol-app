@@ -22,7 +22,12 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 
-export function Footer() {
+interface FooterProps {
+  backgroundClass?: string;
+  textColorClass?: string;
+}
+
+export function Footer({ backgroundClass = "bg-background", textColorClass = "text-foreground" }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
@@ -66,7 +71,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-background border-t">
+    <footer className={`${backgroundClass} border-t`}>
       {/* Newsletter Section */}
       {/* <div className="border-b bg-muted/30">
         <div className="container py-8 md:py-12">
@@ -111,12 +116,12 @@ export function Footer() {
                 className="h-8 w-8 md:h-10 md:w-10"
               />
               <div>
-                <h2 className="text-lg md:text-xl font-bold">AGV Protocol</h2>
-                <p className="text-xs md:text-sm text-muted-foreground">NFT Minting Platform</p>
+                <h2 className={`text-lg md:text-xl font-bold ${textColorClass}`}>AGV Protocol</h2>
+                <p className={`text-xs md:text-sm ${textColorClass === 'text-white' ? 'text-white/70' : 'text-muted-foreground'}`}>NFT Minting Platform</p>
               </div>
             </div>
             
-            <p className="text-sm md:text-base text-muted-foreground max-w-md">
+            <p className={`text-sm md:text-base max-w-md ${textColorClass === 'text-white' ? 'text-white/80' : 'text-muted-foreground'}`}>
               The future of decentralized computing through innovative NFT technology. 
               Join thousands of users minting exclusive AGV NFTs across multiple blockchain networks.
             </p>
@@ -159,13 +164,13 @@ export function Footer() {
           <div className="lg:col-span-3 grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {/* Product Links */}
             <div className="space-y-3 md:space-y-4">
-              <h4 className="font-semibold text-sm md:text-base">Product</h4>
+              <h4 className={`font-semibold text-sm md:text-base ${textColorClass}`}>Product</h4>
               <ul className="space-y-2 md:space-y-3">
                 {footerLinks.product.map((link) => (
                   <li key={link.name}>
                     <Link 
                       href={link.href}
-                      className="text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className={`text-xs md:text-sm transition-colors ${textColorClass === 'text-white' ? 'text-white/70 hover:text-white' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       {link.name}
                     </Link>
@@ -176,13 +181,13 @@ export function Footer() {
 
             {/* Company Links */}
             <div className="space-y-3 md:space-y-4">
-              <h4 className="font-semibold text-sm md:text-base">Company</h4>
+              <h4 className={`font-semibold text-sm md:text-base ${textColorClass}`}>Company</h4>
               <ul className="space-y-2 md:space-y-3">
                 {footerLinks.company.map((link) => (
                   <li key={link.name}>
                     <Link 
                       href={link.href}
-                      className="text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className={`text-xs md:text-sm transition-colors ${textColorClass === 'text-white' ? 'text-white/70 hover:text-white' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       {link.name}
                     </Link>
@@ -193,13 +198,13 @@ export function Footer() {
 
             {/* Support Links */}
             <div className="space-y-3 md:space-y-4">
-              <h4 className="font-semibold text-sm md:text-base">Support</h4>
+              <h4 className={`font-semibold text-sm md:text-base ${textColorClass}`}>Support</h4>
               <ul className="space-y-2 md:space-y-3">
                 {footerLinks.support.map((link) => (
                   <li key={link.name}>
                     <Link 
                       href={link.href}
-                      className="text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className={`text-xs md:text-sm transition-colors ${textColorClass === 'text-white' ? 'text-white/70 hover:text-white' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       {link.name}
                     </Link>
@@ -210,13 +215,13 @@ export function Footer() {
 
             {/* Legal Links */}
             <div className="space-y-3 md:space-y-4">
-              <h4 className="font-semibold text-sm md:text-base">Legal</h4>
+              <h4 className={`font-semibold text-sm md:text-base ${textColorClass}`}>Legal</h4>
               <ul className="space-y-2 md:space-y-3">
                 {footerLinks.legal.map((link) => (
                   <li key={link.name}>
                     <Link 
                       href={link.href}
-                      className="text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className={`text-xs md:text-sm transition-colors ${textColorClass === 'text-white' ? 'text-white/70 hover:text-white' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       {link.name}
                     </Link>
@@ -235,17 +240,17 @@ export function Footer() {
         <div className="flex flex-col space-y-4 md:space-y-0">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-center md:text-left">
-              <p className="text-xs md:text-sm text-muted-foreground">
+              <p className={`text-xs md:text-sm ${textColorClass === 'text-white' ? 'text-white/70' : 'text-muted-foreground'}`}>
                 © {currentYear} AGV Protocol. All rights reserved.
               </p>
-              <div className="flex items-center space-x-1 text-xs md:text-sm text-muted-foreground">
+              <div className={`flex items-center space-x-1 text-xs md:text-sm ${textColorClass === 'text-white' ? 'text-white/70' : 'text-muted-foreground'}`}>
                 <span>Made with</span>
                 <Heart className="h-3 w-3 md:h-4 md:w-4 text-red-500" />
                 <span>for the decentralized future</span>
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 md:space-x-6 text-xs md:text-sm text-muted-foreground">
+            <div className={`flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 md:space-x-6 text-xs md:text-sm ${textColorClass === 'text-white' ? 'text-white/70' : 'text-muted-foreground'}`}>
               <div className="flex items-center space-x-2">
                 <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span>All systems operational</span>
