@@ -14,14 +14,14 @@ export const CHAINS = {
     name: "Polygon",
     symbol: "MATIC",
     explorer: "https://polygonscan.com",
-    nft: "0xe268e673a220354c70b324C02635620a591651F5"
+    nft: ""
   },
   "42161": {
     chainId: "42161",
     name: "Arbitrum One",
     symbol: "ETH",
     explorer: "https://arbiscan.io",
-    nft: "0xe268e673a220354c70b324C02635620a591651F5"
+    nft: ""
   }
 } as const;
 

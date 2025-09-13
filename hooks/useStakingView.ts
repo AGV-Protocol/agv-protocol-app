@@ -3,98 +3,198 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
-import { createThirdwebClient, getContract, readContract } from "thirdweb";
-import { resolveScheme } from "thirdweb/storage";
+import {
+  createThirdwebClient,
+  getContract,
+  getContractEvents,
+  readContract,
+  prepareEvent,
+} from "thirdweb";
+import { transferEvent as erc721TransferEvent } from "thirdweb/extensions/erc721";
+import { transferSingleEvent, transferBatchEvent } from "thirdweb/extensions/erc1155";
+
+import { db } from "@/lib/firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { AGV_COLLECTIONS, type PassKind, type AgvCollection } from "@/lib/agv-config";
 
-// thirdweb v5 helpers (indexer-backed)
-import { getOwnedNFTs } from "thirdweb/extensions/erc721";
-import { getOwnedTokenIds } from "thirdweb/extensions/erc1155";
-
-type Owned721 = {
-  standard: "ERC721";
+type OwnedBase = {
   chainId: number;
   collection: AgvCollection;
   tokenId: bigint;
-  metadata?: any;
+  imageUrl: string;
+  name?: string;
 };
-
-type Owned1155 = {
-  standard: "ERC1155";
-  chainId: number;
-  collection: AgvCollection;
-  tokenId: bigint;
-  amount: bigint;
-  metadata?: any;
-};
-
+type Owned721 = OwnedBase & { standard: "ERC721" };
+type Owned1155 = OwnedBase & { standard: "ERC1155"; amount: bigint };
 export type OwnedNft = Owned721 | Owned1155;
 
-type StakeView721 = {
-  tokenIds: bigint[];
-  unclaimed: bigint;
+const KIND_IMAGE: Record<PassKind, string> = {
+  SEED: "/seedpass.jpg",
+  TREE: "/treepass.jpg",
+  SOLAR: "/solarpass.jpg",
+  COMPUTE: "/computepass.jpg",
 };
 
-type StakeView1155 = {
-  tokenIds: bigint[];
-  amounts: bigint[];
-  unclaimed: bigint;
-};
+/* --------------------------- helpers --------------------------- */
 
-const STAKING721_ABI = [
-  {
-    inputs: [{ internalType: "address", name: "staker", type: "address" }],
-    name: "getStakeInfo",
-    outputs: [
-      { internalType: "uint256[]", name: "", type: "uint256[]" },
-      { internalType: "uint256", name: "", type: "uint256" },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-] as const;
+async function anchorFromInitialized(contract: ReturnType<typeof getContract>) {
+  try {
+    const initializedEvt = prepareEvent({ signature: "event Initialized(uint64)" });
+    const logs = await getContractEvents({
+      contract,
+      events: [initializedEvt],
+      fromBlock: 0n,
+      toBlock: "latest",
+    });
+    if (logs.length) return logs[0].blockNumber as bigint;
+  } catch {}
+  return 0n; // safe fallback, just slower
+}
 
-const STAKING1155_ABI = [
-  {
-    inputs: [{ internalType: "address", name: "staker", type: "address" }],
-    name: "getStakeInfo",
-    outputs: [
-      { internalType: "uint256[]", name: "tokenIds", type: "uint256[]" },
-      { internalType: "uint256[]", name: "amounts", type: "uint256[]" },
-      { internalType: "uint256", name: "unclaimedRewards", type: "uint256" },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-] as const;
+// 721 — fast path using ERC721Enumerable if present
+async function owned721ViaEnumerable(
+  c: AgvCollection,
+  client: ReturnType<typeof createThirdwebClient>,
+  owner: `0x${string}`
+): Promise<bigint[] | null> {
+  const nft = getContract({ client, chain: c.chain, address: c.address, abi: c.nftAbi });
+  try {
+    const bal = (await readContract({
+      contract: nft,
+      method: "function balanceOf(address) view returns (uint256)",
+      params: [owner],
+    })) as bigint;
 
-export function useStakingView(selected: PassKind) {
+    // try tokenOfOwnerByIndex on index 0; if it fails, enumerable not implemented
+    if (bal === 0n) return [];
+    await readContract({
+      contract: nft,
+      method: "function tokenOfOwnerByIndex(address,uint256) view returns(uint256)",
+      params: [owner, 0n],
+    });
+
+    const ids: bigint[] = [];
+    for (let i = 0n; i < bal; i++) {
+      const id = (await readContract({
+        contract: nft,
+        method: "function tokenOfOwnerByIndex(address,uint256) view returns(uint256)",
+        params: [owner, i],
+      })) as bigint;
+      ids.push(id);
+    }
+    return ids;
+  } catch {
+    return null; // not enumerable or call blocked → let caller fall back to events
+  }
+}
+
+// 721 — fallback via Transfer logs
+async function owned721ViaEvents(
+  c: AgvCollection,
+  client: ReturnType<typeof createThirdwebClient>,
+  owner: `0x${string}`
+) {
+  const nft = getContract({ client, chain: c.chain, address: c.address, abi: c.nftAbi });
+  const start = await anchorFromInitialized(nft);
+  const [ins, outs] = await Promise.all([
+    getContractEvents({
+      contract: nft,
+      events: [erc721TransferEvent({ to: owner })],
+      fromBlock: start,
+      toBlock: "latest",
+    }),
+    getContractEvents({
+      contract: nft,
+      events: [erc721TransferEvent({ from: owner })],
+      fromBlock: start,
+      toBlock: "latest",
+    }),
+  ]);
+
+  const set = new Set<string>();
+  for (const e of ins) set.add(e.args.tokenId.toString());
+  for (const e of outs) set.delete(e.args.tokenId.toString());
+  return Array.from(set).map((x) => BigInt(x));
+}
+
+// 1155 — balance netting via TransferSingle/Batch logs
+async function owned1155ViaEvents(
+  c: AgvCollection,
+  client: ReturnType<typeof createThirdwebClient>,
+  owner: `0x${string}`
+) {
+  const nft = getContract({ client, chain: c.chain, address: c.address, abi: c.nftAbi });
+  const start = await anchorFromInitialized(nft);
+  const [inS, inB, outS, outB] = await Promise.all([
+    getContractEvents({ contract: nft, events: [transferSingleEvent({ to: owner })], fromBlock: start, toBlock: "latest" }),
+    getContractEvents({ contract: nft, events: [transferBatchEvent({ to: owner })],   fromBlock: start, toBlock: "latest" }),
+    getContractEvents({ contract: nft, events: [transferSingleEvent({ from: owner })],fromBlock: start, toBlock: "latest" }),
+    getContractEvents({ contract: nft, events: [transferBatchEvent({ from: owner })], fromBlock: start, toBlock: "latest" }),
+  ]);
+
+  const bal = new Map<string, bigint>();
+
+  // incoming
+  for (const e of inS) {
+    const id = BigInt(e.args.id.toString());
+    const v = BigInt(e.args.value.toString());
+    bal.set(id.toString(), (bal.get(id.toString()) ?? 0n) + v);
+  }
+  for (const e of inB) {
+    const ids = e.args.ids.map((x: any) => BigInt(x.toString()));
+    const vs  = e.args.values.map((x: any) => BigInt(x.toString()));
+    for (let i = 0; i < ids.length; i++) {
+      const k = ids[i].toString();
+      bal.set(k, (bal.get(k) ?? 0n) + vs[i]);
+    }
+  }
+
+  // outgoing
+  for (const e of outS) {
+    const id = BigInt(e.args.id.toString());
+    const v = BigInt(e.args.value.toString());
+    bal.set(id.toString(), (bal.get(id.toString()) ?? 0n) - v);
+  }
+  for (const e of outB) {
+    const ids = e.args.ids.map((x: any) => BigInt(x.toString()));
+    const vs  = e.args.values.map((x: any) => BigInt(x.toString()));
+    for (let i = 0; i < ids.length; i++) {
+      const k = ids[i].toString();
+      bal.set(k, (bal.get(k) ?? 0n) - vs[i]);
+    }
+  }
+
+  const result: { tokenId: bigint; amount: bigint }[] = [];
+  for (const [k, v] of bal) if (v > 0n) result.push({ tokenId: BigInt(k), amount: v });
+  return result;
+}
+
+/* ------------------------------ hook ------------------------------ */
+
+export function useStakingView(args: { kind: PassKind; chainId: number }) {
   const account = useActiveAccount();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const [owned, setOwned] = useState<OwnedNft[]>([]);
-  const [stakedIds721, setStakedIds721] = useState<Record<string, bigint[]>>({}); // key: `${chainId}-${nftAddress}`
-  const [stakedMap1155, setStakedMap1155] = useState<Record<string, { ids: bigint[]; amts: bigint[] }>>({});
-  const [unclaimedTotal, setUnclaimedTotal] = useState<bigint>(0n);
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState<string | null>(null);
+
+  const [ownedUnstaked, setOwnedUnstaked] = useState<OwnedNft[]>([]);
+  const [stakedFromDb, setStakedFromDb]   = useState<OwnedNft[]>([]);
+  const [allCombined, setAllCombined]     = useState<OwnedNft[]>([]);
 
   const client = useMemo(
     () => createThirdwebClient({ clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID! }),
     []
   );
 
-  const collections = useMemo(
-    () => AGV_COLLECTIONS.filter((c) => c.kind === selected),
-    [selected]
+  const collectionEntry = useMemo(
+    () => AGV_COLLECTIONS.find((c) => c.kind === args.kind && c.chain.id === args.chainId),
+    [args.kind, args.chainId]
   );
 
   useEffect(() => {
     (async () => {
-      if (!account?.address) {
-        setOwned([]);
-        setStakedIds721({});
-        setStakedMap1155({});
-        setUnclaimedTotal(BigInt(0));
+      if (!account?.address || !collectionEntry) {
+        setOwnedUnstaked([]); setStakedFromDb([]); setAllCombined([]); setError(null);
         return;
       }
 
@@ -102,135 +202,78 @@ export function useStakingView(selected: PassKind) {
       setError(null);
 
       try {
-        // 1) OWNED (indexer-backed)
-        const ownedResults = await Promise.all(
-          collections.map(async (c) => {
-            const nft = getContract({
-              client,
-              chain: c.chain,
-              address: c.address,
-              abi: c.nftAbi,
-            });
+        const c = collectionEntry;
+        const imageUrl = KIND_IMAGE[c.kind];
 
-            if (c.standard === "ERC721") {
-              const nfts = await getOwnedNFTs({ contract: nft, owner: account.address });
-              return nfts.map((n) => ({
-                standard: "ERC721" as const,
-                chainId: c.chain.id,
-                collection: c,
-                tokenId: BigInt(n.id),
-                metadata: n.metadata,
-              }));
-            } else {
-              // ERC1155: list owned token IDs & amounts
-              const owned1155 = await getOwnedTokenIds({ contract: nft, owner: account.address });
-              // getOwnedTokenIds returns { tokenId, balance } pairs (v5); if not, fetch per id via balanceOf
-              return owned1155.map((o) => ({
-                standard: "ERC1155" as const,
-                chainId: c.chain.id,
-                collection: c,
-                tokenId: BigInt(o.tokenId),
-                amount: BigInt(o.balance),
-                metadata: o.metadata, // some indexers include metadata; if not, can fetch via uri()
-              }));
-            }
-          })
-        );
+        // 1) wallet-owned (try enumerable first, then events)
+        let walletOwned: OwnedNft[] = [];
 
-        const flatOwned = ownedResults.flat();
-        setOwned(flatOwned);
-
-        // 2) STAKED (read staking contracts)
-        let unclaimedSum = 0n;
-
-        const stakeReads = await Promise.all(
-          collections.map(async (c) => {
-            const staking = getContract({
-              client,
-              chain: c.chain,
-              address: c.stakingAddress,
-              abi: c.standard === "ERC721" ? STAKING721_ABI : STAKING1155_ABI,
-            });
-
-            if (c.standard === "ERC721") {
-              const [ids, unclaimed] = (await readContract({
-                contract: staking,
-                method: "getStakeInfo",
-                params: [account.address],
-              })) as [bigint[], bigint];
-
-              const key = `${c.chain.id}-${c.address.toLowerCase()}`;
-              return { kind: "721" as const, key, ids, unclaimed };
-            } else {
-              const [ids, amts, unclaimed] = (await readContract({
-                contract: staking,
-                method: "getStakeInfo",
-                params: [account.address],
-              })) as [bigint[], bigint[], bigint];
-
-              const key = `${c.chain.id}-${c.address.toLowerCase()}`;
-              return { kind: "1155" as const, key, ids, amts, unclaimed };
-            }
-          })
-        );
-
-        const map721: Record<string, bigint[]> = {};
-        const map1155: Record<string, { ids: bigint[]; amts: bigint[] }> = {};
-
-        for (const s of stakeReads) {
-          if (s.kind === "721") {
-            map721[s.key] = s.ids;
-            unclaimedSum += s.unclaimed;
-          } else {
-            map1155[s.key] = { ids: s.ids, amts: s.amts };
-            unclaimedSum += s.unclaimed;
-          }
+        if (c.standard === "ERC721") {
+          const idsEnumerable = await owned721ViaEnumerable(c, client, account.address);
+          const ids = idsEnumerable ?? (await owned721ViaEvents(c, client, account.address));
+          walletOwned = ids.map<Owned721>((id) => ({
+            standard: "ERC721",
+            chainId: c.chain.id,
+            collection: c,
+            tokenId: id,
+            imageUrl,
+            name: c.kind,
+          }));
+        } else {
+          const pairs = await owned1155ViaEvents(c, client, account.address);
+          walletOwned = pairs.map<Owned1155>(({ tokenId, amount }) => ({
+            standard: "ERC1155",
+            chainId: c.chain.id,
+            collection: c,
+            tokenId,
+            amount,
+            imageUrl,
+            name: c.kind,
+          }));
         }
 
-        setStakedIds721(map721);
-        setStakedMap1155(map1155);
-        setUnclaimedTotal(unclaimedSum);
+        // 2) staked strictly from Firestore `stakes` (one doc per tokenId)
+        const nftTypeLower =
+          c.kind === "SEED" ? "seed" : c.kind === "TREE" ? "tree" : c.kind === "SOLAR" ? "solar" : "compute";
+
+        const qSnap = await getDocs(
+          query(
+            collection(db, "stakes"),
+            where("wallet", "==", account.address.toLowerCase()),
+            where("chainId", "==", args.chainId as any),
+            where("nftType", "==", nftTypeLower),
+            where("status", "==", "active")
+          )
+        );
+
+        const stakedDocs = qSnap.docs.map((d) => d.data() as any);
+        const staked: OwnedNft[] = stakedDocs
+          .map((d) => d.tokenId as string)
+          .filter(Boolean)
+          .map((tid) => ({
+            standard: "ERC721" as const, // UI purposes
+            chainId: c.chain.id,
+            collection: c,
+            tokenId: BigInt(tid),
+            imageUrl,
+            name: c.kind,
+          }));
+
+        // 3) unstaked = walletOwned − staked
+        const stakedSet = new Set(staked.map((x) => x.tokenId.toString()));
+        const unstaked = walletOwned.filter((x) => !stakedSet.has(x.tokenId.toString()));
+
+        setOwnedUnstaked(unstaked);
+        setStakedFromDb(staked);
+        setAllCombined([...staked, ...unstaked]);
       } catch (e: any) {
-        setError(e?.message ?? String(e));
+        console.error("useStakingView", e);
+        setError("Failed to load NFTs.");
       } finally {
         setLoading(false);
       }
     })();
-  }, [account?.address, client, collections]);
+  }, [account?.address, client, collectionEntry, args.chainId]);
 
-  // 3) Partition owned into staked vs unstaked
-  const keyOf = (c: AgvCollection) => `${c.chain.id}-${c.address.toLowerCase()}`;
-
-  const stakedOwned: OwnedNft[] = [];
-  const unstakedOwned: OwnedNft[] = [];
-
-  for (const it of owned) {
-    const k = keyOf(it.collection);
-
-    if (it.standard === "ERC721") {
-      const staked = (stakedIds721[k] ?? []).some((id) => id === it.tokenId);
-      (staked ? stakedOwned : unstakedOwned).push(it);
-    } else {
-      // 1155: staked if amount > 0 for that tokenId
-      const entry = stakedMap1155[k];
-      if (!entry) {
-        unstakedOwned.push(it);
-      } else {
-        const idx = entry.ids.findIndex((x) => x === it.tokenId);
-        const stakedAmt = idx >= 0 ? entry.amts[idx] : 0n;
-        // If user owns 3 but staked 1, you could split. For simplicity, mark as staked if any > 0.
-        const isStaked = stakedAmt > 0n;
-        (isStaked ? stakedOwned : unstakedOwned).push(it);
-      }
-    }
-  }
-
-  return {
-    loading,
-    error,
-    ownedAll: owned,
-    ownedStaked: stakedOwned,
-    ownedUnstaked: unstakedOwned,
-    unclaimedTotal,
-  };
+  return { loading, error, ownedUnstaked, stakedFromDb, allCombined };
 }

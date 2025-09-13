@@ -1,3 +1,4 @@
+// components/NFTGrid.tsx
 "use client";
 
 import { useState } from "react";
@@ -12,7 +13,7 @@ interface NFT {
   tokenId: string;
   stakedAt?: number;
   rewards?: number;
-  imageUrl?: string;
+  imageUrl?: string; // optional – we don't dereference nested url
   name?: string;
 }
 
@@ -29,7 +30,7 @@ interface NFTGridProps {
 
 const COLLECTION_COLORS = {
   seed: "from-green-500 to-emerald-600",
-  tree: "from-amber-500 to-orange-600", 
+  tree: "from-amber-500 to-orange-600",
   solar: "from-yellow-500 to-amber-600",
   compute: "from-blue-500 to-purple-600",
 };
@@ -61,7 +62,7 @@ export function NFTGrid({
     const diffMs = now - stakedAt;
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    
+
     if (diffDays > 0) {
       return `${diffDays}d ${diffHours}h`;
     }
@@ -76,17 +77,14 @@ export function NFTGrid({
     return (
       <Card className={className}>
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <div className="text-6xl mb-4 opacity-50">
-            {isStaked ? "🔒" : "🎨"}
-          </div>
+          <div className="text-6xl mb-4 opacity-50">{isStaked ? "🔒" : "🎨"}</div>
           <h3 className="text-lg font-semibold mb-2">
             {isStaked ? "No Staked NFTs" : "No NFTs Found"}
           </h3>
           <p className="text-muted-foreground text-center">
-            {isStaked 
+            {isStaked
               ? "You haven't staked any NFTs yet. Stake some NFTs to start earning rewards!"
-              : "No NFTs found in your wallet for this collection."
-            }
+              : "No NFTs found in your wallet for this collection."}
           </p>
         </CardContent>
       </Card>
@@ -109,14 +107,14 @@ export function NFTGrid({
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             {/* Select All Controls */}
             <div className="flex items-center space-x-1">
               <Checkbox
                 checked={allSelected}
                 ref={(el) => {
-                  if (el) el.indeterminate = someSelected;
+                  if (el) (el as any).indeterminate = someSelected;
                 }}
                 onCheckedChange={(checked) => {
                   if (checked) {
@@ -130,7 +128,7 @@ export function NFTGrid({
                 {allSelected ? "Deselect All" : "Select All"}
               </span>
             </div>
-            
+
             {/* View Mode Toggle */}
             <div className="flex border rounded-lg">
               <Button
@@ -166,31 +164,29 @@ export function NFTGrid({
                 onClick={() => onSelectionChange(nft.tokenId)}
               >
                 <CardContent className="p-4">
-                  {/* NFT Image Placeholder */}
-                  <div className={cn(
-                    "w-full h-32 rounded-lg mb-3 bg-gradient-to-br flex items-center justify-center text-white font-bold text-2xl",
-                    COLLECTION_COLORS[collectionType]
-                  )}>
+                  {/* Placeholder image (no nested .url access) */}
+                  <div
+                    className={cn(
+                      "w-full h-32 rounded-lg mb-3 bg-gradient-to-br flex items-center justify-center text-white font-bold text-2xl",
+                      COLLECTION_COLORS[collectionType]
+                    )}
+                  >
                     {COLLECTION_ICONS[collectionType]}
                   </div>
-                  
-                  {/* NFT Info */}
+
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold">#{nft.tokenId}</span>
-                      <Checkbox
-                        checked={selectedIds.includes(nft.tokenId)}
-                        onChange={() => {}} // Handled by card click
-                      />
+                      <Checkbox checked={selectedIds.includes(nft.tokenId)} onChange={() => {}} />
                     </div>
-                    
+
                     {isStaked && nft.stakedAt && (
                       <div className="space-y-1">
                         <div className="flex items-center space-x-1 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" />
                           <span>Staked {formatStakeTime(nft.stakedAt)}</span>
                         </div>
-                        {nft.rewards !== undefined && (
+                        {typeof nft.rewards === "number" && (
                           <div className="flex items-center space-x-1 text-xs text-green-600">
                             <Coins className="h-3 w-3" />
                             <span>{formatRewards(nft.rewards)} rGGP</span>
@@ -198,11 +194,8 @@ export function NFTGrid({
                         )}
                       </div>
                     )}
-                    
-                    <Badge 
-                      variant={isStaked ? "secondary" : "outline"}
-                      className="w-full justify-center"
-                    >
+
+                    <Badge variant={isStaked ? "secondary" : "outline"} className="w-full justify-center">
                       {isStaked ? (
                         <>
                           <Lock className="h-3 w-3 mr-1" />
@@ -234,14 +227,15 @@ export function NFTGrid({
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      {/* NFT Image Placeholder */}
-                      <div className={cn(
-                        "w-12 h-12 rounded-lg bg-gradient-to-br flex items-center justify-center text-white font-bold text-lg",
-                        COLLECTION_COLORS[collectionType]
-                      )}>
+                      <div
+                        className={cn(
+                          "w-12 h-12 rounded-lg bg-gradient-to-br flex items-center justify-center text-white font-bold text-lg",
+                          COLLECTION_COLORS[collectionType]
+                        )}
+                      >
                         {COLLECTION_ICONS[collectionType]}
                       </div>
-                      
+
                       <div>
                         <div className="font-semibold">#{nft.tokenId}</div>
                         {isStaked && nft.stakedAt && (
@@ -250,7 +244,7 @@ export function NFTGrid({
                               <Clock className="h-3 w-3" />
                               <span>{formatStakeTime(nft.stakedAt)}</span>
                             </div>
-                            {nft.rewards !== undefined && (
+                            {typeof nft.rewards === "number" && (
                               <div className="flex items-center space-x-1 text-green-600">
                                 <Coins className="h-3 w-3" />
                                 <span>{formatRewards(nft.rewards)} rGGP</span>
@@ -260,11 +254,9 @@ export function NFTGrid({
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-3">
-                      <Badge 
-                        variant={isStaked ? "secondary" : "outline"}
-                      >
+                      <Badge variant={isStaked ? "secondary" : "outline"}>
                         {isStaked ? (
                           <>
                             <Lock className="h-3 w-3 mr-1" />
@@ -277,10 +269,7 @@ export function NFTGrid({
                           </>
                         )}
                       </Badge>
-                      <Checkbox
-                        checked={selectedIds.includes(nft.tokenId)}
-                        onChange={() => {}} // Handled by card click
-                      />
+                      <Checkbox checked={selectedIds.includes(nft.tokenId)} onChange={() => {}} />
                     </div>
                   </div>
                 </CardContent>

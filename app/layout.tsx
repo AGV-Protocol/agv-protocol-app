@@ -1,10 +1,13 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+
+// ✅ Static import of a Client Component is allowed in a Server Component
 import { Providers } from "./provider";
 import { PageLoading } from "@/components/ui/page-loading";
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
@@ -17,11 +20,7 @@ export const metadata: Metadata = {
   authors: [{ name: "AGV Protocol" }],
   creator: "AGV Protocol",
   publisher: "AGV Protocol",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
+  formatDetection: { email: false, address: false, telephone: false },
   metadataBase: new URL("https://agv-protocol.com"),
   openGraph: {
     title: "AGV Protocol - NFT Minting Platform",
@@ -47,26 +46,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <head>
-        {/* Prefetch important routes */}
+        {/* Optional prefetches */}
         <link rel="prefetch" href="/dashboard" />
         <link rel="prefetch" href="/kol" />
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
       </head>
       <body className={`${inter.className} antialiased`}>
+        {/* ✅ Providers is a client component, rendered directly */}
         <Providers>
           <PageLoading />
-          <div className="relative flex min-h-screen flex-col">
-            {children}
-          </div>
+          <div className="relative flex min-h-screen flex-col">{children}</div>
         </Providers>
       </body>
     </html>
