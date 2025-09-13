@@ -1,7 +1,8 @@
 import React from "react";
-import { Coins, CoinsIcon, Database, Zap } from "lucide-react";
+import { Database, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image"
+import Image from "next/image";
+import Link from "next/link";
 
 export const HeroSection: React.FC = () => {
   return (
@@ -34,22 +35,26 @@ export const HeroSection: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Button
-                  size="lg"
-                  className="bg-[#223256] text-white hover:bg-[#223256]/90 px-6 sm:px-8 py-3 sm:py-4 rounded-md font-semibold text-base sm:text-lg flex items-center justify-center space-x-2 sm:space-x-3"
-                >
-                  <Database className="h-6 w-6 text-white" />
-                  <span>Start Minting</span>
-                </Button>
+                <Link href="/mint">
+                  <Button
+                    size="lg"
+                    className="bg-[#223256] text-white hover:bg-[#223256]/90 px-6 sm:px-8 py-3 sm:py-4 rounded-md font-semibold text-base sm:text-lg flex items-center justify-center space-x-2 sm:space-x-3"
+                  >
+                    <Database className="h-6 w-6 text-white" />
+                    <span>Start Minting</span>
+                  </Button>
+                </Link>
 
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-white text-[#3399FF] hover:bg-white/90 border-black px-6 sm:px-8 py-3 sm:py-4 rounded-md font-semibold text-base sm:text-lg flex items-center justify-center space-x-2 sm:space-x-3"
-                >
-                  <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
-                  <span>View Staking</span>
-                </Button>
+                <Link href="/staking">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="bg-white text-[#3399FF] hover:bg-white/90 border-black px-6 sm:px-8 py-3 sm:py-4 rounded-md font-semibold text-base sm:text-lg flex items-center justify-center space-x-2 sm:space-x-3"
+                  >
+                    <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <span>View Staking</span>
+                  </Button>
+                </Link>
               </div>
             </div>
 
