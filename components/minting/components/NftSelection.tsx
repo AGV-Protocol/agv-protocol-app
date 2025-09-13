@@ -37,66 +37,32 @@ export const NftSelection: React.FC<NftSelectionProps> = ({
       title="Select NFT to mint"
       description="Choose the quantity for each NFT type"
     >
-      {/* Public Mint Section */}
-      <div className="mb-4 sm:mb-6">
-        <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Public Mint</h4>
-        <div className="space-y-3 sm:space-y-4">
-          {(["seed", "tree"] as NftType[]).map((type) => {
-            const info = NFT_INFO[type];
-            const maxAllowed = getMaxSelectableFor(type, selectedChain);
-            const isAvailable = maxAllowed > 0;
-            const dummyData = getDummyData(type);
-            const price = Number((PASS_PRICES as any)[type]?.usd ?? 0);
+      {/* NFT Selection */}
+      <div className="space-y-3 sm:space-y-4">
+        {(["seed", "tree", "solar", "compute"] as NftType[]).map((type) => {
+          const info = NFT_INFO[type];
+          const maxAllowed = getMaxSelectableFor(type, selectedChain);
+          const isAvailable = maxAllowed > 0;
+          const dummyData = getDummyData(type);
+          const price = Number((PASS_PRICES as any)[type]?.usd ?? 0);
 
-            return (
-              <NftCard
-                key={type}
-                type={type}
-                info={info}
-                quantity={quantities[type]}
-                maxAllowed={maxAllowed}
-                isAvailable={isAvailable}
-                mintedCount={dummyData.mintedCount}
-                totalSupply={dummyData.totalSupply}
-                endsIn={dummyData.endsIn}
-                price={price}
-                onQuantityChange={onQuantityChange}
-                statusColor="bg-green-500"
-              />
-            );
-          })}
-        </div>
-      </div>
-      
-      {/* Whitelist Mint Section */}
-      <div>
-        <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Whitelist Mint</h4>
-        <div className="space-y-3 sm:space-y-4">
-          {(["solar", "compute"] as NftType[]).map((type) => {
-            const info = NFT_INFO[type];
-            const maxAllowed = getMaxSelectableFor(type, selectedChain);
-            const isAvailable = maxAllowed > 0;
-            const dummyData = getDummyData(type);
-            const price = Number((PASS_PRICES as any)[type]?.usd ?? 0);
-
-            return (
-              <NftCard
-                key={type}
-                type={type}
-                info={info}
-                quantity={quantities[type]}
-                maxAllowed={maxAllowed}
-                isAvailable={isAvailable}
-                mintedCount={dummyData.mintedCount}
-                totalSupply={dummyData.totalSupply}
-                endsIn={dummyData.endsIn}
-                price={price}
-                onQuantityChange={onQuantityChange}
-                statusColor="bg-red-500"
-              />
-            );
-          })}
-        </div>
+          return (
+            <NftCard
+              key={type}
+              type={type}
+              info={info}
+              quantity={quantities[type]}
+              maxAllowed={maxAllowed}
+              isAvailable={isAvailable}
+              mintedCount={dummyData.mintedCount}
+              totalSupply={dummyData.totalSupply}
+              endsIn={dummyData.endsIn}
+              price={price}
+              onQuantityChange={onQuantityChange}
+              statusColor="bg-green-500"
+            />
+          );
+        })}
       </div>
     </SectionCard>
   );
