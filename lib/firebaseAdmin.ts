@@ -1,31 +1,18 @@
 // lib/firebaseAdmin.ts
-import * as admin from "firebase-admin";
-import { getApps } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
+import { getApps, initializeApp, cert, App } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-const projectId = process.env.FIREBASE_PROJECT_ID;
-const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
-
-// Handle escaped newlines in env
-const privateKey = privateKeyRaw?.replace(/\\n/g, "\n");
-
+let app: App;
 if (!getApps().length) {
-  if (!projectId || !clientEmail || !privateKey) {
-    throw new Error(
-      "Missing FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY in server env"
-    );
-  }
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId,
-      clientEmail,
-      privateKey,
+  app = initializeApp({
+    credential: cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
     }),
   });
+} else {
+  app = getApps()[0]!;
 }
 
-export const adminAuth = getAuth();
-export const adminDb = getFirestore();
-export { admin }; // for FieldValue.serverTimestamp()
+export const adminDb = getFirestore(app);
