@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-// --- Contracts / ABIs (must exist in your repo) ---
+// --- Contracts / ABIs ---
 import {
   NFT_CONTRACTS,
   STAKE_CONTRACTS,
@@ -43,14 +43,14 @@ import {
   REWARD_RATES,
 } from "@/lib/contracts";
 
-// --- Reward helpers (must exist in your repo) ---
+// --- Reward helpers ---
 import { useOffChainRewards } from "@/hooks/useOffChainRewards";
 import { BASE_DAILY_RRGP, bonusFor } from "@/lib/rewards";
 
-// --- Robust NFT detection hook (events-based, across networks by kind) ---
+// --- NFT detection hook ---
 import { useStakingView } from "@/hooks/useStakingView";
 
-// --- Firestore (optional) ---
+// --- Firestore ---
 import { db } from "@/lib/firebase";
 import {
   collection,
@@ -70,7 +70,6 @@ function toGateway(u?: string) {
   return u.replace(/^https?:\/\/ipfs\.io\/ipfs\//i, "https://ipfscdn.io/ipfs/");
 }
 function getImageSrc(nft: any) {
-  // Prefer the hook’s flat string; never touch `.url`
   const flat =
     nft?.imageUrl ??
     (typeof nft?.metadata?.image === "string" ? nft.metadata.image : undefined) ??
@@ -141,10 +140,13 @@ function calculateRewards(
   const currentTime = Math.floor(Date.now() / 1000);
   const startTime = lastClaimedAt || stakedAt;
   const elapsedTime = currentTime - startTime;
-  const totalStakingTime = duration * 24 * 60 * 60; // seconds
+  const totalStakingTime = duration * 24 * 60 * 60;
 
   const dailyRate = REWARD_RATES[collectionType];
-  const elapsedDays = Math.min(elapsedTime / (24 * 60 * 60), totalStakingTime / (24 * 60 * 60));
+  const elapsedDays = Math.min(
+    elapsedTime / (24 * 60 * 60),
+    totalStakingTime / (24 * 60 * 60)
+  );
   const totalRewards = elapsedDays * dailyRate;
 
   const canClaim = elapsedTime >= 24 * 60 * 60; // ≥ 1 day
@@ -328,12 +330,6 @@ export default function StakingPage() {
   const [withdrawing, setWithdrawing] = useState(false);
   const [claiming, setClaiming] = useState(false);
 
-  // read staked count / rewards
-  const [stakedCount, setStakedCount] = useState<bigint>(0n);
-  const [pendingRewards, setPendingRewards] = useState<bigint>(0n);
-  const [timeUnit, setTimeUnit] = useState<bigint>(86400n);
-  const [rewardsPerUnit, setRewardsPerUnit] = useState<bigint>(0n);
-
   // Staking duration state
   const [stakingDuration, setStakingDuration] = useState<number>(7);
   const [stakedTokensInfo, setStakedTokensInfo] = useState<
@@ -341,34 +337,31 @@ export default function StakingPage() {
   >({});
 
   // Rewards (off-chain dashboard)
-  const { loading: rewardsLoading, error: rewardsError, data: rewardsData } = useOffChainRewards();
+  const { data: rewardsData } = useOffChainRewards();
 
-  // ✅ NFT detection (events). Hook API: useStakingView(kind: "SEED" | "TREE" | "SOLAR" | "COMPUTE")
-  const {
-    loading: nftLoading,
-    error: nftError,
-    ownedUnstaked,
-    ownedStaked,
-    // unclaimedTotal, counts, ownedAll
-  } = useStakingView(selectedCollection.toUpperCase() as any);
+  // NFT detection across networks by kind
+  const stakingView = useStakingView(selectedCollection.toUpperCase() as any) as any;
+  const nftLoading: boolean = stakingView?.loading ?? false;
+  const nftError: string | null = stakingView?.error ?? null;
+  const ownedUnstaked: any[] = stakingView?.ownedUnstaked ?? [];
+  const ownedStaked: any[] = stakingView?.ownedStaked ?? [];
 
-  // Filter the hook results to the currently selected chain (so UI text is accurate)
+  // Filter to currently selected chain
   const chainId = CHAIN_CONFIG[chainKey].id;
   const filteredUnstaked = useMemo(
-    () => ownedUnstaked.filter((n) => n.chainId === chainId),
+    () => (Array.isArray(ownedUnstaked) ? ownedUnstaked : []).filter((n: any) => n?.chainId === chainId),
     [ownedUnstaked, chainId]
   );
   const filteredStaked = useMemo(
-    () => ownedStaked.filter((n) => n.chainId === chainId),
+    () => (Array.isArray(ownedStaked) ? ownedStaked : []).filter((n: any) => n?.chainId === chainId),
     [ownedStaked, chainId]
   );
 
   // Chain mismatch hint
   useEffect(() => {
     if (!activeChain?.id) return;
-    const want = chainId;
-    if (activeChain.id !== want) {
-      // optional: hint UI; do not auto-switch without user action
+    if (activeChain.id !== chainId) {
+      // optional: show a UI hint
     }
   }, [activeChain, chainId]);
 
@@ -385,6 +378,7 @@ export default function StakingPage() {
     }
   }
 
+  const [stakedCount, setStakedCount] = useState<bigint>(0n);
   async function refreshStats() {
     if (!account?.address) return;
     try {
@@ -394,21 +388,6 @@ export default function StakingPage() {
         params: [account.address],
       })) as [bigint, bigint];
       setStakedCount(info[0]);
-      setPendingRewards(info[1]);
-
-      const tu = (await readContract({
-        contract: stake,
-        method: "timeUnit",
-        params: [],
-      })) as bigint;
-      const rpu = (await readContract({
-        contract: stake,
-        method: "rewardsPerUnitTime",
-        params: [],
-      })) as bigint;
-
-      setTimeUnit(tu);
-      setRewardsPerUnit(rpu);
       await refreshStakedTokensInfo();
     } catch {
       // ignore on fresh deploys
@@ -554,7 +533,7 @@ export default function StakingPage() {
     if (!account?.address) return toast.error("Connect wallet first");
     if (tokenIds.length === 0) return toast.error("Provide tokenId(s) to withdraw");
 
-    // Check local lock based on Firebase info
+    // Local lock check via Firebase info
     const currentTime = Math.floor(Date.now() / 1000);
     const lockedTokens: string[] = [];
     for (const tokenId of tokenIds) {
@@ -1198,7 +1177,7 @@ function NftPanel({
         </div>
       )}
 
-      {/* ✅ Mint CTA when there are none on the selected chain */}
+      {/* Mint CTA when there are none on the selected chain */}
       {noneFound && (
         <div className="text-center py-10">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
@@ -1229,6 +1208,7 @@ function NftPanel({
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {ownedUnstaked.map((nft) => {
+                  if (!nft) return null;
                   const img = getImageSrc(nft);
                   return (
                     <div
@@ -1271,6 +1251,7 @@ function NftPanel({
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {ownedStaked.map((nft) => {
+                  if (!nft) return null;
                   const img = getImageSrc(nft);
                   return (
                     <div
