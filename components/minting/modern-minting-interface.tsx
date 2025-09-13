@@ -909,8 +909,8 @@ export default function ModernMintingInterface() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="text-left">
-                      <div className="font-semibold">{chain.name}</div>
-                      <div className="text-xs opacity-70">{chain.symbol}</div>
+                      <div className="font-semibold text-white">{chain.name}</div>
+                      <div className="text-xs opacity-70 text-white">{chain.symbol}</div>
                     </div>
                     {selectedChain === chainId && (
                       <div className="w-2 h-2 bg-white rounded-full"></div>
@@ -926,38 +926,33 @@ export default function ModernMintingInterface() {
 
           {/* Minting Mode (UI label only) */}
           <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
-            <div className="flex items-center space-x-3 mb-4 sm:mb-6">
-              <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 shadow-lg">
-                <Zap className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="p-3 rounded-lg bg-[#F5B300] shadow-lg">
+                <Zap className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-white">Minting Mode</h3>
+              <div>
+                <h3 className="text-xl font-semibold text-white">Minting Mode</h3>
+                <p className="text-sm text-white/70">
+                  Mint NFTs directly from the public collection
+                </p>
+              </div>
             </div>
-            <div className="bg-white/5 rounded-lg sm:rounded-xl p-1 sm:p-2">
+            <div className="bg-white/10 rounded-full p-0">
               <Tabs value={mintMode} onValueChange={(value: string) => setMintMode(value as MintMode)}>
                 <TabsList className="grid w-full grid-cols-2 bg-transparent h-auto">
                   <TabsTrigger 
                     value="public" 
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-lg sm:rounded-xl text-xs sm:text-sm py-2 sm:py-3"
+                    className="data-[state=active]:bg-[#4FACFE] data-[state=active]:text-white text-white rounded-full text-sm py-3 font-bold"
                   >
                     Public Mint
                   </TabsTrigger>
                   <TabsTrigger 
                     value="agent"
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-orange-500 data-[state=active]:text-white rounded-lg sm:rounded-xl text-xs sm:text-sm py-2 sm:py-3"
+                    className="data-[state=active]:bg-[#4FACFE] data-[state=active]:text-white text-white rounded-full text-sm py-3 font-bold"
                   >
                     Agent Mint
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="public" className="mt-4">
-                  <p className="text-sm text-white/70">
-                    Mint NFTs directly from the public collection
-                  </p>
-                </TabsContent>
-                <TabsContent value="agent" className="mt-4">
-                  <p className="text-sm text-white/70">
-                    Mint through an authorized agent (coming soon)
-                  </p>
-                </TabsContent>
               </Tabs>
             </div>
           </div>
@@ -965,148 +960,426 @@ export default function ModernMintingInterface() {
           {/* NFT Selection */}
           <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
             <div className="flex items-center space-x-3 mb-4 sm:mb-6">
-              <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg">
-                <Shield className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
+              <div className="p-2 sm:p-3 rounded-lg bg-green-500 shadow-lg">
+                <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg sm:text-xl font-semibold text-white">Select NFTs to Mint</h3>
-                <p className="text-white/60 text-xs sm:text-sm">Choose the quantity for each NFT type</p>
+                <h3 className="text-lg sm:text-xl font-semibold text-white">Select NFT to mint</h3>
+                <p className="text-xs sm:text-sm text-white/70">Choose the quantity for each NFT type</p>
               </div>
             </div>
-            <div className="space-y-4 sm:space-y-6">
-              {(Object.entries(NFT_INFO) as [NftType, typeof NFT_INFO[keyof typeof NFT_INFO]][]).map(([type, info]) => {
-                const modeCap = getModeCap(type, selectedChain);
-                const maxPerWallet = getPerWalletMax(type, selectedChain);
-                const maxAllowed = Math.min(maxPerWallet, modeCap);
-                const isAvailable = maxAllowed > 0;
+            
+            {/* Public Mint Section */}
+            <div className="mb-4 sm:mb-6">
+              <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Public Mint</h4>
+              <div className="space-y-3 sm:space-y-4">
+                {(["seed", "tree"] as NftType[]).map((type) => {
+                  const info = NFT_INFO[type];
+                  const modeCap = getModeCap(type, selectedChain);
+                  const maxPerWallet = getPerWalletMax(type, selectedChain);
+                  const maxAllowed = Math.min(maxPerWallet, modeCap);
+                  const isAvailable = maxAllowed > 0;
+                  
+                  // DUMMY DATA - Replace with real data
+                  const mintedCount = type === "seed" ? 272 : 187;
+                  const totalSupply = type === "seed" ? 85 : 60;
+                  const endsIn = type === "seed" ? "2w 3d 5hrs" : "1w 4d 2hrs";
 
-                return (
-                  <div key={type} className="space-y-3 bg-white/5 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/10">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 rounded-lg overflow-hidden bg-white/10 flex-shrink-0">
-                          <img
-                            src={`/${type}pass.jpg`}
-                            alt={`${info.name} NFT`}
-                            className="w-full h-full object-cover"
-                          />
+                  return (
+                    <div key={type} className="bg-white/5 rounded-lg p-3 sm:p-4 border border-white/10">
+                      {/* Mobile Layout: Stack vertically */}
+                      <div className="block sm:hidden space-y-3">
+                        {/* Name and Description */}
+                        <div className="flex items-center space-x-3">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gray-300 flex-shrink-0"></div>
+                          <div>
+                            <div className="flex items-center space-x-2">
+                              <h3 className="text-sm sm:text-base font-semibold text-white">{info.name}</h3>
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            </div>
+                            <p className="text-xs sm:text-sm text-white/70">{info.description}</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-white text-sm sm:text-base">{info.name}</h3>
-                          <p className="text-xs sm:text-sm text-white/70">{info.description}</p>
+                        
+                        {/* Quantity Selector */}
+                        <div className="flex justify-center">
+                          <div className="flex flex-col items-center space-y-1">
+                            <div className="flex items-center bg-gray-200 rounded-full px-3 sm:px-4 py-1.5 sm:py-2">
+                              <button
+                                onClick={() => handleQuantityChange(type, quantities[type] - 1)}
+                                disabled={quantities[type] <= 0 || !isAvailable}
+                                className="text-blue-600 font-bold text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                -
+                              </button>
+                              <input
+                                type="number"
+                                min="0"
+                                max={maxAllowed}
+                                value={quantities[type] || ""}
+                                onChange={(e) => {
+                                  const value = parseInt(e.target.value) || 0;
+                                  handleQuantityChange(type, value);
+                                }}
+                                disabled={!isAvailable}
+                                className="w-10 sm:w-12 text-center bg-transparent text-black font-bold text-xs sm:text-sm mx-3 sm:mx-4 border-none outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                placeholder="0"
+                              />
+                              <button
+                                onClick={() => handleQuantityChange(type, quantities[type] + 1)}
+                                disabled={quantities[type] >= maxAllowed || !isAvailable}
+                                className="text-blue-600 font-bold text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <span className="text-white font-bold text-xs">Max {maxAllowed}</span>
+                          </div>
+                        </div>
+                        
+                        {/* Data Grid */}
+                        <div className="grid grid-cols-2 gap-3 text-center">
+                          <div>
+                            <p className="text-xs sm:text-sm text-white font-semibold">Price</p>
+                            <p className="text-xs sm:text-sm text-white">${Number((PASS_PRICES as any)[type]?.usd ?? 0)}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs sm:text-sm text-white font-semibold">Minted</p>
+                            <p className="text-xs sm:text-sm text-white">{mintedCount}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs sm:text-sm text-white font-semibold">Supply</p>
+                            <p className="text-xs sm:text-sm text-white">{totalSupply}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs sm:text-sm text-white font-semibold">Ends In</p>
+                            <p className="text-xs sm:text-sm text-white">{endsIn}</p>
+                          </div>
                         </div>
                       </div>
-                      <div className="text-left sm:text-right">
-                        <p className="font-semibold text-white text-sm sm:text-base">
-                          ${Number((PASS_PRICES as any)[type]?.usd ?? 0)}
-                        </p>
-                        <p className="text-xs sm:text-sm text-white/60">Max: {maxAllowed}</p>
+                      
+                      {/* Desktop Layout: 3 columns */}
+                      <div className="hidden sm:grid grid-cols-3 items-center">
+                        {/* First Column: Name and Description */}
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 rounded-lg bg-gray-300 flex-shrink-0"></div>
+                          <div>
+                            <div className="flex items-center space-x-2">
+                              <h3 className="font-semibold text-white">{info.name}</h3>
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            </div>
+                            <p className="text-sm text-white/70">{info.description}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Middle Column: Quantity Selector */}
+                        <div className="flex justify-center">
+                          <div className="flex flex-col items-center space-y-1">
+                            <div className="flex items-center bg-gray-200 rounded-full px-4 py-2">
+                              <button
+                                onClick={() => handleQuantityChange(type, quantities[type] - 1)}
+                                disabled={quantities[type] <= 0 || !isAvailable}
+                                className="text-blue-600 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                -
+                              </button>
+                              <input
+                                type="number"
+                                min="0"
+                                max={maxAllowed}
+                                value={quantities[type] || ""}
+                                onChange={(e) => {
+                                  const value = parseInt(e.target.value) || 0;
+                                  handleQuantityChange(type, value);
+                                }}
+                                disabled={!isAvailable}
+                                className="w-12 text-center bg-transparent text-black font-bold text-sm mx-4 border-none outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                placeholder="0"
+                              />
+                              <button
+                                onClick={() => handleQuantityChange(type, quantities[type] + 1)}
+                                disabled={quantities[type] >= maxAllowed || !isAvailable}
+                                className="text-blue-600 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <span className="text-white font-bold text-xs">Max {maxAllowed}</span>
+                          </div>
+                        </div>
+                        
+                        {/* Last Column: Price, Minted, Supply, Ends In */}
+                        <div className="flex items-center justify-between space-x-6">
+                          <div className="text-right">
+                            <p className="text-white font-semibold">Price</p>
+                            <p className="text-white">${Number((PASS_PRICES as any)[type]?.usd ?? 0)}</p>
+                          </div>
+                          
+                          <div className="text-right">
+                            <p className="text-white font-semibold">Minted</p>
+                            <p className="text-white">{mintedCount}</p>
+                          </div>
+                          
+                          <div className="text-right">
+                            <p className="text-white font-semibold">
+                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                            </p>
+                            <div className="flex items-center justify-between space-x-1">
+                              <p className="text-white">{totalSupply}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="text-right">
+                            <p className="text-white font-semibold">Ends In</p>
+                            <p className="text-white">{endsIn}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
+                  );
+                })}
+              </div>
+            </div>
+            
+            {/* Whitelist Mint Section */}
+            <div>
+              <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Whitelist Mint</h4>
+              <div className="space-y-3 sm:space-y-4">
+                {(["solar", "compute"] as NftType[]).map((type) => {
+                  const info = NFT_INFO[type];
+                  const modeCap = getModeCap(type, selectedChain);
+                  const maxPerWallet = getPerWalletMax(type, selectedChain);
+                  const maxAllowed = Math.min(maxPerWallet, modeCap);
+                  const isAvailable = maxAllowed > 0;
+                  
+                  // DUMMY DATA - Replace with real data
+                  const mintedCount = type === "solar" ? 450 : 60;
+                  const totalSupply = type === "solar" ? 108 : 80;
+                  const endsIn = type === "solar" ? "3w 1d 8hrs" : "2w 5d 3hrs";
 
-                    <div className="flex items-center justify-center sm:justify-start space-x-3 sm:space-x-4">
-                      <button
-                        onClick={() => handleQuantityChange(type, quantities[type] - 1)}
-                        disabled={quantities[type] <= 0 || !isAvailable}
-                        className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-                      >
-                        -
-                      </button>
-                      <input
-                        type="number"
-                        min={0}
-                        max={maxAllowed}
-                        value={quantities[type]}
-                        onChange={(e) => handleQuantityChange(type, parseInt(e.target.value) || 0)}
-                        className="w-16 sm:w-20 text-center rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 px-2 sm:px-3 py-2 text-sm sm:text-base"
-                        disabled={!isAvailable}
-                      />
-                      <button
-                        onClick={() => handleQuantityChange(type, quantities[type] + 1)}
-                        disabled={quantities[type] >= maxAllowed || !isAvailable}
-                        className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-                      >
-                        +
-                      </button>
-                      {!isAvailable && (
-                        <span className="px-2 sm:px-3 py-1 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-yellow-300 text-xs sm:text-sm">
-                          Unavailable for this sale mode
-                        </span>
-                      )}
+                  return (
+                    <div key={type} className="bg-white/5 rounded-lg p-3 sm:p-4 border border-white/10">
+                      {/* Mobile Layout: Stack vertically */}
+                      <div className="block sm:hidden space-y-3">
+                        {/* Name and Description */}
+                        <div className="flex items-center space-x-3">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gray-300 flex-shrink-0"></div>
+                          <div>
+                            <div className="flex items-center space-x-2">
+                              <h3 className="text-sm sm:text-base font-semibold text-white">{info.name}</h3>
+                              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                            </div>
+                            <p className="text-xs sm:text-sm text-white/70">{info.description}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Quantity Selector */}
+                        <div className="flex justify-center">
+                          <div className="flex flex-col items-center space-y-1">
+                            <div className="flex items-center bg-gray-200 rounded-full px-3 sm:px-4 py-1.5 sm:py-2">
+                              <button
+                                onClick={() => handleQuantityChange(type, quantities[type] - 1)}
+                                disabled={quantities[type] <= 0 || !isAvailable}
+                                className="text-blue-600 font-bold text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                -
+                              </button>
+                              <input
+                                type="number"
+                                min="0"
+                                max={maxAllowed}
+                                value={quantities[type] || ""}
+                                onChange={(e) => {
+                                  const value = parseInt(e.target.value) || 0;
+                                  handleQuantityChange(type, value);
+                                }}
+                                disabled={!isAvailable}
+                                className="w-10 sm:w-12 text-center bg-transparent text-black font-bold text-xs sm:text-sm mx-3 sm:mx-4 border-none outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                placeholder="0"
+                              />
+                              <button
+                                onClick={() => handleQuantityChange(type, quantities[type] + 1)}
+                                disabled={quantities[type] >= maxAllowed || !isAvailable}
+                                className="text-blue-600 font-bold text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <span className="text-white font-bold text-xs">Max {maxAllowed}</span>
+                          </div>
+                        </div>
+                        
+                        {/* Data Grid */}
+                        <div className="grid grid-cols-2 gap-3 text-center">
+                          <div>
+                            <p className="text-xs sm:text-sm text-white font-semibold">Price</p>
+                            <p className="text-xs sm:text-sm text-white">${Number((PASS_PRICES as any)[type]?.usd ?? 0)}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs sm:text-sm text-white font-semibold">Minted</p>
+                            <p className="text-xs sm:text-sm text-white">{mintedCount}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs sm:text-sm text-white font-semibold">Supply</p>
+                            <p className="text-xs sm:text-sm text-white">{totalSupply}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs sm:text-sm text-white font-semibold">Ends In</p>
+                            <p className="text-xs sm:text-sm text-white">{endsIn}</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Desktop Layout: 3 columns */}
+                      <div className="hidden sm:grid grid-cols-3 gap-6 items-center">
+                        {/* First Column: Name and Description */}
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 rounded-lg bg-gray-300 flex-shrink-0"></div>
+                          <div>
+                            <div className="flex items-center space-x-2">
+                              <h3 className="font-semibold text-white">{info.name}</h3>
+                              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                            </div>
+                            <p className="text-sm text-white/70">{info.description}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Middle Column: Quantity Selector */}
+                        <div className="flex justify-center">
+                          <div className="flex flex-col items-center space-y-1">
+                            <div className="flex items-center bg-gray-200 rounded-full px-4 py-2">
+                              <button
+                                onClick={() => handleQuantityChange(type, quantities[type] - 1)}
+                                disabled={quantities[type] <= 0 || !isAvailable}
+                                className="text-blue-600 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                -
+                              </button>
+                              <input
+                                type="number"
+                                min="0"
+                                max={maxAllowed}
+                                value={quantities[type] || ""}
+                                onChange={(e) => {
+                                  const value = parseInt(e.target.value) || 0;
+                                  handleQuantityChange(type, value);
+                                }}
+                                disabled={!isAvailable}
+                                className="w-12 text-center bg-transparent text-black font-bold text-sm mx-4 border-none outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                placeholder="0"
+                              />
+                              <button
+                                onClick={() => handleQuantityChange(type, quantities[type] + 1)}
+                                disabled={quantities[type] >= maxAllowed || !isAvailable}
+                                className="text-blue-600 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <span className="text-white font-bold text-xs">Max {maxAllowed}</span>
+                          </div>
+                        </div>
+                        
+                        {/* Last Column: Price, Minted, Supply, Ends In */}
+                        <div className="flex items-center justify-between space-x-6">
+                          <div className="text-right">
+                            <p className="text-white font-semibold">Price</p>
+                            <p className="text-white">${Number((PASS_PRICES as any)[type]?.usd ?? 0)}</p>
+                          </div>
+                          
+                          <div className="text-right">
+                            <p className="text-white font-semibold">Minted</p>
+                            <p className="text-white">{mintedCount}</p>
+                          </div>
+                          
+                          <div className="text-right">
+                            <p className="text-white font-semibold"><svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg></p>
+                            <div className="flex items-center justify-between space-x-1">
+                              <p className="text-white">{totalSupply}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="text-right">
+                            <p className="text-white font-semibold">Ends In</p>
+                            <p className="text-white">{endsIn}</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
 
           {/* KOL ID Input */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Shield className="h-5 w-5" />
-                <span>Referral ID</span>
-              </CardTitle>
-              <CardDescription>
-                ID (6 digits, Optional - "Only input an ID if you were given one"){" "}
-                {kolLocked && (
-                  <span className="text-muted-foreground text-xs">
-                    <Lock className="inline h-3 w-3 mr-1" />
-                    Locked from referral link
-                  </span>
-                )}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Input
-                  id="kolDigits"
-                  inputMode="numeric"
-                  pattern="\d{6}"
-                  maxLength={6}
-                  value={kolDigits}
-                  readOnly={kolLocked}
-                  onChange={(e) => {
-                    if (kolLocked) return;
-                    setKolDigits(e.target.value.replace(/\D/g, "").slice(0, 6));
-                  }}
-                  placeholder="e.g. 123456"
-                  className={cn(
-                    "text-center text-lg font-mono tracking-wider",
-                    kolLocked && "bg-muted cursor-not-allowed"
-                  )}
-                />
+          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
+            <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+              <div className="p-1.5 sm:p-2 rounded-lg bg-blue-500 shadow-lg">
+                <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
-            </CardContent>
-          </Card>
+              <h3 className="text-base sm:text-lg font-semibold text-white">Referral ID</h3>
+            </div>
+            <p className="text-xs sm:text-sm text-white/70 mb-3 sm:mb-4">
+              Input 6 Digit ID (Only input ID provided)
+            </p>
+            <Input
+              id="kolDigits"
+              inputMode="numeric"
+              pattern="\d{6}"
+              maxLength={6}
+              value={kolDigits}
+              readOnly={kolLocked}
+              onChange={(e) => {
+                if (kolLocked) return;
+                setKolDigits(e.target.value.replace(/\D/g, "").slice(0, 6));
+              }}
+              placeholder="E.g 123456"
+              className={cn(
+                "w-full text-center text-sm sm:text-lg font-mono tracking-wider bg-white/10 border-white/20 text-white placeholder:text-white/50",
+                kolLocked && "bg-white/5 cursor-not-allowed"
+              )}
+            />
+            {kolLocked && (
+              <p className="text-xs text-white/50 mt-2 flex items-center">
+                <Lock className="inline h-3 w-3 mr-1" />
+                Locked from referral link
+              </p>
+            )}
+          </div>
 
           {/* Order Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <span>Summary</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
+            <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+              <div className="p-1.5 sm:p-2 rounded-lg shadow-lg">
+                <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-white">Summary</h3>
+            </div>
+            <div className="space-y-3 sm:space-y-4">
               {(Object.entries(quantities) as [NftType, number][])
                 .filter(([, qty]) => qty > 0)
                 .map(([type, qty]) => (
                 <div key={type} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 rounded overflow-hidden bg-white/10 flex-shrink-0">
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded overflow-hidden bg-white/10 flex-shrink-0">
                       <img
                         src={`/${type}pass.jpg`}
                         alt={`${NFT_INFO[type].name} NFT`}
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <span className="text-sm">{NFT_INFO[type].name}</span>
+                    <span className="text-xs sm:text-sm text-white">{NFT_INFO[type].name}</span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium">
+                    <p className="text-xs sm:text-sm font-medium text-white">
                       {qty} × ${Number((PASS_PRICES as any)[type]?.usd ?? 0)}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-white/70">
                       ${(qty * Number((PASS_PRICES as any)[type]?.usd ?? 0)).toLocaleString()}
                     </p>
                   </div>
@@ -1114,87 +1387,100 @@ export default function ModernMintingInterface() {
               ))}
 
               {totalQuantity === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-2">
+                <p className="text-xs sm:text-sm text-white/70 text-center py-6 sm:py-8">
                   No items selected yet
                 </p>
               )}
 
               {totalQuantity > 0 && (
                 <>
-                  <Separator />
-                  <div className="flex items-center justify-between font-semibold">
-                    <span>Total</span>
-                    <span>${totalCost.toLocaleString()}</span>
+                  <Separator className="bg-white/20" />
+                  <div className="flex items-center justify-between font-semibold text-white">
+                    <span className="text-sm sm:text-base">Total</span>
+                    <span className="text-sm sm:text-base">${totalCost.toLocaleString()}</span>
                   </div>
                 </>
               )}
 
               {isConnected && (
-                <p className="text-xs text-muted-foreground text-center">
+                <p className="text-xs text-white/70 text-center">
                   Payment will be processed in {CHAINS[selectedChain].symbol} (USDT equivalent)
                 </p>
               )}
               {account && usdtData?.displayValue && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-white/70">
                   Your USDT: {usdtData.displayValue} {usdtData.symbol}
                 </p>
               )}
               
               {account && nativeData && (
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-white/70">
                     Your {gasInfo.symbol}: {gasInfo.currentGas.toFixed(6)} {gasInfo.symbol}
                   </p>
                   {gasInfo.isInsufficient && (
-                    <p className="text-xs text-amber-600">
+                    <p className="text-xs text-amber-400">
                       ⚠️ Insufficient gas. Minimum required: {gasInfo.minRequired} {gasInfo.symbol}
                     </p>
                   )}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Wallet Connection & Minting */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Wallet className="h-5 w-5" />
-                <span>Connect & Mint</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Wallet Status */}
-              <WalletStatus />
-
+          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-4 max-w-md mx-auto">
+            <div className="flex items-center justify-center space-x-2 mb-3">
+              <div className="p-1.5 rounded-lg shadow-lg">
+                <Wallet className="h-4 w-4 text-white" />
+              </div>
+              <h3 className="text-base font-semibold text-white">Connect & Mint</h3>
+            </div>
+            <div className="space-y-3 text-center">
               {/* Wallet Connect Button */}
               <div className="flex justify-center">
                 <WalletConnect />
               </div>
 
+              {/* Status Messages */}
+              <div className="space-y-1 flex flex-col items-center">
+                {!isConnected && (
+                  <div className="flex items-center space-x-2 text-amber-400">
+                    <AlertTriangle className="h-3 w-3" />
+                    <span className="text-xs">Wallet Not Connected</span>
+                  </div>
+                )}
+                {hasInsufficientGas && (
+                  <div className="flex items-center space-x-2 text-amber-400">
+                    <AlertTriangle className="h-3 w-3" />
+                    <span className="text-xs">Insufficient Gas Balance</span>
+                  </div>
+                )}
+              </div>
+
               {/* Whitelist Status (informational only; affects caps) */}
               {account && (
-                <div className="mt-4 p-3 rounded-lg border">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Whitelist Status:</span>
+                <div className="p-2 rounded-lg border border-white/20 bg-white/5 text-center">
+                  <div className="flex items-center justify-center space-x-2 mb-1">
+                    <span className="text-xs font-medium text-white">Whitelist Status:</span>
                     {checkingWl ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        <span className="text-sm text-gray-500">Checking...</span>
+                      <div className="flex items-center gap-1">
+                        <Loader2 className="h-3 w-3 animate-spin text-white" />
+                        <span className="text-xs text-white/70">Checking...</span>
                       </div>
                     ) : wlEligible ? (
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span className="text-sm text-green-600 font-medium">Whitelisted</span>
+                      <div className="flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3 text-green-400" />
+                        <span className="text-xs text-green-400 font-medium">Whitelisted</span>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2">
-                        <X className="h-4 w-4 text-red-500" />
-                        <span className="text-sm text-red-600 font-medium">Not Whitelisted</span>
+                      <div className="flex items-center gap-1">
+                        <X className="h-3 w-3 text-red-400" />
+                        <span className="text-xs text-red-400 font-medium">Not Whitelisted</span>
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-white/70">
                     Being whitelisted unlocks higher per-wallet limits during the whitelist sale window.
                   </p>
                 </div>
@@ -1202,8 +1488,8 @@ export default function ModernMintingInterface() {
 
               {/* Inline progress bar (above the button) */}
               {isMinting && (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
+                <div className="space-y-2 text-center">
+                  <div className="flex items-center justify-center space-x-4 text-xs text-white">
                     <span>{currentStep}</span>
                     <span>{mintProgress}%</span>
                   </div>
@@ -1211,45 +1497,33 @@ export default function ModernMintingInterface() {
                 </div>
               )}
 
-              {hasInsufficientGas && (
-                <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
-                  <div className="flex items-start space-x-2">
-                    <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                    <div className="text-sm">
-                      <p className="font-medium text-amber-800">Insufficient Gas Balance</p>
-                      <p className="text-amber-700">
-                        You need at least {gasInfo.minRequired} {gasInfo.symbol} to cover transaction fees.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               <Button
                 onClick={handleMint}
                 disabled={!canMint || isMinting}
-                className="w-full"
-                size="lg"
+                className="w-full bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                size="sm"
               >
                 {isMinting ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-3 w-3 animate-spin" />
                     Minting...
                   </>
                 ) : hasInsufficientGas ? (
                   <>
-                    <AlertTriangle className="mr-2 h-4 w-4" />
+                    <AlertTriangle className="mr-2 h-3 w-3" />
                     Insufficient Gas
                   </>
+                ) : !isConnected ? (
+                  "Connect Wallet"
                 ) : (
                   <>
-                    <Zap className="mr-2 h-4 w-4" />
+                    <Zap className="mr-2 h-3 w-3" />
                     Mint NFTs
                   </>
                 )}
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
 
