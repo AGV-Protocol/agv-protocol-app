@@ -22,7 +22,9 @@ import {
   Wallet,
   Menu,
   X,
-  Settings
+  Settings,
+  Home,
+  Sparkles
 } from "lucide-react"
 import Image from "next/image"
 
@@ -33,7 +35,18 @@ interface NavItem {
   badge?: string
 }
 
-const navigation: NavItem[] = []
+const navigation: NavItem[] = [
+  // {
+  //   title: "Home",
+  //   href: "/",
+  //   icon: Home
+  // },
+  // {
+  //   title: "New Landing",
+  //   href: "/landing",
+  //   icon: Sparkles
+  // }
+]
 
 interface AppNavProps {
   user?: {

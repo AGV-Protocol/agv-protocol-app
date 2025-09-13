@@ -1,7 +1,8 @@
-import React from "react";
-import { Wallet, AlertTriangle, Loader2, CheckCircle, X, Zap } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { Wallet, AlertTriangle, Loader2, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
 import { WalletConnect } from "@/components/wallet/wallet-connect";
 import { SectionCard } from "./SectionCard";
 
@@ -13,7 +14,7 @@ interface WalletConnectionProps {
   mintProgress: number;
   canMint: boolean;
   onMint: () => void;
-  account?: any;
+  account?: { address?: string };
   checkingWl: boolean;
   wlEligible: boolean;
 }
@@ -30,101 +31,157 @@ export const WalletConnection: React.FC<WalletConnectionProps> = ({
   checkingWl,
   wlEligible,
 }) => {
+  // KOL Referral
+  const [kolDigits, setKolDigits] = useState("");
+  const [kolLocked, setKolLocked] = useState(false);
+  const fullKolId = useMemo(() => (kolDigits && kolDigits.length === 6 ? `AGV-KOL${kolDigits}` : ""), [kolDigits]);
+
   return (
-    <SectionCard
-      icon={Wallet}
-      iconBg=""
-      title="Connect & Mint"
-      className="max-w-md mx-auto"
-    >
-      <div className="space-y-3 text-center">
-        {/* Wallet Connect Button */}
-        <div className="flex justify-center">
-          <WalletConnect />
-        </div>
-
-        {/* Status Messages */}
-        <div className="space-y-1 flex flex-col items-center">
-          {!isConnected && (
-            <div className="flex items-center space-x-2 text-amber-400">
-              <AlertTriangle className="h-3 w-3" />
-              <span className="text-xs">Wallet Not Connected</span>
-            </div>
-          )}
-          {hasInsufficientGas && (
-            <div className="flex items-center space-x-2 text-amber-400">
-              <AlertTriangle className="h-3 w-3" />
-              <span className="text-xs">Insufficient Gas Balance</span>
-            </div>
-          )}
-        </div>
-
-        {/* Whitelist Status */}
-        {account && (
-          <div className="p-2 rounded-lg border border-white/20 bg-white/5 text-center">
-            <div className="flex items-center justify-center space-x-2 mb-1">
-              <span className="text-xs font-medium text-white">Whitelist Status:</span>
-              {checkingWl ? (
-                <div className="flex items-center gap-1">
-                  <Loader2 className="h-3 w-3 animate-spin text-white" />
-                  <span className="text-xs text-white/70">Checking...</span>
-                </div>
-              ) : wlEligible ? (
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="h-3 w-3 text-green-400" />
-                  <span className="text-xs text-green-400 font-medium">Whitelisted</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1">
-                  <X className="h-3 w-3 text-red-400" />
-                  <span className="text-xs text-red-400 font-medium">Not Whitelisted</span>
-                </div>
-              )}
-            </div>
-            <p className="text-xs text-white/70">
-              Being whitelisted unlocks higher per-wallet limits during the whitelist sale window.
-            </p>
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Referral ID */}
+      <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 p-6">
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg">
+            <Shield className="h-6 w-6 text-white" />
           </div>
-        )}
-
-        {/* Progress Bar */}
-        {isMinting && (
-          <div className="space-y-2 text-center">
-            <div className="flex items-center justify-center space-x-4 text-xs text-white">
-              <span>{currentStep}</span>
-              <span>{mintProgress}%</span>
-            </div>
-            <Progress value={mintProgress} className="w-full" />
+          <div>
+            <h3 className="text-xl font-semibold text-white">Referral ID</h3>
+            <p className="text-white/70 text-sm">Input 6 Digit ID (Only input ID provided)</p>
           </div>
-        )}
-
-        {/* Mint Button */}
-        <Button
-          onClick={onMint}
-          disabled={!canMint || isMinting}
-          className="w-full bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-          size="sm"
-        >
-          {isMinting ? (
-            <>
-              <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-              Minting...
-            </>
-          ) : hasInsufficientGas ? (
-            <>
-              <AlertTriangle className="mr-2 h-3 w-3" />
-              Insufficient Gas
-            </>
-          ) : !isConnected ? (
-            "Connect Wallet"
-          ) : (
-            <>
-              <Zap className="mr-2 h-3 w-3" />
-              Mint NFTs
-            </>
+        </div>
+        <div className="max-w-xs">
+          <Input
+            type="text"
+            placeholder="Enter 6 digits"
+            value={kolDigits}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+              setKolDigits(val);
+              setKolLocked(val.length === 6);
+            }}
+            className="bg-white/10 border-white/20 text-white placeholder-white/50 focus:border-purple-500"
+            disabled={kolLocked}
+          />
+          {fullKolId && (
+            <p className="text-sm text-purple-300 mt-2">KOL ID: {fullKolId}</p>
           )}
-        </Button>
+        </div>
       </div>
-    </SectionCard>
+
+      {/* Wallet Connection & Minting */}
+      <SectionCard
+        icon={Wallet}
+        iconBg="bg-blue-500"
+        title="Wallet Connection & Minting"
+        description="Connect your wallet and mint your NFTs"
+      >
+        {!isConnected ? (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+              <Wallet className="w-8 h-8 text-white/60" />
+            </div>
+            <h3 className="text-lg font-semibold text-white mb-2">Connect Your Wallet</h3>
+            <p className="text-white/70 text-sm mb-6">
+              Connect your wallet to start minting AGV Protocol NFTs
+            </p>
+            <WalletConnect />
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Wallet Info */}
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-white font-medium">Connected Wallet</h4>
+                  <p className="text-white/70 text-sm">
+                    {account?.address ? `${account.address.slice(0, 6)}...${account.address.slice(-4)}` : "Unknown"}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <span className="text-green-300 text-sm">Connected</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Whitelist Status */}
+            {checkingWl ? (
+              <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                <div className="flex items-center space-x-3">
+                  <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
+                  <span className="text-white">Checking whitelist eligibility...</span>
+                </div>
+              </div>
+            ) : wlEligible ? (
+              <div className="bg-green-500/10 rounded-xl p-4 border border-green-500/20">
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <span className="text-green-300">You are whitelisted for exclusive NFTs</span>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-yellow-500/10 rounded-xl p-4 border border-yellow-500/20">
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                  <span className="text-yellow-300">Public minting available</span>
+                </div>
+              </div>
+            )}
+
+            {/* Gas Warning */}
+            {hasInsufficientGas && (
+              <div className="bg-red-500/10 rounded-xl p-4 border border-red-500/20">
+                <div className="flex items-center space-x-3">
+                  <AlertTriangle className="w-5 h-5 text-red-400" />
+                  <div>
+                    <h4 className="text-red-300 font-medium">Insufficient Gas</h4>
+                    <p className="text-red-300/70 text-sm">
+                      You need more native tokens for gas fees to complete the transaction
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Minting Progress */}
+            {isMinting && (
+              <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white font-medium">Minting Progress</span>
+                    <span className="text-white/70 text-sm">{mintProgress}%</span>
+                  </div>
+                  <Progress value={mintProgress} className="h-2" />
+                  {currentStep && (
+                    <p className="text-white/70 text-sm">{currentStep}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Mint Button */}
+            <div className="text-center">
+              <Button
+                onClick={onMint}
+                disabled={!canMint || isMinting}
+                className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isMinting ? (
+                  <div className="flex items-center space-x-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Minting...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <Wallet className="w-5 h-5" />
+                    <span>Mint NFTs</span>
+                  </div>
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+      </SectionCard>
+    </div>
   );
 };

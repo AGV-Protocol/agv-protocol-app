@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Footer } from "@/components/layout/footer";
 import {
   ConnectButton,
   useActiveAccount,
@@ -809,6 +810,9 @@ export default function StakingPage() {
           stakedTokensInfo={stakedTokensInfo}
         />
       </div>
+      
+      {/* Footer */}
+      <Footer backgroundClass="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900" textColorClass="text-white" />
     </div>
   );
 }
