@@ -3,8 +3,8 @@ import { Header } from "@/components/landing/Header";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { MainContent } from "@/components/landing/MainContent";
 import { WhatIsAGV } from "@/components/landing/WhatIsAGV";
-import { BlueprintSection } from "@/components/landing/BlueprintSection";
 import { Footer } from "@/components/landing/Footer";
+import { ThreeLayer } from "@/components/landing/ThreeLayer";
 
 export default function LandingPage() {
   return (
@@ -21,8 +21,8 @@ export default function LandingPage() {
       {/* What Is AGV */}
       <WhatIsAGV />
       
-      {/* Blueprint Section */}
-      <BlueprintSection />
+      {/* Three Layer */}
+      <ThreeLayer />
       
       {/* Footer */}
       <Footer />
