@@ -55,13 +55,14 @@ import { useStakingView } from "@/hooks/useStakingView";
 import { db } from "@/lib/firebase";
 import {
   collection,
-  addDoc,
   query,
   where,
   getDocs,
   Timestamp,
-  deleteDoc,
   doc,
+  setDoc,
+  addDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 /* ─────────────────────────── Helpers ─────────────────────────── */
@@ -73,18 +74,39 @@ function toGateway(u?: string) {
 function getImageSrc(nft: { imageUrl?: string }, fallback?: string) {
   return toGateway(nft?.imageUrl) || fallback;
 }
-function formatTimeLeft(unlockISO: string) {
-  const now = Date.now();
-  const unlock = new Date(unlockISO).getTime();
-  if (unlock <= now) return { label: "Unlocked", unlocked: true };
 
-  const ms = unlock - now;
-  const days = Math.floor(ms / (24 * 60 * 60 * 1000));
-  const hours = Math.floor((ms % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-  const mins = Math.floor((ms % (60 * 60 * 1000)) / (60 * 1000));
-  const label =
-    days > 0 ? `${days}d ${hours}h` : hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
-  return { label: `${label} left`, unlocked: false };
+/** Countdown utils (used in Your Stakes section) */
+function formatRemaining(ms: number) {
+  const totalSec = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(totalSec / 86400);
+  const h = Math.floor((totalSec % 86400) / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+
+  if (d > 0) return `${d}d ${h}h ${m}m ${s}s`;
+  if (h > 0) return `${h}h ${m}m ${s}s`;
+  return `${m}m ${s}s`;
+}
+function Countdown({ unlockAtISO }: { unlockAtISO: string }) {
+  const [now, setNow] = useState<number>(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [unlockAtISO]);
+
+  const unlock = new Date(unlockAtISO).getTime();
+  const remaining = unlock - now;
+  const unlocked = remaining <= 0;
+
+  return (
+    <div
+      className={`mt-1 text-xs ${unlocked ? "text-green-300" : "text-yellow-300"}`}
+      suppressHydrationWarning
+      title={unlocked ? "Stake is unlocked" : "Time left until withdrawal"}
+    >
+      {unlocked ? "Unlocked" : `${formatRemaining(remaining)} left`}
+    </div>
+  );
 }
 
 /* ─────────────────────────── Config ─────────────────────────── */
@@ -142,7 +164,7 @@ function useContracts(
   return { nft, stake, chain };
 }
 
-/* ───────────── Reward calc (used in legacy flows) ───────────── */
+/* ───────────── Reward calc (legacy rates for UI hints) ───────────── */
 function calculateRewards(
   stakedAt: number,
   duration: number,
@@ -162,165 +184,105 @@ function calculateRewards(
   return { totalRewards: Math.max(0, totalRewards), dailyRate, canClaim };
 }
 
-/* ───────────── Firestore logging helpers (used) ───────────── */
-async function logStake(
-  address: string,
+/* ───────────── Wallet-scoped Firestore helpers ───────────── */
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+async function ensureStakeWalletDoc(wallet: string) {
+  const id = wallet.toLowerCase();
+  await setDoc(
+    doc(db, "stakes", id),
+    { wallet: id, createdAt: Timestamp.now(), updatedAt: Timestamp.now() },
+    { merge: true }
+  );
+}
+
+/** Write one item per NFT into /stakes/{wallet}/items */
+async function addWalletStakeItems(
+  wallet: string,
   chainKey: ChainKey,
   collectionType: "seed" | "tree" | "solar" | "compute",
   tokenIds: bigint[],
-  duration: number
+  lockDays: number
 ) {
-  try {
-    const stakedAt = Math.floor(Date.now() / 1000);
-    const unlockTime = stakedAt + duration * 24 * 60 * 60;
+  const walletId = wallet.toLowerCase();
+  await ensureStakeWalletDoc(walletId);
 
-    for (const tokenId of tokenIds) {
-      await addDoc(collection(db, "staking_positions"), {
-        address,
-        chain: chainKey,
-        collection: collectionType,
-        tokenId: tokenId.toString(),
-        stakedAt: Timestamp.fromMillis(stakedAt * 1000),
-        duration,
-        unlockTime: Timestamp.fromMillis(unlockTime * 1000),
-        nft: NFT_CONTRACTS[chainKey][collectionType],
-        stakeContract: STAKE_CONTRACTS[chainKey][collectionType],
-        status: "active",
-        lastClaimedAt: null,
-        totalClaimed: 0,
-      });
-    }
+  const chainId = CHAIN_CONFIG[chainKey].id;
+  const itemsCol = collection(db, "stakes", walletId, "items");
 
-    await addDoc(collection(db, "stakes_v1"), {
-      address,
-      chain: chainKey,
-      collection: collectionType,
-      tokenIds: tokenIds.map((t) => t.toString()),
-      at: Timestamp.now(),
-      duration,
-      unlockTime: Timestamp.fromMillis(unlockTime * 1000),
-      nft: NFT_CONTRACTS[chainKey][collectionType],
-      stakeContract: STAKE_CONTRACTS[chainKey][collectionType],
+  const stakedAt = new Date();
+  const unlockAt = new Date(stakedAt.getTime() + lockDays * DAY_MS);
+
+  const baseDaily = BASE_DAILY_RRGP[collectionType];
+  const bonus = bonusFor(lockDays);
+  const scheduledTotal = baseDaily * bonus * lockDays;
+
+  for (const tokenId of tokenIds) {
+    await addDoc(itemsCol, {
+      chainId,
+      nftType: collectionType,
+      tokenId: tokenId.toString(),
+      amount: 1,
+
+      stakedAt: Timestamp.fromDate(stakedAt),
+      unlockAt: Timestamp.fromDate(unlockAt),
+      lockDays,
+
+      baseDaily,
+      bonusMultiplier: bonus,
+      scheduledTotal,
+
+      status: "active",
+      accruedSoFar: 0,
+      lastAccruedAt: Timestamp.fromDate(stakedAt),
+      txHash: null,
+      kolId: null,
+
+      updatedAt: Timestamp.now(),
     });
-  } catch (error) {
-    console.error("Error logging stake to Firebase:", error);
   }
+
+  await updateDoc(doc(db, "stakes", walletId), { updatedAt: Timestamp.now() });
 }
 
-async function claimRewards(
-  address: string,
+/** Flip matching items to withdrawn */
+async function markWalletStakesWithdrawn(
+  wallet: string,
   chainKey: ChainKey,
   collectionType: "seed" | "tree" | "solar" | "compute",
   tokenIds: bigint[]
 ) {
-  try {
-    const currentTime = Math.floor(Date.now() / 1000);
-    let totalClaimedAmount = 0;
+  const walletId = wallet.toLowerCase();
+  const chainId = CHAIN_CONFIG[chainKey].id;
+  const ids = tokenIds.map(String);
 
-    const positionsQuery = query(
-      collection(db, "staking_positions"),
-      where("address", "==", address),
-      where("chain", "==", chainKey),
-      where("collection", "==", collectionType),
-      where("status", "==", "active")
+  // Firestore 'in' is max 10 — chunk if needed
+  const chunks: string[][] = [];
+  for (let i = 0; i < ids.length; i += 10) chunks.push(ids.slice(i, i + 10));
+
+  for (const batchIds of chunks) {
+    const qSnap = await getDocs(
+      query(
+        collection(db, "stakes", walletId, "items"),
+        where("chainId", "==", chainId),
+        where("nftType", "==", collectionType),
+        where("status", "==", "active"),
+        where("tokenId", "in", batchIds)
+      )
     );
 
-    const positionsSnap = await getDocs(positionsQuery);
-    const positionsToUpdate: Array<{
-      docId: string;
-      newTotalClaimed: number;
-      newLastClaimedAt: number;
-    }> = [];
-
-    for (const docSnap of positionsSnap.docs) {
-      const data = docSnap.data();
-      if (tokenIds.map(String).includes(data.tokenId)) {
-        const stakedAt = data.stakedAt.toMillis() / 1000;
-        const lastClaimedAt = data.lastClaimedAt ? data.lastClaimedAt.toMillis() / 1000 : stakedAt;
-        const duration = data.duration;
-
-        const rewardInfo = calculateRewards(stakedAt, duration, collectionType, lastClaimedAt);
-        if (rewardInfo.totalRewards > 0) {
-          totalClaimedAmount += rewardInfo.totalRewards;
-          positionsToUpdate.push({
-            docId: docSnap.id,
-            newTotalClaimed: (data.totalClaimed || 0) + rewardInfo.totalRewards,
-            newLastClaimedAt: currentTime,
-          });
-        }
-      }
-    }
-
-    for (const update of positionsToUpdate) {
-      await addDoc(collection(db, "staking_positions"), {
-        ...positionsSnap.docs.find((d) => d.id === update.docId)?.data(),
-        lastClaimedAt: Timestamp.fromMillis(update.newLastClaimedAt * 1000),
-        totalClaimed: update.newTotalClaimed,
-        status: "active",
-      });
-    }
-
-    await addDoc(collection(db, "reward_claims"), {
-      address,
-      chain: chainKey,
-      collection: collectionType,
-      tokenIds: tokenIds.map(String),
-      claimedAmount: totalClaimedAmount,
-      claimedAt: Timestamp.fromMillis(currentTime * 1000),
-      transactionHash: null,
-    });
-
-    return totalClaimedAmount;
-  } catch (error) {
-    console.error("Error claiming rewards:", error);
-    throw error;
-  }
-}
-
-async function logWithdraw(
-  address: string,
-  chainKey: ChainKey,
-  collectionType: "seed" | "tree" | "solar" | "compute",
-  tokenIds: bigint[]
-) {
-  try {
-    const positionsQuery = query(
-      collection(db, "staking_positions"),
-      where("address", "==", address),
-      where("chain", "==", chainKey),
-      where("collection", "==", collectionType),
-      where("status", "==", "active")
-    );
-    const positionsSnap = await getDocs(positionsQuery);
-
-    for (const docSnap of positionsSnap.docs) {
-      const data = docSnap.data();
-      if (tokenIds.map(String).includes(data.tokenId)) {
-        await addDoc(collection(db, "staking_positions"), {
-          ...data,
+    await Promise.all(
+      qSnap.docs.map((d) =>
+        updateDoc(d.ref, {
           status: "withdrawn",
           withdrawnAt: Timestamp.now(),
-        });
-      }
-    }
-
-    const q2 = query(
-      collection(db, "stakes_v1"),
-      where("address", "==", address),
-      where("chain", "==", chainKey),
-      where("collection", "==", collectionType)
+          updatedAt: Timestamp.now(),
+        })
+      )
     );
-    const snap = await getDocs(q2);
-    const toRemove: string[] = [];
-    snap.forEach((d) => {
-      const arr = (d.data().tokenIds || []) as string[];
-      const overlap = arr.some((a) => tokenIds.map(String).includes(a));
-      if (overlap) toRemove.push(d.id);
-    });
-    await Promise.all(toRemove.map((id) => deleteDoc(doc(db, "stakes_v1", id))));
-  } catch (error) {
-    console.error("Error logging withdraw to Firebase:", error);
   }
+
+  await updateDoc(doc(db, "stakes", walletId), { updatedAt: Timestamp.now() });
 }
 
 /* ─────────────────────────── Page ─────────────────────────── */
@@ -337,15 +299,14 @@ export default function StakingPage() {
   const [manualTokenId, setManualTokenId] = useState("");
   const [staking, setStaking] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
-  const [claiming, setClaiming] = useState(false);
 
   // Staking duration + local lock knowledge
   const [stakingDuration, setStakingDuration] = useState<number>(7);
   const [stakedTokensInfo, setStakedTokensInfo] = useState<
-    Record<string, { stakedAt: number; duration: number; lastClaimedAt?: number; totalClaimed?: number }>
+    Record<string, { stakedAt: number; duration: number }>
   >({});
 
-  // Off-chain rewards widget
+  // Off-chain rewards summary
   const { data: rewardsData } = useOffChainRewards();
 
   // Moralis hook → current chain + collection
@@ -391,36 +352,31 @@ export default function StakingPage() {
     }
   }
 
+  // Local lock knowledge (used as a final guard before withdraw)
   async function refreshStakedTokensInfo() {
     if (!account?.address) return;
     try {
-      const positionsQuery = query(
-        collection(db, "staking_positions"),
-        where("address", "==", account.address),
-        where("chain", "==", chainKey),
-        where("collection", "==", selectedCollection),
-        where("status", "==", "active")
+      const qSnap = await getDocs(
+        query(
+          collection(db, "stakes", account.address.toLowerCase(), "items"),
+          where("chainId", "==", chainId),
+          where("nftType", "==", selectedCollection),
+          where("status", "==", "active")
+        )
       );
 
-      const positionsSnap = await getDocs(positionsQuery);
-      const stakingInfo: Record<
-        string,
-        { stakedAt: number; duration: number; lastClaimedAt?: number; totalClaimed?: number }
-      > = {};
-
-      positionsSnap.forEach((doc) => {
-        const data = doc.data();
-        const tokenId = data.tokenId;
+      const info: Record<string, { stakedAt: number; duration: number }> = {};
+      qSnap.forEach((d) => {
+        const data = d.data() as any;
+        const tokenId = String(data.tokenId);
         const stakedAt = data.stakedAt.toMillis() / 1000;
-        const duration = data.duration;
-        const lastClaimedAt = data.lastClaimedAt ? data.lastClaimedAt.toMillis() / 1000 : undefined;
-        const totalClaimed = data.totalClaimed || 0;
-        stakingInfo[tokenId] = { stakedAt, duration, lastClaimedAt, totalClaimed };
+        const duration = Number(data.lockDays || 0);
+        info[tokenId] = { stakedAt, duration };
       });
 
-      setStakedTokensInfo(stakingInfo);
+      setStakedTokensInfo(info);
     } catch (err) {
-      console.error("Error fetching staked tokens info:", err);
+      console.error("Error fetching wallet-scoped staked info:", err);
     }
   }
 
@@ -456,11 +412,11 @@ export default function StakingPage() {
     try {
       await ensureChain();
       setStaking(true);
-      toast.loading("Approving (if needed) …");
+      toast.loading("Approving (if needed)…");
       await ensureApproval();
 
       toast.dismiss();
-      toast.loading("Staking…");
+      toast.loading("Staking on-chain…");
       const tx = await prepareContractCall({
         contract: stake,
         method: "stake",
@@ -468,31 +424,21 @@ export default function StakingPage() {
       });
       await sendAndConfirmTransaction({ transaction: tx, account: account! });
       toast.dismiss();
+
+      // Wallet-scoped Firestore write
+      toast.loading("Recording stake…");
+      await addWalletStakeItems(
+        account.address,
+        chainKey,
+        selectedCollection,
+        tokenIds,
+        stakingDuration
+      );
+      toast.dismiss();
       toast.success(`Staked for ${stakingDuration} day${stakingDuration > 1 ? "s" : ""}!`);
 
-      await logStake(account.address, chainKey, selectedCollection, tokenIds, stakingDuration);
-
-      // Optional mirror for off-chain rewards (server writes "stakes" doc)
-      try {
-        await fetch("/api/stakes", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            wallet: account.address,
-            chainId: chainKey,
-            nftType: selectedCollection,
-            amount: tokenIds.length,
-            tokenIds: tokenIds.map((id) => id.toString()),
-            lockDays: stakingDuration,
-            stakedAt: new Date().toISOString(),
-          }),
-        });
-      } catch (apiError) {
-        console.error("Failed to record stake in API:", apiError);
-      }
-
       setManualTokenId("");
-      refreshStats();
+      await refreshStats();
     } catch (err: any) {
       toast.dismiss();
       toast.error(err?.shortMessage || err?.message || "Stake failed");
@@ -501,37 +447,11 @@ export default function StakingPage() {
     }
   }
 
-  async function handleClaimRewards(tokenIds: bigint[]) {
-    if (!account?.address) return toast.error("Connect wallet first");
-    if (tokenIds.length === 0) return toast.error("Select tokens to claim rewards from");
-
-    try {
-      setClaiming(true);
-      toast.loading("Claiming rewards...");
-      const claimedAmount = await claimRewards(
-        account.address,
-        chainKey,
-        selectedCollection,
-        tokenIds
-      );
-      toast.dismiss();
-      toast.success(`Successfully claimed ${claimedAmount.toFixed(2)} AGV rewards!`);
-      await refreshStakedTokensInfo();
-      await loadRewardHistory();
-      refreshStats();
-    } catch (err: any) {
-      toast.dismiss();
-      toast.error(err?.message || "Failed to claim rewards");
-    } finally {
-      setClaiming(false);
-    }
-  }
-
   async function handleWithdraw(tokenIds: bigint[]) {
     if (!account?.address) return toast.error("Connect wallet first");
     if (tokenIds.length === 0) return toast.error("Select at least one NFT to withdraw");
 
-    // Final local guard via Firebase info
+    // Final local guard using wallet-scoped items
     const currentTime = Math.floor(Date.now() / 1000);
     const lockedTokens: string[] = [];
     for (const tokenId of tokenIds) {
@@ -553,7 +473,7 @@ export default function StakingPage() {
     try {
       await ensureChain();
       setWithdrawing(true);
-      toast.loading("Withdrawing…");
+      toast.loading("Withdrawing on-chain…");
       const tx = await prepareContractCall({
         contract: stake,
         method: "withdraw",
@@ -561,9 +481,18 @@ export default function StakingPage() {
       });
       await sendAndConfirmTransaction({ transaction: tx, account: account! });
       toast.dismiss();
+
+      toast.loading("Updating records…");
+      await markWalletStakesWithdrawn(
+        account.address,
+        chainKey,
+        selectedCollection,
+        tokenIds
+      );
+      toast.dismiss();
       toast.success("Withdrawn!");
-      await logWithdraw(account.address, chainKey, selectedCollection, tokenIds);
-      refreshStats();
+
+      await refreshStats();
       setManualTokenId("");
     } catch (err: any) {
       toast.dismiss();
@@ -584,40 +513,15 @@ export default function StakingPage() {
   const presetDurations = [7, 14, 30, 90, 180, 365, 730];
   const handlePresetClick = (days: number) => setStakingDuration(days);
 
-  // Reward history (kept)
+  // (Optional) Reward history placeholder (remove if unused)
   const [rewardHistory, setRewardHistory] = useState<
     Array<{ claimedAt: number; amount: number; tokenIds: string[] }>
   >([]);
-
   async function loadRewardHistory() {
-    if (!account?.address) return;
-    try {
-      const historyQuery = query(
-        collection(db, "reward_claims"),
-        where("address", "==", account.address),
-        where("chain", "==", chainKey),
-        where("collection", "==", selectedCollection)
-      );
-      const historySnap = await getDocs(historyQuery);
-      const history: Array<{ claimedAt: number; amount: number; tokenIds: string[] }> = [];
-      historySnap.forEach((doc) => {
-        const data = doc.data();
-        history.push({
-          claimedAt: data.claimedAt.toMillis(),
-          amount: data.claimedAmount,
-          tokenIds: data.tokenIds,
-        });
-      });
-      history.sort((a, b) => b.claimedAt - a.claimedAt);
-      setRewardHistory(history);
-    } catch (error) {
-      console.error("Error loading reward history:", error);
-    }
+    setRewardHistory([]);
   }
-
   useEffect(() => {
     loadRewardHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.address, chainKey, selectedCollection]);
 
   return (
@@ -720,7 +624,7 @@ export default function StakingPage() {
             rewardsData={rewardsData}
             selectedCollection={selectedCollection}
             stakingDuration={stakingDuration}
-            claiming={claiming}
+            claiming={false}
           />
         )}
 
@@ -736,7 +640,7 @@ export default function StakingPage() {
           />
         )}
 
-        {/* Legacy Stake Flow (select token IDs) */}
+        {/* Stake Flow (select token IDs) */}
         <LegacyStakeSection
           account={account}
           chainKey={chainKey}
@@ -750,7 +654,7 @@ export default function StakingPage() {
           setManualTokenId={setManualTokenId}
         />
 
-        {/* Your Stakes (from /api/rewards) */}
+        {/* Your Stakes (from /api/rewards) with live countdown */}
         {account?.address ? (
           <StakesFromRewards
             wallet={account.address}
@@ -759,12 +663,12 @@ export default function StakingPage() {
           />
         ) : null}
 
-        {/* Reward History */}
+        {/* Reward History (optional) */}
         {account?.address && rewardHistory.length > 0 && (
           <RewardHistory history={rewardHistory} selectedCollection={selectedCollection} />
         )}
 
-        {/* Withdraw (Firestore-driven selection UI) */}
+        {/* Withdraw (wallet-scoped items) */}
         <WithdrawSection
           accountAddress={account?.address}
           chainKey={chainKey}
@@ -1344,7 +1248,7 @@ function LegacyStakeSection({
   );
 }
 
-/* ───────────── NEW: Stakes section backed by /api/rewards ───────────── */
+/* ───────────── Your Stakes section (from /api/rewards) ───────────── */
 
 function StakesFromRewards({
   wallet,
@@ -1406,7 +1310,6 @@ function StakesFromRewards({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {stakes.map((s) => {
-            const time = formatTimeLeft(s.unlockAt);
             const progress =
               s.scheduledTotal > 0 ? Math.min(100, (s.accrued / s.scheduledTotal) * 100) : 0;
 
@@ -1419,15 +1322,14 @@ function StakesFromRewards({
                   <div className="text-white font-medium capitalize">
                     {s.nftType} • {s.lockDays} days
                   </div>
-                  <div className="text-xs text-white/60">Chain {s.chainId}</div>
+                  <div className="text-xs text-white/60">Token #{s.tokenId ?? "—"}</div>
                 </div>
 
                 <div className="text-white/70 text-sm">
                   <div>Staked: {new Date(s.stakedAt).toLocaleDateString()}</div>
                   <div>Unlocks: {new Date(s.unlockAt).toLocaleDateString()}</div>
-                  <div className={`mt-1 ${time.unlocked ? "text-green-300" : "text-yellow-300"}`}>
-                    {time.label}
-                  </div>
+                  {/* LIVE COUNTDOWN */}
+                  <Countdown unlockAtISO={s.unlockAt} />
                 </div>
 
                 <div className="mt-3">
@@ -1448,15 +1350,6 @@ function StakesFromRewards({
                 <div className="mt-3 text-xs text-white/60">
                   Rate: {s.baseDaily} rGGP/day × {s.bonusMultiplier}x • Counted {s.daysCounted} days
                 </div>
-
-                {s.amount > 1 && (
-                  <div className="mt-2 inline-flex items-center gap-2 px-2 py-1 rounded-lg bg-white/10 text-white/80 text-xs">
-                    <span className="w-5 h-5 rounded bg-white/10 flex items-center justify-center">
-                      {s.amount}
-                    </span>
-                    NFTs in this stake
-                  </div>
-                )}
               </div>
             );
           })}
@@ -1517,7 +1410,7 @@ function RewardHistory({
   );
 }
 
-/* ───────────── NEW: Firestore-driven Withdraw Section (card selection) ───────────── */
+/* ───────────── Withdraw Section (wallet-scoped /stakes/{wallet}/items) ───────────── */
 
 function WithdrawSection({
   accountAddress,
@@ -1538,7 +1431,6 @@ function WithdrawSection({
   type StakedCard = {
     tokenId: string;
     stakedAtSec: number;
-    durationDays: number;
     unlockAtSec: number;
     remainingDays: number;
     unlocked: boolean;
@@ -1555,7 +1447,6 @@ function WithdrawSection({
     compute: "/computepass.jpg",
   };
 
-  // fetch staked NFTs from Firestore
   useEffect(() => {
     (async () => {
       setItems([]);
@@ -1567,10 +1458,9 @@ function WithdrawSection({
       try {
         const qSnap = await getDocs(
           query(
-            collection(db, "staking_positions"),
-            where("address", "==", accountAddress),
-            where("chain", "==", chainKey),
-            where("collection", "==", selectedCollection),
+            collection(db, "stakes", accountAddress.toLowerCase(), "items"),
+            where("chainId", "==", CHAIN_CONFIG[chainKey].id),
+            where("nftType", "==", selectedCollection),
             where("status", "==", "active")
           )
         );
@@ -1581,27 +1471,18 @@ function WithdrawSection({
         qSnap.forEach((d) => {
           const data = d.data() as any;
           const stakedAtSec = data.stakedAt.toMillis() / 1000;
-          const durationDays = Number(data.duration || 0);
-          const unlockAtSec = stakedAtSec + durationDays * 24 * 60 * 60;
+          const unlockAtSec = data.unlockAt.toMillis() / 1000;
           const remainingSec = Math.max(0, unlockAtSec - now);
           const remainingDays = remainingSec > 0 ? Math.ceil(remainingSec / (24 * 60 * 60)) : 0;
           const unlocked = remainingSec === 0;
 
-          // Try to use stored image if present, otherwise fallback to collection pass
-          const maybeImage =
-            toGateway(data.imageUrl) ||
-            toGateway(data.image) ||
-            toGateway(data.nft?.image) ||
-            FALLBACK[selectedCollection];
-
           rows.push({
             tokenId: String(data.tokenId),
             stakedAtSec,
-            durationDays,
             unlockAtSec,
             remainingDays,
             unlocked,
-            imageUrl: maybeImage,
+            imageUrl: FALLBACK[selectedCollection],
           });
         });
 
@@ -1613,7 +1494,7 @@ function WithdrawSection({
         setItems(rows);
         setSelected(Object.fromEntries(rows.map((r) => [r.tokenId, false])));
       } catch (e) {
-        console.error("WithdrawSection Firestore load", e);
+        console.error("WithdrawSection load error", e);
         setError("Failed to load staked NFTs.");
       } finally {
         setLoading(false);
