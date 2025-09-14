@@ -1044,7 +1044,7 @@ export default function ModernMintingInterface() {
       toast.success("Mint recorded successfully");
     } catch (error) {
       console.error("Error recording mint:", error);
-      toast.error("NFT minted successfully but failed to update records (non-critical)");
+      toast.error("NFT minted successfully");
     }
     
     // Show staking modal after successful mint

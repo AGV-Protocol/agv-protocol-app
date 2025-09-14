@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { ArrowUp, Wallet } from "lucide-react"
+import { FastLink } from "../ui/fast-link"
 
 export function TestimonialsSection() {
     const testimonials = [
@@ -60,10 +61,12 @@ export function TestimonialsSection() {
                         <br />
                         Sun, and Code
                     </h3>
-
-                    <Button size="lg" className="border border-[#223256] hover:bg-[#223256]/80 text-[#223256] px-8 py-3 text-lg bg-white">
-                        <Wallet className="w-5 h-5" /> Invest Now
-                    </Button>
+                    <FastLink href="/mint">
+                        <Button size="lg" className="border border-[#223256] hover:bg-[#223256]/80 text-[#223256] px-8 py-3 text-lg bg-white">
+                            <Wallet className="w-5 h-5" /> Invest Now
+                        </Button>
+                    </FastLink>
+                    
                 </div>
             </div>
 
