@@ -21,12 +21,14 @@ interface StatsOverviewProps {
       tree: number
       solar: number
       compute: number
+      perChain: Record<string, Record<string, number>>
     }
   }
   className?: string
 }
 
 export function StatsOverview({ stats, className }: StatsOverviewProps) {
+  console.log({stats}, "from stats-overview pageeeeeeeeeeeeee");
   return (
     <div className={`grid gap-4 md:grid-cols-2 lg:grid-cols-3 ${className}`}>
       <StatCard
@@ -66,7 +68,7 @@ export function StatsOverview({ stats, className }: StatsOverviewProps) {
       
       <StatCard
         title="On-chain Total"
-        value={Object.values(stats.onchainTotals).reduce((a, b) => a + b, 0)}
+        value={stats.onchainTotals.seed + stats.onchainTotals.tree + stats.onchainTotals.solar + stats.onchainTotals.compute}
         description="All chains combined"
         icon={Globe}
       />

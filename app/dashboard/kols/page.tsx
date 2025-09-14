@@ -53,6 +53,7 @@ export default function KOLsPage() {
       }
       try {
         const idToken = await auth.currentUser.getIdToken(true);
+        console.log({idToken}, "from kols pageeeeeeeeeeeeee5");
         const res = await fetch("/api/admin/whoami", {
           headers: { Authorization: `Bearer ${idToken}` },
           cache: "no-store",

@@ -5,6 +5,12 @@ import { collection, getDocs } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { toast } from "sonner";
 import { Suspense } from "react";
+import { getContract } from "thirdweb";
+import { useReadContract } from "thirdweb/react";
+import { bsc, polygon, arbitrum } from "thirdweb/chains";
+import type { CollectionKey, ChainId } from "@/lib/contracts";
+import { CHAINS, COMPUTE_ABI, NFT_CONTRACTS, SEED_ABI, SOLAR_ABI, TREE_ABI } from "@/lib/contracts";
+import { thirdwebClient } from "@/app/provider";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { StatsOverview } from "@/components/dashboard/stats-overview";
 import { Leaderboard } from "@/components/dashboard/leaderboard";
@@ -62,6 +68,35 @@ type RangeMode = "THIS_WEEK" | "LAST_WEEK" | "THIS_MONTH" | "LAST_MONTH" | "YTD"
 // Constants
 const NFT_PRICES = { seed: 29, tree: 59, solar: 299, compute: 899 } as const;
 const formatPrice = (n: number) => `$${(n || 0).toLocaleString()}`;
+export const NFT_ABI = {
+  seed: SEED_ABI,
+  tree: TREE_ABI,
+  solar: SOLAR_ABI,
+  compute: COMPUTE_ABI,
+} as const;
+// Helper function to convert BigInt to number
+const n = (value: any) => Number(value || 0);
+
+// Map chain IDs to thirdweb chain objects
+const THIRDWEB_CHAINS = {
+  "56": bsc,
+  "137": polygon,
+  "42161": arbitrum,
+} as const;
+
+// Hook to get NFT contract instance
+function useNftContract(nft: keyof typeof NFT_ABI, chainId: ChainId) {
+  return useMemo(() => {
+    const addr = NFT_CONTRACTS[chainId]?.[nft];
+    if (!addr) return null;
+    return getContract({
+      client: thirdwebClient,
+      address: addr,
+      chain: THIRDWEB_CHAINS[chainId],
+      abi: NFT_ABI[nft as CollectionKey],
+    });
+  }, [nft, chainId]);
+}
 
 export default function DashboardPage() {
   // Data state
@@ -74,6 +109,140 @@ export default function DashboardPage() {
   // Chart state
   const [rangeMode, setRangeMode] = useState<RangeMode>("THIS_WEEK");
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+
+  // ---- Thirdweb contracts & reads (hooks)
+  const seed56 = useNftContract("seed", "56");
+  const seed137 = useNftContract("seed", "137");
+  const seed42161 = useNftContract("seed", "42161");
+  const tree56 = useNftContract("tree", "56");
+  const tree137 = useNftContract("tree", "137");
+  const tree42161 = useNftContract("tree", "42161");
+  const solar56 = useNftContract("solar", "56");
+  const solar137 = useNftContract("solar", "137");
+  const solar42161 = useNftContract("solar", "42161");
+  const compute56 = useNftContract("compute", "56");
+  const compute137 = useNftContract("compute", "137");
+  const compute42161 = useNftContract("compute", "42161");
+
+  const { data: seed56S } = useReadContract({
+    contract: seed56!,
+    method: "totalSupply",
+    params: [],
+    queryOptions: { enabled: !!seed56 },
+  });
+  const { data: seed137S } = useReadContract({
+    contract: seed137!,
+    method: "totalSupply",
+    params: [],
+    queryOptions: { enabled: !!seed137 },
+  });
+  const { data: seed42161S } = useReadContract({
+    contract: seed42161!,
+    method: "totalSupply",
+    params: [],
+    queryOptions: { enabled: !!seed42161 },
+  });
+
+  const { data: tree56S } = useReadContract({
+    contract: tree56!,
+    method: "totalSupply",
+    params: [],
+    queryOptions: { enabled: !!tree56 },
+  });
+  const { data: tree137S } = useReadContract({
+    contract: tree137!,
+    method: "totalSupply",
+    params: [],
+    queryOptions: { enabled: !!tree137 },
+  });
+  const { data: tree42161S } = useReadContract({
+    contract: tree42161!,
+    method: "totalSupply",
+    params: [],
+    queryOptions: { enabled: !!tree42161 },
+  });
+
+  const { data: solar56S } = useReadContract({
+    contract: solar56!,
+    method: "totalSupply",
+    params: [],
+    queryOptions: { enabled: !!solar56 },
+  });
+  const { data: solar137S } = useReadContract({
+    contract: solar137!,
+    method: "totalSupply",
+    params: [],
+    queryOptions: { enabled: !!solar137 },
+  });
+  const { data: solar42161S } = useReadContract({
+    contract: solar42161!,
+    method: "totalSupply",
+    params: [],
+    queryOptions: { enabled: !!solar42161 },
+  });
+
+  const { data: compute56S } = useReadContract({
+    contract: compute56!,
+    method: "totalSupply",
+    params: [],
+    queryOptions: { enabled: !!compute56 },
+  });
+  const { data: compute137S } = useReadContract({
+    contract: compute137!,
+    method: "totalSupply",
+    params: [],
+    queryOptions: { enabled: !!compute137 },
+  });
+  const { data: compute42161S } = useReadContract({
+    contract: compute42161!,
+    method: "totalSupply",
+    params: [],
+    queryOptions: { enabled: !!compute42161 },
+  });
+
+  // ---- Derived on-chain totals
+  const onchainTotals = useMemo(
+    () => ({
+      seed: n(seed56S) + n(seed137S) + n(seed42161S),
+      tree: n(tree56S) + n(tree137S) + n(tree42161S),
+      solar: n(solar56S) + n(solar137S) + n(solar42161S),
+      compute: n(compute56S) + n(compute137S) + n(compute42161S),
+      perChain: {
+        "56": {
+          seed: n(seed56S),
+          tree: n(tree56S),
+          solar: n(solar56S),
+          compute: n(compute56S),
+        },
+        "137": {
+          seed: n(seed137S),
+          tree: n(tree137S),
+          solar: n(solar137S),
+          compute: n(compute137S),
+        },
+        "42161": {
+          seed: n(seed42161S),
+          tree: n(tree42161S),
+          solar: n(solar42161S),
+          compute: n(compute42161S),
+        },
+      } as Record<ChainId, Record<"seed" | "tree" | "solar" | "compute", number>>,
+    }),
+    [
+      seed56S,
+      seed137S,
+      seed42161S,
+      tree56S,
+      tree137S,
+      tree42161S,
+      solar56S,
+      solar137S,
+      solar42161S,
+      compute56S,
+      compute137S,
+      compute42161S,
+    ]
+  );
 
   // Data loading
   const refreshData = async () => {
@@ -118,7 +287,6 @@ export default function DashboardPage() {
         })
       );
     } catch (error) {
-      console.error("Error loading data:", error);
       toast.error("Failed to load data");
     } finally {
       setLoading(false);
@@ -161,9 +329,9 @@ export default function DashboardPage() {
       totalValue,
       activeKols: kols.filter(k => (k.seed ?? 0) + (k.tree ?? 0) + (k.solar ?? 0) + (k.compute ?? 0) > 0).length,
       totalEvents: totalEventsApprox,
-      onchainTotals: { seed: 0, tree: 0, solar: 0, compute: 0 }, // Placeholder
+      onchainTotals,
     };
-  }, [kols, mintDocs]);
+  }, [kols, mintDocs, onchainTotals]);
 
   const doSignOut = async () => {
     await auth.signOut();
@@ -219,6 +387,56 @@ export default function DashboardPage() {
         <Suspense fallback={<LoadingSpinner size="lg" text="Loading stats..." />}>
           <StatsOverview stats={stats} />
         </Suspense>
+
+        {/* On-chain totals */}
+        <Card>
+          <CardHeader>
+            <CardTitle>All Chains — On-chain Mint Totals (All mints)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-3">
+              {(["seed", "tree", "solar", "compute"] as const).map((pass) => {
+                const label =
+                  pass === "seed"
+                    ? "SeedPass"
+                    : pass === "tree"
+                    ? "TreePass"
+                    : pass === "solar"
+                    ? "SolarPass"
+                    : "ComputePass";
+                const total = (onchainTotals as any)[pass] as number;
+                return (
+                  <div
+                    key={`onchain-${pass}`}
+                    className="border border-gray-200 rounded-xl p-3 bg-gray-50"
+                  >
+                    <div className="flex justify-between items-baseline">
+                      <strong className="text-sm font-medium">{label}</strong>
+                      <span className="font-bold text-lg">{total}</span>
+                    </div>
+                    <div className="mt-2 space-y-1">
+                      {(["56", "137", "42161"] as ChainId[]).map((cid) => (
+                        <div
+                          key={`${pass}-${cid}`}
+                          className="flex justify-between text-xs text-gray-600"
+                        >
+                          <span>
+                            {cid === "56"
+                              ? "BNB"
+                              : cid === "137"
+                              ? "Polygon"
+                              : "Arbitrum"}
+                          </span>
+                          <span>{onchainTotals.perChain[cid][pass]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Main Content Grid */}
         <div className="grid gap-6 lg:grid-cols-2 w-full">
