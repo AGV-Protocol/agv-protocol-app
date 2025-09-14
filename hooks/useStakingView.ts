@@ -2,12 +2,17 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount, useReadContract } from "thirdweb/react";
+import {
+  createThirdwebClient,
+  getContract,
+} from "thirdweb";
+import { polygon, arbitrum, bsc } from "thirdweb/chains";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-// Your on-chain contract map (must exist)
-import { NFT_CONTRACTS } from "@/lib/contracts";
+// Contracts / ABIs
+import { NFT_CONTRACTS, STAKE_CONTRACTS, STAKE_ABI } from "@/lib/contracts";
 
 type ChainKey = "56" | "42161" | "137";
 type Collection = "seed" | "tree" | "solar" | "compute";
@@ -17,10 +22,21 @@ export type OwnedNft = {
   tokenAddress: string; // lowercased
   tokenId: bigint;
   standard: "ERC721" | "ERC1155";
-  collection: { address: string }; // minimal, the UI uses .address for key
+  collection: { address: string };
   imageUrl?: string;
   name?: string | null;
-  amount?: bigint; // for 1155 (not strictly needed for staking-by-id)
+  amount?: bigint;
+};
+
+// ───────────────── helpers ─────────────────
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID!,
+});
+
+const CHAIN_BY_KEY: Record<ChainKey, any> = {
+  "56": bsc,
+  "42161": arbitrum,
+  "137": polygon,
 };
 
 function chainIdToKey(chainId: number): ChainKey | null {
@@ -38,44 +54,105 @@ function toGateway(u?: string | null) {
   return u.replace(/^https?:\/\/ipfs\.io\/ipfs\//i, "https://ipfscdn.io/ipfs/");
 }
 
+const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
+
+// ───────────────── hook ─────────────────
+/**
+ * Merges on-chain and Firestore staking views with on-chain priority.
+ * - ownedStaked: union(on-chain, firestore) without duplicates; on-chain wins.
+ * - ownedUnstaked: wallet NFTs minus ownedStaked set.
+ */
 export function useStakingView(params: { chainId: number; collection: Collection }) {
   const { chainId, collection } = params;
   const account = useActiveAccount();
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loadingWallet, setLoadingWallet] = useState(false);
+  const [errorWallet, setErrorWallet] = useState<string | null>(null);
+  const [ownedWallet, setOwnedWallet] = useState<OwnedNft[]>([]);
 
-  const [ownedUnstaked, setOwnedUnstaked] = useState<OwnedNft[]>([]);
-  const [ownedStaked, setOwnedStaked] = useState<OwnedNft[]>([]);
+  const [fsActive, setFsActive] = useState<string[]>([]); // tokenId strings recorded as active in Firestore
+  const [errorFs, setErrorFs] = useState<string | null>(null);
 
   const chainKey = useMemo(() => chainIdToKey(chainId), [chainId]);
-
-  // Resolve the AGV contract address for this chain+collection
   const agvAddress = useMemo(() => {
     if (!chainKey) return null;
     const addr = NFT_CONTRACTS[chainKey]?.[collection];
     return addr ? addr.toLowerCase() : null;
   }, [chainKey, collection]);
 
-  // 1) Load wallet NFTs via Moralis → filter to AGV contract
+  // ─── on-chain: read staked tokens for this wallet & collection on current chain
+  const stakeContract = useMemo(() => {
+    if (!chainKey) return null;
+    const chain = CHAIN_BY_KEY[chainKey];
+    const address = STAKE_CONTRACTS[chainKey][collection];
+    return getContract({ client, chain, address, abi: STAKE_ABI as any });
+  }, [chainKey, collection]);
+
+  const rStake = useReadContract({
+    contract: stakeContract || undefined,
+    method:
+      "function getStakeInfo(address _staker) view returns (uint256[] _tokensStaked, uint256 _rewards)",
+    params: [account?.address ?? ZERO_ADDR],
+    queryOptions: { enabled: !!stakeContract && !!account?.address },
+  });
+
+  const onChainIds: string[] = useMemo(() => {
+    const tuple = (rStake.data ?? [[], 0n]) as [bigint[], bigint];
+    return (tuple[0] || []).map(String);
+  }, [rStake.data]);
+
+  // ─── Firestore: active positions for this wallet/chain/collection
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setErrorFs(null);
+      if (!account?.address || !chainKey || !agvAddress) {
+        setFsActive([]);
+        return;
+      }
+      try {
+        const qSnap = await getDocs(
+          query(
+            collection(db, "staking_positions"),
+            where("address", "==", account.address.toLowerCase()),
+            where("chain", "==", chainKey),
+            where("collection", "==", collection),
+            where("status", "==", "active")
+          )
+        );
+        const ids: string[] = [];
+        qSnap.forEach((d) => {
+          const tokenId = String((d.data() as any).tokenId);
+          if (tokenId) ids.push(tokenId);
+        });
+        if (!cancelled) setFsActive(ids);
+      } catch (e: any) {
+        if (!cancelled) {
+          setErrorFs(e?.message || "Failed to load Firestore positions");
+          setFsActive([]);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [account?.address, chainKey, collection, agvAddress]);
+
+  // ─── wallet NFTs: via your /api/wallet-nfts (Moralis-backed)
   useEffect(() => {
     let active = true;
     (async () => {
-      setError(null);
-      setOwnedUnstaked([]);
+      setErrorWallet(null);
+      setOwnedWallet([]);
       if (!account?.address || !chainId || !agvAddress) return;
 
-      setLoading(true);
+      setLoadingWallet(true);
       try {
         const url = new URL("/api/wallet-nfts", window.location.origin);
         url.searchParams.set("address", account.address);
-        url.searchParams.set("chain", toHexChain(chainId)); // e.g., "0x38"
-
+        url.searchParams.set("chain", toHexChain(chainId));
         const res = await fetch(url.toString(), { cache: "no-store" });
-        if (!res.ok) {
-          const txt = await res.text().catch(() => "");
-          throw new Error(txt || `Failed to fetch wallet NFTs (${res.status})`);
-        }
+        if (!res.ok) throw new Error(await res.text());
         const data = (await res.json()) as {
           items: Array<{
             tokenAddress: string;
@@ -85,7 +162,6 @@ export function useStakingView(params: { chainId: number; collection: Collection
             name?: string | null;
           }>;
         };
-
         const items = (data?.items ?? [])
           .filter((n) => n?.tokenAddress?.toLowerCase() === agvAddress)
           .map<OwnedNft>((n) => ({
@@ -97,79 +173,52 @@ export function useStakingView(params: { chainId: number; collection: Collection
             imageUrl: toGateway(n.imageUrl || undefined),
             name: n.name ?? null,
           }));
-
-        if (active) setOwnedUnstaked(items);
+        if (active) setOwnedWallet(items);
       } catch (e: any) {
-        if (active) setError(e?.message || "Failed to load wallet NFTs");
+        if (active) setErrorWallet(e?.message || "Failed to load wallet NFTs");
       } finally {
-        if (active) setLoading(false);
+        if (active) setLoadingWallet(false);
       }
     })();
-
     return () => {
       active = false;
     };
   }, [account?.address, chainId, agvAddress]);
 
-  // 2) Load currently staked tokens for this wallet from Firestore
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      if (!account?.address || !chainKey || !agvAddress) {
-        setOwnedStaked([]);
-        return;
-      }
+  // ─── merge on-chain + firestore (on-chain priority, no dups)
+  const unionStakedIds = useMemo(() => {
+    const oc = new Set(onChainIds); // on-chain first
+    const fs = fsActive;
+    for (const id of fs) oc.add(id);
+    return oc; // set of strings
+  }, [onChainIds, fsActive]);
 
-      try {
-        // We store active stakes per tokenId in `staking_positions`
-        const qSnap = await getDocs(
-          query(
-            collection(db, "staking_positions"),
-            where("address", "==", account.address),
-            where("chain", "==", chainKey),
-            where("collection", "==", collection),
-            where("status", "==", "active")
-          )
-        );
+  // ownedStaked as minimal OwnedNft rows (id + address); metadata is optional
+  const ownedStaked: OwnedNft[] = useMemo(() => {
+    if (!agvAddress) return [];
+    return [...unionStakedIds].map((id) => ({
+      chainId,
+      tokenAddress: agvAddress,
+      tokenId: BigInt(id),
+      standard: "ERC721",
+      collection: { address: agvAddress },
+      imageUrl: undefined,
+      name: collection.toUpperCase(),
+    }));
+  }, [unionStakedIds, agvAddress, chainId, collection]);
 
-        const staked: OwnedNft[] = qSnap.docs.map((d) => {
-          const tokenId = BigInt(String(d.data().tokenId));
-          return {
-            chainId,
-            tokenAddress: agvAddress,
-            tokenId,
-            standard: "ERC721", // UI only needs the id to withdraw/claim
-            collection: { address: agvAddress },
-            imageUrl: undefined,
-            name: collection.toUpperCase(),
-          };
-        });
-
-        if (!cancelled) setOwnedStaked(staked);
-      } catch {
-        if (!cancelled) setOwnedStaked([]);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [account?.address, chainId, chainKey, collection, agvAddress]);
-
-  // 3) Subtract staked from wallet list to get *true* unstaked
-  const stakedSet = useMemo(
-    () => new Set(ownedStaked.map((x) => x.tokenId.toString())),
-    [ownedStaked]
-  );
-  const trueUnstaked = useMemo(
-    () => ownedUnstaked.filter((x) => !stakedSet.has(x.tokenId.toString())),
-    [ownedUnstaked, stakedSet]
-  );
+  // true unstaked = wallet NFTs minus unionStakedIds
+  const ownedUnstaked = useMemo(() => {
+    const stakedSet = unionStakedIds;
+    return ownedWallet.filter((x) => !stakedSet.has(x.tokenId.toString()));
+  }, [ownedWallet, unionStakedIds]);
 
   return {
-    loading,
-    error,
-    ownedUnstaked: trueUnstaked,
+    loading: loadingWallet || rStake.isPending,
+    error: errorWallet || (rStake.error ? String(rStake.error) : null) || errorFs,
+    ownedUnstaked,
     ownedStaked,
+    onChainIds,  // for diagnostics if you want
+    fsActive,    // for diagnostics if you want
   };
 }
