@@ -1429,14 +1429,14 @@ export default function ModernMintingInterface() {
           </div>
 
           {/* Wallet Connection & Minting */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-4 max-w-md mx-auto">
-            <div className="flex items-center justify-center space-x-2 mb-3">
-              <div className="p-1.5 rounded-lg shadow-lg">
-                <Wallet className="h-4 w-4 text-white" />
+          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-4 sm:p-6 max-w-2xl mx-auto">
+            <div className="flex items-center justify-center space-x-3 mb-4">
+              <div className="p-2 rounded-lg shadow-lg">
+                <Wallet className="h-5 w-5 text-white" />
               </div>
-              <h3 className="text-base font-semibold text-white">Connect & Mint</h3>
+              <h3 className="text-lg font-semibold text-white">Connect & Mint</h3>
             </div>
-            <div className="space-y-3 text-center">
+            <div className="space-y-4 text-center">
               {/* Wallet Connect Button */}
               <div className="flex justify-center">
                 <WalletConnect />
@@ -1501,7 +1501,7 @@ export default function ModernMintingInterface() {
                 onClick={handleMint}
                 disabled={!canMint || isMinting}
                 className="w-full bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                size="sm"
+                size="default"
               >
                 {isMinting ? (
                   <>
