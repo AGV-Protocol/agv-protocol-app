@@ -15,7 +15,8 @@ import {
   Globe,
   Heart,
   MessageCircle,
-  Send
+  Send,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,7 +60,7 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
 
   const socialLinks = [
     { name: "GitHub", href: "https://github.com/AGV-Protocol/", icon: Github },
-    { name: "Twitter", href: "https://x.com/agv_partners", icon: Twitter },
+    { name: "Twitter", href: "https://x.com/AgvProtocol", icon: Twitter},
     { name: "Discord", href: "https://discord.gg/JP9RtzM2SC", icon: MessageCircle },
     { name: "Telegram", href: "https://t.me/agvprotocol", icon: Send },
   ];
