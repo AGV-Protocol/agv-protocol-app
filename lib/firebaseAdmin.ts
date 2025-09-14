@@ -1,6 +1,7 @@
 // lib/firebaseAdmin.ts
 import { getApps, initializeApp, cert, App } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
 
 function must(name: string, v?: string | null) {
   if (!v) throw new Error(`Missing server env: ${name}`);
@@ -27,3 +28,4 @@ if (!getApps().length) {
 }
 
 export const adminDb = getFirestore(app);
+export const adminAuth = getAuth(app);
