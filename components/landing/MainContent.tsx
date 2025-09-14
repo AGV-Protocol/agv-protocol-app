@@ -6,14 +6,15 @@ import {
   Shield, 
   ArrowRight,
   Github,
-  Twitter,
+  X,
   MessageCircle,
   Send,
   FileText,
   Coins,
   BookOpen,
   ExternalLink,
-  Globe
+  Globe,
+  Twitter
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -51,7 +52,7 @@ export const MainContent: React.FC = () => {
     {
       name: "Twitter",
       icon: <Twitter className="h-5 w-5" />,
-      url: "https://x.com/agv_partners",
+      url: "https://x.com/AgvProtocol",
       followers: "12.5K"
     },
     {
@@ -112,7 +113,7 @@ export const MainContent: React.FC = () => {
                   <Database className="h-6 w-6 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-800">1,234</div>
+                  <div className="text-2xl font-bold text-gray-800">1,299</div>
                   <div className="text-xs text-gray-500">NFTs Minted</div>
                 </div>
               </div>
@@ -125,7 +126,7 @@ export const MainContent: React.FC = () => {
                   <Zap className="h-6 w-6 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-800">50 rGGP</div>
+                  <div className="text-2xl font-bold text-gray-800">Upto 50 rGGP</div>
                   <div className="text-xs text-gray-500">Daily Rewards</div>
                 </div>
               </div>

@@ -206,6 +206,126 @@ const SpendingCapModal = ({
   );
 };
 
+/** ---------------- UI: Staking Modal ---------------- **/
+interface StakingModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onGoToStaking: () => void;
+  mintedNfts: { type: NftType; quantity: number }[];
+}
+
+const StakingModal = ({
+  isOpen,
+  onClose,
+  onGoToStaking,
+  mintedNfts,
+}: StakingModalProps) => {
+  useEffect(() => {
+    if (isOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = 'unset';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => { if (e.key === 'Escape' && isOpen) onClose(); };
+    if (isOpen) document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      style={{
+        position: "fixed", top: 0, left: 0, right: 0, bottom: 0, width: "100vw", height: "100vh",
+        backgroundColor: "rgba(0, 0, 0, 0.5)", display: "flex", alignItems: "center",
+        justifyContent: "center", zIndex: 50, overflow: "hidden",
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div
+        style={{
+          backgroundColor: "#1f2937", color: "#fff", borderRadius: "1rem", padding: "1.5rem",
+          maxWidth: "28rem", width: "90%", margin: "1rem",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <div
+              style={{
+                width: "2rem", height: "2rem", borderRadius: "50%",
+                background: "linear-gradient(45deg, #10b981, #059669)", display: "flex",
+                alignItems: "center", justifyContent: "center",
+              }}
+            >
+              <CheckCircle style={{ height: "1rem", width: "1rem", color: "#fff" }} />
+            </div>
+            <h3 style={{ fontSize: "1.125rem", fontWeight: "bold", margin: 0 }}>Minting Successful!</h3>
+          </div>
+          <button
+            onClick={onClose}
+            style={{ background: "none", border: "none", color: "#9ca3af", cursor: "pointer", padding: "0.25rem" }}
+            aria-label="Close staking modal"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div style={{ marginBottom: "1.5rem" }}>
+          <p style={{ color: "#d1d5db", marginBottom: "1rem", fontSize: "0.875rem" }}>
+            Congratulations! You have successfully minted your NFT{`${mintedNfts.length > 1 ? 's' : ''}`}.
+          </p>
+          
+          <div style={{ backgroundColor: "#374151", borderRadius: "0.5rem", padding: "1rem", marginBottom: "1rem" }}>
+            <h4 style={{ color: "#f3f4f6", fontSize: "0.875rem", fontWeight: "semibold", marginBottom: "0.5rem" }}>
+              Minted NFTs
+            </h4>
+            {mintedNfts.map((nft, index) => (
+              <div key={index} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                <span style={{ color: "#d1d5db", fontSize: "0.875rem" }}>{NFT_INFO[nft.type].name}</span>
+                <span style={{ color: "#fff", fontSize: "0.875rem", fontWeight: "semibold" }}>×{nft.quantity}</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ backgroundColor: "#1e40af", borderRadius: "0.5rem", padding: "1rem", marginBottom: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+              <Zap style={{ height: "1rem", width: "1rem", color: "#60a5fa" }} />
+              <h4 style={{ color: "#f3f4f6", fontSize: "0.875rem", fontWeight: "semibold" }}>
+                Ready to Stake?
+              </h4>
+            </div>
+            <p style={{ color: "#d1d5db", fontSize: "0.75rem" }}>
+              Stake your NFTs to earn rewards and unlock additional benefits in the AGV ecosystem.
+            </p>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <button
+            onClick={onClose}
+            style={{
+              flex: 1, padding: "0.75rem", backgroundColor: "transparent", color: "#d1d5db",
+              border: "1px solid #4b5563", borderRadius: "0.5rem", cursor: "pointer", fontWeight: "medium",
+            }}
+          >
+            Maybe Later
+          </button>
+          <button
+            onClick={onGoToStaking}
+            style={{
+              flex: 1, padding: "0.75rem", backgroundColor: "#10b981", color: "#fff",
+              border: "none", borderRadius: "0.5rem", cursor: "pointer", fontWeight: "medium",
+            }}
+          >
+            Go to Staking
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /** ---------------- UI: Transaction Progress Modal (kept; disabled) ---------------- **/
 interface TransactionProgressModalProps {
   isOpen: boolean;
@@ -561,6 +681,7 @@ export default function ModernMintingInterface() {
   
   const [showSpendingModal, setShowSpendingModal] = useState(false); // not used
   const [showProgressModal, setShowProgressModal] = useState(false); // not used
+  const [showStakingModal, setShowStakingModal] = useState(false);
   const [txHash, setTxHash] = useState<string>("");
   const [progressStage, setProgressStage] = useState<"approval" | "mint" | "confirming" | "success" | "timeout" | "error">("approval");
   const [pendingApprovalTx, setPendingApprovalTx] = useState<ReturnType<typeof prepareContractCall> | null>(null);
@@ -578,6 +699,16 @@ export default function ModernMintingInterface() {
   const getMaxSelectableFor = (type: NftType, chain: ChainId) =>
     Math.min(getPerWalletMax(type, chain), getModeCap(type, chain));
 
+  const canSelectNftType = (type: NftType) => {
+    // Public NFTs (seed, tree) can always be selected
+    if (type === "seed" || type === "tree") return true;
+    
+    // Whitelist NFTs (solar, compute) can be selected but minting is restricted
+    if (type === "solar" || type === "compute") return true;
+    
+    return false;
+  };
+
   // Calculated totals (using imported PASS_PRICES.usd)
   const totalCost = useMemo(() => {
     return (Object.entries(quantities) as [NftType, number][])
@@ -594,10 +725,17 @@ export default function ModernMintingInterface() {
     if (picked.length !== 1) return false;
     const [pickedType, pickedQty] = picked[0] as [NftType, number];
     const allowed = getMaxSelectableFor(pickedType, selectedChain);
+    
+    // Check if user is trying to mint whitelist-only NFTs without being whitelisted
+    const isWhitelistOnly = pickedType === "solar" || pickedType === "compute";
+    if (isWhitelistOnly && !wlEligible) return false;
+    
     return allowed > 0 && pickedQty <= allowed;
-  }, [isConnected, hasInsufficientGas, totalQuantity, totalCost, quantities, selectedChain, saleMode]);
+  }, [isConnected, hasInsufficientGas, totalQuantity, totalCost, quantities, selectedChain, saleMode, wlEligible]);
 
   const handleQuantityChange = (type: NftType, value: number) => {
+    if (!canSelectNftType(type)) return;
+    
     const maxAllowed = getMaxSelectableFor(type, selectedChain);
     const newValue = Math.max(0, Math.min(value, maxAllowed));
     setQuantities(prev =>
@@ -879,6 +1017,12 @@ export default function ModernMintingInterface() {
   const handleSpendingCapClose = () => { setShowSpendingModal(false); setIsMinting(false); setCurrentStep(""); setPendingApprovalTx(null); setPendingMintTx(null); };
   const handleProgressClose = () => { setShowProgressModal(false); setProgressStage("approval"); setTxHash(""); setIsMinting(false); setCurrentStep(""); };
   const handleVerifyWallet = () => { toast.success("Please check your connected wallet's NFT collection to verify if the mint was successful"); setTimeout(() => window.location.reload(), 2000); };
+  
+  const handleStakingModalClose = () => { setShowStakingModal(false); };
+  const handleGoToStaking = () => { 
+    setShowStakingModal(false); 
+    window.location.href = '/staking'; 
+  };
 
   const handleTransactionSuccess = async (receipt: { transactionHash?: string } | null) => {
     setProgressStage("success"); setCurrentStep("Minted successfully!"); setMintProgress(100); setIsMinting(false);
@@ -902,8 +1046,21 @@ export default function ModernMintingInterface() {
       console.error("Error recording mint:", error);
       toast.error("NFT minted successfully but failed to update records (non-critical)");
     }
+    
+    // Show staking modal after successful mint
+    const mintedNfts = (Object.entries(quantities) as [NftType, number][])
+      .filter(([, qty]) => qty > 0)
+      .map(([type, qty]) => ({ type, quantity: qty }));
+    
     setQuantities({ seed: 0, tree: 0, solar: 0, compute: 0});
-    setTimeout(() => { setShowProgressModal(false); setProgressStage("approval"); setTxHash(""); setCurrentStep(""); setMintProgress(0); }, 1200);
+    setTimeout(() => { 
+      setShowProgressModal(false); 
+      setProgressStage("approval"); 
+      setTxHash(""); 
+      setCurrentStep(""); 
+      setMintProgress(0);
+      setShowStakingModal(true); // Show staking modal
+    }, 1200);
   };
 
   const handleTransactionError = (err: unknown) => {
@@ -958,6 +1115,40 @@ export default function ModernMintingInterface() {
     const link = `${window.location.origin}/mint/${kolDigits}`;
     navigator.clipboard.writeText(link);
     toast.success("Referral link copied to clipboard");
+  };
+
+  const getMintButtonText = () => {
+    if (isMinting) return "Minting...";
+    if (hasInsufficientGas) return "Insufficient Gas";
+    if (!isConnected) return "Connect Wallet";
+    
+    // Check if user is trying to mint whitelist-only NFTs without being whitelisted
+    const picked = Object.entries(quantities).filter(([, q]) => q > 0);
+    if (picked.length === 1) {
+      const [pickedType] = picked[0] as [NftType, number];
+      const isWhitelistOnly = pickedType === "solar" || pickedType === "compute";
+      if (isWhitelistOnly && !wlEligible) {
+        return "Whitelist Required";
+      }
+    }
+    
+    return "Mint NFTs";
+  };
+
+  const getMintButtonDisabled = () => {
+    if (isMinting) return true;
+    if (hasInsufficientGas) return true;
+    if (!isConnected) return true;
+    
+    // Check if user is trying to mint whitelist-only NFTs without being whitelisted
+    const picked = Object.entries(quantities).filter(([, q]) => q > 0);
+    if (picked.length === 1) {
+      const [pickedType] = picked[0] as [NftType, number];
+      const isWhitelistOnly = pickedType === "solar" || pickedType === "compute";
+      if (isWhitelistOnly && !wlEligible) return true;
+    }
+    
+    return !canMint;
   };
 
   return (
@@ -1046,9 +1237,33 @@ export default function ModernMintingInterface() {
                 <p className="text-xs sm:text-sm text-white/70">Choose the quantity for each NFT type</p>
               </div>
             </div>
+
+            {/* Agent Mint - Coming Soon */}
+            {mintMode === "agent" && (
+              <div className="text-center py-12 sm:py-16">
+                <div className="mb-6">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
+                    <Zap className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Agent Mint Coming Soon</h3>
+                  <p className="text-sm sm:text-base text-white/70 max-w-md mx-auto">
+                    The Agent Mint feature is currently under development. Stay tuned for updates!
+                  </p>
+                </div>
+                <div className="flex justify-center">
+                  <Button
+                    onClick={() => setMintMode("public")}
+                    className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-6 py-2"
+                  >
+                    Switch to Public Mint
+                  </Button>
+                </div>
+              </div>
+            )}
             
             {/* Public Mint Section */}
-            <div className="mb-4 sm:mb-6">
+            {mintMode === "public" && (
+              <div className="mb-4 sm:mb-6">
               <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Public Mint</h4>
               <div className="space-y-3 sm:space-y-4">
                 {(["seed", "tree"] as NftType[]).map((type) => {
@@ -1059,8 +1274,8 @@ export default function ModernMintingInterface() {
                   const isAvailable = maxAllowed > 0;
                   
                   // DUMMY DATA - Replace with real data
-                  const mintedCount = type === "seed" ? 272 : 187;
-                  const totalSupply = type === "seed" ? 85 : 60;
+                  const mintedCount = type === "seed" ? 254 : 120;
+                  const totalSupply = type === "seed" ? 85 : 61;
                   const endsIn = timeLeft[type] ? formatTimeLeft(timeLeft[type]) : "Loading...";
 
                   return (
@@ -1231,10 +1446,12 @@ export default function ModernMintingInterface() {
                   );
                 })}
               </div>
-            </div>
+              </div>
+            )}
             
             {/* Whitelist Mint Section */}
-            <div>
+            {mintMode === "public" && (
+              <div>
               <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Whitelist Mint</h4>
               <div className="space-y-3 sm:space-y-4">
                 {(["solar", "compute"] as NftType[]).map((type) => {
@@ -1245,8 +1462,8 @@ export default function ModernMintingInterface() {
                   const isAvailable = maxAllowed > 0;
                   
                   // DUMMY DATA - Replace with real data
-                  const mintedCount = type === "solar" ? 450 : 60;
-                  const totalSupply = type === "solar" ? 108 : 80;
+                  const mintedCount = type === "solar" ? 82 : 33;
+                  const totalSupply = type === "solar" ? 25 : 15;
                   const endsIn = timeLeft[type] ? formatTimeLeft(timeLeft[type]) : "Loading...";
 
                   return (
@@ -1415,11 +1632,13 @@ export default function ModernMintingInterface() {
                   );
                 })}
               </div>
-            </div>
+              </div>
+            )}
           </div>
 
           {/* KOL ID Input */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
+          {mintMode === "public" && (
+            <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
             <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
               <div className="p-1.5 sm:p-2 rounded-lg bg-blue-500 shadow-lg">
                 <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
@@ -1452,10 +1671,12 @@ export default function ModernMintingInterface() {
                 Locked from referral link
               </p>
             )}
-          </div>
+            </div>
+          )}
 
           {/* Order Summary */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
+          {mintMode === "public" && (
+            <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
             <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
               <div className="p-1.5 sm:p-2 rounded-lg shadow-lg">
                 <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
@@ -1528,10 +1749,12 @@ export default function ModernMintingInterface() {
                 </div>
               )}
             </div>
-          </div>
+            </div>
+          )}
 
           {/* Wallet Connection & Minting */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-4 sm:p-6 max-w-2xl mx-auto">
+          {mintMode === "public" && (
+            <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-4 sm:p-6 max-w-2xl mx-auto">
             <div className="flex items-center justify-center space-x-3 mb-4">
               <div className="p-2 rounded-lg shadow-lg">
                 <Wallet className="h-5 w-5 text-white" />
@@ -1601,7 +1824,7 @@ export default function ModernMintingInterface() {
 
               <Button
                 onClick={handleMint}
-                disabled={!canMint || isMinting}
+                disabled={getMintButtonDisabled()}
                 className="w-full bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 size="default"
               >
@@ -1617,15 +1840,31 @@ export default function ModernMintingInterface() {
                   </>
                 ) : !isConnected ? (
                   "Connect Wallet"
-                ) : (
-                  <>
-                    <Zap className="mr-2 h-3 w-3" />
-                    Mint NFTs
-                  </>
-                )}
+                ) : (() => {
+                  const picked = Object.entries(quantities).filter(([, q]) => q > 0);
+                  if (picked.length === 1) {
+                    const [pickedType] = picked[0] as [NftType, number];
+                    const isWhitelistOnly = pickedType === "solar" || pickedType === "compute";
+                    if (isWhitelistOnly && !wlEligible) {
+                      return (
+                        <>
+                          <Lock className="mr-2 h-3 w-3" />
+                          Whitelist Required
+                        </>
+                      );
+                    }
+                  }
+                  return (
+                    <>
+                      <Zap className="mr-2 h-3 w-3" />
+                      Mint NFTs
+                    </>
+                  );
+                })()}
               </Button>
             </div>
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1649,6 +1888,14 @@ export default function ModernMintingInterface() {
         chainId={selectedChain}
         stage={progressStage}
         onVerifyWallet={handleVerifyWallet}
+      />
+
+      {/* Staking Modal */}
+      <StakingModal
+        isOpen={showStakingModal}
+        onClose={handleStakingModalClose}
+        onGoToStaking={handleGoToStaking}
+        mintedNfts={mintResults.map(result => ({ type: result.type, quantity: result.quantity }))}
       />
     </div>
   );

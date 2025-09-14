@@ -45,7 +45,9 @@ export default function KOLsPage() {
   // Fetch server-verified role
   useEffect(() => {
     (async () => {
+      console.log("from kols pageeeeeeeeeeeeee1");
       if (!auth.currentUser) {
+        console.log("from kols pageeeeeeeeeeeeee2");
         setWho({ authed: false, email: null, isAdmin: false, isSuperAdmin: false });
         return;
       }
@@ -56,8 +58,10 @@ export default function KOLsPage() {
           cache: "no-store",
         });
         const data = await res.json().catch(() => null);
+        console.log({data}, "from kols pageeeeeeeeeeeeee3");
         if (data) setWho(data);
-      } catch {
+      } catch(e) {
+        console.log({e}, "from kols pageeeeeeeeeeeeee4");
         setWho((s) => ({ ...s, isAdmin: false, isSuperAdmin: false }));
       }
     })();
