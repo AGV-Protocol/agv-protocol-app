@@ -64,7 +64,9 @@ export async function POST(req: NextRequest) {
       process.env.NEXT_PUBLIC_SITE_URL ||
       originHeader ||
       ""; // fallback to empty (client will build its own link)
-    const referralLink = base ? `${base}/?kolId=${encodeURIComponent(kolId)}` : null;
+    // Extract the 6-digit number from KOL ID for the referral link
+    const digits = kolId.match(/\d{6}/)?.[0] || "";
+    const referralLink = base ? `${base}/mint/${digits}` : null;
 
     return NextResponse.json({ kolId, referralLink }, { status: 200 });
   } catch (err: any) {

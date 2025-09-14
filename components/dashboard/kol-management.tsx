@@ -107,7 +107,9 @@ export function KOLManagement({
   }
 
   const copyReferralLink = (kolId: string) => {
-    const link = `${window.location.origin}/?kolId=${encodeURIComponent(kolId)}`
+    // Extract the 6-digit number from KOL ID (e.g., "AGV-KOL461337" -> "461337")
+    const digits = kolId.match(/\d{6}/)?.[0] || ""
+    const link = `${window.location.origin}/mint/${digits}`
     navigator.clipboard.writeText(link)
     toast.success("Referral link copied")
   }
@@ -240,7 +242,9 @@ export function KOLManagement({
               </TableHeader>
               <TableBody>
                 {filteredKols.map((kol) => {
-                  const referralLink = `${window.location.origin}/?kolId=${encodeURIComponent(kol.kolId)}`
+                  // Extract the 6-digit number from KOL ID for the referral link
+                  const digits = kol.kolId.match(/\d{6}/)?.[0] || ""
+                  const referralLink = `${window.location.origin}/mint/${digits}`
                   
                   return (
                     <TableRow key={kol.kolId}>

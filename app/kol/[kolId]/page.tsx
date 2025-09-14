@@ -246,7 +246,9 @@ export default function KOLPage() {
   const referralLink = useMemo(() => {
     if (typeof window === "undefined") return "";
     if (!kol?.kolId) return "";
-    return `${window.location.origin}/?kolId=${encodeURIComponent(kol.kolId)}`;
+    // Extract the 6-digit number from KOL ID for the referral link
+    const digits = kol.kolId.match(/\d{6}/)?.[0] || "";
+    return `${window.location.origin}/mint/${digits}`;
   }, [kol?.kolId]);
 
   const signInGoogle = async () => {

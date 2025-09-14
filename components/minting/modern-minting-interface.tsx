@@ -877,7 +877,7 @@ export default function ModernMintingInterface() {
   }, [searchParams, pathname]);
 
   const handleCopyReferralLink = () => {
-    const link = `${window.location.origin}/?kolId=${fullKolId}`;
+    const link = `${window.location.origin}/mint/${kolDigits}`;
     navigator.clipboard.writeText(link);
     toast.success("Referral link copied to clipboard");
   };
