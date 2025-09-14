@@ -11,13 +11,17 @@ export const WhyAGV: React.FC = () => {
         </h2>
         
         {/* Description */}
-        <p className="text-base sm:text-lg lg:text-xl text-[#223256] tracking-widest leading-relaxed max-w-4xl mb-8 sm:mb-12 text-center">
-          AGV is not a one-off project. It’s a replicable protocol turning real land into digital yield infrastructure.
-
+        <p
+          className="text-base text-[#223256] leading-relaxed max-w-4xl mb-8 sm:mb-12 text-center tracking-wide"
+          style={{ wordSpacing: "0.05em" }}
+        >
+          AGV is not a one-off project. It&apos;s a replicable protocol turning real land into digital yield infrastructure.
+          <br />
           Every AGV unit is expected to generate $180k–$280k in annual revenue, with an IRR between 18% and 26%, based on actual orchard yields and regional solar performance data.
-
-          We combine China’s world-leading agricultural and solar assets with modular SPV tokenization and on-chain data architecture, making every physical unit digitally verifiable, yield-bearing, and DeFi-compatible.
+          <br />
+          We combine China&apos;s world-leading agricultural and solar assets with modular SPV tokenization and on-chain data architecture, making every physical unit digitally verifiable, yield-bearing, and DeFi-compatible.
         </p>
+
         <div className="w-full h-full">
           <Image
             src="/whyAgv.png"

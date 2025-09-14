@@ -5,9 +5,9 @@ import Image from "next/image"
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="relative bg-[#66CCFF] text-white overflow-hidden">
+    <footer className="relative bg-[#3399FF] text-white overflow-hidden">
       {/* Circular Overlay */}
-      <div className="absolute bottom-0 left-0 w-80 h-80 sm:w-96 sm:h-96 lg:w-[500px] lg:h-[500px] bg-[#99DDFF] rounded-full opacity-30 transform -translate-x-1/2 translate-y-1/2"></div>
+        <div className="absolute bottom-0 left-4 sm:left-6 lg:left-8 w-80 h-80 sm:w-96 sm:h-96 lg:w-[1000px] lg:h-[1000px] bg-gradient-to-br from-transparent to-[#99DDFF] rounded-full opacity-30 transform -translate-x-1/2 translate-y-1/2"></div>
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {/* Main Content */}
@@ -18,19 +18,17 @@ export const Footer: React.FC = () => {
             <div className="flex items-center space-x-2 sm:space-x-3">
               <FastLink href="/" className="flex items-center space-x-2">
                 <Image
-                  src="/logo.png"
+                  src="/footer-logo.png"
                   alt="AGV Protocol"
-                  width={32}
-                  height={32}
+                  width={100}
+                  height={100}
                   className="rounded-lg"
                 />
               </FastLink>
-              <span className="text-white font-semibold text-sm sm:text-lg">AGRIVOLT PROTOCOL</span>
+              <span className="text-white font-semibold text-sm sm:text-lg">AGRIVOLT <br />PROTOCOL
+              <br />
+                NFT Minting Platform</span>
             </div>
-            
-            {/* Tagline */}
-            <p className="text-white/90 text-base sm:text-lg font-medium">NFT Minting Platform</p>
-            
             {/* Description */}
             <p className="text-white/90 leading-relaxed max-w-lg text-sm sm:text-base">
               The future of decentralized computing through innovative NFT technology. Join thousands of users minting exclusive AGV NFTs across multiple blockchain networks.
@@ -50,14 +48,6 @@ export const Footer: React.FC = () => {
                 <Link2 className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                 <span className="text-white text-xs sm:text-sm font-medium">Multi-Chain</span>
               </div>
-            </div>
-            
-            {/* Legal/Operational Details */}
-            <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-white/80">
-              <p>Headquartered in Asia. Operated globally. Audited by top firms.</p>
-              <p>
-                All real-world assets are held by authorized Chinese SPVs and mapped via legal authorization to JLL Asset Ltd. (BVI Company No. 2182436). NFT issuance and operations are executed by iJET Limited (NZBN: 9429049576290). Governance transition to the BVI-based AGV DAO is in progress.
-              </p>
             </div>
           </div>
           
@@ -110,25 +100,36 @@ export const Footer: React.FC = () => {
         </div>
         
         {/* Bottom Section - Social Media & Copyright */}
-        <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 pt-6 border-t border-white/20">
-          {/* Social Media Icons */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
-            <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
-              <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[#66CCFF]" />
-            </a>
-            <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
-              <Twitter className="w-4 h-4 sm:w-5 sm:h-5 text-[#66CCFF]" />
-            </a>
-            <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
-              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-[#66CCFF]" />
-            </a>
-            <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
-              <Send className="w-4 h-4 sm:w-5 sm:h-5 text-[#66CCFF]" />
-            </a>
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 mb-8 sm:mb-12">
+          {/* Legal/Operational Details */}
+          <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-white/80">
+            <p>Headquartered in Asia. Operated globally. Audited by top firms.</p>
+            <p>
+              All real-world assets are held by authorized Chinese SPVs and mapped via legal authorization to JLL Asset Ltd. (BVI Company No. 2182436). NFT issuance and operations are executed by iJET Limited (NZBN: 9429049576290). Governance transition to the BVI-based AGV DAO is in progress.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-end justify-content-end">
+            {/* Social Media Icons */}
+            <div className="flex items-center space-x-2 sm:space-x-3 mb-4">
+              <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 border border-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
+                <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </a>
+              <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 border border-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
+                <Twitter className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </a>
+              <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 border border-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
+                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </a>
+              <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 border border-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
+                <Send className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </a>
+            </div>
+
+            {/* Copyright */}
+            <p className="text-white/80 text-xs sm:text-sm">© 2025 AgriVolt Protocol. All rights</p>
           </div>
           
-          {/* Copyright */}
-          <p className="text-white/80 text-xs sm:text-sm">© 2025 AgriVolt Protocol. All rights</p>
         </div>
       </div>
     </footer>

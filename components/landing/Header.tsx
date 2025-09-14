@@ -5,7 +5,7 @@ import Image from "next/image"
 
 export const Header: React.FC = () => {
   return (
-    <header className="bg-[#3399FF] px-4 sm:px-6 py-4">
+    <header className="sticky top-0 z-50 bg-[#3399FF] px-4 sm:px-6 py-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center space-x-2 sm:space-x-3">

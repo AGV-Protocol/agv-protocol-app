@@ -30,7 +30,10 @@ export const ExploreAGV: React.FC = () => {
         </h2>
         
         {/* Description */}
-        <p className="text-base sm:text-lg lg:text-xl text-[#223256] tracking-widest leading-relaxed max-w-4xl mb-8 sm:mb-12 text-center">
+        <p
+          className="text-base text-[#223256] leading-relaxed max-w-4xl mb-8 sm:mb-12 text-center tracking-wide"
+          style={{ wordSpacing: "0.05em" }}
+        >
           Come visit our real-world project sites and see how orchards, solar arrays, and blockchain come together. From China&apos;s green zones to future international hubs, AGV is building the future of land-based RWA on-chain.
         </p>
         

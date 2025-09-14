@@ -11,7 +11,7 @@ export const ThreeLayer: React.FC = () => {
         },
         {
             title: "Solar-Driven Rewards",
-            description: "Each unit includes 6MW of solar capacity powering not only the farm,but also edge nodes and energy- backed token minting — “sunlight as income.”",
+            description: "Each unit includes 6MW of solar capacity powering not only the farm,but also edge nodes and energy- backed token minting — \"sunlight as income.\"",
         },
         {
             title: "DePIN-Ready Infrastructure",

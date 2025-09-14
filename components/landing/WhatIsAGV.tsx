@@ -11,7 +11,10 @@ export const WhatIsAGV: React.FC = () => {
         </h2>
         
         {/* Description */}
-        <p className="text-base sm:text-lg lg:text-xl text-[#223256] tracking-widest leading-relaxed max-w-4xl mb-8 sm:mb-12 text-center">
+        <p
+          className="text-base text-[#223256] leading-relaxed max-w-4xl mb-8 sm:mb-12 text-center tracking-wide"
+          style={{ wordSpacing: "0.05em" }}
+        >
           AGV (AgriVolt Protocol) is a real-asset-backed Web3 protocol that brings orchards, solar farms, and decentralized nodes onto the blockchain. Each asset unit generates real-world yield from fruit harvests to solar energy and edge computing. Users can adopt fruit trees, stake in solar, and earn tokenized rewards with transparent returns. Rooted in Chinas leading agricultural and solar regions, AGV makes sustainability investable, verifiable, and globally scalable.
         </p>
         <div className="w-full h-full">

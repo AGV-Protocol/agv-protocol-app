@@ -91,7 +91,7 @@ export const HeroSection: React.FC = () => {
           alt="AGV Hero"
           width={1000}
           height={0}
-          className="rounded-lg w-full h-[30pc]"
+          className="w-full h-[30pc]"
         />
       </div>
       
