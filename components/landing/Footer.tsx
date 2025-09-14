@@ -1,5 +1,7 @@
 import React from "react";
-import { ArrowUpRight, Check, Zap, Link2, MessageCircle, Twitter, Users, Send } from "lucide-react";
+import { Check, Zap, Link2, MessageCircle, Twitter, Users, Send } from "lucide-react";
+import { FastLink } from "../ui/fast-link";
+import Image from "next/image"
 
 export const Footer: React.FC = () => {
   return (
@@ -13,11 +15,17 @@ export const Footer: React.FC = () => {
           {/* Left Section - Company Information */}
           <div className="space-y-4 sm:space-y-6">
             {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center">
-                <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 text-[#66CCFF]" />
-              </div>
-              <span className="text-white font-bold text-xl sm:text-2xl">AGV Protocol</span>
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <FastLink href="/" className="flex items-center space-x-2">
+                <Image
+                  src="/logo.png"
+                  alt="AGV Protocol"
+                  width={32}
+                  height={32}
+                  className="rounded-lg"
+                />
+              </FastLink>
+              <span className="text-white font-semibold text-sm sm:text-lg">AGRIVOLT PROTOCOL</span>
             </div>
             
             {/* Tagline */}

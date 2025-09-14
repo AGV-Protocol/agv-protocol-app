@@ -1,6 +1,6 @@
 import React from "react";
-import { FastLink } from "../ui/fast-link";
 import { WalletConnect } from "@/components/wallet/wallet-connect";
+import { FastLink } from "../ui/fast-link";
 import Image from "next/image"
 
 export const Header: React.FC = () => {
