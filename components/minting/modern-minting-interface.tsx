@@ -245,8 +245,8 @@ const TransactionProgressModal = ({
 
   const EXPLORERS: Record<ChainId, string> = {
     "56": "https://bscscan.io",
-    "137": "https://polscan.io",
-    "42161": "https://arbiscan.io",
+    "137": "https://polygonscan.io",
+    "42161": "https://arbiscan.com",
   };
   const explorerBase = EXPLORERS[chainId] ?? "";
   const explorerUrl = txHash ? `${explorerBase}/tx/${txHash}` : null;
@@ -595,7 +595,7 @@ export default function ModernMintingInterface() {
     const [pickedType, pickedQty] = picked[0] as [NftType, number];
     const allowed = getMaxSelectableFor(pickedType, selectedChain);
     return allowed > 0 && pickedQty <= allowed;
-  }, [isConnected, hasInsufficientGas, totalQuantity, totalCost, quantities, selectedChain, saleMode]);
+  }, [isConnected, hasInsufficientGas, totalQuantity, totalCost, quantities, selectedChain, getMaxSelectableFor]);
 
   const handleQuantityChange = (type: NftType, value: number) => {
     const maxAllowed = getMaxSelectableFor(type, selectedChain);
@@ -696,7 +696,7 @@ export default function ModernMintingInterface() {
   const nativeData = nativeBalanceResult?.data || undefined;
 
   const gasInfo = useMemo(() => {
-    const GAS_THRESHOLDS: Record<ChainId, number> = { "56": 0.005, "137": 0.01, "42161": 0.001 } as const;
+    const GAS_THRESHOLDS: Record<ChainId, number> = { "56": 0.0005, "137": 0.001, "42161": 0.0001 } as const;
     const currentGas = parseFloat(nativeData?.displayValue ?? "0");
     const minRequired = GAS_THRESHOLDS[selectedChain];
     const symbol = CHAINS[selectedChain].symbol;
@@ -1059,7 +1059,7 @@ export default function ModernMintingInterface() {
                   const isAvailable = maxAllowed > 0;
                   
                   // DUMMY DATA - Replace with real data
-                  const mintedCount = type === "seed" ? 272 : 187;
+                  const mintedCount = type === "seed" ? 84 : 74;
                   const totalSupply = type === "seed" ? 85 : 60;
                   const endsIn = timeLeft[type] ? formatTimeLeft(timeLeft[type]) : "Loading...";
 
@@ -1245,7 +1245,7 @@ export default function ModernMintingInterface() {
                   const isAvailable = maxAllowed > 0;
                   
                   // DUMMY DATA - Replace with real data
-                  const mintedCount = type === "solar" ? 450 : 60;
+                  const mintedCount = type === "solar" ? 32 : 60;
                   const totalSupply = type === "solar" ? 108 : 80;
                   const endsIn = timeLeft[type] ? formatTimeLeft(timeLeft[type]) : "Loading...";
 
