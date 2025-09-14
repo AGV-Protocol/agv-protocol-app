@@ -9,7 +9,7 @@ import { getContract } from "thirdweb";
 import { useReadContract } from "thirdweb/react";
 import { bsc, polygon, arbitrum } from "thirdweb/chains";
 import type { CollectionKey, ChainId } from "@/lib/contracts";
-import { CHAINS, COMPUTE_ABI, NFT_CONTRACTS, SEED_ABI, SOLAR_ABI, TREE_ABI } from "@/lib/contracts";
+import { COMPUTE_ABI, NFT_CONTRACTS, SEED_ABI, SOLAR_ABI, TREE_ABI } from "@/lib/contracts";
 import { thirdwebClient } from "@/app/provider";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { StatsOverview } from "@/components/dashboard/stats-overview";
@@ -23,10 +23,17 @@ import { TrendsChart } from "@/components/dashboard/charts/trends-chart";
 import { RealTimeRefresh } from "@/components/dashboard/real-time-refresh";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { EmptyState } from "@/components/ui/empty-state";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { 
-  Activity,
-  TrendingUp
+  Shield,
+  ShieldCheck,
+  UserPlus,
+  UserMinus,
+  Settings
 } from "lucide-react";
 
 // Types
@@ -40,7 +47,7 @@ interface KOL {
   tree?: number;
   solar?: number;
   compute?: number;
-  updatedAt?: any;
+  updatedAt?: unknown;
 }
 
 interface MintEventItem {
@@ -49,7 +56,7 @@ interface MintEventItem {
   quantity: number;
   chainId: string;
   txHash?: string | null;
-  timestamp: any;
+  timestamp: unknown;
 }
 
 interface MintDoc {
@@ -60,14 +67,25 @@ interface MintDoc {
   compute?: number;
   perChain?: Record<string, { seed?: number; tree?: number; solar?: number; compute?: number }>;
   events?: MintEventItem[];
-  updatedAt?: any;
+  updatedAt?: unknown;
 }
 
-type RangeMode = "THIS_WEEK" | "LAST_WEEK" | "THIS_MONTH" | "LAST_MONTH" | "YTD" | "MONTHS_IN_YEAR";
+// type RangeMode = "THIS_WEEK" | "LAST_WEEK" | "THIS_MONTH" | "LAST_MONTH" | "YTD" | "MONTHS_IN_YEAR";
+
+interface WhoAmI {
+  authed: boolean;
+  email: string | null;
+  isAdmin: boolean;
+  isSuperAdmin: boolean;
+  claims: {
+    role: string | null;
+    roles: string[];
+    admin: boolean;
+  };
+}
 
 // Constants
 const NFT_PRICES = { seed: 29, tree: 59, solar: 299, compute: 899 } as const;
-const formatPrice = (n: number) => `$${(n || 0).toLocaleString()}`;
 export const NFT_ABI = {
   seed: SEED_ABI,
   tree: TREE_ABI,
@@ -75,7 +93,7 @@ export const NFT_ABI = {
   compute: COMPUTE_ABI,
 } as const;
 // Helper function to convert BigInt to number
-const n = (value: any) => Number(value || 0);
+const n = (value: unknown) => Number(value || 0);
 
 // Map chain IDs to thirdweb chain objects
 const THIRDWEB_CHAINS = {
@@ -106,9 +124,25 @@ export default function DashboardPage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(false);
 
-  // Chart state
-  const [rangeMode, setRangeMode] = useState<RangeMode>("THIS_WEEK");
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  // Chart state (unused but kept for future use)
+  // const [rangeMode, setRangeMode] = useState<RangeMode>("THIS_WEEK");
+  // const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+
+  // Admin management state
+  const [who, setWho] = useState<WhoAmI>({
+    authed: false,
+    email: null,
+    isAdmin: false,
+    isSuperAdmin: false,
+    claims: {
+      role: null,
+      roles: [],
+      admin: false,
+    },
+  });
+  const [adminEmail, setAdminEmail] = useState("");
+  const [roleBusy, setRoleBusy] = useState<"grant" | "revoke" | null>(null);
+  const [showAdminModal, setShowAdminModal] = useState(false);
 
   // ---- Thirdweb contracts & reads (hooks)
   const seed56 = useNftContract("seed", "56");
@@ -255,7 +289,7 @@ export default function DashboardPage() {
       
       setKols(
         ks.docs.map((d) => {
-          const v = d.data() as any;
+          const v = d.data() as Record<string, unknown>;
           return {
             kolId: v.kolId,
             name: v.name ?? "",
@@ -273,7 +307,7 @@ export default function DashboardPage() {
       
       setMintDocs(
         ms.docs.map((d) => {
-          const v = d.data() as any;
+          const v = d.data() as Record<string, unknown>;
           return {
             kolId: d.id,
             seed: Number(v.seed ?? 0),
@@ -286,7 +320,7 @@ export default function DashboardPage() {
           } as MintDoc;
         })
       );
-    } catch (error) {
+    } catch {
       toast.error("Failed to load data");
     } finally {
       setLoading(false);
@@ -296,6 +330,33 @@ export default function DashboardPage() {
 
   useEffect(() => {
     refreshData();
+  }, []);
+
+  // Fetch server-verified admin role
+  useEffect(() => {
+    (async () => {
+      if (!auth.currentUser) {
+        setWho({ 
+          authed: false, 
+          email: null, 
+          isAdmin: false, 
+          isSuperAdmin: false,
+          claims: { role: null, roles: [], admin: false }
+        });
+        return;
+      }
+      try {
+        const idToken = await auth.currentUser.getIdToken(true);
+        const res = await fetch("/api/admin/whoami", {
+          headers: { Authorization: `Bearer ${idToken}` },
+          cache: "no-store",
+        });
+        const data = await res.json().catch(() => null);
+        if (data) setWho(data);
+      } catch {
+        setWho((s) => ({ ...s, isAdmin: false, isSuperAdmin: false }));
+      }
+    })();
   }, []);
 
   // Computed stats
@@ -337,6 +398,32 @@ export default function DashboardPage() {
     await auth.signOut();
   };
 
+  const changeAdminRole = async (action: "grant" | "revoke") => {
+    const email = adminEmail.trim();
+    if (!email) return toast.error("Enter an email");
+    if (!auth.currentUser) return toast.error("Sign-in required");
+    setRoleBusy(action);
+    try {
+      const token = await auth.currentUser.getIdToken(true);
+      const res = await fetch("/api/admin/users/grant-role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ email, action }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || res.statusText);
+      toast.success(`${action === "grant" ? "Granted" : "Revoked"} admin for ${email}`);
+      setAdminEmail("");
+      setShowAdminModal(false);
+    } catch (e: unknown) {
+      toast.error(`${action === "grant" ? "Grant" : "Revoke"} failed`, {
+        description: (e as Error)?.message || String(e),
+      });
+    } finally {
+      setRoleBusy(null);
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout 
@@ -367,13 +454,86 @@ export default function DashboardPage() {
       <div className="space-y-6 w-full min-w-0">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold">Dashboard Overview</h1>
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold">Dashboard Overview</h1>
+              {who.isSuperAdmin && (
+                <Badge variant="default" className="bg-purple-600 text-white">
+                  <ShieldCheck className="w-3 h-3 mr-1" />
+                  Super Admin
+                </Badge>
+              )}
+              {who.isAdmin && !who.isSuperAdmin && (
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                  <Shield className="w-3 h-3 mr-1" />
+                  Admin
+                </Badge>
+              )}
+            </div>
             <p className="text-muted-foreground text-sm sm:text-base">
               Welcome to the AGV Protocol admin dashboard
             </p>
+            {who.authed && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Signed in as: <span className="font-medium">{who.email}</span>
+              </p>
+            )}
           </div>
           
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 flex items-center gap-3">
+            {who.isSuperAdmin && (
+              <Dialog open={showAdminModal} onOpenChange={setShowAdminModal}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Settings className="w-4 h-4" />
+                    Manage Admins
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <Shield className="w-5 h-5" />
+                      Admin Management
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="admin-email">User Email</Label>
+                      <Input
+                        id="admin-email"
+                        type="email"
+                        placeholder="user@company.com"
+                        value={adminEmail}
+                        onChange={(e) => setAdminEmail(e.target.value)}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Changes take effect after the user refreshes their token (sign out/in).
+                    </p>
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => changeAdminRole("revoke")}
+                        disabled={!adminEmail || roleBusy !== null}
+                        className="gap-2"
+                      >
+                        <UserMinus className="w-4 h-4" />
+                        {roleBusy === "revoke" ? "Revoking..." : "Revoke Admin"}
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => changeAdminRole("grant")}
+                        disabled={!adminEmail || roleBusy !== null}
+                        className="gap-2"
+                      >
+                        <UserPlus className="w-4 h-4" />
+                        {roleBusy === "grant" ? "Granting..." : "Grant Admin"}
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
             <RealTimeRefresh
               onRefresh={refreshData}
               isRefreshing={loading}
@@ -404,7 +564,7 @@ export default function DashboardPage() {
                     : pass === "solar"
                     ? "SolarPass"
                     : "ComputePass";
-                const total = (onchainTotals as any)[pass] as number;
+                const total = (onchainTotals as Record<string, unknown>)[pass] as number;
                 return (
                   <div
                     key={`onchain-${pass}`}
