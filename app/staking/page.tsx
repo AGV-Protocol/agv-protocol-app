@@ -1,6 +1,4 @@
-// app/staking/page.tsx
 "use client";
-
 import { useEffect, useMemo, useState } from "react";
 import { Footer } from "@/components/layout/footer";
 import {
@@ -31,7 +29,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
-
 // Contracts / ABIs
 import {
   NFT_CONTRACTS,
@@ -41,16 +38,13 @@ import {
   SOLAR_ABI,
   COMPUTE_ABI,
   STAKE_ABI,
-  REWARD_RATES,
+  // REWARD_RATES, // ← not used anymore in this flow
 } from "@/lib/contracts";
-
 // Rewards (off-chain dashboard)
 import { useOffChainRewards } from "@/hooks/useOffChainRewards";
 import { BASE_DAILY_RRGP, bonusFor } from "@/lib/rewards";
-
-// Moralis-backed hook
+// Moralis + on-chain merge hook (name-collision fixed version)
 import { useStakingView } from "@/hooks/useStakingView";
-
 /* ─────────────────────────── Helpers ─────────────────────────── */
 function toGateway(u?: string) {
   if (!u) return undefined;
@@ -60,7 +54,6 @@ function toGateway(u?: string) {
 function getImageSrc(nft: { imageUrl?: string }, fallback?: string) {
   return toGateway(nft?.imageUrl) || fallback;
 }
-
 /** Countdown utils (used in Your Stakes section) */
 function formatRemaining(ms: number) {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -68,7 +61,6 @@ function formatRemaining(ms: number) {
   const h = Math.floor((totalSec % 86400) / 3600);
   const m = Math.floor((totalSec % 3600) / 60);
   const s = totalSec % 60;
-
   if (d > 0) return `${d}d ${h}h ${m}m ${s}s`;
   if (h > 0) return `${h}h ${m}m ${s}s`;
   return `${m}m ${s}s`;
@@ -79,11 +71,9 @@ function Countdown({ unlockAtISO }: { unlockAtISO: string }) {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, [unlockAtISO]);
-
   const unlock = new Date(unlockAtISO).getTime();
   const remaining = unlock - now;
   const unlocked = remaining <= 0;
-
   return (
     <div
       className={`mt-1 text-xs ${unlocked ? "text-green-300" : "text-yellow-300"}`}
@@ -94,12 +84,10 @@ function Countdown({ unlockAtISO }: { unlockAtISO: string }) {
     </div>
   );
 }
-
 /* ─────────────────────────── Config ─────────────────────────── */
 const client = createThirdwebClient({
   clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID!,
 });
-
 type ChainKey = "56" | "42161" | "137";
 const CHAIN_CONFIG: Record<
   ChainKey,
@@ -109,7 +97,6 @@ const CHAIN_CONFIG: Record<
   "42161": { id: 42161, label: "Arbitrum", chain: arbitrum, fallbackImg: "/seedpass.jpg" },
   "137": { id: 137, label: "Polygon", chain: polygon, fallbackImg: "/seedpass.jpg" },
 };
-
 function useContracts(
   chainKey: ChainKey,
   collectionType: "seed" | "tree" | "solar" | "compute" = "seed"
@@ -117,7 +104,6 @@ function useContracts(
   const chain = CHAIN_CONFIG[chainKey].chain;
   const nftAddress = NFT_CONTRACTS[chainKey][collectionType];
   const stakeAddress = STAKE_CONTRACTS[chainKey][collectionType];
-
   const nft = useMemo(
     () =>
       getContract({
@@ -135,7 +121,6 @@ function useContracts(
       }),
     [chainKey, collectionType, nftAddress]
   );
-
   const stake = useMemo(
     () =>
       getContract({
@@ -146,86 +131,36 @@ function useContracts(
       }),
     [chainKey, collectionType, stakeAddress]
   );
-
   return { nft, stake, chain };
 }
-
-/* ───────────── Reward calc (legacy rates for UI hints) ───────────── */
-function calculateRewards(
-  stakedAt: number,
-  duration: number,
-  collectionType: "seed" | "tree" | "solar" | "compute",
-  lastClaimedAt?: number
-): { totalRewards: number; dailyRate: number; canClaim: boolean } {
-  const currentTime = Math.floor(Date.now() / 1000);
-  const startTime = lastClaimedAt || stakedAt;
-  const elapsedTime = currentTime - startTime;
-  const totalStakingTime = duration * 24 * 60 * 60;
-
-  const dailyRate = REWARD_RATES[collectionType];
-  const elapsedDays = Math.min(elapsedTime / (24 * 60 * 60), totalStakingTime / (24 * 60 * 60));
-  const totalRewards = elapsedDays * dailyRate;
-
-  const canClaim = elapsedTime >= 24 * 60 * 60; // ≥ 1 day
-  return { totalRewards: Math.max(0, totalRewards), dailyRate, canClaim };
-}
-
-/* ───────────── REMOVE client Firestore writes/reads ───────────── */
-/*
-// Firestore
-import { db } from "@/lib/firebase";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  Timestamp,
-  doc,
-  setDoc,
-  addDoc,
-  updateDoc,
-} from "firebase/firestore";
-
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-async function ensureStakeWalletDoc(wallet: string) { ... }
-
-async function addWalletStakeItems(...) { ... }
-
-async function markWalletStakesWithdrawn(...) { ... }
-*/
-
+/* ───────────── Legacy inline reward calc (unused in new flow) ───────────── */
+// function calculateRewards(...) { /* not used in this flow */ } // ← intentionally omitted
 /* ─────────────────────────── Page ─────────────────────────── */
 export default function StakingPage() {
   const account = useActiveAccount();
   const activeChain = useActiveWalletChain();
   const switchChain = useSwitchActiveWalletChain();
-
   const [chainKey, setChainKey] = useState<ChainKey>("56");
   const [selectedCollection, setSelectedCollection] =
     useState<"seed" | "tree" | "solar" | "compute">("seed");
   const { nft, stake } = useContracts(chainKey, selectedCollection);
-
   const [manualTokenId, setManualTokenId] = useState("");
   const [staking, setStaking] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
-
   // Staking duration + local lock knowledge (now sourced via /api/rewards, not Firestore client)
   const [stakingDuration, setStakingDuration] = useState<number>(7);
   const [stakedTokensInfo, setStakedTokensInfo] = useState<
     Record<string, { stakedAt: number; duration: number }>
   >({});
-
   // Off-chain rewards summary
   const { data: rewardsData } = useOffChainRewards();
-
-  // Moralis hook → current chain + collection
+  // Unified NFT view (wallet + on-chain staked + firestore dedupe)
   const chainId = CHAIN_CONFIG[chainKey].id;
-  const { loading: nftLoading, error: nftError, ownedUnstaked, ownedStaked } = useStakingView({
-    chainId,
-    collection: selectedCollection,
-  });
-
+  const { loading: nftLoading, error: nftError, ownedUnstaked, ownedStaked, onChainIds } =
+    useStakingView({
+      chainId,
+      collection: selectedCollection,
+    });
   // Chain mismatch hint
   useEffect(() => {
     if (!activeChain?.id) return;
@@ -233,7 +168,6 @@ export default function StakingPage() {
       // optionally show a banner; we switch when user acts
     }
   }, [activeChain, chainId]);
-
   async function ensureChain() {
     if (activeChain?.id !== chainId) {
       try {
@@ -245,23 +179,23 @@ export default function StakingPage() {
       }
     }
   }
-
   const [stakedCount, setStakedCount] = useState<bigint>(0n);
   async function refreshStats() {
     if (!account?.address) return;
     try {
+      // getStakeInfo returns (uint256[] tokensStaked, uint256 rewards)
       const info = (await readContract({
         contract: stake,
         method: "getStakeInfo",
         params: [account.address],
-      })) as [bigint, bigint];
-      setStakedCount(info[0]);
+      })) as [bigint[], bigint];
+      const count = BigInt((info?.[0] || []).length);
+      setStakedCount(count);
       await refreshStakedTokensInfo();
     } catch {
       // ignore if contract not initialized yet
     }
   }
-
   // Local lock knowledge (client now pulls from /api/rewards instead of Firestore directly)
   async function refreshStakedTokensInfo() {
     if (!account?.address) return;
@@ -269,14 +203,12 @@ export default function StakingPage() {
       const res = await fetch(`/api/rewards?wallet=${account.address}`);
       if (!res.ok) throw new Error(await res.text());
       const json = await res.json();
-
       const filtered = (json?.stakes || []).filter(
         (s: any) =>
           String(s.nftType) === selectedCollection &&
           Number(s.chainId) === chainId &&
           (s.status === "active" || s.status === "completed")
       );
-
       const info: Record<string, { stakedAt: number; duration: number }> = {};
       filtered.forEach((s: any) => {
         const tokenId = String(s.tokenId);
@@ -284,18 +216,15 @@ export default function StakingPage() {
         const duration = Number(s.lockDays || 0);
         info[tokenId] = { stakedAt: stakedAtSec, duration };
       });
-
       setStakedTokensInfo(info);
     } catch (err) {
       console.error("Error loading staked tokens info from /api/rewards:", err);
     }
   }
-
   useEffect(() => {
     refreshStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.address, chainKey, selectedCollection]);
-
   async function ensureApproval() {
     const owner = account!.address!;
     const operator = STAKE_CONTRACTS[chainKey][selectedCollection];
@@ -304,7 +233,6 @@ export default function StakingPage() {
       method: "function isApprovedForAll(address owner, address operator) view returns (bool)",
       params: [owner, operator],
     })) as boolean;
-
     if (!approved) {
       const tx = await prepareContractCall({
         contract: nft,
@@ -314,18 +242,15 @@ export default function StakingPage() {
       await sendAndConfirmTransaction({ transaction: tx, account: account! });
     }
   }
-
   async function handleStake(tokenIds: bigint[]) {
     if (!account?.address) return toast.error("Connect wallet first");
     if (tokenIds.length === 0) return toast.error("Select or input at least one tokenId");
     if (stakingDuration < 1) return toast.error("Staking duration must be at least 1 day");
-
     try {
       await ensureChain();
       setStaking(true);
       toast.loading("Approving (if needed)…");
       await ensureApproval();
-
       toast.dismiss();
       toast.loading("Staking on-chain…");
       const tx = await prepareContractCall({
@@ -335,7 +260,6 @@ export default function StakingPage() {
       });
       const receipt = await sendAndConfirmTransaction({ transaction: tx, account: account! });
       toast.dismiss();
-
       // 🔄 Record via admin API instead of client Firestore
       toast.loading("Recording stake…");
       await fetch("/api/stakes/record", {
@@ -352,7 +276,6 @@ export default function StakingPage() {
       });
       toast.dismiss();
       toast.success(`Staked for ${stakingDuration} day${stakingDuration > 1 ? "s" : ""}!`);
-
       setManualTokenId("");
       await refreshStats();
     } catch (err: any) {
@@ -362,11 +285,9 @@ export default function StakingPage() {
       setStaking(false);
     }
   }
-
   async function handleWithdraw(tokenIds: bigint[]) {
     if (!account?.address) return toast.error("Connect wallet first");
     if (tokenIds.length === 0) return toast.error("Select at least one NFT to withdraw");
-
     // Final local guard using /api/rewards-derived lock info
     const currentTime = Math.floor(Date.now() / 1000);
     const lockedTokens: string[] = [];
@@ -385,7 +306,6 @@ export default function StakingPage() {
       toast.error(`Locked: ${lockedTokens.join(", ")}`);
       return;
     }
-
     try {
       await ensureChain();
       setWithdrawing(true);
@@ -397,7 +317,6 @@ export default function StakingPage() {
       });
       await sendAndConfirmTransaction({ transaction: tx, account: account! });
       toast.dismiss();
-
       // 🔄 Update via admin API instead of client Firestore
       toast.loading("Updating records…");
       await fetch("/api/stakes/withdraw", {
@@ -412,7 +331,6 @@ export default function StakingPage() {
       });
       toast.dismiss();
       toast.success("Withdrawn!");
-
       await refreshStats();
       setManualTokenId("");
     } catch (err: any) {
@@ -422,7 +340,6 @@ export default function StakingPage() {
       setWithdrawing(false);
     }
   }
-
   // Reward UI helper
   const dailyRewardHint = useMemo(() => {
     const baseRate = BASE_DAILY_RRGP[selectedCollection];
@@ -430,10 +347,8 @@ export default function StakingPage() {
     const totalRate = baseRate * bonus;
     return `${totalRate.toFixed(1)} rGGP / day (${baseRate} × ${bonus}x bonus)`;
   }, [selectedCollection, stakingDuration]);
-
   const presetDurations = [7, 14, 30, 90, 180, 365, 730];
   const handlePresetClick = (days: number) => setStakingDuration(days);
-
   // (Optional) Reward history placeholder (unchanged)
   const [rewardHistory, setRewardHistory] = useState<
     Array<{ claimedAt: number; amount: number; tokenIds: string[] }>
@@ -444,7 +359,6 @@ export default function StakingPage() {
   useEffect(() => {
     loadRewardHistory();
   }, [account?.address, chainKey, selectedCollection]);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
@@ -488,7 +402,6 @@ export default function StakingPage() {
             </header>
           </div>
         </div>
-
         {/* Network & Collection */}
         <div className="space-y-6">
           <SelectorPanel
@@ -499,7 +412,6 @@ export default function StakingPage() {
             setSelectedCollection={setSelectedCollection}
           />
         </div>
-
         {/* Staking Duration */}
         <DurationPanel
           stakingDuration={stakingDuration}
@@ -507,7 +419,6 @@ export default function StakingPage() {
           presetDurations={presetDurations}
           handlePresetClick={handlePresetClick}
         />
-
         {/* Stats */}
         <div className="mt-8">
           <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
@@ -538,7 +449,6 @@ export default function StakingPage() {
             />
           </div>
         </div>
-
         {/* Rewards Dashboard (summary) */}
         {account?.address && rewardsData && (
           <RewardsPanel
@@ -548,8 +458,7 @@ export default function StakingPage() {
             claiming={false}
           />
         )}
-
-        {/* NFTs (wallet + staked view) */}
+        {/* NFTs (wallet + staked view via unified hook) */}
         {account?.address && (
           <NftPanel
             nftLoading={nftLoading}
@@ -560,7 +469,6 @@ export default function StakingPage() {
             chainKey={chainKey}
           />
         )}
-
         {/* Stake Flow (select token IDs) */}
         <LegacyStakeSection
           account={account}
@@ -574,22 +482,20 @@ export default function StakingPage() {
           manualTokenId={manualTokenId}
           setManualTokenId={setManualTokenId}
         />
-
-        {/* Your Stakes (from /api/rewards) with live countdown */}
+        {/* Your Stakes (merged: API rewards + on-chain presence) with live countdown where available */}
         {account?.address ? (
           <StakesFromRewards
             wallet={account.address}
             filterChainId={CHAIN_CONFIG[chainKey].id}
             filterCollection={selectedCollection}
+            onChainTokenIds={onChainIds}
           />
         ) : null}
-
         {/* Reward History (optional) */}
         {account?.address && rewardHistory.length > 0 && (
           <RewardHistory history={rewardHistory} selectedCollection={selectedCollection} />
         )}
-
-        {/* Withdraw (now sourced from /api/rewards, not client Firestore) */}
+        {/* Withdraw (sourced from /api/rewards) */}
         <WithdrawSection
           accountAddress={account?.address}
           chainKey={chainKey}
@@ -598,7 +504,6 @@ export default function StakingPage() {
           onWithdraw={handleWithdraw}
         />
       </div>
-
       {/* Footer */}
       <Footer
         backgroundClass="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900"
@@ -607,9 +512,7 @@ export default function StakingPage() {
     </div>
   );
 }
-
 /* ───────────────────────── Subcomponents ───────────────────────── */
-
 function SelectorPanel({
   chainKey,
   setChainKey,
@@ -659,7 +562,6 @@ function SelectorPanel({
           Current wallet chain: <span className="text-blue-300">{activeChainName ?? "Not connected"}</span>
         </div>
       </div>
-
       {/* Collection */}
       <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
         <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
@@ -700,7 +602,6 @@ function SelectorPanel({
     </>
   );
 }
-
 function DurationPanel({
   stakingDuration,
   setStakingDuration,
@@ -737,7 +638,6 @@ function DurationPanel({
             ))}
           </div>
         </div>
-
         <div className="flex items-center gap-4">
           <label htmlFor="duration" className="text-white/80 text-sm font-medium">
             Duration (days):
@@ -752,7 +652,6 @@ function DurationPanel({
             className="w-20 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-center"
           />
         </div>
-
         <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
           <div className="flex items-center gap-2 mb-2">
             <Lock className="w-4 h-4 text-purple-300" />
@@ -770,7 +669,6 @@ function DurationPanel({
     </div>
   );
 }
-
 function RewardsPanel({
   rewardsData,
   selectedCollection,
@@ -798,7 +696,6 @@ function RewardsPanel({
           <div className="text-xs text-green-300/60 mt-1">{rewardsData.totals.remaining.toFixed(2)} remaining</div>
         </div>
       </div>
-
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white/5 rounded-xl p-4 border border-white/10">
@@ -819,7 +716,6 @@ function RewardsPanel({
               <span className="text-white font-medium">{rewardsData.stakes.length}</span>
             </div>
           </div>
-
           <div className="bg-white/5 rounded-xl p-4 border border-white/10">
             <div className="text-center">
               <div className="text-2xl font-bold text-green-400 mb-2">
@@ -846,7 +742,6 @@ function RewardsPanel({
             </div>
           </div>
         </div>
-
         {rewardsData.stakes.length > 0 && (
           <div className="bg-white/5 rounded-xl p-4 border border-white/10">
             <h4 className="text-white font-medium mb-3">Active Stakes & Rewards</h4>
@@ -879,7 +774,6 @@ function RewardsPanel({
     </div>
   );
 }
-
 function NftPanel({
   nftLoading,
   nftError,
@@ -897,7 +791,6 @@ function NftPanel({
 }) {
   const noneFound = !nftLoading && !nftError && ownedUnstaked.length === 0 && ownedStaked.length === 0;
   const fallback = `/${selectedCollection}pass.jpg`;
-
   return (
     <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -917,21 +810,18 @@ function NftPanel({
           </div>
         </div>
       </div>
-
       {nftLoading && (
         <div className="text-center py-8">
           <Loader2 className="w-8 h-8 animate-spin mx-auto text-white/60" />
           <p className="text-white/60 mt-2">Loading NFTs...</p>
         </div>
       )}
-
       {nftError && (
         <div className="text-center py-8">
           <AlertTriangle className="w-8 h-8 mx-auto text-yellow-400" />
           <p className="text-yellow-300 mt-2">Error loading NFTs: {nftError}</p>
         </div>
       )}
-
       {/* Mint CTA when none */}
       {noneFound && (
         <div className="text-center py-10">
@@ -950,7 +840,6 @@ function NftPanel({
           </Link>
         </div>
       )}
-
       {!nftLoading && !nftError && !noneFound && (
         <div className="space-y-6">
           {/* Unstaked */}
@@ -992,7 +881,6 @@ function NftPanel({
               </div>
             </div>
           )}
-
           {/* Staked */}
           {ownedStaked.length > 0 && (
             <div>
@@ -1038,7 +926,6 @@ function NftPanel({
     </div>
   );
 }
-
 function LegacyStakeSection({
   account,
   chainKey,
@@ -1063,7 +950,6 @@ function LegacyStakeSection({
   setManualTokenId: (s: string) => void;
 }) {
   const showMintCta = !nftLoading && !nftError && ownedUnstaked.length === 0;
-
   return (
     <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -1076,83 +962,50 @@ function LegacyStakeSection({
         </div>
         <div className="text-sm text-white/60">Detected via indexer</div>
       </div>
-
       {account?.address ? (
-        <>
-          {nftLoading ? (
-            <div className="text-center py-8">
-              <Loader2 className="w-8 h-8 animate-spin mx-auto text-white/60" />
-              <p className="text-white/60 mt-2">Loading NFTs...</p>
-            </div>
-          ) : nftError ? (
-            <div className="p-4 flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-yellow-400 mt-0.5" />
-              <div>
-                <h4 className="text-yellow-300 font-medium mb-1">Error loading NFTs</h4>
-                <p className="text-yellow-400 text-sm">{nftError}. You can still enter a token ID manually below.</p>
-              </div>
-            </div>
-          ) : ownedUnstaked.length > 0 ? (
-            <OwnedTokensList
-              ids={ownedUnstaked.map((nft) => nft.tokenId)}
-              onStake={async (ids) => {
-                await handleStake(ids);
-              }}
-              staking={staking}
-            />
-          ) : (
-            <div className="p-4 flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-yellow-400 mt-0.5" />
-              <div>
-                <h4 className="text-yellow-300 font-medium mb-1">No NFTs found</h4>
-                <p className="text-yellow-400 text-sm">
-                  No {selectedCollection.charAt(0).toUpperCase() + selectedCollection.slice(1)} NFTs detected in your wallet on{" "}
-                  {CHAIN_CONFIG[chainKey].label}. You can still enter a token ID manually, or mint one first:
-                </p>
-                {showMintCta && (
-                  <div className="mt-3">
-                    <Link
-                      href="/mint"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-sm font-medium transition-all"
-                    >
-                      Mint an NFT
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div className="mt-6 bg-white/5 rounded-xl p-4 border border-white/10">
-            <h4 className="text-white font-medium mb-3">Manual Token ID Entry</h4>
-            <div className="flex gap-3">
-              <input
-                value={manualTokenId}
-                onChange={(e) => setManualTokenId(e.target.value)}
-                placeholder="Enter token ID (e.g., 123)"
-                className="flex-1 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-              />
-              <button
-                onClick={() => {
-                  const id = manualTokenId.trim();
-                  if (!id) return;
-                  handleStake([BigInt(id)]);
-                }}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={staking || !manualTokenId.trim()}
-              >
-                {staking ? (
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Staking...
-                  </div>
-                ) : (
-                  "Stake NFT"
-                )}
-              </button>
+        nftLoading ? (
+          <div className="text-center py-8">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-white/60" />
+            <p className="text-white/60 mt-2">Loading NFTs...</p>
+          </div>
+        ) : nftError ? (
+          <div className="p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-yellow-400 mt-0.5" />
+            <div>
+              <h4 className="text-yellow-300 font-medium mb-1">Error loading NFTs</h4>
+              <p className="text-yellow-400 text-sm">{nftError}. You can still enter a token ID manually below.</p>
             </div>
           </div>
-        </>
+        ) : ownedUnstaked.length > 0 ? (
+          <OwnedTokensList
+            ids={ownedUnstaked.map((nft) => nft.tokenId)}
+            onStake={async (ids) => {
+              await handleStake(ids);
+            }}
+            staking={staking}
+          />
+        ) : (
+          <div className="p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-yellow-400 mt-0.5" />
+            <div>
+              <h4 className="text-yellow-300 font-medium mb-1">No NFTs found</h4>
+              <p className="text-yellow-400 text-sm">
+                No {selectedCollection.charAt(0).toUpperCase() + selectedCollection.slice(1)} NFTs detected in your wallet on{" "}
+                {CHAIN_CONFIG[chainKey].label}. You can still enter a token ID manually, or mint one first:
+              </p>
+              {showMintCta && (
+                <div className="mt-3">
+                  <Link
+                    href="/mint"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-sm font-medium transition-all"
+                  >
+                    Mint an NFT
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        )
       ) : (
         <div className="text-center py-12">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
@@ -1165,25 +1018,53 @@ function LegacyStakeSection({
           </div>
         </div>
       )}
+      <div className="mt-6 bg-white/5 rounded-xl p-4 border border-white/10">
+        <h4 className="text-white font-medium mb-3">Manual Token ID Entry</h4>
+        <div className="flex gap-3">
+          <input
+            value={manualTokenId}
+            onChange={(e) => setManualTokenId(e.target.value)}
+            placeholder="Enter token ID (e.g., 123)"
+            className="flex-1 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+          />
+          <button
+            onClick={() => {
+              const id = manualTokenId.trim();
+              if (!id) return;
+              handleStake([BigInt(id)]);
+            }}
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={staking || !manualTokenId.trim()}
+          >
+            {staking ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Staking...
+              </div>
+            ) : (
+              "Stake NFT"
+            )}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
-
-/* ───────────── Your Stakes section (from /api/rewards) ───────────── */
-
+/* ───────────── Your Stakes section (merged: API + on-chain) ───────────── */
 function StakesFromRewards({
   wallet,
   filterChainId,
   filterCollection,
+  onChainTokenIds = [],
 }: {
   wallet: string;
   filterChainId: number;
   filterCollection: "seed" | "tree" | "solar" | "compute";
+  onChainTokenIds?: string[];
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stakes, setStakes] = useState<any[]>([]);
-
   useEffect(() => {
     if (!wallet) return;
     (async () => {
@@ -1193,27 +1074,51 @@ function StakesFromRewards({
         const res = await fetch(`/api/rewards?wallet=${wallet}`);
         if (!res.ok) throw new Error(await res.text());
         const json = await res.json();
-
-        const filtered = (json?.stakes || []).filter(
+        // API (server-side Firestore) for rewards, times, etc.
+        const apiFiltered = (json?.stakes || []).filter(
           (s: any) =>
             String(s.nftType) === filterCollection &&
             Number(s.chainId) === filterChainId &&
             (s.status === "active" || s.status === "completed")
         );
-        setStakes(filtered);
-      } catch (e: any) {
+        // Build union with on-chain token IDs (already current chain/collection from hook)
+        const byId = new Map<string, any>();
+        for (const s of apiFiltered) byId.set(String(s.tokenId), s);
+        const allIds = new Set<string>([
+          ...apiFiltered.map((s: any) => String(s.tokenId)),
+          ...onChainTokenIds.map(String),
+        ]);
+        const merged = Array.from(allIds).map((id) => {
+          const fromApi = byId.get(id);
+          if (fromApi) return fromApi;
+          // For purely on-chain entries without server record, show minimal card (no rewards/clock)
+          return {
+            id: `onchain-${id}`,
+            tokenId: id,
+            nftType: filterCollection,
+            chainId: filterChainId,
+            stakedAt: null,
+            unlockAt: null,
+            lockDays: null,
+            accrued: 0,
+            scheduledTotal: 0,
+            baseDaily: 0,
+            bonusMultiplier: 1,
+            daysCounted: 0,
+          };
+        });
+        setStakes(merged);
+      } catch (e: nothing) {
         console.error("StakesFromRewards error", e);
         setError("Failed to load your stakes.");
       } finally {
         setLoading(false);
       }
     })();
-  }, [wallet, filterChainId, filterCollection]);
-
+  }, [wallet, filterChainId, filterCollection, onChainTokenIds]);
   return (
     <div className="mt-8 bg-white/5 rounded-2xl border border-white/10 p-6">
       <h2 className="text-xl text-white font-semibold mb-4">Your Stakes</h2>
-
       {!wallet ? (
         <p className="text-white/60">Connect your wallet to view stakes.</p>
       ) : loading ? (
@@ -1231,33 +1136,35 @@ function StakesFromRewards({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {stakes.map((s) => {
-            const progress =
-              s.scheduledTotal > 0 ? Math.min(100, (s.accrued / s.scheduledTotal) * 100) : 0;
-
+            const haveRewards = s && typeof s.scheduledTotal === "number" && s.scheduledTotal > 0;
+            const progress = haveRewards
+              ? Math.min(100, (s.accrued / s.scheduledTotal) * 100)
+              : 0;
+            const stakedAtStr = s?.stakedAt ? new Date(s.stakedAt).toLocaleDateString() : "—";
+            const unlockAtStr = s?.unlockAt ? new Date(s.unlockAt).toLocaleDateString() : "—";
             return (
               <div
-                key={s.id}
+                key={s.id ?? `token-${s.tokenId}`}
                 className="rounded-xl bg-white/5 border border-white/10 p-4 hover:bg-white/10 transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-white font-medium capitalize">
-                    {s.nftType} • {s.lockDays} days
+                    {s.nftType} {s.lockDays ? `• ${s.lockDays} days` : ""}
                   </div>
                   <div className="text-xs text-white/60">Token #{s.tokenId ?? "—"}</div>
                 </div>
-
                 <div className="text-white/70 text-sm">
-                  <div>Staked: {new Date(s.stakedAt).toLocaleDateString()}</div>
-                  <div>Unlocks: {new Date(s.unlockAt).toLocaleDateString()}</div>
-                  {/* LIVE COUNTDOWN */}
-                  <Countdown unlockAtISO={s.unlockAt} />
+                  <div>Staked: {stakedAtStr}</div>
+                  <div>Unlocks: {unlockAtStr}</div>
+                  {/* LIVE COUNTDOWN only if API provided unlockAt */}
+                  {s?.unlockAt ? <Countdown unlockAtISO={s.unlockAt} /> : null}
                 </div>
-
                 <div className="mt-3">
                   <div className="flex items-center justify-between text-xs text-white/60 mb-1">
                     <span>Accrued</span>
                     <span>
-                      {s.accrued.toFixed(2)} / {s.scheduledTotal.toFixed(2)} rGGP
+                      {haveRewards ? s.accrued.toFixed(2) : "—"}{" "}
+                      {haveRewards ? ` / ${s.scheduledTotal.toFixed(2)} rGGP` : ""}
                     </span>
                   </div>
                   <div className="h-2 rounded bg-white/10 overflow-hidden">
@@ -1267,10 +1174,11 @@ function StakesFromRewards({
                     />
                   </div>
                 </div>
-
-                <div className="mt-3 text-xs text-white/60">
-                  Rate: {s.baseDaily} rGGP/day × {s.bonusMultiplier}x • Counted {s.daysCounted} days
-                </div>
+                {haveRewards && (
+                  <div className="mt-3 text-xs text-white/60">
+                    Rate: {s.baseDaily} rGGP/day × {s.bonusMultiplier}x • Counted {s.daysCounted} days
+                  </div>
+                )}
               </div>
             );
           })}
@@ -1279,7 +1187,6 @@ function StakesFromRewards({
     </div>
   );
 }
-
 function RewardHistory({
   history,
   selectedCollection,
@@ -1296,7 +1203,6 @@ function RewardHistory({
         </h3>
         <p className="text-white/60 text-sm mt-1">Your recent reward claims for {selectedCollection} NFTs</p>
       </div>
-
       <div className="space-y-3 max-h-60 overflow-y-auto">
         {history.slice(0, 10).map((claim, index) => (
           <div
@@ -1321,7 +1227,6 @@ function RewardHistory({
           </div>
         ))}
       </div>
-
       {history.length > 10 && (
         <div className="mt-4 text-center">
           <p className="text-white/60 text-sm">Showing 10 most recent claims. Total: {history.length} claims</p>
@@ -1330,9 +1235,7 @@ function RewardHistory({
     </div>
   );
 }
-
 /* ───────────── Withdraw Section (sourced from /api/rewards) ───────────── */
-
 function WithdrawSection({
   accountAddress,
   chainKey,
@@ -1348,7 +1251,6 @@ function WithdrawSection({
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   type StakedCard = {
     tokenId: string;
     stakedAtSec: number;
@@ -1357,31 +1259,26 @@ function WithdrawSection({
     unlocked: boolean;
     imageUrl: string;
   };
-
   const [items, setItems] = useState<StakedCard[]>([]);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
-
   const FALLBACK: Record<"seed" | "tree" | "solar" | "compute", string> = {
     seed: "/seedpass.jpg",
     tree: "/treepass.jpg",
     solar: "/solarpass.jpg",
     compute: "/computepass.jpg",
   };
-
   useEffect(() => {
     (async () => {
       setItems([]);
       setError(null);
       setSelected({});
       if (!accountAddress) return;
-
       setLoading(true);
       try {
         // Pull from your rewards API (server-side Firestore reads), not client Firestore
         const res = await fetch(`/api/rewards?wallet=${accountAddress}`);
         if (!res.ok) throw new Error(await res.text());
         const json = await res.json();
-
         const nowSec = Math.floor(Date.now() / 1000);
         const filtered = (json?.stakes || []).filter(
           (s: any) =>
@@ -1389,7 +1286,6 @@ function WithdrawSection({
             Number(s.chainId) === CHAIN_CONFIG[chainKey].id &&
             (s.status === "active" || s.status === "completed")
         );
-
         const rows: StakedCard[] = filtered.map((s: any) => {
           const stakedAtSec = Math.floor(new Date(s.stakedAt).getTime() / 1000);
           const unlockAtSec = Math.floor(new Date(s.unlockAt).getTime() / 1000);
@@ -1405,12 +1301,10 @@ function WithdrawSection({
             imageUrl: FALLBACK[selectedCollection],
           };
         });
-
         // sort: unlocked first, then by tokenId asc
         rows.sort(
           (a, b) => Number(b.unlocked) - Number(a.unlocked) || Number(a.tokenId) - Number(b.tokenId)
         );
-
         setItems(rows);
         setSelected(Object.fromEntries(rows.map((r) => [r.tokenId, false])));
       } catch (e: any) {
@@ -1421,16 +1315,13 @@ function WithdrawSection({
       }
     })();
   }, [accountAddress, chainKey, selectedCollection]);
-
   const unlockedItems = useMemo(() => items.filter((i) => i.unlocked), [items]);
   const lockedItems = useMemo(() => items.filter((i) => !i.unlocked), [items]);
   const pickedUnlocked = useMemo(
     () => unlockedItems.filter((i) => selected[i.tokenId]).map((i) => BigInt(i.tokenId)),
     [unlockedItems, selected]
   );
-
   const canWithdraw = pickedUnlocked.length > 0 && !withdrawing;
-
   return (
     <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
       <div className="mb-6">
@@ -1440,7 +1331,6 @@ function WithdrawSection({
         </h3>
         <p className="text-white/60 text-sm mt-1">Select your staked NFTs. Only unlocked NFTs can be withdrawn.</p>
       </div>
-
       {!accountAddress ? (
         <div className="text-white/60">Connect your wallet to see staked NFTs.</div>
       ) : loading ? (
@@ -1495,7 +1385,6 @@ function WithdrawSection({
               </div>
             </>
           )}
-
           {/* Locked */}
           {lockedItems.length > 0 && (
             <>
@@ -1529,7 +1418,6 @@ function WithdrawSection({
               </div>
             </>
           )}
-
           {/* Action bar */}
           <div className="mt-6 flex items-center justify-between">
             <div className="text-white/70 text-sm">
@@ -1558,7 +1446,6 @@ function WithdrawSection({
     </div>
   );
 }
-
 function StatCard({
   title,
   value,
@@ -1599,7 +1486,6 @@ function StatCard({
     </div>
   );
 }
-
 function OwnedTokensList({
   ids,
   onStake,
@@ -1610,17 +1496,14 @@ function OwnedTokensList({
   staking: boolean;
 }) {
   const [selected, setSelected] = useState<Record<string, boolean>>({});
-
   useEffect(() => {
     const next: Record<string, boolean> = {};
     ids.forEach((id) => (next[id.toString()] = false));
     setSelected(next);
   }, [ids]);
-
   const picked = Object.entries(selected)
     .filter(([, v]) => v)
     .map(([k]) => BigInt(k));
-
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -1653,7 +1536,6 @@ function OwnedTokensList({
           );
         })}
       </div>
-
       {picked.length > 0 && (
         <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 rounded-xl p-4">
           <div className="flex items-center justify-between">

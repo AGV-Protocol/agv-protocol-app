@@ -534,22 +534,22 @@ export const NFT_ABI = [
 // Staking contract addresses
 export const STAKE_CONTRACTS = {
   "56": {
-    seed: "0xe268e673a220354c70b324C02635620a591651F5", // Deployed staking contract for Seedpass on BSC
-    tree: "0xe268e673a220354c70b324C02635620a591651F5", // Same contract for all NFT types on BSC
-    solar: "0xe268e673a220354c70b324C02635620a591651F5", // Same contract for all NFT types on BSC
-    compute: "0xe268e673a220354c70b324C02635620a591651F5", // Same contract for all NFT types on BSC
+    seed: "0xe268e673a220354c70b324C02635620a591651F5", 
+    tree: "0xb203C59041Aa907A31CEDc1b5940330FE79240e0", 
+    solar: "0xb29A79ef1BA60f6F14C4CEf8009fA62462d02457", 
+    compute: "0xb65F906a95c6da8a68fe06223a7b45B93F32Ef67", 
   },
   "137": {
-    seed: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Polygon staking contract
-    tree: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Polygon staking contract
-    solar: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Polygon staking contract
-    compute: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Polygon staking contract
+    seed: "0x97374395524966dC37173f2687Adfe102cdc379F", 
+    tree: "0x09134a3336b037d81bcF6f9fB0d6d01006486F69", 
+    solar: "0xe7B07808A4EE8F9CB9AA8503Fd0c30543f1F2567", 
+    compute: "0x5BBe89D35B31aF8Cb98937c608B82F295e9963b3", 
   },
   "42161": {
-    seed: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Arbitrum staking contract
-    tree: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Arbitrum staking contract
-    solar: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Arbitrum staking contract
-    compute: "0xe268e673a220354c70b324C02635620a591651F5", // Placeholder - replace with actual Arbitrum staking contract
+    seed: "0xf2Fbdf4f05D23698EED36F02B632790421bc262e", 
+    tree: "0xC17c8d0366356148250972aaeEf6DB7e92fbdc17",
+    solar: "0xd6DeA02195cA3778c5cd77eE87B010B2A41C38E4",
+    compute: "0x620E35906b65a7D4E717e360Eca3C65B69520DCA", 
   },
 } as const;
 

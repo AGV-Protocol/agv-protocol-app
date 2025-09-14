@@ -3,12 +3,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useActiveAccount, useReadContract } from "thirdweb/react";
-import {
-  createThirdwebClient,
-  getContract,
-} from "thirdweb";
+import { createThirdwebClient, getContract } from "thirdweb";
 import { polygon, arbitrum, bsc } from "thirdweb/chains";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection as fsCollection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 // Contracts / ABIs
@@ -63,7 +60,7 @@ const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
  * - ownedUnstaked: wallet NFTs minus ownedStaked set.
  */
 export function useStakingView(params: { chainId: number; collection: Collection }) {
-  const { chainId, collection } = params;
+  const { chainId, collection: nftCollection } = params;
   const account = useActiveAccount();
 
   const [loadingWallet, setLoadingWallet] = useState(false);
@@ -76,17 +73,17 @@ export function useStakingView(params: { chainId: number; collection: Collection
   const chainKey = useMemo(() => chainIdToKey(chainId), [chainId]);
   const agvAddress = useMemo(() => {
     if (!chainKey) return null;
-    const addr = NFT_CONTRACTS[chainKey]?.[collection];
+    const addr = NFT_CONTRACTS[chainKey]?.[nftCollection];
     return addr ? addr.toLowerCase() : null;
-  }, [chainKey, collection]);
+  }, [chainKey, nftCollection]);
 
   // ─── on-chain: read staked tokens for this wallet & collection on current chain
   const stakeContract = useMemo(() => {
     if (!chainKey) return null;
     const chain = CHAIN_BY_KEY[chainKey];
-    const address = STAKE_CONTRACTS[chainKey][collection];
+    const address = STAKE_CONTRACTS[chainKey][nftCollection];
     return getContract({ client, chain, address, abi: STAKE_ABI as any });
-  }, [chainKey, collection]);
+  }, [chainKey, nftCollection]);
 
   const rStake = useReadContract({
     contract: stakeContract || undefined,
@@ -113,10 +110,10 @@ export function useStakingView(params: { chainId: number; collection: Collection
       try {
         const qSnap = await getDocs(
           query(
-            collection(db, "staking_positions"),
+            fsCollection(db, "staking_positions"),
             where("address", "==", account.address.toLowerCase()),
             where("chain", "==", chainKey),
-            where("collection", "==", collection),
+            where("collection", "==", nftCollection),
             where("status", "==", "active")
           )
         );
@@ -136,7 +133,7 @@ export function useStakingView(params: { chainId: number; collection: Collection
     return () => {
       cancelled = true;
     };
-  }, [account?.address, chainKey, collection, agvAddress]);
+  }, [account?.address, chainKey, nftCollection, agvAddress]);
 
   // ─── wallet NFTs: via your /api/wallet-nfts (Moralis-backed)
   useEffect(() => {
@@ -203,9 +200,9 @@ export function useStakingView(params: { chainId: number; collection: Collection
       standard: "ERC721",
       collection: { address: agvAddress },
       imageUrl: undefined,
-      name: collection.toUpperCase(),
+      name: nftCollection.toUpperCase(),
     }));
-  }, [unionStakedIds, agvAddress, chainId, collection]);
+  }, [unionStakedIds, agvAddress, chainId, nftCollection]);
 
   // true unstaked = wallet NFTs minus unionStakedIds
   const ownedUnstaked = useMemo(() => {
@@ -218,7 +215,7 @@ export function useStakingView(params: { chainId: number; collection: Collection
     error: errorWallet || (rStake.error ? String(rStake.error) : null) || errorFs,
     ownedUnstaked,
     ownedStaked,
-    onChainIds,  // for diagnostics if you want
-    fsActive,    // for diagnostics if you want
+    onChainIds, // diagnostics
+    fsActive,   // diagnostics
   };
 }
