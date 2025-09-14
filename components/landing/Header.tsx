@@ -1,6 +1,7 @@
 import React from "react";
-import { ArrowUpRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { FastLink } from "../ui/fast-link";
+import { WalletConnect } from "@/components/wallet/wallet-connect";
+import Image from "next/image"
 
 export const Header: React.FC = () => {
   return (
@@ -8,9 +9,15 @@ export const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center space-x-2 sm:space-x-3">
-          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-lg flex items-center justify-center">
-            <ArrowUpRight className="w-3 h-3 sm:w-5 sm:h-5 text-[#3399FF]" />
-          </div>
+          <FastLink href="/" className="flex items-center space-x-2">
+            <Image
+              src="/logo.png"
+              alt="AGV Protocol"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
+          </FastLink>
           <span className="text-white font-semibold text-sm sm:text-lg">AGRIVOLT PROTOCOL</span>
         </div>
 
@@ -23,12 +30,8 @@ export const Header: React.FC = () => {
           <a href="#" className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">Investors Relations</a>
         </nav>
 
-        {/* Connect Button */}
-        <Button 
-          className="bg-white text-[#3399FF] hover:bg-white/90 font-medium px-3 sm:px-6 py-2 rounded-lg text-xs sm:text-sm"
-        >
-          Connect
-        </Button>
+        {/* Wallet Connect */}
+        <WalletConnect />
       </div>
     </header>
   );
