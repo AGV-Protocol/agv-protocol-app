@@ -41,14 +41,13 @@ import {
   SOLAR_ABI,
   COMPUTE_ABI,
   STAKE_ABI,
-  REWARD_RATES,
 } from "@/lib/contracts";
 
 // Rewards (off-chain dashboard)
 import { useOffChainRewards } from "@/hooks/useOffChainRewards";
 import { BASE_DAILY_RRGP, bonusFor } from "@/lib/rewards";
 
-// Aggregated staking view (on-chain priority, merged with Firestore)
+// Aggregated wallet/staked view (wallet NFTs + Firestore)
 import { useStakingView } from "@/hooks/useStakingView";
 
 /* ─────────────────────────── Helpers ─────────────────────────── */
@@ -61,7 +60,7 @@ function getImageSrc(nft: { imageUrl?: string }, fallback?: string) {
   return toGateway(nft?.imageUrl) || fallback;
 }
 
-/** Countdown utils */
+/** Countdown utils (used in Your Stakes section) */
 function formatRemaining(ms: number) {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
   const d = Math.floor(totalSec / 86400);
@@ -79,9 +78,11 @@ function Countdown({ unlockAtISO }: { unlockAtISO: string }) {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, [unlockAtISO]);
+
   const unlock = new Date(unlockAtISO).getTime();
   const remaining = unlock - now;
   const unlocked = remaining <= 0;
+
   return (
     <div
       className={`mt-1 text-xs ${unlocked ? "text-green-300" : "text-yellow-300"}`}
@@ -148,26 +149,6 @@ function useContracts(
   return { nft, stake, chain };
 }
 
-/* ───────────── Reward calc (legacy rate hint) ───────────── */
-function calculateRewards(
-  stakedAt: number,
-  duration: number,
-  collectionType: "seed" | "tree" | "solar" | "compute",
-  lastClaimedAt?: number
-): { totalRewards: number; dailyRate: number; canClaim: boolean } {
-  const currentTime = Math.floor(Date.now() / 1000);
-  const startTime = lastClaimedAt || stakedAt;
-  const elapsedTime = currentTime - startTime;
-  const totalStakingTime = duration * 24 * 60 * 60;
-
-  const dailyRate = REWARD_RATES[collectionType];
-  const elapsedDays = Math.min(elapsedTime / (24 * 60 * 60), totalStakingTime / (24 * 60 * 60));
-  const totalRewards = elapsedDays * dailyRate;
-
-  const canClaim = elapsedTime >= 24 * 60 * 60;
-  return { totalRewards: Math.max(0, totalRewards), dailyRate, canClaim };
-}
-
 /* ─────────────────────────── Admin API helpers ─────────────────────────── */
 async function apiRecordStake(input: {
   wallet: string;
@@ -218,17 +199,25 @@ export default function StakingPage() {
   // Staking duration
   const [stakingDuration, setStakingDuration] = useState<number>(7);
 
-  // Off-chain rewards summary
-  const { data: rewardsData, mutate: refetchRewards } = useOffChainRewards();
+  // Rewards summary
+  const { data: rewardsData } = useOffChainRewards();
 
-  // Aggregated (wallet NFTs + union(on-chain, firestore))
+  // Wallet NFTs + Firestore (admin-indexed) staked view
   const chainId = CHAIN_CONFIG[chainKey].id;
   const { loading: nftLoading, error: nftError, ownedUnstaked, ownedStaked } = useStakingView({
     chainId,
     collection: selectedCollection,
   });
 
-  // Chain mismatch hint
+  // On-chain: source of truth for which tokenIds are staked
+  const [onChainStakedIds, setOnChainStakedIds] = useState<bigint[]>([]);
+
+  // Chain mismatch hint (no auto-switch; we switch on action)
+  useEffect(() => {
+    if (!activeChain?.id) return;
+    // optional banner could go here
+  }, [activeChain?.id]);
+
   async function ensureChain() {
     if (activeChain?.id !== chainId) {
       try {
@@ -241,23 +230,26 @@ export default function StakingPage() {
     }
   }
 
-  // Count staked from on-chain contract (not critical if unavailable)
-  const [stakedCount, setStakedCount] = useState<bigint>(0n);
-  async function refreshOnChainStakeCount() {
-    if (!account?.address) return;
+  async function refreshOnChainStaked() {
+    if (!account?.address) {
+      setOnChainStakedIds([]);
+      return;
+    }
     try {
       const info = (await readContract({
         contract: stake,
-        method: "getStakeInfo",
+        method:
+          "function getStakeInfo(address _staker) view returns (uint256[] _tokensStaked, uint256 _rewards)",
         params: [account.address],
       })) as [bigint[], bigint];
-      setStakedCount(BigInt(info[0]?.length ?? 0));
+      setOnChainStakedIds(info?.[0] ?? []);
     } catch {
-      // ignore
+      setOnChainStakedIds([]);
     }
   }
+
   useEffect(() => {
-    refreshOnChainStakeCount();
+    refreshOnChainStaked();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.address, chainKey, selectedCollection]);
 
@@ -302,8 +294,8 @@ export default function StakingPage() {
       const receipt = await sendAndConfirmTransaction({ transaction: tx, account: account! });
       toast.dismiss();
 
-      // Admin API write (no client Firestore perms needed)
-      toast.loading("Recording stake (admin)...");
+      // Admin API — record stake (no client Firestore writes)
+      toast.loading("Recording stake…");
       await apiRecordStake({
         wallet: account.address,
         chainId,
@@ -316,7 +308,7 @@ export default function StakingPage() {
 
       toast.success(`Staked for ${stakingDuration} day${stakingDuration > 1 ? "s" : ""}!`);
       setManualTokenId("");
-      await Promise.all([refreshOnChainStakeCount(), refetchRewards()]);
+      await refreshOnChainStaked();
     } catch (err: any) {
       toast.dismiss();
       toast.error(err?.shortMessage || err?.message || "Stake failed");
@@ -342,7 +334,8 @@ export default function StakingPage() {
       const receipt = await sendAndConfirmTransaction({ transaction: tx, account: account! });
       toast.dismiss();
 
-      toast.loading("Updating records (admin)…");
+      // Admin API — mark withdrawn (no client Firestore writes)
+      toast.loading("Updating records…");
       await apiMarkWithdraw({
         wallet: account.address,
         chainId,
@@ -354,7 +347,7 @@ export default function StakingPage() {
 
       toast.success("Withdrawn!");
       setManualTokenId("");
-      await Promise.all([refreshOnChainStakeCount(), refetchRewards()]);
+      await refreshOnChainStaked();
     } catch (err: any) {
       toast.dismiss();
       toast.error(err?.shortMessage || err?.message || "Withdraw failed");
@@ -374,7 +367,41 @@ export default function StakingPage() {
   const presetDurations = [7, 14, 30, 90, 180, 365, 730];
   const handlePresetClick = (days: number) => setStakingDuration(days);
 
-  // (Optional) Reward history placeholder
+  /* ───────────── merge on-chain + Firestore staked; filter unstaked by on-chain ───────────── */
+  const agvAddress = useMemo(
+    () => NFT_CONTRACTS[chainKey][selectedCollection].toLowerCase(),
+    [chainKey, selectedCollection]
+  );
+  const onChainSet = useMemo(
+    () => new Set(onChainStakedIds.map((x) => x.toString())),
+    [onChainStakedIds]
+  );
+
+  // Build staked cards from on-chain first (priority), then add Firestore extras (no dupes)
+  const mergedStaked = useMemo(() => {
+    const base = onChainStakedIds.map((id) => ({
+      chainId,
+      tokenAddress: agvAddress,
+      tokenId: id,
+      standard: "ERC721" as const,
+      collection: { address: agvAddress },
+      imageUrl: undefined,
+      name: selectedCollection.toUpperCase(),
+    }));
+    const seen = new Set(onChainStakedIds.map((x) => x.toString()));
+    const extras = ownedStaked.filter(
+      (it: any) => !seen.has(it.tokenId?.toString?.() ?? String(it.tokenId))
+    );
+    return [...base, ...extras];
+  }, [onChainStakedIds, ownedStaked, agvAddress, chainId, selectedCollection]);
+
+  // Unstaked must exclude anything contract says is staked
+  const finalUnstaked = useMemo(
+    () => ownedUnstaked.filter((x: any) => !onChainSet.has(x.tokenId.toString())),
+    [ownedUnstaked, onChainSet]
+  );
+
+  // (Optional) Reward history placeholder (kept for parity)
   const [rewardHistory, setRewardHistory] = useState<
     Array<{ claimedAt: number; amount: number; tokenIds: string[] }>
   >([]);
@@ -452,7 +479,7 @@ export default function StakingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StatCard
               title="Staked NFTs"
-              value={stakedCount.toString()}
+              value={String(onChainStakedIds.length)}
               subtitle="From on-chain"
               icon={<Lock className="w-6 h-6 text-white" />}
               gradient="from-blue-500 to-cyan-500"
@@ -466,7 +493,7 @@ export default function StakingPage() {
             />
             <StatCard
               title="Daily Rewards"
-              value={dailyRewardHint}
+              value={`${(BASE_DAILY_RRGP[selectedCollection] * bonusFor(stakingDuration)).toFixed(1)} rGGP / day`}
               subtitle="Per NFT staked"
               icon={<ArrowRightLeft className="w-6 h-6 text-white" />}
               gradient="from-blue-500 to-cyan-500"
@@ -474,7 +501,7 @@ export default function StakingPage() {
           </div>
         </div>
 
-        {/* Rewards Dashboard (summary from /api/rewards) */}
+        {/* Rewards Dashboard (summary) */}
         {account?.address && rewardsData && (
           <RewardsPanel
             rewardsData={rewardsData}
@@ -484,13 +511,13 @@ export default function StakingPage() {
           />
         )}
 
-        {/* NFTs (wallet + staked view, MERGED view – on-chain priority) */}
+        {/* NFTs (wallet + staked view, merged with on-chain priority) */}
         {account?.address && (
           <NftPanel
             nftLoading={nftLoading}
             nftError={nftError}
-            ownedUnstaked={ownedUnstaked}
-            ownedStaked={ownedStaked}
+            ownedUnstaked={finalUnstaked}
+            ownedStaked={mergedStaked}
             selectedCollection={selectedCollection}
             chainKey={chainKey}
           />
@@ -503,7 +530,7 @@ export default function StakingPage() {
           selectedCollection={selectedCollection}
           nftLoading={nftLoading}
           nftError={nftError}
-          ownedUnstaked={ownedUnstaked}
+          ownedUnstaked={finalUnstaked}
           staking={staking}
           handleStake={handleStake}
           manualTokenId={manualTokenId}
@@ -524,13 +551,14 @@ export default function StakingPage() {
           <RewardHistory history={rewardHistory} selectedCollection={selectedCollection} />
         )}
 
-        {/* Withdraw (selection by staked set; contract is source of truth) */}
+        {/* Withdraw (on-chain source of truth; rewards data for countdowns if present) */}
         <WithdrawSection
           accountAddress={account?.address}
           chainKey={chainKey}
           selectedCollection={selectedCollection}
           withdrawing={withdrawing}
           onWithdraw={handleWithdraw}
+          onChainStakedIds={onChainStakedIds}
         />
       </div>
 
@@ -830,7 +858,7 @@ function NftPanel({
   selectedCollection: "seed" | "tree" | "solar" | "compute";
   chainKey: ChainKey;
 }) {
-  const noneFound = !nftLoading && !nftError && ownedUnstaked.length === 0 && ownedStaked.length === 0;
+  const noneFound = !nftLoading && ownedUnstaked.length === 0 && ownedStaked.length === 0;
   const fallback = `/${selectedCollection}pass.jpg`;
 
   return (
@@ -886,7 +914,7 @@ function NftPanel({
         </div>
       )}
 
-      {!nftLoading && !nftError && !noneFound && (
+      {!nftLoading && !noneFound && (
         <div className="space-y-6">
           {/* Unstaked */}
           {ownedUnstaked.length > 0 && (
@@ -928,7 +956,7 @@ function NftPanel({
             </div>
           )}
 
-          {/* Staked (MERGED: on-chain priority) */}
+          {/* Staked (merged, on-chain priority) */}
           {ownedStaked.length > 0 && (
             <div>
               <h4 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
@@ -997,7 +1025,7 @@ function LegacyStakeSection({
   manualTokenId: string;
   setManualTokenId: (s: string) => void;
 }) {
-  const showMintCta = !nftLoading && !nftError && ownedUnstaked.length === 0;
+  const showMintCta = !nftLoading && ownedUnstaked.length === 0;
 
   return (
     <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
@@ -1266,73 +1294,101 @@ function RewardHistory({
   );
 }
 
-/* ───────────── Withdraw Section ─────────────
-   Uses merged staked set (on-chain priority via useStakingView above in panel).
-   We let the contract be the final authority; Firestore is updated via admin API after success.
-*/
+/* ───────────── Withdraw Section (on-chain source of truth; rewards unlocks if available) ───────────── */
+
 function WithdrawSection({
   accountAddress,
   chainKey,
   selectedCollection,
   withdrawing,
   onWithdraw,
+  onChainStakedIds,
 }: {
   accountAddress?: string;
   chainKey: ChainKey;
   selectedCollection: "seed" | "tree" | "solar" | "compute";
   withdrawing: boolean;
   onWithdraw: (ids: bigint[]) => Promise<void>;
+  onChainStakedIds: bigint[];
 }) {
-  // For a simple UX, we fetch the merged staked set again via rewards API to know unlocks/countdown if available.
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [items, setItems] = useState<
-    { tokenId: string; stakedAtISO?: string; unlockAtISO?: string; unlocked?: boolean }[]
-  >([]);
+
+  type Row = {
+    tokenId: string;
+    stakedAtISO?: string;
+    unlockAtISO?: string;
+    unlocked?: boolean; // undefined when unknown (contract will enforce)
+  };
+
+  const [rows, setRows] = useState<Row[]>([]);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
+
+  const FALLBACK: Record<"seed" | "tree" | "solar" | "compute", string> = {
+    seed: "/seedpass.jpg",
+    tree: "/treepass.jpg",
+    solar: "/solarpass.jpg",
+    compute: "/computepass.jpg",
+  };
 
   useEffect(() => {
     (async () => {
-      setItems([]);
-      setSelected({});
       setError(null);
+      setRows([]);
+      setSelected({});
       if (!accountAddress) return;
 
       setLoading(true);
       try {
-        // We prefer admin rewards API snapshot (if present) for unlockAt; otherwise we still list tokens without a lock guard.
+        // Pull admin-indexed rewards for unlocks/countdown if available
         const res = await fetch(`/api/rewards?wallet=${accountAddress}`);
         const json = res.ok ? await res.json() : { stakes: [] as any[] };
 
         const chainId = CHAIN_CONFIG[chainKey].id;
+        const relevant = (json?.stakes || []).filter(
+          (s: any) =>
+            String(s.nftType) === selectedCollection &&
+            Number(s.chainId) === chainId &&
+            (s.status === "active" || s.status === "completed")
+        );
 
-        const filtered = (json?.stakes || [])
-          .filter(
-            (s: any) =>
-              String(s.nftType) === selectedCollection &&
-              Number(s.chainId) === chainId &&
-              (s.status === "active" || s.status === "completed")
-          )
-          .map((s: any) => ({
-            tokenId: String(s.tokenId ?? ""),
-            stakedAtISO: s.stakedAt,
-            unlockAtISO: s.unlockAt,
-            unlocked: new Date(s.unlockAt).getTime() <= Date.now(),
-          }));
+        // Map admin data by tokenId for quick lookup
+        const byToken: Record<string, { stakedAt: string; unlockAt: string }> = {};
+        for (const s of relevant) {
+          if (s?.tokenId != null) {
+            byToken[String(s.tokenId)] = { stakedAt: s.stakedAt, unlockAt: s.unlockAt };
+          }
+        }
 
-        // If rewards API returns nothing (e.g. admin hasn’t recorded yet), we still allow withdraw UI;
-        // the on-chain contract will enforce locks. So we’ll show an empty list here, and the user
-        // can still withdraw from the main contract by tokenId (e.g. via a tiny manual input UI if desired).
-        setItems(filtered);
-        setSelected(Object.fromEntries(filtered.map((r) => [r.tokenId, false])));
+        // On-chain source of truth: only list tokens that the contract says are staked
+        const finalRows: Row[] = onChainStakedIds.map((id) => {
+          const key = id.toString();
+          const meta = byToken[key];
+          if (meta) {
+            const unlockTs = new Date(meta.unlockAt).getTime();
+            const unlocked = !Number.isNaN(unlockTs) ? unlockTs <= Date.now() : undefined;
+            return { tokenId: key, stakedAtISO: meta.stakedAt, unlockAtISO: meta.unlockAt, unlocked };
+          }
+          // no admin meta — still show the token (contract will enforce lock)
+          return { tokenId: key, stakedAtISO: undefined, unlockAtISO: undefined, unlocked: undefined };
+        });
+
+        // Sort: known-unlocked first, then unknown, then locked; then by tokenId asc
+        finalRows.sort((a, b) => {
+          const score = (r: Row) => (r.unlocked === true ? 2 : r.unlocked === undefined ? 1 : 0);
+          return score(b) - score(a) || Number(a.tokenId) - Number(b.tokenId);
+        });
+
+        setRows(finalRows);
+        setSelected(Object.fromEntries(finalRows.map((r) => [r.tokenId, false])));
       } catch (e: any) {
-        console.error(e);
+        console.error("WithdrawSection error", e);
         setError("Failed to load withdrawal info.");
       } finally {
         setLoading(false);
       }
     })();
-  }, [accountAddress, chainKey, selectedCollection]);
+  }, [accountAddress, chainKey, selectedCollection, onChainStakedIds]);
 
   const picked = useMemo(
     () => Object.entries(selected).filter(([, v]) => v).map(([k]) => BigInt(k)),
@@ -1349,7 +1405,7 @@ function WithdrawSection({
           Withdraw Staked NFTs
         </h3>
         <p className="text-white/60 text-sm mt-1">
-          Select your staked NFTs. If unlock times aren’t visible, the contract will still enforce locks.
+          Based on on-chain state. If unlock times aren’t visible, the contract will still enforce locks.
         </p>
       </div>
 
@@ -1363,16 +1419,24 @@ function WithdrawSection({
       ) : error ? (
         <div className="text-center py-8">
           <AlertTriangle className="w-8 h-8 mx-auto text-yellow-400" />
-          <p className="text-yellow-300 mt-2">{error}</p>
+        <p className="text-yellow-300 mt-2">{error}</p>
         </div>
-      ) : items.length === 0 ? (
+      ) : rows.length === 0 ? (
         <div className="text-white/60">No active stakes found.</div>
       ) : (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {items.map((it) => {
+            {rows.map((it) => {
               const on = !!selected[it.tokenId];
-              const unlocked = it.unlocked ?? false;
+              const status =
+                it.unlocked === true ? "Unlocked" : it.unlocked === false ? "Locked" : "Lock unknown";
+              const statusClass =
+                it.unlocked === true
+                  ? "text-green-300"
+                  : it.unlocked === false
+                  ? "text-yellow-300"
+                  : "text-white/70";
+
               return (
                 <button
                   key={it.tokenId}
@@ -1385,7 +1449,7 @@ function WithdrawSection({
                 >
                   <div className="relative">
                     <img
-                      src={`/${selectedCollection}pass.jpg`}
+                      src={FALLBACK[selectedCollection]}
                       alt={`Token #${it.tokenId}`}
                       className="w-full aspect-square rounded-lg object-cover"
                       loading="lazy"
@@ -1397,10 +1461,10 @@ function WithdrawSection({
                     {on && <CheckCircle className="w-5 h-5 text-white" />}
                   </div>
                   <div className="text-xs text-white/70">
-                    {it.stakedAtISO ? `Staked ${new Date(it.stakedAtISO).toLocaleDateString()}` : "—"}
+                    {it.stakedAtISO ? `Staked ${new Date(it.stakedAtISO).toLocaleDateString()}` : "Staked —"}
                   </div>
-                  <div className={`text-xs mt-1 ${unlocked ? "text-green-300" : "text-yellow-300"}`}>
-                    {it.unlockAtISO ? <Countdown unlockAtISO={it.unlockAtISO} /> : "Lock unknown"}
+                  <div className={`text-xs mt-1 ${statusClass}`}>
+                    {it.unlockAtISO ? <Countdown unlockAtISO={it.unlockAtISO} /> : status}
                   </div>
                 </button>
               );
