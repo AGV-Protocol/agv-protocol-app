@@ -70,14 +70,14 @@ export const HeroSection: React.FC = () => {
 
                   <div className="space-y-1 sm:space-y-2">
                     <div className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold">4</div>
-                    <div className="text-sm sm:text-base lg:text-lg font-medium">NFT <div>Collections</div>
+                    <div className="text-sm sm:text-base lg:text-lg font-medium">NFT Collections
 
                     </div>
                   </div>
 
                   <div className="space-y-1 sm:space-y-2">
                     <div className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold">50</div>
-                    <div className="text-sm sm:text-base lg:text-lg font-medium">rGGP <div>Daily Rewards</div></div>
+                    <div className="text-sm sm:text-base lg:text-lg font-medium">rGGP Daily Rewards</div>
                   </div>
                 </div>
               </div>
@@ -94,7 +94,7 @@ export const HeroSection: React.FC = () => {
           className="w-full h-[30pc]"
         />
       </div>
-      
+
     </section>
   );
 };
