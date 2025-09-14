@@ -70,23 +70,23 @@ export const MainContent: React.FC = () => {
 
   const articles = [
     {
-      title: "Getting Started with AGV Protocol",
-      description: "Learn how to mint your first NFT and start earning rewards",
-      url: "#",
-      date: "2024-01-15"
+      title: "Introducing AGV Protocol",
+      description: "Introducing AGV Protocol: Unlocking the Future of Real-World Assets",
+      url: "https://docs.google.com/document/d/1WdsXlrIuJws5uCaO0q3dFp2sB32yWntfqcWXds6wKeI/edit?usp=drivesdk",
+      date: ""
     },
-    {
-      title: "Understanding Multi-Chain Staking",
-      description: "A comprehensive guide to staking across different networks",
-      url: "#",
-      date: "2024-01-10"
-    },
-    {
-      title: "Security Best Practices",
-      description: "How to keep your NFTs and rewards safe",
-      url: "#",
-      date: "2024-01-05"
-    }
+    // {
+    //   title: "Understanding Multi-Chain Staking",
+    //   description: "A comprehensive guide to staking across different networks",
+    //   url: "#",
+    //   date: "2024-01-10"
+    // },
+    // {
+    //   title: "Security Best Practices",
+    //   description: "How to keep your NFTs and rewards safe",
+    //   url: "#",
+    //   date: "2024-01-05"
+    // }
   ];
   return (
     <section className="relative">

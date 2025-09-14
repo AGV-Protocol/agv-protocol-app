@@ -455,6 +455,84 @@ export default function ModernMintingInterface() {
   const isConnected = !!account;
   const chainId = (account as any)?.chain?.id?.toString() || "56";
 
+  // Countdown timer state
+  const [timeLeft, setTimeLeft] = useState<Record<string, { days: number; hours: number; minutes: number; seconds: number }>>({});
+  const [endTimes, setEndTimes] = useState<Record<string, Date>>({});
+
+  // Countdown helper functions
+  const calculateTimeLeft = (endTime: Date) => {
+    const now = new Date().getTime();
+    const end = endTime.getTime();
+    const difference = end - now;
+
+    if (difference > 0) {
+      return {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((difference % (1000 * 60)) / 1000)
+      };
+    }
+    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  };
+
+  const formatTimeLeft = (time: { days: number; hours: number; minutes: number; seconds: number }) => {
+    if (time.days > 0) {
+      return `${time.days}d ${time.hours}h ${time.minutes}m ${time.seconds}s`;
+    } else if (time.hours > 0) {
+      return `${time.hours}h ${time.minutes}m ${time.seconds}s`;
+    } else if (time.minutes > 0) {
+      return `${time.minutes}m ${time.seconds}s`;
+    } else {
+      return `${time.seconds}s`;
+    }
+  };
+
+  const isTimeRunningLow = (time: { days: number; hours: number; minutes: number; seconds: number }) => {
+    return time.days === 0 && time.hours < 24; // Less than 24 hours remaining
+  };
+
+  // Initialize fixed end times once when component mounts
+  useEffect(() => {
+    const now = new Date();
+    const initialEndTimes: Record<string, Date> = {
+      seed: new Date(now.getTime() + (14 * 24 * 60 * 60 * 1000) + (5 * 60 * 60 * 1000) + (30 * 60 * 1000) + (45 * 1000)), // 14 days 5 hours 30 minutes 45 seconds
+      tree: new Date(now.getTime() + (21 * 24 * 60 * 60 * 1000) + (4 * 60 * 60 * 1000) + (15 * 60 * 1000) + (20 * 1000)), // 21 days 4 hours 15 minutes 20 seconds
+      solar: new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000) + (1 * 60 * 60 * 1000) + (45 * 60 * 1000) + (10 * 1000)), // 7 days 1 hour 45 minutes 10 seconds
+      compute: new Date(now.getTime() + (14 * 24 * 60 * 60 * 1000) + (12 * 60 * 60 * 1000) + (30 * 60 * 1000) + (5 * 1000)), // 14 days 12 hours 30 minutes 5 seconds
+    };
+    setEndTimes(initialEndTimes);
+  }, []);
+
+  // Update countdown every second
+  useEffect(() => {
+    if (Object.keys(endTimes).length === 0) return; // Wait for end times to be set
+
+    // Initial calculation
+    const initialTimeLeft: Record<string, { days: number; hours: number; minutes: number; seconds: number }> = {};
+    (["seed", "tree", "solar", "compute"] as NftType[]).forEach(type => {
+      if (endTimes[type]) {
+        initialTimeLeft[type] = calculateTimeLeft(endTimes[type]);
+      }
+    });
+    setTimeLeft(initialTimeLeft);
+
+    // Set up interval for updates
+    const timer = setInterval(() => {
+      const newTimeLeft: Record<string, { days: number; hours: number; minutes: number; seconds: number }> = {};
+      
+      (["seed", "tree", "solar", "compute"] as NftType[]).forEach(type => {
+        if (endTimes[type]) {
+          newTimeLeft[type] = calculateTimeLeft(endTimes[type]);
+        }
+      });
+      
+      setTimeLeft(newTimeLeft);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [endTimes]);
+
   const CHAINS = useMemo(() => ({
     "56": { chainId: "56", name: "Binance Smart Chain", symbol: "BNB", chain: defineChain(56) },
     "137": { chainId: "137", name: "Polygon", symbol: "MATIC", chain: defineChain(137) },
@@ -983,7 +1061,7 @@ export default function ModernMintingInterface() {
                   // DUMMY DATA - Replace with real data
                   const mintedCount = type === "seed" ? 272 : 187;
                   const totalSupply = type === "seed" ? 85 : 60;
-                  const endsIn = type === "seed" ? "2w 3d 5hrs" : "1w 4d 2hrs";
+                  const endsIn = timeLeft[type] ? formatTimeLeft(timeLeft[type]) : "Loading...";
 
                   return (
                     <div key={type} className="bg-white/5 rounded-lg p-3 sm:p-4 border border-white/10">
@@ -1053,7 +1131,13 @@ export default function ModernMintingInterface() {
                           </div>
                           <div>
                             <p className="text-xs sm:text-sm text-white font-semibold">Ends In</p>
-                            <p className="text-xs sm:text-sm text-white">{endsIn}</p>
+                            <p className={`text-xs sm:text-sm font-mono transition-colors duration-300 ${
+                              timeLeft[type] && isTimeRunningLow(timeLeft[type]) 
+                                ? "text-red-400 animate-pulse" 
+                                : "text-white"
+                            }`}>
+                              {endsIn}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -1133,7 +1217,13 @@ export default function ModernMintingInterface() {
                           
                           <div className="text-right">
                             <p className="text-white font-semibold">Ends In</p>
-                            <p className="text-white">{endsIn}</p>
+                            <p className={`font-mono transition-colors duration-300 ${
+                              timeLeft[type] && isTimeRunningLow(timeLeft[type]) 
+                                ? "text-red-400 animate-pulse" 
+                                : "text-white"
+                            }`}>
+                              {endsIn}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -1157,7 +1247,7 @@ export default function ModernMintingInterface() {
                   // DUMMY DATA - Replace with real data
                   const mintedCount = type === "solar" ? 450 : 60;
                   const totalSupply = type === "solar" ? 108 : 80;
-                  const endsIn = type === "solar" ? "3w 1d 8hrs" : "2w 5d 3hrs";
+                  const endsIn = timeLeft[type] ? formatTimeLeft(timeLeft[type]) : "Loading...";
 
                   return (
                     <div key={type} className="bg-white/5 rounded-lg p-3 sm:p-4 border border-white/10">
@@ -1227,7 +1317,13 @@ export default function ModernMintingInterface() {
                           </div>
                           <div>
                             <p className="text-xs sm:text-sm text-white font-semibold">Ends In</p>
-                            <p className="text-xs sm:text-sm text-white">{endsIn}</p>
+                            <p className={`text-xs sm:text-sm font-mono transition-colors duration-300 ${
+                              timeLeft[type] && isTimeRunningLow(timeLeft[type]) 
+                                ? "text-red-400 animate-pulse" 
+                                : "text-white"
+                            }`}>
+                              {endsIn}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -1305,7 +1401,13 @@ export default function ModernMintingInterface() {
                           
                           <div className="text-right">
                             <p className="text-white font-semibold">Ends In</p>
-                            <p className="text-white">{endsIn}</p>
+                            <p className={`font-mono transition-colors duration-300 ${
+                              timeLeft[type] && isTimeRunningLow(timeLeft[type]) 
+                                ? "text-red-400 animate-pulse" 
+                                : "text-white"
+                            }`}>
+                              {endsIn}
+                            </p>
                           </div>
                         </div>
                       </div>

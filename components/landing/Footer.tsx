@@ -1,6 +1,7 @@
 import React from "react";
-import { Check, Zap, Link2, MessageCircle, Twitter, Users, Send } from "lucide-react";
+import { Check, Zap, Link2, MessageCircle, Twitter, Send, Github } from "lucide-react";
 import { FastLink } from "../ui/fast-link";
+import Link from "next/link";
 import Image from "next/image"
 
 export const Footer: React.FC = () => {
@@ -57,10 +58,10 @@ export const Footer: React.FC = () => {
             <div className="space-y-3 sm:space-y-4">
               <h3 className="text-white font-bold text-base sm:text-lg">Product</h3>
               <ul className="space-y-1 sm:space-y-2">
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">NFT Minting</a></li>
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Dashboard</a></li>
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">KOL Program</a></li>
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Analytics</a></li>
+                <li><Link href="/mint" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">NFT Minting</Link></li>
+                <li><Link href="/dashboard" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Dashboard</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">KOL Program</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Analytics</Link></li>
               </ul>
             </div>
             
@@ -68,10 +69,10 @@ export const Footer: React.FC = () => {
             <div className="space-y-3 sm:space-y-4">
               <h3 className="text-white font-bold text-base sm:text-lg">Company</h3>
               <ul className="space-y-1 sm:space-y-2">
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">About Us</a></li>
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Careers</a></li>
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Press</a></li>
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Blog</a></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">About Us</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Careers</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Press</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Blog</Link></li>
               </ul>
             </div>
             
@@ -79,10 +80,10 @@ export const Footer: React.FC = () => {
             <div className="space-y-3 sm:space-y-4">
               <h3 className="text-white font-bold text-base sm:text-lg">Support</h3>
               <ul className="space-y-1 sm:space-y-2">
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Help Center</a></li>
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Documentation</a></li>
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">API Reference</a></li>
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Contact Support</a></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Help Center</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Documentation</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">API Reference</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Contact Support</Link></li>
               </ul>
             </div>
             
@@ -90,10 +91,10 @@ export const Footer: React.FC = () => {
             <div className="space-y-3 sm:space-y-4">
               <h3 className="text-white font-bold text-base sm:text-lg">Legal</h3>
               <ul className="space-y-1 sm:space-y-2">
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Privacy Policy</a></li>
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Terms of Service</a></li>
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Cookie Policy</a></li>
-                <li><a href="#" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">GDPR</a></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Privacy Policy</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Terms of Service</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Cookie Policy</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">GDPR</Link></li>
               </ul>
             </div>
           </div>
@@ -112,16 +113,16 @@ export const Footer: React.FC = () => {
           <div className="flex flex-col items-end justify-content-end">
             {/* Social Media Icons */}
             <div className="flex items-center space-x-2 sm:space-x-3 mb-4">
-              <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 border border-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
+              <a href="https://discord.gg/JP9RtzM2SC" target="_blank" rel="noopener noreferrer" className="w-8 h-8 sm:w-10 sm:h-10 border border-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
                 <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </a>
-              <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 border border-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
+              <a href="https://x.com/agv_partners" target="_blank" rel="noopener noreferrer" className="w-8 h-8 sm:w-10 sm:h-10 border border-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
                 <Twitter className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </a>
-              <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 border border-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
-                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              <a href="https://github.com/AGV-Protocol/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 sm:w-10 sm:h-10 border border-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
+                <Github className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </a>
-              <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 border border-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
+              <a href="https://t.me/agvprotocol" target="_blank" rel="noopener noreferrer" className="w-8 h-8 sm:w-10 sm:h-10 border border-white rounded-lg flex items-center justify-center hover:bg-white/90 transition-colors">
                 <Send className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </a>
             </div>

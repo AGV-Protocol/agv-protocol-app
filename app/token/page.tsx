@@ -18,7 +18,9 @@ import {
   Github,
   BookOpen,
   FileText,
-  ArrowRight
+  ArrowRight,
+  Send,
+  MessageCircle
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -51,9 +53,10 @@ export default function TokenPage() {
   };
 
   const socialLinks = {
-    twitter: "https://twitter.com/agvprotocol",
-    discord: "https://discord.gg/agvprotocol",
-    github: "https://github.com/agvprotocol",
+    twitter: "https://x.com/agv_partners",
+    discord: "https://discord.gg/JP9RtzM2SC",
+    github: "https://github.com/AGV-Protocol/",
+    telegram: "https://t.me/agvprotocol",
     website: "https://agvprotocol.com",
   };
 
@@ -613,8 +616,9 @@ export default function TokenPage() {
                 {Object.entries(socialLinks).map(([platform, url]) => {
                   const icons = {
                     twitter: Twitter,
-                    discord: Globe,
+                    discord: MessageCircle,
                     github: Github,
+                    telegram: Send,
                     website: Globe,
                   };
                   const Icon = icons[platform as keyof typeof icons];

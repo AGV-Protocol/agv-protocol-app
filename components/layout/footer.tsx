@@ -32,28 +32,28 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
 
   const footerLinks = {
     product: [
-      { name: "NFT Minting", href: "/" },
+      { name: "NFT Minting", href: "/mint" },
       { name: "Dashboard", href: "/dashboard" },
-      { name: "KOL Program", href: "/kol" },
-      { name: "Analytics", href: "/analytics" },
+      { name: "KOL Program", href: "/coming-soon" },
+      { name: "Analytics", href: "/coming-soon" },
     ],
     company: [
-      { name: "About Us", href: "/about" },
-      { name: "Careers", href: "/careers" },
-      { name: "Press", href: "/press" },
-      { name: "Blog", href: "/blog" },
+      { name: "About Us", href: "/coming-soon" },
+      { name: "Careers", href: "/coming-soon" },
+      { name: "Press", href: "/coming-soon" },
+      { name: "Blog", href: "/coming-soon" },
     ],
     support: [
-      { name: "Help Center", href: "/help" },
-      { name: "Documentation", href: "/docs" },
-      { name: "API Reference", href: "/api-docs" },
-      { name: "Contact Support", href: "/support" },
+      { name: "Help Center", href: "/coming-soon" },
+      { name: "Documentation", href: "/coming-soon" },
+      { name: "API Reference", href: "/coming-soon" },
+      { name: "Contact Support", href: "/coming-soon" },
     ],
     legal: [
-      { name: "Privacy Policy", href: "/privacy" },
-      { name: "Terms of Service", href: "/terms" },
-      { name: "Cookie Policy", href: "/cookies" },
-      { name: "GDPR", href: "/gdpr" },
+      { name: "Privacy Policy", href: "/coming-soon" },
+      { name: "Terms of Service", href: "/coming-soon" },
+      { name: "Cookie Policy", href: "/coming-soon" },
+      { name: "GDPR", href: "/coming-soon" },
     ],
   };
 
