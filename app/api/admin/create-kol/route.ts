@@ -1,7 +1,8 @@
 export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
-import { adminDb, admin } from "@/lib/firebaseAdmin";
+import { adminDb } from "@/lib/firebaseAdmin";
+import { FieldValue } from "firebase-admin/firestore"; 
 import { requireAdmin } from "../_auth";
 
 type Body = {
@@ -24,6 +25,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Name and walletAddress are required" }, { status: 400 });
     }
 
+    // normalize wallet
+    const wallet = walletAddress.toLowerCase();
+
     // unique-ish kolId (few tries)
     let kolId = makeKolId();
     for (let i = 0; i < 5; i++) {
@@ -32,17 +36,19 @@ export async function POST(req: NextRequest) {
       kolId = makeKolId();
     }
 
+    // TIP: if you want the doc id to be kolId, use .doc(kolId).set(...) instead of .add(...)
     await adminDb.collection("kols").add({
       kolId,
       name,
-      walletAddress,
+      walletAddress: wallet,
       email,
       target: Number(target) || 0,
       seed: 0,
       tree: 0,
       solar: 0,
       compute: 0,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(), 
+      updatedAt: FieldValue.serverTimestamp(), 
     });
 
     await adminDb.collection("mintEvents").doc(kolId).set(
@@ -54,17 +60,14 @@ export async function POST(req: NextRequest) {
         compute: 0,
         perChain: {},
         events: [],
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(), 
+        updatedAt: FieldValue.serverTimestamp(), 
       },
       { merge: true }
     );
 
-    const originHeader = req.headers.get("origin");
-    const base =
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      originHeader ||
-      ""; // fallback to empty (client will build its own link)
-    // Extract the 6-digit number from KOL ID for the referral link
+    const originHeader = req.headers.get("origin") || "";
+    const base = process.env.NEXT_PUBLIC_SITE_URL || originHeader || "";
     const digits = kolId.match(/\d{6}/)?.[0] || "";
     const referralLink = base ? `${base}/mint/${digits}` : null;
 
