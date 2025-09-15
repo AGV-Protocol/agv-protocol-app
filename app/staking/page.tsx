@@ -40,7 +40,6 @@ import {
   SOLAR_ABI,
   COMPUTE_ABI,
   STAKE_ABI,
-  REWARD_RATES,
 } from "@/lib/contracts";
 
 // Rewards (off-chain dashboard)
@@ -140,26 +139,6 @@ function useContracts(
   return { nft, stake, chain };
 }
 
-/* ───────────── Reward calc (legacy rates for UI hints) ───────────── */
-function calculateRewards(
-  stakedAt: number,
-  duration: number,
-  collectionType: "seed" | "tree" | "solar" | "compute",
-  lastClaimedAt?: number
-): { totalRewards: number; dailyRate: number; canClaim: boolean } {
-  const currentTime = Math.floor(Date.now() / 1000);
-  const startTime = lastClaimedAt || stakedAt;
-  const elapsedTime = currentTime - startTime;
-  const totalStakingTime = duration * 24 * 60 * 60;
-
-  const dailyRate = REWARD_RATES[collectionType];
-  const elapsedDays = Math.min(elapsedTime / (24 * 60 * 60), totalStakingTime / (24 * 60 * 60));
-  const totalRewards = elapsedDays * dailyRate;
-
-  const canClaim = elapsedTime >= 24 * 60 * 60; // ≥ 1 day
-  return { totalRewards: Math.max(0, totalRewards), dailyRate, canClaim };
-}
-
 /* ─────────────────────────── Page ─────────────────────────── */
 export default function StakingPage() {
   const account = useActiveAccount();
@@ -171,12 +150,17 @@ export default function StakingPage() {
     useState<"seed" | "tree" | "solar" | "compute">("seed");
   const { nft, stake } = useContracts(chainKey, selectedCollection);
 
-  const [manualTokenId, setManualTokenId] = useState("");
   const [staking, setStaking] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
 
   // Staking duration
   const [stakingDuration, setStakingDuration] = useState<number>(7);
+
+  // Selection state (lifted) for legacy rewards preview
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const toggleSelected = (id: string) =>
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  const clearSelection = () => setSelectedIds([]);
 
   // Off-chain rewards summary
   const { data: rewardsData, refetch: refetchRewards } = useOffChainRewards();
@@ -249,7 +233,7 @@ export default function StakingPage() {
 
   async function handleStake(tokenIds: bigint[]) {
     if (!account?.address) return toast.error("Connect wallet first");
-    if (tokenIds.length === 0) return toast.error("Select or input at least one tokenId");
+    if (tokenIds.length === 0) return toast.error("Select at least one tokenId");
     if (stakingDuration < 1) return toast.error("Staking duration must be at least 1 day");
 
     try {
@@ -285,7 +269,7 @@ export default function StakingPage() {
       toast.dismiss();
       toast.success(`Staked for ${stakingDuration} day${stakingDuration > 1 ? "s" : ""}!`);
 
-      setManualTokenId("");
+      clearSelection();
       await Promise.all([refreshStats(), refetchRewards?.()]);
     } catch (err: any) {
       toast.dismiss();
@@ -328,7 +312,6 @@ export default function StakingPage() {
       toast.success("Withdrawn!");
 
       await Promise.all([refreshStats(), refetchRewards?.()]);
-      setManualTokenId("");
     } catch (err: any) {
       toast.dismiss();
       toast.error(err?.shortMessage || err?.message || "Withdraw failed");
@@ -337,16 +320,33 @@ export default function StakingPage() {
     }
   }
 
-  // Reward UI helper
+  // Reward preview (legacy logic) — recomputes as user selects NFTs & changes duration
+  const rewardPreview = useMemo(() => {
+    const count = selectedIds.length;
+    const base = BASE_DAILY_RRGP[selectedCollection] || 0;
+    const mult = bonusFor(stakingDuration) || 1;
+    const perNftDaily = base * mult;
+    const totalDaily = perNftDaily * count;
+    const scheduledTotal = totalDaily * stakingDuration; // simple linear schedule
+    return { count, base, mult, perNftDaily, totalDaily, scheduledTotal };
+  }, [selectedIds, selectedCollection, stakingDuration]);
+
+  // Overview card helper
   const dailyRewardHint = useMemo(() => {
     const baseRate = BASE_DAILY_RRGP[selectedCollection];
-    const bonus = bonusFor(stakingDuration);
-    const totalRate = baseRate * bonus;
-    return `${totalRate.toFixed(1)} rGGP / day (${baseRate} × ${bonus}x bonus)`;
+    const b = bonusFor(stakingDuration);
+    const totalRate = baseRate * b;
+    return `${totalRate.toFixed(1)} rGGP / day (${baseRate} × ${b}x bonus)`;
   }, [selectedCollection, stakingDuration]);
 
   const presetDurations = [7, 14, 30, 90, 180, 365, 730];
   const handlePresetClick = (days: number) => setStakingDuration(days);
+
+  // Build list of unstaked tokenIds as strings for selection grid
+  const unstakedIds: string[] = useMemo(
+    () => (ownedUnstaked || []).map((n) => n.tokenId?.toString?.() ?? String(n.tokenId)),
+    [ownedUnstaked]
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
@@ -428,7 +428,7 @@ export default function StakingPage() {
           </div>
         </div>
 
-        {/* Rewards Dashboard (summary) */}
+        {/* Rewards Dashboard (summary — legacy rewards retained) */}
         {account?.address && rewardsData && (
           <RewardsPanel
             rewardsData={rewardsData}
@@ -438,30 +438,21 @@ export default function StakingPage() {
           />
         )}
 
-        {/* NFTs (wallet + staked view) */}
-        {account?.address && (
-          <NftPanel
-            nftLoading={nftLoading}
-            nftError={nftError}
-            ownedUnstaked={ownedUnstaked}
-            ownedStaked={ownedStaked}
-            selectedCollection={selectedCollection}
-            chainKey={chainKey}
-          />
-        )}
-
-        {/* Stake Flow (select token IDs) — LEGACY SECTION RETAINED */}
-        <LegacyStakeSection
-          account={account}
+        {/* Stake Flow (select NFTs) + Legacy Rewards Preview (dynamic) */}
+        <StakeFlow
+          accountAddress={account?.address}
           chainKey={chainKey}
           selectedCollection={selectedCollection}
           nftLoading={nftLoading}
           nftError={nftError}
           ownedUnstaked={ownedUnstaked}
           staking={staking}
-          handleStake={handleStake}
-          manualTokenId={manualTokenId}
-          setManualTokenId={setManualTokenId}
+          onStake={(ids) => handleStake(ids)}
+          selectedIds={selectedIds}
+          onToggle={toggleSelected}
+          onClear={clearSelection}
+          stakingDuration={stakingDuration}
+          rewardPreview={rewardPreview}
         />
 
         {/* Your Stakes (from /api/rewards) — static remaining text (no live updates) */}
@@ -551,10 +542,10 @@ function SelectorPanel({
           Select NFT Collection
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-          {(["seed", "tree", "solar", "compute"] as const).map((collection) => (
+          {["seed", "tree", "solar", "compute"].map((collection) => (
             <button
               key={collection}
-              onClick={() => setSelectedCollection(collection)}
+              onClick={() => setSelectedCollection(collection as any)}
               className={`group relative overflow-hidden rounded-lg sm:rounded-xl p-3 sm:p-4 transition-all duration-300 ${
                 selectedCollection === collection
                   ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25"
@@ -764,296 +755,216 @@ function RewardsPanel({
   );
 }
 
-function NftPanel({
-  nftLoading,
-  nftError,
-  ownedUnstaked,
-  ownedStaked,
-  selectedCollection,
-  chainKey,
-}: {
-  nftLoading: boolean;
-  nftError: string | null;
-  ownedUnstaked: any[];
-  ownedStaked: any[];
-  selectedCollection: "seed" | "tree" | "solar" | "compute";
-  chainKey: ChainKey;
-}) {
-  const noneFound = !nftLoading && !nftError && ownedUnstaked.length === 0 && ownedStaked.length === 0;
-  const fallback = `/${selectedCollection}pass.jpg`;
-
-  return (
-    <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-blue-400" />
-            Your {selectedCollection.charAt(0).toUpperCase() + selectedCollection.slice(1)} NFTs
-          </h3>
-          <p className="text-white/60 text-sm mt-1">Wallet (unstaked) • Indexer (staked)</p>
-        </div>
-        <div className="flex gap-2">
-          <div className="px-3 py-1 rounded-lg bg-green-500/20 border border-green-500/30">
-            <span className="text-green-300 text-sm font-medium">{ownedUnstaked.length} Available</span>
-          </div>
-          <div className="px-3 py-1 rounded-lg bg-blue-500/20 border border-blue-500/30">
-            <span className="text-blue-300 text-sm font-medium">{ownedStaked.length} Staked</span>
-          </div>
-        </div>
-      </div>
-
-      {nftLoading && (
-        <div className="text-center py-8">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto text-white/60" />
-          <p className="text-white/60 mt-2">Loading NFTs...</p>
-        </div>
-      )}
-
-      {nftError && (
-        <div className="text-center py-8">
-          <AlertTriangle className="w-8 h-8 mx-auto text-yellow-400" />
-          <p className="text-yellow-300 mt-2">Error loading NFTs: {nftError}</p>
-        </div>
-      )}
-
-      {/* Mint CTA when none */}
-      {noneFound && (
-        <div className="text-center py-10">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
-            <AlertTriangle className="w-8 h-8 text-white/60" />
-          </div>
-          <h4 className="text-white font-medium mb-2">No AGV NFTs Found</h4>
-          <p className="text-white/60 text-sm mb-4">
-            You don’t have any {selectedCollection} NFTs in your connected wallet on {CHAIN_CONFIG[chainKey].label}.
-          </p>
-          <Link
-            href="/mint"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium transition-all"
-          >
-            Mint your first NFT
-          </Link>
-        </div>
-      )}
-
-      {!nftLoading && !nftError && !noneFound && (
-        <div className="space-y-6">
-          {/* Unstaked */}
-          {ownedUnstaked.length > 0 && (
-            <div>
-              <h4 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
-                <Unlock className="w-5 h-5 text-green-400" />
-                Available to Stake ({ownedUnstaked.length})
-              </h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {ownedUnstaked.map((nft) => {
-                  const img = getImageSrc(nft, fallback);
-                  return (
-                    <div
-                      key={`${nft.collection.address}-${nft.tokenId.toString()}`}
-                      className="rounded-xl p-4 bg-white/5 border border-white/10 hover:border-green-500/30 transition-all duration-300"
-                    >
-                      <div className="text-xs opacity-60 mb-2">
-                        {nft.standard} • Chain {nft.chainId}
-                      </div>
-                      {img ? (
-                        <img
-                          className="rounded-lg mb-2 w-full aspect-square object-cover"
-                          src={img}
-                          alt={nft?.name ?? ""}
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="rounded-lg mb-2 w-full aspect-square bg-white/10" />
-                      )}
-                      <div className="text-sm font-medium text-white">
-                        Token #{nft.tokenId.toString()}
-                        {"amount" in nft && nft.amount ? ` · x${nft.amount.toString()}` : ""}
-                      </div>
-                      <div className="text-xs text-white/60 mt-1">{nft.name ?? "AGV NFT"}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Staked */}
-          {ownedStaked.length > 0 && (
-            <div>
-              <h4 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
-                <Lock className="w-5 h-5 text-blue-400" />
-                Currently Staked ({ownedStaked.length})
-              </h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {ownedStaked.map((nft) => {
-                  const img = getImageSrc(nft, fallback);
-                  return (
-                    <div
-                      key={`${nft.collection.address}-${nft.tokenId.toString()}`}
-                      className="rounded-xl p-4 bg-blue-500/10 border border-blue-500/30"
-                    >
-                      <div className="text-xs opacity-60 mb-2">
-                        {nft.standard} • Chain {nft.chainId}
-                      </div>
-                      {img ? (
-                        <img
-                          className="rounded-lg mb-2 w-full aspect-square object-cover"
-                          src={img}
-                          alt={nft?.name ?? ""}
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="rounded-lg mb-2 w-full aspect-square bg-white/10" />
-                      )}
-                      <div className="text-sm font-medium text-white">
-                        Token #{nft.tokenId.toString()}
-                        {"amount" in nft && nft.amount ? ` · x${nft.amount.toString()}` : ""}
-                      </div>
-                      <div className="text-xs text-white/60 mt-1">{nft.name ?? "AGV NFT"}</div>
-                      <div className="mt-2 px-2 py-1 rounded-lg bg-blue-500/20 text-xs text-blue-300">Staked</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function LegacyStakeSection({
-  account,
+function StakeFlow({
+  accountAddress,
   chainKey,
   selectedCollection,
   nftLoading,
   nftError,
   ownedUnstaked,
   staking,
-  handleStake,
-  manualTokenId,
-  setManualTokenId,
+  onStake,
+  selectedIds,
+  onToggle,
+  onClear,
+  stakingDuration,
+  rewardPreview,
 }: {
-  account: any;
+  accountAddress?: string;
   chainKey: ChainKey;
   selectedCollection: "seed" | "tree" | "solar" | "compute";
   nftLoading: boolean;
   nftError: string | null;
   ownedUnstaked: any[];
   staking: boolean;
-  handleStake: (ids: bigint[]) => Promise<void>;
-  manualTokenId: string;
-  setManualTokenId: (s: string) => void;
+  onStake: (ids: bigint[]) => Promise<void>;
+  selectedIds: string[];
+  onToggle: (id: string) => void;
+  onClear: () => void;
+  stakingDuration: number;
+  rewardPreview: { count: number; base: number; mult: number; perNftDaily: number; totalDaily: number; scheduledTotal: number };
 }) {
-  const showMintCta = !nftLoading && !nftError && ownedUnstaked.length === 0;
+  const fallback = `/${selectedCollection}pass.jpg`;
 
   return (
-    <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-            <div className="w-2 h-2 bg-white rounded-full"></div>
-            Your {selectedCollection.charAt(0).toUpperCase() + selectedCollection.slice(1)} NFTs
-          </h3>
-          <p className="text-white/60 text-sm mt-1">Available for staking on {CHAIN_CONFIG[chainKey].label}</p>
+    <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Select NFTs */}
+      <div className="lg:col-span-2 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="text-xl font-semibold text-white flex items-center gap-2">
+              <Unlock className="w-5 h-5 text-green-400" />
+              Select NFTs to Stake
+            </h3>
+            <p className="text-white/60 text-sm mt-1">Detected in wallet on {CHAIN_CONFIG[chainKey].label}</p>
+          </div>
+          <div className="text-sm text-white/60">{ownedUnstaked?.length || 0} available</div>
         </div>
-        <div className="text-sm text-white/60">Detected via indexer</div>
+
+        {!accountAddress ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+              <Lock className="w-8 h-8 text-white/60" />
+            </div>
+            <h4 className="text-white font-medium mb-2">Connect Your Wallet</h4>
+            <p className="text-white/60 text-sm">Connect to view and stake your NFTs</p>
+            <div className="mt-4">
+              <ConnectButton client={client} />
+            </div>
+          </div>
+        ) : nftLoading ? (
+          <div className="text-center py-8">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-white/60" />
+            <p className="text-white/60 mt-2">Loading NFTs...</p>
+          </div>
+        ) : nftError ? (
+          <div className="p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-yellow-400 mt-0.5" />
+            <div>
+              <h4 className="text-yellow-300 font-medium mb-1">Error loading NFTs</h4>
+              <p className="text-yellow-400 text-sm">{nftError}</p>
+            </div>
+          </div>
+        ) : !ownedUnstaked || ownedUnstaked.length === 0 ? (
+          <div className="text-center py-10">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+              <AlertTriangle className="w-8 h-8 text-white/60" />
+            </div>
+            <h4 className="text-white font-medium mb-2">No AGV NFTs Found</h4>
+            <p className="text-white/60 text-sm mb-4">
+              You don’t have any {selectedCollection} NFTs in your connected wallet on {CHAIN_CONFIG[chainKey].label}.
+            </p>
+            <Link
+              href="/mint"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium transition-all"
+            >
+              Mint your first NFT
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4">
+            {ownedUnstaked.map((nft) => {
+              const id = nft.tokenId?.toString?.() ?? String(nft.tokenId);
+              const on = selectedIds.includes(id);
+              const img = getImageSrc(nft, fallback);
+              return (
+                <button
+                  key={`${nft.collection.address}-${id}`}
+                  onClick={() => onToggle(id)}
+                  className={`group relative overflow-hidden rounded-xl p-4 text-left transition-all duration-300 ${
+                    on
+                      ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25"
+                      : "bg-white/5 hover:bg-white/10 border border-white/10"
+                  }`}
+                >
+                  <div className="text-xs opacity-60 mb-2">
+                    {nft.standard} • Chain {nft.chainId}
+                  </div>
+                  {img ? (
+                    <img
+                      className="rounded-lg mb-2 w-full aspect-square object-cover"
+                      src={img}
+                      alt={nft?.name ?? "AGV NFT"}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="rounded-lg mb-2 w-full aspect-square bg-white/10" />
+                  )}
+                  <div className="text-sm font-medium text-white">
+                    Token #{id}
+                    {"amount" in nft && nft.amount ? ` · x${nft.amount.toString()}` : ""}
+                  </div>
+                  <div className="text-xs text-white/60 mt-1">{nft.name ?? "AGV NFT"}</div>
+                  {on && (
+                    <div className="absolute top-3 right-3">
+                      <CheckCircle className="w-5 h-5 text-white" />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Action bar */}
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="text-white/70 text-sm">
+            Selected: <span className="text-white font-medium">{selectedIds.length}</span>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={onClear}
+              disabled={selectedIds.length === 0}
+              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/90 border border-white/20 disabled:opacity-50"
+            >
+              Clear
+            </button>
+            <button
+              onClick={() => onStake(selectedIds.map((s) => BigInt(s)))}
+              disabled={staking || selectedIds.length === 0}
+              className="px-5 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {staking ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Staking…
+                </span>
+              ) : (
+                `Stake ${selectedIds.length || ""}`.trim()
+              )}
+            </button>
+          </div>
+        </div>
       </div>
 
-      {account?.address ? (
-        <>
-          {nftLoading ? (
-            <div className="text-center py-8">
-              <Loader2 className="w-8 h-8 animate-spin mx-auto text-white/60" />
-              <p className="text-white/60 mt-2">Loading NFTs...</p>
-            </div>
-          ) : nftError ? (
-            <div className="p-4 flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-yellow-400 mt-0.5" />
-              <div>
-                <h4 className="text-yellow-300 font-medium mb-1">Error loading NFTs</h4>
-                <p className="text-yellow-400 text-sm">{nftError}. You can still enter a token ID manually below.</p>
-              </div>
-            </div>
-          ) : ownedUnstaked.length > 0 ? (
-            <OwnedTokensList
-              ids={ownedUnstaked.map((nft) => BigInt(nft.tokenId))}
-              onStake={async (ids) => {
-                await handleStake(ids);
-              }}
-              staking={staking}
-            />
-          ) : (
-            <div className="p-4 flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-yellow-400 mt-0.5" />
-              <div>
-                <h4 className="text-yellow-300 font-medium mb-1">No NFTs found</h4>
-                <p className="text-yellow-400 text-sm">
-                  No {selectedCollection.charAt(0).toUpperCase() + selectedCollection.slice(1)} NFTs detected in your wallet on {" "}
-                  {CHAIN_CONFIG[chainKey].label}. You can still enter a token ID manually, or mint one first:
-                </p>
-                {showMintCta && (
-                  <div className="mt-3">
-                    <Link
-                      href="/mint"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-sm font-medium transition-all"
-                    >
-                      Mint an NFT
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+      {/* Legacy Rewards Preview */}
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+        <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <TrendingUp className="w-6 h-6 text-yellow-300" />
+          Legacy Rewards Preview
+        </h3>
 
-          <div className="mt-6 bg-white/5 rounded-xl p-4 border border-white/10">
-            <h4 className="text-white font-medium mb-3">Manual Token ID Entry</h4>
-            <div className="flex gap-3">
-              <input
-                value={manualTokenId}
-                onChange={(e) => setManualTokenId(e.target.value)}
-                placeholder="Enter token ID (e.g., 123)"
-                className="flex-1 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-              />
-              <button
-                onClick={() => {
-                  const id = manualTokenId.trim();
-                  if (!id) return;
-                  try {
-                    const bi = BigInt(id);
-                    handleStake([bi]);
-                  } catch {
-                    toast.error("Token ID must be a number");
-                  }
-                }}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={staking || !manualTokenId.trim()}
-              >
-                {staking ? (
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Staking...
-                  </div>
-                ) : (
-                  "Stake NFT"
-                )}
-              </button>
+        <div className="grid grid-cols-1 gap-4">
+          <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white/80 text-sm">Selection</span>
+              <span className="text-white font-medium">{rewardPreview.count} NFT{rewardPreview.count === 1 ? "" : "s"}</span>
+            </div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white/80 text-sm">Base Daily (per NFT)</span>
+              <span className="text-green-400 font-medium">{rewardPreview.base} rGGP</span>
+            </div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white/80 text-sm">Bonus Multiplier</span>
+              <span className="text-yellow-400 font-medium">{rewardPreview.mult}x</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-white/80 text-sm">Per NFT Daily</span>
+              <span className="text-white font-medium">{rewardPreview.perNftDaily.toFixed(2)} rGGP</span>
             </div>
           </div>
-        </>
-      ) : (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
-            <Lock className="w-8 h-8 text-white/60" />
+
+          <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white/80 text-sm">Total Daily (all selected)</span>
+              <span className="text-cyan-300 font-semibold">{rewardPreview.totalDaily.toFixed(2)} rGGP</span>
+            </div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white/80 text-sm">Duration</span>
+              <span className="text-white font-medium">{stakingDuration} day{stakingDuration > 1 ? "s" : ""}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-white/80 text-sm">Scheduled Total (selection × days)</span>
+              <span className="text-emerald-300 font-bold">{rewardPreview.scheduledTotal.toFixed(2)} rGGP</span>
+            </div>
           </div>
-          <h4 className="text-white font-medium mb-2">Connect Your Wallet</h4>
-          <p className="text-white/60 text-sm">Connect your wallet to view and stake your NFTs</p>
-          <div className="mt-4">
-            <ConnectButton client={client} />
-          </div>
+
+          <p className="text-xs text-white/50">
+            This is a legacy rewards estimate based on current selection and lock duration. Actual accrual is computed
+            off-chain and capped at unlock. No live countdowns or background timers are running on this page.
+          </p>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -1202,87 +1113,6 @@ function StatCard({
         </div>
         <div className="text-white/80 font-medium">{title}</div>
       </div>
-    </div>
-  );
-}
-
-function OwnedTokensList({
-  ids,
-  onStake,
-  staking,
-}: {
-  ids: bigint[];
-  onStake: (ids: bigint[]) => Promise<void>;
-  staking: boolean;
-}) {
-  const [selected, setSelected] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    const next: Record<string, boolean> = {};
-    ids.forEach((id) => (next[id.toString()] = false));
-    setSelected(next);
-  }, [ids]);
-
-  const picked = Object.entries(selected)
-    .filter(([, v]) => v)
-    .map(([k]) => BigInt(k));
-
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {ids.map((id) => {
-          const key = id.toString();
-          const isOn = !!selected[key];
-          return (
-            <button
-              key={key}
-              onClick={() => setSelected((prev) => ({ ...prev, [key]: !prev[key] }))}
-              className={`group relative overflow-hidden rounded-xl p-4 text-left transition-all duration-300 ${
-                isOn
-                  ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25"
-                  : "bg-white/5 hover:bg-white/10 border border-white/10"
-              }`}
-            >
-              <div className="relative z-10">
-                <div className="text-xs opacity-70 mb-1">Token ID</div>
-                <div className="text-lg font-semibold">{key}</div>
-              </div>
-              {isOn && (
-                <div className="absolute top-2 right-2">
-                  <CheckCircle className="w-5 h-5 text-white" />
-                </div>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {picked.length > 0 && (
-        <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 rounded-xl p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="text-white font-medium">Selected for Staking</h4>
-              <p className="text-white/60 text-sm">
-                {picked.length} NFT{picked.length > 1 ? "s" : ""} selected
-              </p>
-            </div>
-            <button
-              onClick={() => onStake(picked)}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={staking || picked.length === 0}
-            >
-              {staking ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Staking...
-                </div>
-              ) : (
-                `Stake ${picked.length} NFT${picked.length > 1 ? "s" : ""}`
-              )}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

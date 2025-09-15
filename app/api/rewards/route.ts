@@ -10,6 +10,8 @@ import {
   bonusFor,
 } from "@/lib/rewards";
 
+const NFT_TYPES = ["seed", "tree", "solar", "compute"] as const;
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -19,25 +21,37 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "wallet required" }, { status: 400 });
     }
 
-    // Optional filters (client can still filter, this just reduces work)
     const chainIdFilter = searchParams.get("chainId")
       ? Number(searchParams.get("chainId"))
       : undefined;
 
     const nftTypeParam = (searchParams.get("nftType") || "").toLowerCase();
-    const nftTypeFilter = (["seed", "tree", "solar", "compute"] as const).includes(
-      nftTypeParam as any
-    )
+    const nftTypeFilter = (NFT_TYPES as readonly string[]).includes(nftTypeParam)
       ? (nftTypeParam as NftType)
       : undefined;
 
-    const includeWithdrawn = (searchParams.get("includeWithdrawn") || "false") === "true";
+    const includeWithdrawn =
+      (searchParams.get("includeWithdrawn") || "false") === "true";
 
     // Read wallet-scoped items: /stakes/{wallet}/items
     const itemsRef = adminDb.collection("stakes").doc(wallet).collection("items");
-    const snap = await itemsRef.get(); // small to moderate volumes; filter in-memory to avoid index requirements
+    const snap = await itemsRef.get();
 
     const now = new Date();
+
+    // ✅ Explicit empty response when there are no docs
+    if (snap.empty) {
+      return NextResponse.json(
+        {
+          wallet,
+          asOf: now.toISOString(),
+          totals: { accrued: 0, scheduled: 0, remaining: 0 },
+          stakes: [],
+        },
+        { status: 200 }
+      );
+    }
+
     const effectiveItems = snap.docs
       .map((doc) => ({ id: doc.id, ref: doc.ref, data: doc.data() as any }))
       .filter(({ data }) => {
@@ -56,7 +70,9 @@ export async function GET(req: NextRequest) {
 
     const items = effectiveItems.flatMap(({ id, ref, data }) => {
       try {
-        const nftType = String(data.nftType || "").toLowerCase() as NftType;
+        const nftTypeRaw = String(data.nftType || "").toLowerCase();
+        const isKnownType = (NFT_TYPES as readonly string[]).includes(nftTypeRaw);
+        const nftType = (isKnownType ? nftTypeRaw : "seed") as NftType; // fallback type for typing only
 
         const stakedAt: Date =
           data.stakedAt?.toDate?.() ??
@@ -68,24 +84,24 @@ export async function GET(req: NextRequest) {
           data.unlockAt?.toDate?.() ??
           new Date(stakedAt.getTime() + lockDays * DAY_MS);
 
-        // Fallbacks if older docs are missing derived fields
+        // Safe lookups with fallbacks
         const baseDaily = Number(
-          data.baseDaily ?? BASE_DAILY_RRGP[nftType] ?? 0
+          data.baseDaily ??
+            (BASE_DAILY_RRGP as Record<string, number>)[nftType] ??
+            0
         );
         const bonusMultiplier = Number(
           data.bonusMultiplier ?? bonusFor(lockDays) ?? 1
         );
 
-        // Compute current accrual snapshot
         const result = accruedToDate({
-          nftType,
+          nftType: (isKnownType ? nftType : ("seed" as NftType)), // ensure function gets a valid enum
           amount,
           stakedAt,
           lockDays,
           now,
         });
 
-        // Scheduled cap fallback if missing
         const scheduledTotal = Number(
           data.scheduledTotal ?? baseDaily * bonusMultiplier * lockDays * amount
         );
@@ -93,7 +109,6 @@ export async function GET(req: NextRequest) {
         totalAccrued += result.accrued;
         totalCap += scheduledTotal;
 
-        // Lazy update logic (advance once per day or if drift found)
         const last: Date | undefined = data.lastAccruedAt?.toDate?.();
         const lastMs = last?.getTime?.() ?? stakedAt.getTime();
         const effectiveNow = new Date(Math.min(now.getTime(), unlockAtObj.getTime()));
@@ -101,7 +116,6 @@ export async function GET(req: NextRequest) {
         const shouldUpdate =
           effectiveNow.getTime() - lastMs >= DAY_MS ||
           Math.abs(Number(data.accruedSoFar ?? 0) - result.accrued) > 0.000001 ||
-          // backfill missing derived fields on legacy docs
           data.scheduledTotal === undefined ||
           data.baseDaily === undefined ||
           data.bonusMultiplier === undefined;
@@ -116,7 +130,6 @@ export async function GET(req: NextRequest) {
             scheduledTotal,
           };
 
-          // Flip to completed when the lock has ended (but not withdrawn)
           if (effectiveNow.getTime() >= unlockAtObj.getTime() && data.status === "active") {
             update.status = "completed";
           }
@@ -146,7 +159,6 @@ export async function GET(req: NextRequest) {
           },
         ];
       } catch (e) {
-        // Skip any bad doc instead of failing the whole response
         console.error("rewards: bad doc", id, e);
         return [];
       }
@@ -156,7 +168,6 @@ export async function GET(req: NextRequest) {
       await batch.commit();
     }
 
-    // Sort newest first by stakedAt (client can also sort)
     items.sort((a, b) => (a.stakedAt < b.stakedAt ? 1 : -1));
 
     return NextResponse.json(
