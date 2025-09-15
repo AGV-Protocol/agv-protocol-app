@@ -960,8 +960,7 @@ function StakeFlow({
           </div>
 
           <p className="text-xs text-white/50">
-            This is a legacy rewards estimate based on current selection and lock duration. Actual accrual is computed
-            off-chain and capped at unlock. No live countdowns or background timers are running on this page.
+            This is a legacy rewards estimate based on current selection and lock duration.
           </p>
         </div>
       </div>
