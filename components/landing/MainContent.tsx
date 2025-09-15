@@ -74,13 +74,13 @@ export const MainContent: React.FC = () => {
       title: "Introducing AGV Protocol",
       description: "Introducing AGV Protocol: Unlocking the Future of Real-World Assets",
       url: "https://medium.com/@agvprotocol/introducing-agv-protocol-unlocking-the-future-of-real-world-assets-c0715b23ff63",
-      date: ""
+      date: "2025-09-14"
     },
     {
        title: "rGGP Explained: The AGV Reward Token",
        description: "How AGV Protocol Turns Real-World Yields into Rewards",
        url: "https://medium.com/@agvprotocol",
-       date: "2024-01-10"
+       date: "2025-09-15"
     },
     // {
     //   title: "Security Best Practices",
