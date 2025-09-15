@@ -71,14 +71,14 @@ export const MainContent: React.FC = () => {
 
   const articles = [
     {
-      title: "Introducing AGV Protocol",
+      title: "Introducing AGV Protocol ",
       description: "Introducing AGV Protocol: Unlocking the Future of Real-World Assets",
       url: "https://medium.com/@agvprotocol/introducing-agv-protocol-unlocking-the-future-of-real-world-assets-c0715b23ff63",
       date: "2025-09-14"
     },
     {
-       title: "rGGP Explained: The AGV Reward Token",
-       description: "How AGV Protocol Turns Real-World Yields into Rewards",
+       title: "rGGP Explained",
+       description: "How AGV Protocol Turns Real-World Yields into On-chain Rewards",
        url: "https://medium.com/@agvprotocol/rggp-explained-how-agv-protocol-turns-real-world-yields-into-rewards-dacb0a7c31e9",
        date: "2025-09-15"
     },
