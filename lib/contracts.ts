@@ -1,54 +1,57 @@
-import { defineChain } from "thirdweb/chains";
+// Simplified contracts configuration without Thirdweb imports
+// This avoids ES module compatibility issues
 
 export const CHAINS = {
   "56": {
     chainId: "56",
     name: "Binance Smart Chain",
     symbol: "BNB",
-    chain: defineChain(56),
+    explorer: "https://bscscan.com",
+    nft: "0xe268e673a220354c70b324C02635620a591651F5"
   },
   "137": {
     chainId: "137",
     name: "Polygon",
     symbol: "MATIC",
-    chain: defineChain(137),
+    explorer: "https://polygonscan.com",
+    nft: ""
   },
   "42161": {
     chainId: "42161",
     name: "Arbitrum One",
     symbol: "ETH",
-    chain: defineChain(42161),
-  },
-};
+    explorer: "https://arbiscan.io",
+    nft: ""
+  }
+} as const;
 
-export const USDT_ADDRESSES: Record<string, string> = {
-  "56": "0x55d398326f99059ff775485246999027b3197955", // BSC USDT
-  "137": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f", // Polygon USDT
-  "42161": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9", // Arbitrum USDT
-};
+export const USDT_ADDRESSES = {
+  "56": "0x55d398326f99059fF775485246999027B3197955", // BSC USDT
+  "137": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", // Polygon USDT
+  "42161": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", // Arbitrum USDT
+} as const;
 
-export const NFT_CONTRACTS: Record<string, Record<string, string>> = {
-  seed: {
-    "56": "0xFF362C39eB0eDecA946A5528d30D9c9E9285f3fc",
-    "137": "0x492a86EdEEa01158FcD3C8f2348A4c0431b8A24d",
-    "42161": "0x90b9E1C8645bC731be19537A4932B26Fc218e464",
+export const NFT_CONTRACTS = {
+  "56": {
+    seed: "0xFF362C39eB0eDecA946A5528d30D9c9E9285f3fc",
+    tree: "0x1E092126E4AB12503d37dD08E20F9192b8439458",
+    solar: "0x4F26621592D3B1ca344d187e469a86e2eE5FEa1E",
+    compute: "0x6F503f315c95835A68d140440CA49b5C3e885Ce3",
   },
-  tree: {
-    "56": "0x1E092126E4AB12503d37dD08E20F9192b8439458",
-    "137": "0xf44f237b8775ae985107dd2f877d5c5bbaaea31f",
-    "42161": "0xc574AB1e7e2B27ff4460C299E3448C572894276A",
+  "137": {
+    seed: "0x492a86EdEEa01158FcD3C8f2348A4c0431b8A24d",
+    tree: "0xf44f237b8775ae985107dd2f877d5c5bbaaea31f",
+    solar: "0x19B21F15C2E49dD0697e6D3499C82f0B899B97f2",
+    compute: "0xa2c1381B89FD986B4dbA4dbb03167A7655107308",
   },
-  solar: {
-    "56": "0x4F26621592D3B1ca344d187e469a86e2eE5FEa1E", 
-    "137": "0x19B21F15C2E49dD0697e6D3499C82f0B899B97f2", 
-    "42161": "0x492a86EdEEa01158FcD3C8f2348A4c0431b8A24d",
-  },
-  compute: {
-    "56": "0x6F503f315c95835A68d140440CA49b5C3e885Ce3", 
-    "137": "0xa2c1381B89FD986B4dbA4dbb03167A7655107308", 
-    "42161": "0xf44F237b8775AE985107dd2F877d5c5BBaAea31f", 
-  },
-};
+  "42161": {
+    seed: "0x90b9E1C8645bC731be19537A4932B26Fc218e464",
+    tree: "0xc574AB1e7e2B27ff4460C299E3448C572894276A",
+    solar: "0x492a86EdEEa01158FcD3C8f2348A4c0431b8A24d",
+    compute: "0xf44F237b8775AE985107dd2F877d5c5BBaAea31f",
+  }
+} as const;
+
 
 // -----------------------------
 // ABIs
@@ -450,75 +453,162 @@ export const TREE_ABI = [
 
 // Standard USDT ABI (as provided)
 export const USDT_ABI = [
-  { "inputs": [], "payable": false, "stateMutability": "nonpayable", "type": "constructor" },
   {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "spender", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }
-    ],
-    "name": "Approval",
-    "type": "event"
+    inputs: [],
+    name: "decimals",
+    outputs: [{ internalType: "uint8", name: "", type: "uint8" }],
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
+    inputs: [],
+    name: "symbol",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": true, "internalType": "address", "name": "from", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "to", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }
-    ],
-    "name": "Transfer",
-    "type": "event"
+    inputs: [],
+    name: "totalSupply",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
   },
-  { "constant": true, "inputs": [], "name": "_decimals", "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }], "payable": false, "stateMutability": "view", "type": "function" },
-  { "constant": true, "inputs": [], "name": "_name", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function" },
-  { "constant": true, "inputs": [], "name": "_symbol", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function" },
-  { "constant": true, "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }, { "internalType": "address", "name": "spender", "type": "address" }], "name": "allowance", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" },
-  { "constant": false, "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "approve", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" },
-  { "constant": true, "inputs": [{ "internalType": "address", "name": "account", "type": "address" }], "name": "balanceOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" },
-  { "constant": false, "inputs": [{ "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "burn", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" },
-  { "constant": true, "inputs": [], "name": "decimals", "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }], "payable": false, "stateMutability": "view", "type": "function" },
-  { "constant": false, "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "subtractedValue", "type": "uint256" }], "name": "decreaseAllowance", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" },
-  { "constant": true, "inputs": [], "name": "getOwner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function" },
-  { "constant": false, "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "addedValue", "type": "uint256" }], "name": "increaseAllowance", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" },
-  { "constant": false, "inputs": [{ "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "mint", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" },
-  { "constant": true, "inputs": [], "name": "name", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function" },
-  { "constant": true, "inputs": [], "name": "owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function" },
-  { "constant": false, "inputs": [], "name": "renounceOwnership", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" },
-  { "constant": true, "inputs": [], "name": "symbol", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function" },
-  { "constant": true, "inputs": [], "name": "totalSupply", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" },
-  { "constant": false, "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" },
   {
-    "constant": false,
-    "inputs": [
-      { "internalType": "address", "name": "sender", "type": "address" },
-      { "internalType": "address", "name": "recipient", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "transferFrom",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
+    inputs: [{ internalType: "address", name: "account", type: "address" }],
+    name: "balanceOf",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
   },
-  { "constant": false, "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }
-];
+  {
+    inputs: [
+      { internalType: "address", name: "spender", type: "address" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "owner", type: "address" },
+      { internalType: "address", name: "spender", type: "address" },
+    ],
+    name: "allowance",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
 
-// Convenience map if you want to select ABI by collection key.
-export type CollectionKey = "seed" | "tree" | "solar" | "compute";
-export const NFT_ABI: Record<CollectionKey, readonly any[]> = {
-  seed: SEED_ABI,
-  tree: TREE_ABI,
-  solar: SOLAR_ABI,
-  compute: COMPUTE_ABI
-};
+// Simplified ABI for NFT contracts
+export const NFT_ABI = [
+  {
+    inputs: [],
+    name: "totalSupply",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
+    name: "ownerOf",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "to", type: "address" },
+      { internalType: "uint256", name: "quantity", type: "uint256" },
+    ],
+    name: "mint",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+] as const;
+
+// Staking contract addresses
+export const STAKE_CONTRACTS = {
+  "56": {
+    seed: "0xe268e673a220354c70b324C02635620a591651F5", 
+    tree: "0xb203C59041Aa907A31CEDc1b5940330FE79240e0", 
+    solar: "0xb29A79ef1BA60f6F14C4CEf8009fA62462d02457", 
+    compute: "0xb65F906a95c6da8a68fe06223a7b45B93F32Ef67", 
+  },
+  "137": {
+    seed: "0x97374395524966dC37173f2687Adfe102cdc379F", 
+    tree: "0x09134a3336b037d81bcF6f9fB0d6d01006486F69", 
+    solar: "0xe7B07808A4EE8F9CB9AA8503Fd0c30543f1F2567", 
+    compute: "0x5BBe89D35B31aF8Cb98937c608B82F295e9963b3", 
+  },
+  "42161": {
+    seed: "0xf2Fbdf4f05D23698EED36F02B632790421bc262e", 
+    tree: "0xC17c8d0366356148250972aaeEf6DB7e92fbdc17",
+    solar: "0xd6DeA02195cA3778c5cd77eE87B010B2A41C38E4",
+    compute: "0x620E35906b65a7D4E717e360Eca3C65B69520DCA", 
+  },
+} as const;
+
+// Staking contract ABI (simplified for StakeERC721)
+export const STAKE_ABI = [
+  {
+    inputs: [{ internalType: "uint256[]", name: "tokenIds", type: "uint256[]" }],
+    name: "stake",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256[]", name: "tokenIds", type: "uint256[]" }],
+    name: "withdraw",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "staker", type: "address" }],
+    name: "getStakeInfo",
+    outputs: [
+      { internalType: "uint256", name: "tokensStaked", type: "uint256" },
+      { internalType: "uint256", name: "rewards", type: "uint256" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "user", type: "address" }],
+    name: "getStakedTokens",
+    outputs: [{ internalType: "uint256[]", name: "", type: "uint256[]" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "timeUnit",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "rewardsPerUnitTime",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
+
+// Reward rates per tier (tokens per day)
+export const REWARD_RATES = {
+  seed: 10,    // 10 tokens per day
+  tree: 25,    // 25 tokens per day
+  solar: 50,   // 50 tokens per day
+  compute: 100, // 100 tokens per day
+} as const;
+
+export type ChainId = keyof typeof CHAINS;
+export type CollectionKey = keyof typeof NFT_CONTRACTS["56"];

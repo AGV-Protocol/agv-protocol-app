@@ -6,7 +6,7 @@ export const revalidate = 0;
 import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
-import { isAddress, solidityPackedKeccak256, getAddress } from "ethers";
+import { isAddress, getAddress, keccak256, AbiCoder } from "ethers";
 
 /**
  * CONFIG
@@ -127,7 +127,8 @@ export async function GET(req: NextRequest) {
     }
 
     // Optional: include the leaf so clients can precheck on the front end
-    const leaf = solidityPackedKeccak256(["address"], [addressLc]);
+    const abiCoder = new AbiCoder();
+    const leaf = keccak256(abiCoder.encode(["address"], [addressLc]));
 
     return NextResponse.json({
       whitelisted: true,

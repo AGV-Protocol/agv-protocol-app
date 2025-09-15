@@ -1,31 +1,31 @@
 // lib/firebaseAdmin.ts
-import * as admin from "firebase-admin";
-import { getApps } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
+import { getApps, initializeApp, cert, App } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
 
-const projectId = process.env.FIREBASE_PROJECT_ID;
-const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
-
-// Handle escaped newlines in env
-const privateKey = privateKeyRaw?.replace(/\\n/g, "\n");
-
-if (!getApps().length) {
-  if (!projectId || !clientEmail || !privateKey) {
-    throw new Error(
-      "Missing FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY in server env"
-    );
-  }
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId,
-      clientEmail,
-      privateKey,
-    }),
-  });
+function must(name: string, v?: string | null) {
+  if (!v) throw new Error(`Missing server env: ${name}`);
+  return v;
 }
 
-export const adminAuth = getAuth();
-export const adminDb = getFirestore();
-export { admin }; // for FieldValue.serverTimestamp()
+function normalizePrivateKey(raw: string) {
+  // Remove accidental wrapping quotes and restore newlines
+  return raw.replace(/^"|"$/g, "").replace(/\\n/g, "\n");
+}
+
+let app: App;
+if (!getApps().length) {
+  app = initializeApp({
+    credential: cert({
+      projectId: must("FIREBASE_PROJECT_ID", process.env.FIREBASE_PROJECT_ID),
+      clientEmail: must("FIREBASE_CLIENT_EMAIL", process.env.FIREBASE_CLIENT_EMAIL),
+      privateKey: normalizePrivateKey(must("FIREBASE_PRIVATE_KEY", process.env.FIREBASE_PRIVATE_KEY)),
+    }),
+    // databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com` // optional
+  });
+} else {
+  app = getApps()[0]!;
+}
+
+export const adminDb = getFirestore(app);
+export const adminAuth = getAuth(app);

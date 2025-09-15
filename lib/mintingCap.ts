@@ -1,7 +1,10 @@
-import { getContract, readContract } from "thirdweb";
-
 // Define the Thirdweb contract type
-type ThirdwebContract = ReturnType<typeof getContract>;
+type ThirdwebContract = {
+  address: `0x${string}`;
+  chain: any;
+  abi: any;
+  client: any;
+};
 
 // Minting caps for each NFT type (global across all chains)
 export const MINTING_CAPS = {
@@ -68,6 +71,7 @@ export async function canMintNFT({
 
     // Get total supply from contract with retry
     const totalSupply = await withRetry(async () => {
+      const { readContract } = await import("thirdweb");
       return await readContract({
         contract: nftContract,
         method: "totalSupply",
@@ -75,7 +79,7 @@ export async function canMintNFT({
       });
     }, 3, 1000);
 
-    const totalMinted = Number(totalSupply.toString());
+    const totalMinted = Number(totalSupply?.toString() || "0");
     const maxSupply = MINTING_CAPS[nftType].totalSupply; // Use totalSupply instead of whitelistSupply
 
     // Check supply cap
