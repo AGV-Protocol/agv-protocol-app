@@ -79,7 +79,7 @@ export const MainContent: React.FC = () => {
     {
        title: "rGGP Explained: The AGV Reward Token",
        description: "How AGV Protocol Turns Real-World Yields into Rewards",
-       url: "https://medium.com/@agvprotocol",
+       url: "https://medium.com/@agvprotocol/rggp-explained-how-agv-protocol-turns-real-world-yields-into-rewards-dacb0a7c31e9",
        date: "2025-09-15"
     },
     // {
