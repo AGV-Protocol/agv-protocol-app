@@ -28,7 +28,7 @@ export const WhyAGV: React.FC = () => {
             alt="AGV Hero"
             width={1000}
             height={0}
-            className="rounded-lg w-full h-[30pc]"
+            className="rounded-lg w-full h-[35pc]"
           />
         </div>
         

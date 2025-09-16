@@ -38,7 +38,7 @@ export const HeroSection: React.FC = () => {
                 <Link href="/mint">
                   <Button
                     size="lg"
-                    className="bg-[#223256] text-white hover:bg-[#223256]/90 px-6 sm:px-8 py-3 sm:py-4 rounded-md font-semibold text-base sm:text-lg flex items-center justify-center space-x-2 sm:space-x-3"
+                    className="bg-[#223256] text-white hover:bg-[#223256]/90 hover:shadow-lg px-6 sm:px-8 py-3 sm:py-4 rounded-md font-semibold text-base sm:text-lg flex items-center justify-center space-x-2 sm:space-x-3 transition-all duration-300"
                   >
                     <Database className="h-6 w-6 text-white" />
                     <span>Start Minting</span>
@@ -49,7 +49,7 @@ export const HeroSection: React.FC = () => {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="bg-white text-[#3399FF] hover:bg-white/90 border-black px-6 sm:px-8 py-3 sm:py-4 rounded-md font-semibold text-base sm:text-lg flex items-center justify-center space-x-2 sm:space-x-3"
+                    className="bg-white text-[#3399FF] hover:bg-white/90 hover:shadow-lg border-black px-6 sm:px-8 py-3 sm:py-4 rounded-md font-semibold text-base sm:text-lg flex items-center justify-center space-x-2 sm:space-x-3 transition-all duration-300"
                   >
                     <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
                     <span>View Staking</span>
@@ -91,7 +91,7 @@ export const HeroSection: React.FC = () => {
           alt="AGV Hero"
           width={1000}
           height={0}
-          className="w-full h-[30pc]"
+          className="w-full h-[35pc]"
         />
       </div>
 

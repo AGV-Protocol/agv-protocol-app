@@ -93,7 +93,7 @@ export const MainContent: React.FC = () => {
     <section className="relative">
       {/* Gradient section from hero end to Platform Overview title */}
       <div className="bg-gradient-to-b from-[#66CCFF] to-white pt-16 sm:pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pl-[12px]">
           {/* Platform Overview Title */}
             <div className="flex items-center mb-8 sm:mb-12 px-4 sm:px-8 lg:px-24">
               <div className="w-2 h-2 bg-[#3399FF] rounded-full mr-3"></div>

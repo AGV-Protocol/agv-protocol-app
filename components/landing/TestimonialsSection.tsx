@@ -62,7 +62,7 @@ export function TestimonialsSection() {
                         Sun, and Code
                     </h3>
                     <FastLink href="/mint">
-                        <Button size="lg" className="border border-[#223256] hover:bg-[#223256]/80 text-[#223256] px-8 py-3 text-lg bg-white">
+                        <Button size="lg" className="border border-[#223256] hover:bg-[#223256]/80 hover:text-white text-[#223256] px-8 py-3 text-lg bg-white">
                             <Wallet className="w-5 h-5" /> Invest Now
                         </Button>
                     </FastLink>
