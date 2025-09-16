@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ArrowUp, Wallet } from "lucide-react"
+import { ArrowUp, Wallet, Quote } from "lucide-react"
 import { FastLink } from "../ui/fast-link"
 
 export function TestimonialsSection() {
@@ -45,7 +45,7 @@ export function TestimonialsSection() {
                     {testimonials.map((testimonial, index) => (
                         <div key={index} className="text-center bg-white p-8 rounded-lg shadow-lg">
                             {/* Placeholder circle for quote icon/image */}
-                            <div className="w-16 h-16 bg-slate-300 rounded-full mx-auto mb-6"></div>
+                            <div className="w-16 h-16 bg-slate-300 rounded-full mx-auto mb-6 flex items-center justify-center"><Quote className="w-8 h-8 text-[#223256]"/></div>
 
                             <blockquote className="text-[#223256] text-lg mb-4 leading-relaxed">&ldquo;{testimonial.quote}&rdquo;</blockquote>
 

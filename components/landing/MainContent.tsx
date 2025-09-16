@@ -71,17 +71,17 @@ export const MainContent: React.FC = () => {
 
   const articles = [
     {
-      title: "Introducing AGV Protocol",
+      title: "Introducing AGV Protocol ",
       description: "Introducing AGV Protocol: Unlocking the Future of Real-World Assets",
-      url: "https://docs.google.com/document/d/1WdsXlrIuJws5uCaO0q3dFp2sB32yWntfqcWXds6wKeI/edit?usp=drivesdk",
-      date: ""
+      url: "https://medium.com/@agvprotocol/introducing-agv-protocol-unlocking-the-future-of-real-world-assets-c0715b23ff63",
+      date: "2025-09-14"
     },
-    // {
-    //   title: "Understanding Multi-Chain Staking",
-    //   description: "A comprehensive guide to staking across different networks",
-    //   url: "#",
-    //   date: "2024-01-10"
-    // },
+    {
+       title: "rGGP Explained",
+       description: "How AGV Protocol Turns Real-World Yields into On-chain Rewards",
+       url: "https://medium.com/@agvprotocol/rggp-explained-how-agv-protocol-turns-real-world-yields-into-rewards-dacb0a7c31e9",
+       date: "2025-09-15"
+    },
     // {
     //   title: "Security Best Practices",
     //   description: "How to keep your NFTs and rewards safe",
