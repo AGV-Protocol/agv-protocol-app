@@ -153,7 +153,7 @@ export default function StakingPage() {
   const [staking, setStaking] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
 
-  // Staking duration
+  // Staking duration (minimum 7 days)
   const [stakingDuration, setStakingDuration] = useState<number>(7);
 
   // Selection state (lifted) for legacy rewards preview
@@ -167,7 +167,7 @@ export default function StakingPage() {
 
   // Indexer hook → current chain + collection
   const chainId = CHAIN_CONFIG[chainKey].id;
-  const { loading: nftLoading, error: nftError, ownedUnstaked, ownedStaked } = useStakingView({
+  const { loading: nftLoading, error: nftError, ownedUnstaked, ownedStaked, refetch: refetchStakingView } = useStakingView({
     chainId,
     collection: selectedCollection,
   });
@@ -234,7 +234,7 @@ export default function StakingPage() {
   async function handleStake(tokenIds: bigint[]) {
     if (!account?.address) return toast.error("Connect wallet first");
     if (tokenIds.length === 0) return toast.error("Select at least one tokenId");
-    if (stakingDuration < 1) return toast.error("Staking duration must be at least 1 day");
+    if (stakingDuration < 7) return toast.error("Staking duration must be at least 7 days");
 
     try {
       await ensureChain();
@@ -270,7 +270,7 @@ export default function StakingPage() {
       toast.success(`Staked for ${stakingDuration} day${stakingDuration > 1 ? "s" : ""}!`);
 
       clearSelection();
-      await Promise.all([refreshStats(), refetchRewards?.()]);
+      await Promise.all([refreshStats(), refetchRewards?.(), refetchStakingView?.()]);
     } catch (err: any) {
       toast.dismiss();
       toast.error(err?.shortMessage || err?.message || "Stake failed");
@@ -311,7 +311,7 @@ export default function StakingPage() {
       toast.dismiss();
       toast.success("Withdrawn!");
 
-      await Promise.all([refreshStats(), refetchRewards?.()]);
+      await Promise.all([refreshStats(), refetchRewards?.(), refetchStakingView?.()]);
     } catch (err: any) {
       toast.dismiss();
       toast.error(err?.shortMessage || err?.message || "Withdraw failed");
@@ -368,7 +368,7 @@ export default function StakingPage() {
                   <span className="font-semibold text-blue-300">
                     {CHAIN_CONFIG[chainKey].label}
                   </span>{" "}
-                  to earn rewards. Set a lock period (min 1 day).
+                  to earn rewards. Set a lock period (min 7 days).
                 </p>
               </div>
               <div className="hidden sm:block">
@@ -620,10 +620,10 @@ function DurationPanel({
           <input
             id="duration"
             type="number"
-            min="1"
+            min="7"
             max="730"
             value={stakingDuration}
-            onChange={(e) => setStakingDuration(Math.max(1, Number.parseInt(e.target.value) || 1))}
+            onChange={(e) => setStakingDuration(Math.max(7, Number.parseInt(e.target.value) || 7))}
             className="w-20 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-center"
           />
         </div>
@@ -638,7 +638,7 @@ function DurationPanel({
             <span className="font-semibold text-purple-300">
               {stakingDuration} day{stakingDuration > 1 ? "s" : ""}
             </span>
-            . You cannot withdraw until this period ends.
+            . You cannot withdraw until this period ends. Minimum staking period is 7 days.
           </p>
         </div>
       </div>

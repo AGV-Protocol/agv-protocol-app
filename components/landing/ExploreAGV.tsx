@@ -6,7 +6,7 @@ export const ExploreAGV: React.FC = () => {
   const carousel = [
     '/landing-car1.png',
     '/landing-car2.png',
-    '/landing-car3.png',
+    '/landing-car4.png',
   ]
 
   const [currentIndex, setCurrentIndex] = useState(0);

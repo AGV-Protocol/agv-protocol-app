@@ -48,7 +48,7 @@ export function BlockchainInfrastructure() {
                 </div>
                 <div className="relative">
                     <Image
-                        src="/landing-car1.png"
+                        src="/infra3.png"
                         alt="Solar panel farm with green grass strips"
                         width={600}
                         height={1000}
@@ -61,7 +61,7 @@ export function BlockchainInfrastructure() {
             <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
                 <div className="relative order-2 lg:order-1">
                     <Image
-                        src="/infrastructure.jpg"
+                        src="/infra1.png"
                         alt="Solar panel infrastructure with monitoring systems"
                         width={600}
                         height={400}
@@ -143,7 +143,7 @@ export function BlockchainInfrastructure() {
                 </div>
                 <div className="relative">
                     <Image
-                        src="/landing-car3.png"
+                        src="/infra2.png"
                         alt="Scalable solar panel infrastructure"
                         width={600}
                         height={400}
