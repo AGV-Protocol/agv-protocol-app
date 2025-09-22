@@ -136,50 +136,47 @@ export function useStakingView(params: { chainId: number; collection: Collection
   }, [account?.address, chainKey, nftCollection, agvAddress]);
 
   // ─── wallet NFTs: via your /api/wallet-nfts (Moralis-backed)
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      setErrorWallet(null);
-      setOwnedWallet([]);
-      if (!account?.address || !chainId || !agvAddress) return;
+  const loadWalletNfts = async () => {
+    if (!account?.address || !chainId || !agvAddress) return;
 
-      setLoadingWallet(true);
-      try {
-        const url = new URL("/api/wallet-nfts", window.location.origin);
-        url.searchParams.set("address", account.address);
-        url.searchParams.set("chain", toHexChain(chainId));
-        const res = await fetch(url.toString(), { cache: "no-store" });
-        if (!res.ok) throw new Error(await res.text());
-        const data = (await res.json()) as {
-          items: Array<{
-            tokenAddress: string;
-            tokenIdStr: string;
-            contractType?: "ERC721" | "ERC1155";
-            imageUrl?: string | null;
-            name?: string | null;
-          }>;
-        };
-        const items = (data?.items ?? [])
-          .filter((n) => n?.tokenAddress?.toLowerCase() === agvAddress)
-          .map<OwnedNft>((n) => ({
-            chainId,
-            tokenAddress: n.tokenAddress.toLowerCase(),
-            tokenId: BigInt(n.tokenIdStr || "0"),
-            standard: (n.contractType as any) === "ERC1155" ? "ERC1155" : "ERC721",
-            collection: { address: agvAddress },
-            imageUrl: toGateway(n.imageUrl || undefined),
-            name: n.name ?? null,
-          }));
-        if (active) setOwnedWallet(items);
-      } catch (e: any) {
-        if (active) setErrorWallet(e?.message || "Failed to load wallet NFTs");
-      } finally {
-        if (active) setLoadingWallet(false);
-      }
-    })();
-    return () => {
-      active = false;
-    };
+    setLoadingWallet(true);
+    setErrorWallet(null);
+    try {
+      const url = new URL("/api/wallet-nfts", window.location.origin);
+      url.searchParams.set("address", account.address);
+      url.searchParams.set("chain", toHexChain(chainId));
+      const res = await fetch(url.toString(), { cache: "no-store" });
+      if (!res.ok) throw new Error(await res.text());
+      const data = (await res.json()) as {
+        items: Array<{
+          tokenAddress: string;
+          tokenIdStr: string;
+          contractType?: "ERC721" | "ERC1155";
+          imageUrl?: string | null;
+          name?: string | null;
+        }>;
+      };
+      const items = (data?.items ?? [])
+        .filter((n) => n?.tokenAddress?.toLowerCase() === agvAddress)
+        .map<OwnedNft>((n) => ({
+          chainId,
+          tokenAddress: n.tokenAddress.toLowerCase(),
+          tokenId: BigInt(n.tokenIdStr || "0"),
+          standard: (n.contractType as any) === "ERC1155" ? "ERC1155" : "ERC721",
+          collection: { address: agvAddress },
+          imageUrl: toGateway(n.imageUrl || undefined),
+          name: n.name ?? null,
+        }));
+      setOwnedWallet(items);
+    } catch (e: any) {
+      setErrorWallet(e?.message || "Failed to load wallet NFTs");
+    } finally {
+      setLoadingWallet(false);
+    }
+  };
+
+  useEffect(() => {
+    loadWalletNfts();
   }, [account?.address, chainId, agvAddress]);
 
   // ─── merge on-chain + firestore (on-chain priority, no dups)
@@ -210,6 +207,13 @@ export function useStakingView(params: { chainId: number; collection: Collection
     return ownedWallet.filter((x) => !stakedSet.has(x.tokenId.toString()));
   }, [ownedWallet, unionStakedIds]);
 
+  const refetch = () => {
+    // Refetch on-chain data
+    rStake.refetch();
+    // Reload wallet NFTs
+    loadWalletNfts();
+  };
+
   return {
     loading: loadingWallet || rStake.isPending,
     error: errorWallet || (rStake.error ? String(rStake.error) : null) || errorFs,
@@ -217,5 +221,6 @@ export function useStakingView(params: { chainId: number; collection: Collection
     ownedStaked,
     onChainIds, // diagnostics
     fsActive,   // diagnostics
+    refetch,
   };
 }
