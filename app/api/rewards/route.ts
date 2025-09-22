@@ -169,6 +169,7 @@ export async function GET(req: NextRequest) {
             status: data.status ?? "active",
             txHash: data.txHash ?? null,
             kolId: data.kolId ?? null,
+            withdrawnAt: data.withdrawnAt ? data.withdrawnAt.toDate().toISOString() : null,
           },
         ];
       } catch (e) {

@@ -152,6 +152,7 @@ export default function StakingPage() {
 
   const [staking, setStaking] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
+  const [withdrawRefreshTrigger, setWithdrawRefreshTrigger] = useState(0);
 
   // Staking duration (minimum 7 days)
   const [stakingDuration, setStakingDuration] = useState<number>(7);
@@ -302,16 +303,18 @@ export default function StakingPage() {
         {
           wallet: account.address,
           chainId,
-          nftType: selectedCollection,
+          collectionType: selectedCollection,
           tokenIds: tokenIds.map(String),
           txHash: (receipt as any)?.transactionHash ?? null,
         },
-        "PATCH"
+        "POST"
       );
       toast.dismiss();
       toast.success("Withdrawn!");
 
       await Promise.all([refreshStats(), refetchRewards?.(), refetchStakingView?.()]);
+      // Trigger refresh of withdraw section
+      setWithdrawRefreshTrigger(prev => prev + 1);
     } catch (err: any) {
       toast.dismiss();
       toast.error(err?.shortMessage || err?.message || "Withdraw failed");
@@ -471,6 +474,7 @@ export default function StakingPage() {
           selectedCollection={selectedCollection}
           withdrawing={withdrawing}
           onWithdraw={handleWithdraw}
+          refreshTrigger={withdrawRefreshTrigger}
         />
       </div>
 
@@ -1124,12 +1128,14 @@ function WithdrawSection({
   selectedCollection,
   withdrawing,
   onWithdraw,
+  refreshTrigger,
 }: {
   accountAddress?: string;
   chainKey: ChainKey;
   selectedCollection: "seed" | "tree" | "solar" | "compute";
   withdrawing: boolean;
   onWithdraw: (ids: bigint[]) => Promise<void>;
+  refreshTrigger?: number;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -1181,6 +1187,7 @@ function WithdrawSection({
         // Separate active and withdrawn stakes
         const activeStakes = allStakes.filter((s: any) => s.status === "active" || s.status === "completed");
         const withdrawnStakes = allStakes.filter((s: any) => s.status === "withdrawn");
+        
 
         // Process active stakes
         const activeRows = activeStakes.map((s: any) => {
@@ -1223,7 +1230,7 @@ function WithdrawSection({
         setLoading(false);
       }
     })();
-  }, [accountAddress, chainKey, selectedCollection]);
+  }, [accountAddress, chainKey, selectedCollection, refreshTrigger]);
 
   const unlockedItems = useMemo(() => activeItems.filter((i) => i.unlocked), [activeItems]);
   const lockedItems = useMemo(() => activeItems.filter((i) => !i.unlocked), [activeItems]);
