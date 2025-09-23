@@ -154,8 +154,8 @@ export default function StakingPage() {
   const [withdrawing, setWithdrawing] = useState(false);
   const [withdrawRefreshTrigger, setWithdrawRefreshTrigger] = useState(0);
 
-  // Staking duration (minimum 7 days)
-  const [stakingDuration, setStakingDuration] = useState<number>(7);
+  // Staking duration (minimum 1 day)
+  const [stakingDuration, setStakingDuration] = useState<number>(1);
 
   // Selection state (lifted) for legacy rewards preview
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -235,7 +235,7 @@ export default function StakingPage() {
   async function handleStake(tokenIds: bigint[]) {
     if (!account?.address) return toast.error("Connect wallet first");
     if (tokenIds.length === 0) return toast.error("Select at least one tokenId");
-    if (stakingDuration < 7) return toast.error("Staking duration must be at least 7 days");
+    if (stakingDuration < 1) return toast.error("Staking duration must be at least 1 day");
 
     try {
       await ensureChain();
@@ -342,7 +342,7 @@ export default function StakingPage() {
     return `${totalRate.toFixed(1)} rGGP / day (${baseRate} × ${b}x bonus)`;
   }, [selectedCollection, stakingDuration]);
 
-  const presetDurations = [7, 14, 30, 90, 180, 365, 730];
+  const presetDurations = [1, 7, 14, 30, 90, 180, 365, 730];
   const handlePresetClick = (days: number) => setStakingDuration(days);
 
   // Build list of unstaked tokenIds as strings for selection grid
@@ -624,10 +624,10 @@ function DurationPanel({
           <input
             id="duration"
             type="number"
-            min="7"
+            min="1"
             max="730"
             value={stakingDuration}
-            onChange={(e) => setStakingDuration(Math.max(7, Number.parseInt(e.target.value) || 7))}
+            onChange={(e) => setStakingDuration(Math.max(1, Number.parseInt(e.target.value) || 1))}
             className="w-20 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-center"
           />
         </div>
@@ -642,7 +642,7 @@ function DurationPanel({
             <span className="font-semibold text-purple-300">
               {stakingDuration} day{stakingDuration > 1 ? "s" : ""}
             </span>
-            . You cannot withdraw until this period ends. Minimum staking period is 7 days.
+            . You cannot withdraw until this period ends. Minimum staking period is 1 day.
           </p>
         </div>
       </div>
