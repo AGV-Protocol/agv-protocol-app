@@ -56,12 +56,11 @@ export const Footer: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {/* Product Column */}
             <div className="space-y-3 sm:space-y-4">
-              <h3 className="text-white font-bold text-base sm:text-lg">Product</h3>
+              <h3 className="text-white font-bold text-base sm:text-lg">Resources</h3>
               <ul className="space-y-1 sm:space-y-2">
                 <li><Link href="/mint" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">NFT Minting</Link></li>
-                <li><Link href="/dashboard" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Dashboard</Link></li>
+                <li><Link href="/staking" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">NFT Staking</Link></li>
                 <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">KOL Program</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Analytics</Link></li>
               </ul>
             </div>
             
@@ -70,9 +69,8 @@ export const Footer: React.FC = () => {
               <h3 className="text-white font-bold text-base sm:text-lg">Company</h3>
               <ul className="space-y-1 sm:space-y-2">
                 <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">About Us</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Careers</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Press</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Blog</Link></li>
+                <li><Link href="/career" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Careers</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Blogs</Link></li>
               </ul>
             </div>
             
@@ -82,7 +80,6 @@ export const Footer: React.FC = () => {
               <ul className="space-y-1 sm:space-y-2">
                 <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Help Center</Link></li>
                 <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Documentation</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">API Reference</Link></li>
                 <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Contact Support</Link></li>
               </ul>
             </div>
