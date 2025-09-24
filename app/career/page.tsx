@@ -16,7 +16,8 @@ import {
   TrendingUp, 
   ArrowRight,
   Briefcase,
-  Laptop
+  Laptop,
+  TriangleAlert
 } from "lucide-react";
 import Image from "next/image";
 
@@ -61,26 +62,26 @@ export default function CareerPage() {
 
   // Sample data for open roles
   const openRoles = [
-    {
-      icon: Code,
-      title: "Senior Blockchain Developer",
-      description: "Lead the development of our smart contracts and blockchain infrastructure. Experience with Solidity and Web3 required."
-    },
-    {
-      icon: TrendingUp,
-      title: "Product Manager",
-      description: "Drive product strategy and roadmap for our NFT ecosystem. Strong analytical skills and Web3 experience preferred."
-    },
-    {
-      icon: Briefcase,
-      title: "Business Development",
-      description: "Build partnerships and expand our ecosystem. Experience in Web3 business development and relationship building."
-    },
-    {
-      icon: Laptop,
-      title: "Frontend Developer",
-      description: "Create beautiful and intuitive user interfaces for our platform. React, TypeScript, and Web3 integration experience."
-    }
+    // {
+    //   icon: Code,
+    //   title: "Senior Blockchain Developer",
+    //   description: "Lead the development of our smart contracts and blockchain infrastructure. Experience with Solidity and Web3 required."
+    // },
+    // {
+    //   icon: TrendingUp,
+    //   title: "Product Manager",
+    //   description: "Drive product strategy and roadmap for our NFT ecosystem. Strong analytical skills and Web3 experience preferred."
+    // },
+    // {
+    //   icon: Briefcase,
+    //   title: "Business Development",
+    //   description: "Build partnerships and expand our ecosystem. Experience in Web3 business development and relationship building."
+    // },
+    // {
+    //   icon: Laptop,
+    //   title: "Frontend Developer",
+    //   description: "Create beautiful and intuitive user interfaces for our platform. React, TypeScript, and Web3 integration experience."
+    // }
   ];
 
   const handleReadMore = (role: string) => {
@@ -123,11 +124,11 @@ export default function CareerPage() {
       {/* Our Company Values Section */}
       <section className="py-16 sm:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-left mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#223256] mb-4">
               OUR COMPANY VALUES
             </h2>
-            <p className="text-lg text-[#223256] max-w-3xl mx-auto">
+            <p className="text-lg text-[#223256] max-w-3xl">
               These core values guide everything we do and shape our company culture.
             </p>
           </div>
@@ -148,11 +149,11 @@ export default function CareerPage() {
       {/* Perks & Benefits Section */}
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-left mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#223256] mb-4">
               PERKS & BENEFITS
             </h2>
-            <p className="text-lg text-[#223256] max-w-3xl mx-auto">
+            <p className="text-lg text-[#223256] max-w-3xl">
               We offer competitive benefits and perks to support our team&apos;s success and well-being.
             </p>
           </div>
@@ -173,11 +174,11 @@ export default function CareerPage() {
       {/* Open Roles Section */}
       <section className="py-16 sm:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-left mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#223256] mb-4">
               OPEN ROLES
             </h2>
-            <p className="text-lg text-[#223256] max-w-3xl mx-auto">
+            <p className="text-lg text-[#223256] max-w-3xl">
               Join our team and help shape the future of Web3 technology.
             </p>
           </div>
@@ -209,6 +210,7 @@ export default function CareerPage() {
               </>
             ) : (
               <div className="text-center py-12">
+                <TriangleAlert className="w-10 h-10 text-white mx-auto mb-4" />
                 <p className="text-white text-xl font-medium">No openings right now</p>
               </div>
             )}

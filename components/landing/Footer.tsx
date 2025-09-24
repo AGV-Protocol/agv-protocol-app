@@ -70,7 +70,7 @@ export const Footer: React.FC = () => {
               <ul className="space-y-1 sm:space-y-2">
                 <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">About Us</Link></li>
                 <li><Link href="/career" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Careers</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Blogs</Link></li>
+                <li><Link href="/blog" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Blogs</Link></li>
               </ul>
             </div>
             
