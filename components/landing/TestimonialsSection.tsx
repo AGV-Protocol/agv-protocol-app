@@ -3,20 +3,23 @@
 import { Button } from "@/components/ui/button"
 import { ArrowUp, Wallet, Quote } from "lucide-react"
 import { FastLink } from "../ui/fast-link"
+import { useTranslations } from "@/hooks/useTranslations"
 
 export function TestimonialsSection() {
+    const { t, locale } = useTranslations();
+    
     const testimonials = [
         {
-            quote: "Tokenization of real-world assets could unlock a $10T market by 2030.",
-            source: "Boston Consulting Group",
+            quote: t('testimonials.quote1'),
+            source: t('testimonials.source1'),
         },
         {
-            quote: "ESG and energy-linked infrastructure are set to dominate institutional flows over the next decade.",
-            source: "BlackRock 2024 Outlook",
+            quote: t('testimonials.quote2'),
+            source: t('testimonials.source2'),
         },
         {
-            quote: "Distributed green energy is the foundation of long-term economic resilience.",
-            source: "World Bank",
+            quote: t('testimonials.quote3'),
+            source: t('testimonials.source3'),
         },
     ]
 
@@ -30,13 +33,10 @@ export function TestimonialsSection() {
                 {/* Header Section */}
                 <div className="text-center mb-16">
                     <h2 className="text-4xl text-center md:text-5xl font-bold text-[#223256] mb-6 text-balance">
-                        The Future of Infrastructure Is Real,
-                        <br />
-                        Green, and On-Chain
+                        {t('testimonials.title1')}
                     </h2>
                     <p className="text-lg text-[#223256] max-w-4xl mx-auto leading-relaxed">
-                        Top institutions agree: real-world assets, sustainable energy, and blockchain integration are shaping the
-                        next trillion-dollar opportunity. AGV is positioned at the intersection of these macro trends.
+                        {t('testimonials.description')}
                     </p>
                 </div>
 
@@ -57,13 +57,11 @@ export function TestimonialsSection() {
                 {/* Call to Action Section */}
                 <div className="text-center">
                     <h3 className="text-4xl text-center md:text-5xl font-bold text-[#223256] mb-8 text-balance">
-                        The Future Is Powered by Land,
-                        <br />
-                        Sun, and Code
+                        {t('testimonials.title2')}
                     </h3>
-                    <FastLink href="/mint">
+                    <FastLink href={`/${locale}/mint`}>
                         <Button size="lg" className="border border-[#223256] hover:bg-[#223256]/80 hover:text-white text-[#223256] px-8 py-3 text-lg bg-white">
-                            <Wallet className="w-5 h-5" /> Invest Now
+                            <Wallet className="w-5 h-5" /> {t('testimonials.investNow')}
                         </Button>
                     </FastLink>
                     

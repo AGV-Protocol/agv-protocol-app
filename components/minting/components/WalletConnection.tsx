@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { WalletConnect } from "@/components/wallet/wallet-connect";
+import { useTranslations } from "@/hooks/useTranslations";
 import { SectionCard } from "./SectionCard";
 
 interface WalletConnectionProps {
@@ -31,6 +32,7 @@ export const WalletConnection: React.FC<WalletConnectionProps> = ({
   checkingWl,
   wlEligible,
 }) => {
+  const { t } = useTranslations();
   // KOL Referral
   const [kolDigits, setKolDigits] = useState("");
   const [kolLocked, setKolLocked] = useState(false);
@@ -45,14 +47,14 @@ export const WalletConnection: React.FC<WalletConnectionProps> = ({
             <Shield className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-white">Referral ID</h3>
-            <p className="text-white/70 text-sm">Input 6 Digit ID (Only input ID provided)</p>
+            <h3 className="text-xl font-semibold text-white">{t('minting.referralId')}</h3>
+            <p className="text-white/70 text-sm">{t('minting.input6DigitId')}</p>
           </div>
         </div>
         <div className="max-w-xs">
           <Input
             type="text"
-            placeholder="Enter 6 digits"
+            placeholder={t('minting.enter6Digits')}
             value={kolDigits}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "").slice(0, 6);
@@ -63,7 +65,7 @@ export const WalletConnection: React.FC<WalletConnectionProps> = ({
             disabled={kolLocked}
           />
           {fullKolId && (
-            <p className="text-sm text-purple-300 mt-2">KOL ID: {fullKolId}</p>
+            <p className="text-sm text-purple-300 mt-2">{t('minting.kolId')}: {fullKolId}</p>
           )}
         </div>
       </div>
@@ -80,9 +82,9 @@ export const WalletConnection: React.FC<WalletConnectionProps> = ({
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
               <Wallet className="w-8 h-8 text-white/60" />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Connect Your Wallet</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">{t('minting.connectYourWallet')}</h3>
             <p className="text-white/70 text-sm mb-6">
-              Connect your wallet to start minting AGV Protocol NFTs
+              {t('minting.connectToMint')}
             </p>
             <WalletConnect />
           </div>

@@ -1,15 +1,20 @@
+"use client";
 import React from "react";
 import { WalletConnect } from "@/components/wallet/wallet-connect";
 import { FastLink } from "../ui/fast-link";
+import { LanguageSwitcher } from "../ui/language-switcher";
+import { useTranslations } from "@/hooks/useTranslations";
 import Image from "next/image"
 
 export const Header: React.FC = () => {
+  const { t, locale } = useTranslations();
+  
   return (
     <header className="sticky top-0 z-50 bg-[#3399FF] px-4 sm:px-6 py-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center space-x-2 sm:space-x-3">
-          <FastLink href="/" className="flex items-center space-x-2">
+          <FastLink href={`/${locale}/landing`} className="flex items-center space-x-2">
             <Image
               src="/logo.png"
               alt="AGV Protocol"
@@ -23,15 +28,18 @@ export const Header: React.FC = () => {
 
         {/* Navigation */}
         <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
-          <a href="/" className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">Home</a>
-          <a href="/coming-soon" className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">About</a>
-          <a href="/career" className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">Career</a>
-          <a href="/blog" className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">Resources</a>
-          <a href="/coming-soon" className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">Investors Relations</a>
+          <a href={`/${locale}/landing`} className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">{t('nav.home')}</a>
+          <a href={`/${locale}/coming-soon`} className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">{t('nav.about')}</a>
+          <a href={`/${locale}/career`} className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">{t('nav.career')}</a>
+          <a href={`/${locale}/blog`} className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">{t('nav.blog')}</a>
+          <a href={`/${locale}/coming-soon`} className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">{t('nav.investors')}</a>
         </nav>
 
-        {/* Wallet Connect */}
-        <WalletConnect />
+        {/* Right side - Language Switcher and Wallet Connect */}
+        <div className="flex items-center space-x-4">
+          <LanguageSwitcher className="bg-white/10 hover:bg-white/20 text-white border-white/20" />
+          <WalletConnect />
+        </div>
       </div>
     </header>
   );

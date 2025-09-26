@@ -1,8 +1,11 @@
 'use client'
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "@/hooks/useTranslations";
 import Image from "next/image"
 
 export const ExploreAGV: React.FC = () => {
+  const { t } = useTranslations();
+  
   const carousel = [
     '/landing-car1.png',
     '/landing-car2.png',
@@ -26,7 +29,7 @@ export const ExploreAGV: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center">
         {/* Title */}
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#223256] mb-6 sm:mb-8">
-          Explore AGV&apos;s On-Chain Infrastructure
+          {t('exploreagv.title')}
         </h2>
         
         {/* Description */}
@@ -34,7 +37,7 @@ export const ExploreAGV: React.FC = () => {
           className="text-base text-[#223256] leading-relaxed max-w-4xl mb-8 sm:mb-12 text-center tracking-wide"
           style={{ wordSpacing: "0.05em" }}
         >
-          Come visit our real-world project sites and see how orchards, solar arrays, and blockchain come together. From China&apos;s green zones to future international hubs, AGV is building the future of land-based RWA on-chain.
+          {t('exploreagv.description')}
         </p>
         
         {/* Carousel Container */}

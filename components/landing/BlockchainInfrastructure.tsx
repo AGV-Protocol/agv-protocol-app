@@ -1,49 +1,60 @@
+"use client";
+import React from "react";
+import { useTranslations } from "@/hooks/useTranslations";
 import Image from "next/image"
 
 export function BlockchainInfrastructure() {
+  const { t } = useTranslations();
     return (
         <section className="py-16 px-6 max-w-7xl mx-auto">
             {/* Header */}
             <div className="text-center mb-16">
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold !text-[#223256] mb-6 sm:mb-8">
-                    Revolutionizing Infrastructure with Blockchain
+                    {t('blockchain.title')}
                 </h2>
             </div>
 
             {/* Real Assets Section */}
             <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
                 <div className="space-y-6">
-                    <h2 className="text-2xl !text-[#223256] font-bold text-foreground mb-6">REAL ASSETS. REAL REVENUE.</h2>
+                    <h2 className="text-2xl !text-[#223256] font-bold text-foreground mb-6">{t('blockchain.realAssets')}</h2>
                     <p 
                       className="text-base text-[#223256] leading-relaxed mb-4 tracking-wide"
                       style={{ wordSpacing: "0.05em" }}
                     >
-                      Each AGV unit includes:
+                      {t('blockchain.eachUnit')}
                     </p>
                     <ul className="space-y-3 text-muted-foreground">
                         <li className="flex items-start">
                             <span className="text-[#223256] mr-2">•</span>
-                            100 mu high-density apple orchards
+                            {t('blockchain.item1')}
                         </li>
                         <li className="flex items-start">
                             <span className="text-[#223256] mr-2">•</span>
-                            6MW utility-grade solar farm
+                            {t('blockchain.item2')}
                         </li>
                         <li className="flex items-start">
                             <span className="text-[#223256] mr-2">•</span>
-                            Annual revenue: $180,000 - $280,000
+                            {t('blockchain.item3')}
                         </li>
                         <li className="flex items-start">
                             <span className="text-[#223256] mr-2">•</span>
-                            IRR target: 18% - 26%
+                            {t('blockchain.item4')}
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-[#223256] mr-2">•</span>
+                            {t('blockchain.item5')}
+                        </li>
+                        <li className="flex items-start">
+                            <span className="text-[#223256] mr-2">•</span>
+                            {t('blockchain.item6')}
                         </li>
                     </ul>
                     <p 
                       className="text-base text-[#223256] leading-relaxed tracking-wide"
                       style={{ wordSpacing: "0.05em" }}
                     >
-                        Assets are land-based, yield-producing, and inflation-resistant — not synthetic tokens or speculative DeFi
-                        experiments.
+                        {t('blockchain.assetsDescription')}
                     </p>
                 </div>
                 <div className="relative">
@@ -69,43 +80,36 @@ export function BlockchainInfrastructure() {
                     />
                 </div>
                 <div className="space-y-6 order-1 lg:order-2">
-                    <h2 className="text-2xl !text-[#223256] font-bold text-foreground mb-6">ON-CHAIN DATA INFRASTRUCTURE</h2>
+                    <h2 className="text-2xl !text-[#223256] font-bold text-foreground mb-6">{t('blockchain.onChainData')}</h2>
                     <p 
                       className="text-base text-[#223256] leading-relaxed mb-4 tracking-wide"
                       style={{ wordSpacing: "0.05em" }}
                     >
-                      On-Chain Data Infrastructure
-                    </p>
-                    <p 
-                      className="text-base text-[#223256] leading-relaxed mb-4 tracking-wide"
-                      style={{ wordSpacing: "0.05em" }}
-                    >
-                      Every unit is equipped with:
+                      {t('blockchain.onChainDataDesc')}
                     </p>
                     <ul className="space-y-3 text-muted-foreground">
                         <li className="flex items-start">
                             <span className="text-[#223256] mr-2">•</span>
-                            IoT sensors for real-time yield and energy data
+                            {t('blockchain.onChainItem1')}
                         </li>
                         <li className="flex items-start">
                             <span className="text-[#223256] mr-2">•</span>
-                            Smart contracts and NFT mapping
+                            {t('blockchain.onChainItem2')}
                         </li>
                         <li className="flex items-start">
                             <span className="text-[#223256] mr-2">•</span>
-                            Dashboards synced with satellite feeds
+                            {t('blockchain.onChainItem3')}
                         </li>
                         <li className="flex items-start">
                             <span className="text-[#223256] mr-2">•</span>
-                            Token emission linked to verified output
+                            {t('blockchain.onChainItem4')}
                         </li>
                     </ul>
                     <p 
                       className="text-base text-[#223256] leading-relaxed tracking-wide"
                       style={{ wordSpacing: "0.05em" }}
                     >
-                        Users can monitor growth, power generation, and token accrual — all transparently recorded and accessible
-                        on-chain.
+                        {t('blockchain.onChainDataDesc2')}
                     </p>
                 </div>
             </div>
@@ -113,32 +117,32 @@ export function BlockchainInfrastructure() {
             {/* Built to Scale Section */}
             <div className="grid lg:grid-cols-2 gap-12 items-center">
                 <div className="space-y-6">
-                    <h2 className="text-2xl !text-[#223256] font-bold text-foreground mb-6">BUILT TO SCALE, GLOBALLY</h2>
+                    <h2 className="text-2xl !text-[#223256] font-bold text-foreground mb-6">{t('blockchain.builtToScale')}</h2>
                     <p 
                       className="text-base text-[#223256] leading-relaxed mb-4 tracking-wide"
                       style={{ wordSpacing: "0.05em" }}
                     >
-                      Each AGV unit is standardized and tokenized via SPV:
+                      {t('blockchain.builtToScaleDesc')}
                     </p>
                     <ul className="space-y-3 text-muted-foreground">
                         <li className="flex items-start">
                             <span className="text-[#223256] mr-2">•</span>
-                            Expandable with battery storage & edge compute
+                            {t('blockchain.builtItem1')}
                         </li>
                         <li className="flex items-start">
                             <span className="text-[#223256] mr-2">•</span>
-                            Modular design supports irrigation, AI nodes, or carbon tracking
+                            {t('blockchain.builtItem2')}
                         </li>
                         <li className="flex items-start">
                             <span className="text-[#223256] mr-2">•</span>
-                            Applicable across Asia, LATAM, Africa, and MENA
+                            {t('blockchain.builtItem3')}
                         </li>
                     </ul>
                     <p 
                       className="text-base text-[#223256] leading-relaxed tracking-wide"
                       style={{ wordSpacing: "0.05em" }}
                     >
-                        CEX-ready, DeFi-compatible, and ESG-aligned — AGV is built for global integration.
+                        {t('blockchain.builtToScaleDesc2')}
                     </p>
                 </div>
                 <div className="relative">

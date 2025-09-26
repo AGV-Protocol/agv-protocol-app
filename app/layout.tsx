@@ -48,11 +48,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
+    <html suppressHydrationWarning className={inter.variable}>
       <head>
-        {/* Optional prefetches */}
-        <link rel="prefetch" href="/dashboard" />
-        <link rel="prefetch" href="/kol" />
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
       </head>
@@ -60,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* ✅ Providers is a client component, rendered directly */}
         <Providers>
           <PageLoading />
-          <div className="relative flex min-h-screen flex-col">{children}</div>
+          {children}
         </Providers>
       </body>
     </html>

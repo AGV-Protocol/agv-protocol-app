@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "@/hooks/useTranslations";
 
 interface FooterProps {
   backgroundClass?: string;
@@ -29,32 +30,33 @@ interface FooterProps {
 }
 
 export function Footer({ backgroundClass = "bg-background", textColorClass = "text-foreground" }: FooterProps) {
+  const { t } = useTranslations();
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
     product: [
-      { name: "NFT Minting", href: "/mint" },
-      { name: "Dashboard", href: "/dashboard" },
-      { name: "KOL Program", href: "/coming-soon" },
-      { name: "Analytics", href: "/coming-soon" },
+      { name: t('footer.nftMinting'), href: "/mint" },
+      { name: t('nav.dashboard'), href: "/dashboard" },
+      { name: t('footer.kolProgram'), href: "/coming-soon" },
+      { name: t('dashboard.analytics'), href: "/coming-soon" },
     ],
     company: [
-      { name: "About Us", href: "/coming-soon" },
-      { name: "Careers", href: "/coming-soon" },
+      { name: t('footer.aboutUs'), href: "/coming-soon" },
+      { name: t('footer.careers'), href: "/coming-soon" },
       { name: "Press", href: "/coming-soon" },
-      { name: "Blog", href: "/coming-soon" },
+      { name: t('footer.blogs'), href: "/coming-soon" },
     ],
     support: [
-      { name: "Help Center", href: "/coming-soon" },
-      { name: "Documentation", href: "/coming-soon" },
+      { name: t('footer.helpCenter'), href: "/coming-soon" },
+      { name: t('footer.documentation'), href: "/coming-soon" },
       { name: "API Reference", href: "/coming-soon" },
-      { name: "Contact Support", href: "/coming-soon" },
+      { name: t('footer.contactSupport'), href: "/coming-soon" },
     ],
     legal: [
-      { name: "Privacy Policy", href: "/coming-soon" },
-      { name: "Terms of Service", href: "/coming-soon" },
-      { name: "Cookie Policy", href: "/coming-soon" },
-      { name: "GDPR", href: "/coming-soon" },
+      { name: t('footer.privacy'), href: "/coming-soon" },
+      { name: t('footer.terms'), href: "/coming-soon" },
+      { name: t('footer.cookiePolicy'), href: "/coming-soon" },
+      { name: t('footer.gdpr'), href: "/coming-soon" },
     ],
   };
 
@@ -66,9 +68,9 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
   ];
 
   const features = [
-    { icon: Shield, text: "Secure & Trusted" },
-    { icon: Zap, text: "Lightning Fast" },
-    { icon: Globe, text: "Multi-Chain" },
+    { icon: Shield, text: t('footer.secure') },
+    { icon: Zap, text: t('footer.fast') },
+    { icon: Globe, text: t('footer.multichain') },
   ];
 
   return (
@@ -118,13 +120,12 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
               />
               <div>
                 <h2 className={`text-lg md:text-xl font-bold ${textColorClass}`}>AGV Protocol</h2>
-                <p className={`text-xs md:text-sm ${textColorClass === 'text-white' ? 'text-white/70' : 'text-muted-foreground'}`}>NFT Minting Platform</p>
+                <p className={`text-xs md:text-sm ${textColorClass === 'text-white' ? 'text-white/70' : 'text-muted-foreground'}`}>{t('footer.nftMinting')}</p>
               </div>
             </div>
             
             <p className={`text-sm md:text-base max-w-md ${textColorClass === 'text-white' ? 'text-white/80' : 'text-muted-foreground'}`}>
-              The future of decentralized computing through innovative NFT technology. 
-              Join thousands of users minting exclusive AGV NFTs across multiple blockchain networks.
+              {t('footer.description')}
             </p>
             
             {/* Feature Badges */}

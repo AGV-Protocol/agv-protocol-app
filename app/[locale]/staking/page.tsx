@@ -391,6 +391,7 @@ export default function StakingPage() {
             activeChainName={activeChain?.name}
             selectedCollection={selectedCollection}
             setSelectedCollection={setSelectedCollection}
+            t={t}
           />
         </div>
 
@@ -400,33 +401,34 @@ export default function StakingPage() {
           setStakingDuration={setStakingDuration}
           presetDurations={presetDurations}
           handlePresetClick={handlePresetClick}
+          t={t}
         />
 
         {/* Stats */}
         <div className="mt-8">
           <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
             <div className="w-2 h-2 bg-white rounded-full"></div>
-            Staking Overview
+            {t('staking.overview')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StatCard
-              title="Staked NFTs"
+              title={t('staking.stakedNfts')}
               value={stakedCount.toString()}
-              subtitle="Currently staked"
+              subtitle={t('staking.currentlyStaked')}
               icon={<Lock className="w-6 h-6 text-white" />}
               gradient="from-blue-500 to-cyan-500"
             />
             <StatCard
-              title="Available Rewards"
+              title={t('staking.availableRewards')}
               value={rewardsData?.totals?.accrued?.toFixed(2) || "0.00"}
-              subtitle="rGGP ready to claim"
+              subtitle={t('staking.rggpReadyToClaim')}
               icon={<Coins className="w-6 h-6 text-white" />}
               gradient="from-green-500 to-emerald-500"
             />
             <StatCard
-              title="Daily Rewards"
+              title={t('staking.dailyRewards')}
               value={dailyRewardHint}
-              subtitle="Per NFT staked"
+              subtitle={t('staking.perNftStaked')}
               icon={<ArrowRightLeft className="w-6 h-6 text-white" />}
               gradient="from-blue-500 to-cyan-500"
             />
@@ -458,6 +460,7 @@ export default function StakingPage() {
           onClear={clearSelection}
           stakingDuration={stakingDuration}
           rewardPreview={rewardPreview}
+          t={t}
         />
 
         {/* Your Stakes (from /api/rewards) — static remaining text (no live updates) */}
@@ -477,6 +480,7 @@ export default function StakingPage() {
           withdrawing={withdrawing}
           onWithdraw={handleWithdraw}
           refreshTrigger={withdrawRefreshTrigger}
+          t={t}
         />
       </div>
 
@@ -497,12 +501,14 @@ function SelectorPanel({
   activeChainName,
   selectedCollection,
   setSelectedCollection,
+  t,
 }: {
   chainKey: ChainKey;
   setChainKey: (k: ChainKey) => void;
   activeChainName?: string;
   selectedCollection: "seed" | "tree" | "solar" | "compute";
   setSelectedCollection: (v: "seed" | "tree" | "solar" | "compute") => void;
+  t: (key: string) => string;
 }) {
   return (
     <>
@@ -510,7 +516,7 @@ function SelectorPanel({
       <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
         <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
           <div className="w-2 h-2 bg-white rounded-full"></div>
-          Select Network
+          {t('staking.selectNetwork')}
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
           {(["56", "42161", "137"] as ChainKey[]).map((k) => (
@@ -537,7 +543,7 @@ function SelectorPanel({
           ))}
         </div>
         <div className="mt-4 text-sm tracking-wide text-white/70">
-          Current wallet chain: <span className="text-blue-300">{activeChainName ?? "Not connected"}</span>
+          {t('staking.currentWalletChain')}: <span className="text-blue-300">{activeChainName ?? t('staking.notConnected')}</span>
         </div>
       </div>
 
@@ -545,7 +551,7 @@ function SelectorPanel({
       <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
         <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
           <div className="w-2 h-2 bg-white rounded-full"></div>
-          Select NFT Collection
+          {t('staking.selectNftCollection')}
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           {["seed", "tree", "solar", "compute"].map((collection) => (
@@ -587,21 +593,23 @@ function DurationPanel({
   setStakingDuration,
   presetDurations,
   handlePresetClick,
+  t,
 }: {
   stakingDuration: number;
   setStakingDuration: (n: number) => void;
   presetDurations: number[];
   handlePresetClick: (n: number) => void;
+  t: (key: string) => string;
 }) {
   return (
     <div className="mt-6 bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/10 p-3 sm:p-6">
       <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
         <div className="w-2 h-2 bg-white rounded-full"></div>
-        Select Staking Duration
+        {t('staking.selectStakingDuration')}
       </h3>
       <div className="space-y-4">
         <div className="space-y-3">
-          <label className="text-white/80 text-sm font-medium block">Quick Select:</label>
+          <label className="text-white/80 text-sm font-medium block">{t('staking.quickSelect')}:</label>
           <div className="flex flex-wrap gap-2">
             {presetDurations.map((days) => (
               <button
@@ -775,6 +783,7 @@ function StakeFlow({
   onClear,
   stakingDuration,
   rewardPreview,
+  t,
 }: {
   accountAddress?: string;
   chainKey: ChainKey;
@@ -789,6 +798,7 @@ function StakeFlow({
   onClear: () => void;
   stakingDuration: number;
   rewardPreview: { count: number; base: number; mult: number; perNftDaily: number; totalDaily: number; scheduledTotal: number };
+  t: (key: string) => string;
 }) {
   const fallback = `/${selectedCollection}pass.jpg`;
 
@@ -1020,7 +1030,7 @@ function StakesFromRewards({
       <h2 className="text-xl text-white font-semibold mb-4">Your Stakes</h2>
 
       {!wallet ? (
-        <p className="text-white/60">Connect your wallet to view stakes.</p>
+        <p className="text-white/60">{t('staking.connectWalletToViewStakes')}</p>
       ) : loading ? (
         <div className="text-center py-8">
           <Loader2 className="w-8 h-8 animate-spin mx-auto text-white/60" />
@@ -1131,6 +1141,7 @@ function WithdrawSection({
   withdrawing,
   onWithdraw,
   refreshTrigger,
+  t,
 }: {
   accountAddress?: string;
   chainKey: ChainKey;
@@ -1138,6 +1149,7 @@ function WithdrawSection({
   withdrawing: boolean;
   onWithdraw: (ids: bigint[]) => Promise<void>;
   refreshTrigger?: number;
+  t: (key: string) => string;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -1227,7 +1239,7 @@ function WithdrawSection({
         setSelected(Object.fromEntries(activeRows.map((r) => [r.tokenId, false])));
       } catch (e) {
         console.error("WithdrawSection load error", e);
-        setError("Failed to load staked NFTs.");
+        setError(t('staking.failedToLoadStakedNfts'));
       } finally {
         setLoading(false);
       }
@@ -1248,17 +1260,17 @@ function WithdrawSection({
       <div className="mb-6">
         <h3 className="text-xl font-semibold text-white flex items-center gap-2">
           <div className="w-2 h-2 bg-white rounded-full"></div>
-          Withdraw Staked NFTs
+          {t('staking.withdrawStakedNfts')}
         </h3>
-        <p className="text-white/60 text-sm mt-1">Select your staked NFTs. Only unlocked NFTs can be withdrawn.</p>
+        <p className="text-white/60 text-sm mt-1">{t('staking.selectStakedNftsDescription')}</p>
       </div>
 
       {!accountAddress ? (
-        <div className="text-white/60">Connect your wallet to see staked NFTs.</div>
+        <div className="text-white/60">{t('staking.connectWalletToSeeStakedNfts')}</div>
       ) : loading ? (
         <div className="text-center py-8">
           <Loader2 className="w-8 h-8 animate-spin mx-auto text-white/60" />
-          <p className="text-white/60 mt-2">Loading staked NFTs…</p>
+          <p className="text-white/60 mt-2">{t('staking.loadingStakedNfts')}</p>
         </div>
       ) : error ? (
         <div className="text-center py-8">

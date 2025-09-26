@@ -1,21 +1,24 @@
+"use client";
 import React from "react";
+import { useTranslations } from "@/hooks/useTranslations";
 import Image from "next/image"
 import { FileText } from "lucide-react";
 
 export const ThreeLayer: React.FC = () => {
+    const { t } = useTranslations();
+    
     const articles = [
         {
-            title: "Fruit-Backed NFTs",
-            description: "AGV transforms apple orchards into tokenized assets.Each NFT maps to a real tree, producing fruit, revenue, and verifiable yield on- chain.",
-            
+            title: t('threelayer.fruit.title'),
+            description: t('threelayer.fruit.description'),
         },
         {
-            title: "Solar-Driven Rewards",
-            description: "Each unit includes 6MW of solar capacity powering not only the farm,but also edge nodes and energy- backed token minting — \"sunlight as income.\"",
+            title: t('threelayer.solar.title'),
+            description: t('threelayer.solar.description'),
         },
         {
-            title: "DePIN-Ready Infrastructure",
-            description: "AGV unites sensors, smart contracts, and real-time data to power edge nodes, record carbon, and deliver Web3 services worldwide."
+            title: t('threelayer.depin.title'),
+            description: t('threelayer.depin.description'),
         }
     ];
     return (
@@ -23,7 +26,7 @@ export const ThreeLayer: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center">
                 {/* Title */}
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#223256] mb-6 sm:mb-8">
-                    Three Layers of Real-World Yield
+                    {t('threelayer.title')}
                 </h2>
 
                 <div className="mb-8">
