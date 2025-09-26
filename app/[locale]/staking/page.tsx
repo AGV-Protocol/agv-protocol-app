@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { Footer } from "@/components/layout/footer";
 import { useTranslations } from "@/hooks/useTranslations";
 import {
@@ -61,11 +62,12 @@ function getImageSrc(nft: { imageUrl?: string }, fallback?: string) {
 }
 
 // One-shot remaining string (no live interval updates)
-function formatRemainingOnce(unlockAtISO: string) {
-  const now = Date.now();
-  const unlock = new Date(unlockAtISO).getTime();
-  const remaining = unlock - now;
-  if (remaining <= 0) return "Unlocked";
+function formatRemainingOnce(unlockAtISO: string, t?: (key: string) => string) {
+  try {
+    const now = Date.now();
+    const unlock = new Date(unlockAtISO).getTime();
+    const remaining = unlock - now;
+    if (remaining <= 0) return t ? t('staking.unlocked') : 'Unlocked';
   const totalSec = Math.floor(remaining / 1000);
   const d = Math.floor(totalSec / 86400);
   const h = Math.floor((totalSec % 86400) / 3600);
@@ -73,6 +75,9 @@ function formatRemainingOnce(unlockAtISO: string) {
   if (d > 0) return `${d}d ${h}h`;
   if (h > 0) return `${h}h ${m}m`;
   return `${m}m`;
+  } catch (error) {
+    return 'Unlocked';
+  }
 }
 
 async function postJSON<T>(url: string, body: any, method: "POST" | "PATCH" = "POST"): Promise<T> {
@@ -235,18 +240,18 @@ export default function StakingPage() {
   }
 
   async function handleStake(tokenIds: bigint[]) {
-    if (!account?.address) return toast.error("Connect wallet first");
-    if (tokenIds.length === 0) return toast.error("Select at least one tokenId");
-    if (stakingDuration < 1) return toast.error("Staking duration must be at least 1 day");
+    if (!account?.address) return toast.error(t('staking.connectWalletFirst'));
+    if (tokenIds.length === 0) return toast.error(t('staking.selectAtLeastOneToken'));
+    if (stakingDuration < 1) return toast.error(t('staking.durationMustBeAtLeastOneDay'));
 
     try {
       await ensureChain();
       setStaking(true);
-      toast.loading("Approving (if needed)…");
+      toast.loading(t('staking.approvingIfNeeded'));
       await ensureApproval();
 
       toast.dismiss();
-      toast.loading("Staking on-chain…");
+      toast.loading(t('staking.stakingOnChain'));
       const tx = await prepareContractCall({
         contract: stake,
         method: "stake",
@@ -256,7 +261,7 @@ export default function StakingPage() {
       toast.dismiss();
 
       // Record stakes via API (no client Firestore writes)
-      toast.loading("Recording stake…");
+      toast.loading(t('staking.recordingStake'));
       await postJSON<{ ok: boolean }>(
         "/api/stakes",
         {
@@ -276,20 +281,20 @@ export default function StakingPage() {
       await Promise.all([refreshStats(), refetchRewards?.(), refetchStakingView?.()]);
     } catch (err: any) {
       toast.dismiss();
-      toast.error(err?.shortMessage || err?.message || "Stake failed");
+      toast.error(err?.shortMessage || err?.message || t('staking.stakeFailed'));
     } finally {
       setStaking(false);
     }
   }
 
   async function handleWithdraw(tokenIds: bigint[]) {
-    if (!account?.address) return toast.error("Connect wallet first");
-    if (tokenIds.length === 0) return toast.error("Select at least one NFT to withdraw");
+    if (!account?.address) return toast.error(t('staking.connectWalletFirst'));
+    if (tokenIds.length === 0) return toast.error(t('staking.selectAtLeastOneNftToWithdraw'));
 
     try {
       await ensureChain();
       setWithdrawing(true);
-      toast.loading("Withdrawing on-chain…");
+      toast.loading(t('staking.withdrawingOnChain'));
       const tx = await prepareContractCall({
         contract: stake,
         method: "withdraw",
@@ -299,7 +304,7 @@ export default function StakingPage() {
       toast.dismiss();
 
       // Mark withdrawn via API (no client Firestore writes)
-      toast.loading("Updating records…");
+      toast.loading(t('staking.updatingRecords'));
       await postJSON<{ ok: boolean }>(
         "/api/stakes/withdraw",
         {
@@ -312,14 +317,14 @@ export default function StakingPage() {
         "POST"
       );
       toast.dismiss();
-      toast.success("Withdrawn!");
+      toast.success(t('staking.withdrawn'));
 
       await Promise.all([refreshStats(), refetchRewards?.(), refetchStakingView?.()]);
       // Trigger refresh of withdraw section
       setWithdrawRefreshTrigger(prev => prev + 1);
     } catch (err: any) {
       toast.dismiss();
-      toast.error(err?.shortMessage || err?.message || "Withdraw failed");
+      toast.error(err?.shortMessage || err?.message || t('staking.withdrawFailed'));
     } finally {
       setWithdrawing(false);
     }
@@ -1018,7 +1023,7 @@ function StakesFromRewards({
         setStakes(filtered);
       } catch (e: any) {
         console.error("StakesFromRewards error", e);
-        setError("Failed to load your stakes.");
+        setError(t('staking.failedToLoadStakes'));
       } finally {
         setLoading(false);
       }
@@ -1047,8 +1052,8 @@ function StakesFromRewards({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {stakes.map((s) => {
             const progress = s.scheduledTotal > 0 ? Math.min(100, (s.accrued / s.scheduledTotal) * 100) : 0;
-            const remaining = formatRemainingOnce(s.unlockAt);
-            const unlocked = remaining === "Unlocked";
+            const remaining = formatRemainingOnce(s.unlockAt, t);
+            const unlocked = remaining === t('staking.unlocked') || remaining === 'Unlocked';
 
             return (
               <div
@@ -1205,12 +1210,12 @@ function WithdrawSection({
 
         // Process active stakes
         const activeRows = activeStakes.map((s: any) => {
-          const remaining = formatRemainingOnce(s.unlockAt);
+          const remaining = formatRemainingOnce(s.unlockAt, t);
           return {
             tokenId: String(s.tokenId ?? ""),
             stakedAt: s.stakedAt,
             unlockAt: s.unlockAt,
-            unlocked: remaining === "Unlocked",
+            unlocked: remaining === t('staking.unlocked') || remaining === 'Unlocked',
             remainingLabel: remaining,
             imageUrl: FALLBACK[selectedCollection],
             status: s.status,
@@ -1420,3 +1425,6 @@ function WithdrawSection({
     </div>
   );
 }
+
+// Disable server-side rendering for this page
+export const dynamic = 'force-dynamic';

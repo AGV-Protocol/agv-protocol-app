@@ -129,7 +129,7 @@ const SpendingCapModal = ({
           <button
             onClick={onClose}
             style={{ background: "none", border: "none", color: "#9ca3af", cursor: "pointer", padding: "0.25rem" }}
-            aria-label="Close spending cap modal"
+            aria-label={t('minting.closeSpendingCapModal')}
           >
             <X size={20} />
           </button>
@@ -266,7 +266,7 @@ const StakingModal = ({
           <button
             onClick={onClose}
             style={{ background: "none", border: "none", color: "#9ca3af", cursor: "pointer", padding: "0.25rem" }}
-            aria-label="Close staking modal"
+            aria-label={t('minting.closeStakingModal')}
           >
             <X size={20} />
           </button>
@@ -389,7 +389,7 @@ const TransactionProgressModal = ({
   const copyTxHash = async () => {
     if (!txHash) return;
     await navigator.clipboard.writeText(txHash);
-    toast.success("Transaction hash copied");
+    toast.success(t('minting.transactionHashCopied'));
   };
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -420,14 +420,14 @@ const TransactionProgressModal = ({
               <Loader2 style={{ height: "1.5rem", width: "1.5rem", color: "#3b82f6", animation: "spin 1s linear infinite" }} />
             )}
             <h3 style={{ fontSize: "1.125rem", fontWeight: "bold", margin: 0 }}>
-              {stage === "success" ? "Transaction Successful!" : stage === "error" ? "Transaction Failed" : stage === "timeout" ? "Transaction Timeout" : "Transaction Progress"}
+              {stage === "success" ? t('minting.transactionSuccessful') : stage === "error" ? t('minting.transactionFailed') : stage === "timeout" ? t('minting.transactionTimeout') : t('minting.transactionProgress')}
             </h3>
           </div>
           {(stage === "success" || stage === "error" || showTimeoutOption) && (
             <button
               onClick={onClose}
               style={{ background: "none", border: "none", color: "#9ca3af", cursor: "pointer", padding: "0.25rem" }}
-              aria-label="Close progress modal"
+              aria-label={t('minting.closeProgressModal')}
             >
               <X size={20} />
             </button>
@@ -447,7 +447,7 @@ const TransactionProgressModal = ({
               <button
                 onClick={copyTxHash}
                 style={{ background: "none", border: "1px solid #4b5563", borderRadius: "0.25rem", padding: "0.25rem", color: "#9ca3af", cursor: "pointer" }}
-                aria-label="Copy tx hash"
+                aria-label={t('minting.copyTxHash')}
               >
                 <Copy size={14} />
               </button>

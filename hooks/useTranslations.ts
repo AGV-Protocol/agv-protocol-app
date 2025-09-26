@@ -10,11 +10,20 @@ export function useTranslations() {
   const locale = (params?.locale as Locale) || 'en';
 
   const t = (key: string): string => {
-    return getTranslation(locale, key);
+    try {
+      return getTranslation(locale, key);
+    } catch (error) {
+      console.warn('Translation error:', error);
+      return key;
+    }
   };
 
   const hasT = (key: string): boolean => {
-    return hasTranslation(locale, key);
+    try {
+      return hasTranslation(locale, key);
+    } catch (error) {
+      return false;
+    }
   };
 
   return {
