@@ -217,6 +217,7 @@
     "perNFTStaked": "Per NFT staked",
     "selectNetwork": "Select Network",
     "selectNFTCollection": "Select NFT Collection",
+    "selectNftCollection": "Select NFT Collection",
     "selectStakingDuration": "Select Staking Duration",
     "quickSelect": "Quick Select",
     "day": "day",
