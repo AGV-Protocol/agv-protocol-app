@@ -2,9 +2,7 @@
 'use client';
 
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import { locales, localeNames, localeFlags, isRTL } from '@/lib/i18n';
-import { addLocaleToPathname, removeLocaleFromPathname } from '@/lib/i18n';
-import { Locale } from '@/lib/i18n';
+import { locales, localeNames, localeFlags, type Locale } from '@/i18n';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +11,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Globe } from 'lucide-react';
+
+// Utility functions for pathname handling
+const removeLocaleFromPathname = (pathname: string): string => {
+  const localePattern = /^\/[a-z]{2}(-[A-Z]{2})?/;
+  return pathname.replace(localePattern, '') || '/';
+};
+
+const addLocaleToPathname = (pathname: string, locale: string): string => {
+  const cleanPath = pathname === '/' ? '' : pathname;
+  return `/${locale}${cleanPath}`;
+};
 
 interface LanguageSwitcherProps {
   className?: string;
@@ -30,7 +39,6 @@ export function LanguageSwitcher({
   const router = useRouter();
   
   const currentLocale = (params?.locale as Locale) || 'en';
-  const isCurrentRTL = isRTL(currentLocale);
 
   const handleLocaleChange = (newLocale: Locale) => {
     const currentPath = removeLocaleFromPathname(pathname);
@@ -45,7 +53,6 @@ export function LanguageSwitcher({
           variant="outline" 
           size="sm" 
           className={`flex items-center gap-2 ${className}`}
-          dir={isCurrentRTL ? 'rtl' : 'ltr'}
         >
           <Globe className="h-4 w-4" />
           {showFlags && <span>{localeFlags[currentLocale]}</span>}
@@ -60,7 +67,6 @@ export function LanguageSwitcher({
             className={`flex items-center gap-2 cursor-pointer ${
               locale === currentLocale ? 'bg-accent' : ''
             }`}
-            dir={isRTL(locale) ? 'rtl' : 'ltr'}
           >
             {showFlags && <span className="text-lg">{localeFlags[locale]}</span>}
             {showNames && <span>{localeNames[locale]}</span>}

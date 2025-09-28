@@ -1,9 +1,8 @@
-// hooks/useTranslations.ts
 'use client';
 
 import { useParams } from 'next/navigation';
 import { getTranslation, hasTranslation } from '@/lib/translations';
-import { Locale } from '@/lib/i18n';
+import { Locale } from '@/i18n';
 
 export function useTranslations() {
   const params = useParams();

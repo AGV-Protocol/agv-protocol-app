@@ -1,66 +1,47 @@
-// middleware.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { locales, defaultLocale, getLocaleFromPathname, addLocaleToPathname } from './lib/i18n';
+import { locales, defaultLocale } from './i18n';
+
+export const config = {
+  matcher: [
+    '/((?!api|admin|coming-soon|_next/static|_next/image|favicon.ico|.*\\..*).*)',
+    '/'
+  ]
+};
 
 export function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-  
-  // Check if there is any supported locale in the pathname
-  const pathnameIsMissingLocale = locales.every(
-    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
-  );
+  const { pathname } = request.nextUrl;
 
-  // Redirect if there is no locale
-  if (pathnameIsMissingLocale) {
-    // Get locale from Accept-Language header or use default
-    const locale = getLocaleFromRequest(request) || defaultLocale;
-    
-    // Redirect to the pathname with the locale
-    const redirectUrl = new URL(addLocaleToPathname(pathname, locale), request.url);
-    return NextResponse.redirect(redirectUrl);
+  // Skip API routes, admin routes, and static files
+  if (pathname.startsWith('/api') || pathname.startsWith('/admin') || pathname.startsWith('/coming-soon')) {
+    return NextResponse.next();
   }
 
-  // Add locale to response headers for client-side usage
-  const locale = getLocaleFromPathname(pathname);
-  if (locale) {
-    const response = NextResponse.next();
-    response.headers.set('x-locale', locale);
+  // Skip static files
+  if (pathname.includes('.')) {
+    return NextResponse.next();
+  }
+
+  // Check if pathname already has a locale
+  const pathnameHasLocale = locales.some(
+    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+  );
+
+  if (!pathnameHasLocale) {
+    // Get locale from cookie or default to English
+    const locale = request.cookies.get('NEXT_LOCALE')?.value || defaultLocale;
+    
+    // Redirect to the same pathname with locale
+    const url = new URL(`/${locale}${pathname}`, request.url);
+    const response = NextResponse.redirect(url);
+    
+    // Set/update the locale cookie
+    response.cookies.set('NEXT_LOCALE', locale, { 
+      path: '/', 
+      maxAge: 60 * 60 * 24 * 365 // 1 year
+    });
+    
     return response;
   }
 
   return NextResponse.next();
 }
-
-function getLocaleFromRequest(request: NextRequest): string | null {
-  // Check Accept-Language header
-  const acceptLanguage = request.headers.get('accept-language');
-  if (acceptLanguage) {
-    // Parse Accept-Language header and find the best match
-    const languages = acceptLanguage
-      .split(',')
-      .map(lang => {
-        const [locale, qValue] = lang.trim().split(';q=');
-        return {
-          locale: locale.split('-')[0], // Get language code only
-          quality: qValue ? parseFloat(qValue) : 1.0
-        };
-      })
-      .sort((a, b) => b.quality - a.quality);
-
-    // Find the first supported locale
-    for (const { locale } of languages) {
-      if (locales.includes(locale as any)) {
-        return locale;
-      }
-    }
-  }
-
-  return null;
-}
-
-export const config = {
-  // Matcher ignoring `/_next/`, `/api/`, and static files
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg|.*\\.ico|.*\\.webp|.*\\.avif|.*\\.css|.*\\.js|.*\\.woff|.*\\.woff2|.*\\.ttf|.*\\.eot).*)'
-  ]
-};

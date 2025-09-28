@@ -1,6 +1,6 @@
 // app/[locale]/layout.tsx
 import { notFound } from 'next/navigation';
-import { locales, isRTL } from '@/lib/i18n';
+import { locales } from '@/i18n';
 import { Inter } from 'next/font/google';
 import '../globals.css';
 
@@ -27,10 +27,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     notFound();
   }
 
-  const isRTLDirection = isRTL(locale as any);
-
   return (
-    <html lang={locale} dir={isRTLDirection ? 'rtl' : 'ltr'} suppressHydrationWarning className={inter.variable}>
+    <html lang={locale} suppressHydrationWarning className={inter.variable}>
       <head>
         {/* Optional prefetches */}
         <link rel="prefetch" href={`/${locale}/dashboard`} />

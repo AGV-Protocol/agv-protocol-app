@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "@/hooks/useTranslations";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface FooterProps {
   backgroundClass?: string;
@@ -30,7 +31,7 @@ interface FooterProps {
 }
 
 export function Footer({ backgroundClass = "bg-background", textColorClass = "text-foreground" }: FooterProps) {
-  const { t } = useTranslations();
+  const { t, locale } = useTranslations();
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
@@ -139,26 +140,36 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
               ))}
             </div>
             
-            {/* Social Links */}
-            <div className="flex space-x-2 md:space-x-4">
-              {socialLinks.map((social) => (
-                <Button
-                  key={social.name}
-                  variant="outline"
-                  size="sm"
-                  asChild
-                  className="h-8 w-8 md:h-10 md:w-10 p-0"
-                >
-                  <a 
-                    href={social.href} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    aria-label={social.name}
+            {/* Social Links and Language Switcher */}
+            <div className="flex flex-col space-y-4">
+              <div className="flex space-x-2 md:space-x-4">
+                {socialLinks.map((social) => (
+                  <Button
+                    key={social.name}
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className="h-8 w-8 md:h-10 md:w-10 p-0"
                   >
-                    <social.icon className="h-3 w-3 md:h-4 md:w-4" />
-                  </a>
-                </Button>
-              ))}
+                    <a 
+                      href={social.href} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      aria-label={social.name}
+                    >
+                      <social.icon className="h-3 w-3 md:h-4 md:w-4" />
+                    </a>
+                  </Button>
+                ))}
+              </div>
+              
+              {/* Language Switcher */}
+              <div className="flex items-center space-x-2">
+                <LanguageSwitcher 
+                  currentLocale={locale} 
+                  className="text-xs"
+                />
+              </div>
             </div>
           </div>
 

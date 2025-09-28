@@ -1,6 +1,6 @@
 // app/[locale]/page.tsx
 import { redirect } from 'next/navigation';
-import { defaultLocale } from '@/lib/i18n';
+import { defaultLocale } from '@/i18n';
 
 interface LocalePageProps {
   params: Promise<{ locale: string }>;

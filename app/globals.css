@@ -110,40 +110,6 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* RTL Support */
-  [dir="rtl"] {
-    direction: rtl;
-  }
-  
-  [dir="ltr"] {
-    direction: ltr;
-  }
-  
-  /* RTL-specific adjustments */
-  [dir="rtl"] .rtl\:text-right {
-    text-align: right;
-  }
-  
-  [dir="rtl"] .rtl\:text-left {
-    text-align: left;
-  }
-  
-  [dir="rtl"] .rtl\:ml-auto {
-    margin-left: auto;
-  }
-  
-  [dir="rtl"] .rtl\:mr-auto {
-    margin-right: auto;
-  }
-  
-  [dir="rtl"] .rtl\:pl-0 {
-    padding-left: 0;
-  }
-  
-  [dir="rtl"] .rtl\:pr-0 {
-    padding-right: 0;
-  }
-  
   /* Arabic font support */
   [lang="ar"] {
     font-family: 'Inter', 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
@@ -152,11 +118,6 @@
   /* Japanese font support */
   [lang="ja"] {
     font-family: 'Inter', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
-  }
-  
-  /* Thai font support */
-  [lang="th"] {
-    font-family: 'Inter', 'Sukhumvit Set', 'Kanit', sans-serif;
   }
   
   /* Typography Scale */
