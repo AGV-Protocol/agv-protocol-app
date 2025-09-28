@@ -1,10 +1,13 @@
+"use client";
 import React from "react";
 import { Check, Zap, Link2, MessageCircle, Twitter, Send, Github } from "lucide-react";
 import { FastLink } from "../ui/fast-link";
 import Link from "next/link";
-import Image from "next/image"
+import Image from "next/image";
+import { useTranslations } from "@/app/[locale]/TranslationProvider";
 
 export const Footer: React.FC = () => {
+  const t = useTranslations('footer');
   return (
     <footer className="relative bg-[#3399FF] text-white overflow-hidden">
       {/* Circular Overlay */}
@@ -26,28 +29,28 @@ export const Footer: React.FC = () => {
                   className="rounded-lg"
                 />
               </FastLink>
-              <span className="text-white font-semibold text-sm sm:text-lg">AGRIVOLT <br />PROTOCOL
+              <span className="text-white font-semibold text-sm sm:text-lg">{t('companyName')} <br />
               <br />
-                NFT Minting Platform</span>
+                {t('tagline')}</span>
             </div>
             {/* Description */}
             <p className="text-white/90 leading-relaxed max-w-lg text-sm sm:text-base">
-              The future of decentralized computing through innovative NFT technology. Join thousands of users minting exclusive AGV NFTs across multiple blockchain networks.
+              {t('description')}
             </p>
             
             {/* Feature Highlights */}
             <div className="flex flex-wrap gap-3 sm:gap-4 lg:gap-6">
               <div className="flex items-center space-x-2">
                 <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                <span className="text-white text-xs sm:text-sm font-medium">Secure & Trusted</span>
+                <span className="text-white text-xs sm:text-sm font-medium">{t('features.secure')}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                <span className="text-white text-xs sm:text-sm font-medium">Lightning Fast</span>
+                <span className="text-white text-xs sm:text-sm font-medium">{t('features.fast')}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Link2 className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                <span className="text-white text-xs sm:text-sm font-medium">Multi-Chain</span>
+                <span className="text-white text-xs sm:text-sm font-medium">{t('features.multiChain')}</span>
               </div>
             </div>
           </div>
@@ -56,45 +59,45 @@ export const Footer: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {/* Product Column */}
             <div className="space-y-3 sm:space-y-4">
-              <h3 className="text-white font-bold text-base sm:text-lg">Product</h3>
+              <h3 className="text-white font-bold text-base sm:text-lg">{t('navigation.product.title')}</h3>
               <ul className="space-y-1 sm:space-y-2">
-                <li><Link href="/mint" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">NFT Minting</Link></li>
-                <li><Link href="/dashboard" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Dashboard</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">KOL Program</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Analytics</Link></li>
+                <li><Link href="/mint" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.product.nftMinting')}</Link></li>
+                <li><Link href="/dashboard" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.product.dashboard')}</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.product.kolProgram')}</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.product.analytics')}</Link></li>
               </ul>
             </div>
             
             {/* Company Column */}
             <div className="space-y-3 sm:space-y-4">
-              <h3 className="text-white font-bold text-base sm:text-lg">Company</h3>
+              <h3 className="text-white font-bold text-base sm:text-lg">{t('navigation.company.title')}</h3>
               <ul className="space-y-1 sm:space-y-2">
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">About Us</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Careers</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Press</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Blog</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.company.aboutUs')}</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.company.careers')}</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.company.press')}</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.company.blog')}</Link></li>
               </ul>
             </div>
             
             {/* Support Column */}
             <div className="space-y-3 sm:space-y-4">
-              <h3 className="text-white font-bold text-base sm:text-lg">Support</h3>
+              <h3 className="text-white font-bold text-base sm:text-lg">{t('navigation.support.title')}</h3>
               <ul className="space-y-1 sm:space-y-2">
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Help Center</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Documentation</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">API Reference</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Contact Support</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.support.helpCenter')}</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.support.documentation')}</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.support.apiReference')}</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.support.contactSupport')}</Link></li>
               </ul>
             </div>
             
             {/* Legal Column */}
             <div className="space-y-3 sm:space-y-4">
-              <h3 className="text-white font-bold text-base sm:text-lg">Legal</h3>
+              <h3 className="text-white font-bold text-base sm:text-lg">{t('navigation.legal.title')}</h3>
               <ul className="space-y-1 sm:space-y-2">
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Privacy Policy</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Terms of Service</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">Cookie Policy</Link></li>
-                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">GDPR</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.legal.privacyPolicy')}</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.legal.termsOfService')}</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.legal.cookiePolicy')}</Link></li>
+                <li><Link href="/coming-soon" className="text-white/80 hover:text-white transition-colors text-xs sm:text-sm">{t('navigation.legal.gdpr')}</Link></li>
               </ul>
             </div>
           </div>
@@ -104,9 +107,9 @@ export const Footer: React.FC = () => {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 mb-8 sm:mb-12">
           {/* Legal/Operational Details */}
           <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-white/80">
-            <p>Headquartered in Asia. Operated globally. Audited by top firms.</p>
+            <p>{t('legal.headquarters')}</p>
             <p>
-              All real-world assets are held by authorized Chinese SPVs and mapped via legal authorization to JLL Asset Ltd. (BVI Company No. 2182436). NFT issuance and operations are executed by iJET Limited (NZBN: 9429049576290). Governance transition to the BVI-based AGV DAO is in progress.
+              {t('legal.description')}
             </p>
           </div>
 
@@ -128,7 +131,7 @@ export const Footer: React.FC = () => {
             </div>
 
             {/* Copyright */}
-            <p className="text-white/80 text-xs sm:text-sm">© 2025 AgriVolt Protocol. All rights</p>
+            <p className="text-white/80 text-xs sm:text-sm">{t('copyright')}</p>
           </div>
           
         </div>

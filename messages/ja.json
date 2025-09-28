@@ -1,0 +1,339 @@
+{
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "success": "成功",
+    "submit": "送信",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "edit": "編集",
+    "delete": "削除",
+    "back": "戻る",
+    "next": "次へ",
+    "previous": "前へ",
+    "close": "閉じる",
+    "confirm": "確認",
+    "required": "必須",
+    "optional": "任意"
+  },
+  "navigation": {
+    "home": "ホーム",
+    "about": "について",
+    "contact": "お問い合わせ",
+    "dashboard": "ダッシュボード",
+    "staking": "ステーキング",
+    "mint": "ミント",
+    "admin": "管理"
+  },
+  "header": {
+    "nav": {
+      "home": "ホーム",
+      "dashboard": "ダッシュボード",
+      "staking": "ステーキング",
+      "mint": "ミント",
+      "about": "について",
+      "products": "製品",
+      "research": "研究",
+      "investorRelations": "投資家向け広報"
+    },
+    "connectWallet": "ウォレット接続",
+    "disconnect": "切断"
+  },
+  "hero": {
+    "title": "AGVプロトコル",
+    "subtitle": "分散型物理インフラストラクチャネットワーク",
+    "description": "リアルワールドアセットのトークン化を通じて分散型インフラストラクチャの未来を構築。",
+    "buttons": {
+      "getStarted": "始める",
+      "learnMore": "詳しく見る"
+    }
+  },
+  "staking": {
+    "title": "ステーキングダッシュボード",
+    "description": "NFTをステークして報酬を獲得しましょう",
+    "stake": "ステーキング",
+    "unstake": "アンステーキング",
+    "rewards": "リワード",
+    "totalStaked": "総ステーキング量",
+    "availableRewards": "利用可能なリワード",
+    "overview": "ステーキングの概要",
+    "stakedNFTs": "ステークされたNFT",
+    "currentlyStaked": "現在賭けられている",
+    "readyToClaim": "rGGPの申請準備完了",
+    "dailyRewards": "デイリー報酬",
+    "perNFTStaked": "ステークされたNFTごとに",
+    "selectNetwork": "ネットワークを選択",
+    "selectNFTCollection": "NFTコレクションを選択",
+    "selectStakingDuration": "ステーキング期間を選択",
+    "quickSelect": "クイック選択",
+    "day": "日",
+    "durationDays": "期間（日数）",
+    "lockPeriod": "ロック期間",
+    "lockPeriodDescription": "NFTは{duration}日間{plural}ロックされます。この期間が終了するまで出金できません。最短ステーキング期間は7日間です。",
+    "currentWalletChain": "現在のウォレットチェーン",
+    "notConnected": "接続されていません",
+    "connectWalletFirst": "まずウォレットを接続する",
+    "selectAtLeastOne": "少なくとも1つのトークンIDを選択してください",
+    "minimumDuration": "ステーキング期間は少なくとも7日間である必要があります",
+    "approving": "承認中（必要な場合）…",
+    "stakingOnChain": "オンチェーンでのステーキング…",
+    "recordingStake": "記録ステーク…",
+    "stakeSuccess": "{duration} 日間{plural}ステークされました!",
+    "stakeFailed": "ステーク失敗",
+    "selectAtLeastOneWithdraw": "出金するNFTを少なくとも1つ選択してください",
+    "withdrawingOnChain": "オンチェーンで出金中…",
+    "updatingRecords": "レコードを更新しています…",
+    "withdrawSuccess": "撤回しました！",
+    "withdrawFailed": "引き出しに失敗しました"
+  },
+  "minting": {
+    "title": "AGVプロトコルの鋳造",
+    "description": "複数のブロックチェーン ネットワークにわたって独占的な AGV プロトコル NFT を発行します。",
+    "mint": "ミント",
+    "price": "価格",
+    "supply": "供給量",
+    "remaining": "残り",
+    "collectionChoices": "SeedPass、TreePass、SolarPass、ComputePass コレクションから選択します。",
+    "liveMinting": "ライブ鋳造",
+    "multiChain": "マルチチェーン",
+    "usdtPayment": "USDT支払い"
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "overview": "概要",
+    "analytics": "分析",
+    "performance": "パフォーマンス",
+    "activity": "アクティビティ",
+    "description": "AGVプロトコルの活動とパフォーマンスの概要"
+  },
+  "footer": {
+    "companyName": "AGVプロトコル",
+    "tagline": "分散型インフラストラクチャネットワーク",
+    "description": "リアルワールドアセットのトークン化を通じて分散型インフラストラクチャの未来を構築。",
+    "sections": {
+      "platform": {
+        "title": "プラットフォーム",
+        "staking": "ステーキング",
+        "minting": "ミンティング",
+        "rewards": "リワード"
+      },
+      "resources": {
+        "title": "リソース",
+        "documentation": "ドキュメント",
+        "whitepaper": "ホワイトペーパー",
+        "blog": "ブログ"
+      },
+      "support": {
+        "title": "サポート",
+        "helpCenter": "ヘルプセンター",
+        "contact": "お問い合わせ",
+        "faq": "よくある質問"
+      },
+      "legal": {
+        "title": "法的",
+        "privacyPolicy": "プライバシーポリシー",
+        "termsOfService": "利用規約",
+        "cookiePolicy": "クッキーポリシー"
+      }
+    },
+    "copyright": "© 2025 AGVプロトコル。全著作権所有"
+  },
+  "home": {
+    "valuePillars": {
+      "educate": {
+        "title": "教育と拡大",
+        "description": "包括的な教育とコミュニティ参加を通じてRWAの認識と理解を構築"
+      },
+      "growth": {
+        "title": "持続可能な成長",
+        "description": "構造化された進歩パスを通じてエアドロップハンターを長期KOLとアンバサダーに変革"
+      },
+      "institutional": {
+        "title": "機関連携",
+        "description": "機関に真の採用と検証可能なユーザートラクションを提供"
+      }
+    },
+    "valueProposition": {
+      "title": "バリュープロポジション",
+      "description": "AGVプロトコルを分散型インフラストラクチャプラットフォームのリーダーにする3つのコアピラー"
+    }
+  },
+  "landing": {
+    "whatIsAGV": {
+      "title": "AGVとは？",
+      "description": "AGV（AgriVolt Protocol）は、果樹園、太陽光発電所、分散型ノードをブロックチェーン上に統合する、実資産に裏付けられたWeb3プロトコルです。各資産ユニットは、果物の収穫から太陽光発電、エッジコンピューティングに至るまで、実世界の収益を生み出します。ユーザーは果樹を植え、太陽光発電に投資することで、透明性のあるトークン化された報酬を獲得できます。中国の主要な農業・太陽光発電地域に根ざしたAGVは、持続可能性への投資、検証、そしてグローバルなスケーラビリティを実現します。"
+    },
+    "threeLayer": {
+      "fruitBacked": {
+        "title": "フルーツを裏付けとしたNFT",
+        "description": "AGV はリンゴ園をトークン化された資産に変換します。各 NFT は実際の木にマッピングされ、果物、収益、およびチェーン上で検証可能な収益を生み出します。"
+      },
+      "solarDriven": {
+        "title": "太陽光による報酬",
+        "description": "各ユニットには 6MW の太陽光発電容量が含まれており、ファームだけでなくエッジ ノードやエネルギーに裏付けられたトークン発行にも電力を供給します (つまり「収入としての太陽光」)。"
+      },
+      "depinReady": {
+        "title": "DePIN対応インフラストラクチャ",
+        "description": "AGV は、センサー、スマート コントラクト、リアルタイム データを統合して、エッジ ノードに電力を供給し、炭素を記録し、世界中に Web3 サービスを提供します。"
+      },
+      "title": "3層価値モデル"
+    },
+    "fixing": {
+      "title": "現実世界のトークン化における問題点の修正",
+      "description1": "AGVは、果樹園や太陽光発電所をNFTやトークンに変換することで、デジタル世界と物理世界を繋ぎます。それぞれの資産は、収益分配、所有権、ガバナンスを自動化するスマートコントラクトにリンクされており、断片化されたデータ、検証不可能な収益、不透明な土地権利といった問題を解決します。",
+      "description2": "AGVは、標準化された資産ユニットを中核としています。100ムーの高収量リンゴ園と6MWの太陽光発電を組み合わせたものです。このモデルは、IoTベースのパフォーマンスデータと予測モデルを活用し、ユニットあたり年間18万ドル～28万ドルの収益と18%～26%のIRR（内部収益率）を実現します。",
+      "description3": "複製が難しい従来の農業プロジェクトとは異なり、AGV ユニットは SPV パッケージ化され、DeFi と互換性があり、グローバルにモジュール化されているため、国境を越えた迅速な展開と繰り返し可能なスケーリングが可能になります。"
+    },
+    "exploreAGV": {
+      "title": "AGVのオンチェーンインフラストラクチャを探索する",
+      "description": "実際のプロジェクト現場を訪れ、果樹園、太陽光発電パネル、そしてブロックチェーンがどのように融合しているかをご覧ください。中国のグリーンゾーンから将来の国際ハブまで、AGVは陸上型RWAオンチェーンの未来を築いています。"
+    },
+    "whyAGV": {
+      "title": "AGV が実際の収益インフラの青写真となる理由",
+      "description": "AGV プロトコルは、実績のある農業手法と最先端のブロックチェーン テクノロジーを組み合わせた、現実世界の資産トークン化の次の進化を表しています。",
+      "description1": "AGVは単発のプロジェクトではありません。実在の土地をデジタル収益インフラに変える、再現可能なプロトコルです。",
+      "description2": "実際の果樹園の収穫量と地域の太陽光発電パフォーマンスデータに基づくと、AGV ユニット 1 台あたり年間収益 18 万ドル～ 28 万ドル、IRR 18% ～ 26% を生み出すことが期待されます。",
+      "description3": "当社は、中国の世界をリードする農業および太陽光発電資産を、モジュール式 SPV トークン化およびオンチェーン データ アーキテクチャと組み合わせ、すべての物理ユニットをデジタル検証可能、収益性があり、DeFi と互換性のあるものにします。"
+    },
+    "blockchainInfrastructure": {
+      "title": "ブロックチェーンインフラ",
+      "description": "BSC、Polygon、および Arbitrum ネットワークをサポートする堅牢なマルチチェーン アーキテクチャに基づいて構築されています。",
+      "realAssets": {
+        "features": [
+          "100ムーの高密度リンゴ園",
+          "6MWの公益事業グレードの太陽光発電所",
+          "年間収益: 180,000～280,000ドル",
+          "IRR目標: 18% - 26%"
+        ],
+        "title": "実物資産。実物収益。",
+        "description": "各 AGV ユニットには以下が含まれます。",
+        "conclusion": "資産は土地ベースで、利回りを生み出し、インフレに耐性があり、合成トークンや投機的な DeFi 実験ではありません。"
+      },
+      "onChainData": {
+        "features": [
+          "リアルタイムの収穫量とエネルギーデータのためのIoTセンサー",
+          "スマートコントラクトとNFTマッピング",
+          "衛星フィードと同期したダッシュボード",
+          "検証された出力にリンクされたトークン発行"
+        ],
+        "title": "オンチェーンデータインフラストラクチャ",
+        "subtitle": "オンチェーンデータインフラストラクチャ",
+        "description": "各ユニットには以下が装備されています:",
+        "conclusion": "ユーザーは成長、発電、トークンの蓄積を監視できます。これらはすべてチェーン上で透過的に記録され、アクセスできます。"
+      },
+      "builtToScale": {
+        "features": [
+          "バッテリーストレージとエッジコンピューティングで拡張可能",
+          "モジュール設計は灌漑、AIノード、または炭素追跡をサポートします",
+          "アジア、中南米、アフリカ、MENA 地域に適用可能"
+        ],
+        "title": "グローバル規模で構築",
+        "description": "各 AGV ユニットは SPV を介して標準化され、トークン化されます。",
+        "conclusion": "CEX 対応、DeFi 対応、ESG 準拠 — AGV はグローバル統合向けに構築されています。"
+      }
+    },
+    "testimonials": {
+      "title": "コミュニティの声",
+      "description": "主要機関は、現実世界の資産、持続可能なエネルギー、そしてブロックチェーンの統合が、次の1兆ドル規模のビジネスチャンスを形作るという点で一致しています。AGVは、これらのマクロトレンドの交差点に位置しています。",
+      "quotes": [],
+      "cta": {
+        "title": "未来は土地、太陽、そしてコードによって動かされる",
+        "button": "今すぐ投資する",
+        "backToTop": "トップに戻る"
+      }
+    },
+    "features": {
+      "multiChain": {
+        "title": "マルチチェーンサポート",
+        "description": "BSC、Polygon、Arbitrumネットワーク全体でNFTを展開および管理します"
+      },
+      "secureMinting": {
+        "title": "安全な鋳造",
+        "description": "高度なセキュリティ対策とスマートコントラクト監査"
+      },
+      "instantRewards": {
+        "title": "インスタントリワード",
+        "description": "ステーキングシステムで発行後すぐに報酬を獲得"
+      }
+    },
+    "community": {
+      "title": "コミュニティ",
+      "github": "GitHub",
+      "twitter": "ツイッター",
+      "discord": "不和",
+      "telegram": "電報",
+      "follow": "フォローする",
+      "join": "参加する",
+      "members": "メンバー",
+      "followers": "フォロワー",
+      "stars": "星"
+    },
+    "hero": {
+      "stats": {
+        "blockchains": "ブロックチェーン",
+        "nftCollections": "NFTコレクション",
+        "dailyRewards": "rGGPデイリー報酬"
+      },
+      "title": "AGVプロトコルNFTエコシステム",
+      "description": "SeedPass、TreePass、SolarPass、ComputePassの限定NFTをアンロックして、持続可能な報酬への入り口を手に入れましょう。ロックアップ期間なしですぐにステーキングし、BSC、Polygon、Arbitrumネットワークで毎日報酬を獲得しましょう。",
+      "startMinting": "鋳造を開始する",
+      "viewStaking": "ステーキングを表示"
+    },
+    "platformOverview": {
+      "title": "プラットフォームの概要",
+      "totalSupply": "総供給量",
+      "nftsMinted": "発行されたNFT",
+      "rewardRate": "報酬率",
+      "dailyRewards": "デイリー報酬",
+      "auditRating": "監査評価",
+      "securityScore": "セキュリティスコア"
+    },
+    "coreFeatures": {
+      "multiChain": {
+        "title": "マルチチェーンサポート",
+        "description": "BSC、Polygon、Arbitrumネットワーク全体でNFTを展開および管理します"
+      },
+      "secureMinting": {
+        "title": "安全な鋳造",
+        "description": "高度なセキュリティ対策とスマートコントラクト監査"
+      },
+      "instantRewards": {
+        "title": "インスタントリワード",
+        "description": "ステーキングシステムで発行後すぐに報酬を獲得"
+      },
+      "title": "コア機能"
+    },
+    "getStarted": {
+      "mintNFTs": {
+        "title": "ミントNFT",
+        "description": "複数のチェーンにわたってAGVプロトコルNFTをミントする",
+        "button": "鋳造を開始する"
+      },
+      "stakeEarn": {
+        "title": "ステーク＆アーン",
+        "description": "NFTをステークして毎日の報酬を獲得しましょう",
+        "button": "ステーキングを始める"
+      },
+      "learnMore": {
+        "title": "もっと詳しく知る",
+        "description": "トークンの情報とドキュメントを調べる",
+        "button": "詳細を表示"
+      },
+      "title": "始める"
+    },
+    "latestUpdates": {
+      "articles": {
+        "introducing": {
+          "title": "AGVプロトコルの紹介",
+          "description": "AGVプロトコルのご紹介：現実世界の資産の未来を解き放つ"
+        },
+        "rggpExplained": {
+          "title": "rGGPの説明",
+          "description": "AGVプロトコルが現実世界の収益をオンチェーン報酬に変える方法"
+        }
+      },
+      "title": "最新情報",
+      "readMore": "続きを読む"
+    }
+  }
+}

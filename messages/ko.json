@@ -1,0 +1,376 @@
+{
+  "common": {
+    "loading": "로딩 중...",
+    "error": "오류",
+    "success": "성공",
+    "submit": "제출",
+    "cancel": "취소",
+    "save": "저장",
+    "edit": "편집",
+    "delete": "삭제",
+    "back": "뒤로",
+    "next": "다음",
+    "previous": "이전",
+    "close": "닫기",
+    "confirm": "확인",
+    "required": "필수",
+    "optional": "선택사항"
+  },
+  "navigation": {
+    "home": "홈",
+    "about": "소개",
+    "contact": "연락처",
+    "dashboard": "대시보드",
+    "staking": "스테이킹",
+    "mint": "민팅",
+    "admin": "관리"
+  },
+  "header": {
+    "nav": {
+      "home": "홈",
+      "dashboard": "대시보드",
+      "staking": "스테이킹",
+      "mint": "민팅",
+      "about": "에 대한",
+      "products": "제품",
+      "research": "연구",
+      "investorRelations": "투자자 관계"
+    },
+    "connectWallet": "지갑 연결",
+    "disconnect": "연결 해제"
+  },
+  "hero": {
+    "title": "AGV 프로토콜",
+    "subtitle": "분산형 물리적 인프라 네트워크",
+    "description": "실제 자산 토큰화를 통해 분산형 인프라의 미래를 구축합니다.",
+    "buttons": {
+      "getStarted": "시작하기",
+      "learnMore": "더 알아보기"
+    }
+  },
+  "staking": {
+    "title": "스테이킹 대시보드",
+    "description": "NFT를 스테이킹하고 보상을 받으세요",
+    "stake": "스테이킹",
+    "unstake": "언스테이킹",
+    "rewards": "보상",
+    "totalStaked": "총 스테이킹",
+    "availableRewards": "사용 가능한 보상",
+    "overview": "스테이킹 개요",
+    "stakedNFTs": "스테이킹된 NFT",
+    "currentlyStaked": "현재 지분",
+    "readyToClaim": "rGGP 청구 준비 완료",
+    "dailyRewards": "일일 보상",
+    "perNFTStaked": "NFT 스테이킹당",
+    "selectNetwork": "네트워크 선택",
+    "selectNFTCollection": "NFT 컬렉션 선택",
+    "selectStakingDuration": "스테이킹 기간 선택",
+    "quickSelect": "빠른 선택",
+    "day": "낮",
+    "durationDays": "기간(일)",
+    "lockPeriod": "잠금 기간",
+    "lockPeriodDescription": "귀하의 NFT는 {duration}일{복수형} 동안 잠금됩니다. 이 기간이 끝날 때까지는 출금할 수 없습니다. 최소 스테이킹 기간은 7일입니다.",
+    "currentWalletChain": "현재 지갑 체인",
+    "notConnected": "연결되지 않음",
+    "connectWalletFirst": "먼저 지갑을 연결하세요",
+    "selectAtLeastOne": "최소한 하나의 토큰 ID를 선택하세요",
+    "minimumDuration": "스테이킹 기간은 최소 7일 이상이어야 합니다.",
+    "approving": "승인(필요한 경우)…",
+    "stakingOnChain": "온체인 스테이킹…",
+    "recordingStake": "기록 지분…",
+    "stakeSuccess": "{duration}일{plural} 동안 스테이킹되었습니다!",
+    "stakeFailed": "스테이크 실패",
+    "selectAtLeastOneWithdraw": "인출할 NFT를 하나 이상 선택하세요",
+    "withdrawingOnChain": "온체인에서 인출…",
+    "updatingRecords": "기록을 업데이트 중입니다…",
+    "withdrawSuccess": "빼는!",
+    "withdrawFailed": "출금 실패"
+  },
+  "minting": {
+    "title": "AGV 프로토콜 마이닝",
+    "description": "여러 블록체인 네트워크에서 독점적인 AGV 프로토콜 NFT를 생성하세요.",
+    "mint": "민팅",
+    "price": "가격",
+    "supply": "공급량",
+    "remaining": "남은 수량",
+    "collectionChoices": "SeedPass, TreePass, SolarPass, ComputePass 컬렉션 중에서 선택하세요.",
+    "liveMinting": "라이브 주조",
+    "multiChain": "멀티 체인",
+    "usdtPayment": "USDT 결제"
+  },
+  "dashboard": {
+    "title": "대시보드",
+    "overview": "개요",
+    "analytics": "분석",
+    "performance": "성능",
+    "activity": "활동",
+    "description": "AGV 프로토콜 활동 및 성과 개요"
+  },
+  "footer": {
+    "companyName": "AGV 프로토콜",
+    "tagline": "분산형 인프라 네트워크",
+    "description": "실제 자산 토큰화를 통해 분산형 인프라의 미래를 구축합니다.",
+    "sections": {
+      "platform": {
+        "title": "플랫폼",
+        "staking": "스테이킹",
+        "minting": "민팅",
+        "rewards": "보상"
+      },
+      "resources": {
+        "title": "리소스",
+        "documentation": "문서",
+        "whitepaper": "백서",
+        "blog": "블로그"
+      },
+      "support": {
+        "title": "지원",
+        "helpCenter": "도움말 센터",
+        "contact": "연락처",
+        "faq": "자주 묻는 질문"
+      },
+      "legal": {
+        "title": "법적 고지",
+        "privacyPolicy": "개인정보 보호정책",
+        "termsOfService": "서비스 약관",
+        "cookiePolicy": "쿠키 정책"
+      }
+    },
+    "copyright": "© 2025 AGV 프로토콜. 모든 권리 보유"
+  },
+  "landing": {
+    "whatIsAGV": {
+      "title": "AGV란 무엇인가?",
+      "description": "AGV(AgriVolt Protocol)는 과수원, 태양광 발전소, 그리고 분산형 노드를 블록체인에 연결하는 실물 자산 기반 웹3 프로토콜입니다. 각 자산 단위는 과일 수확부터 태양광 에너지 및 엣지 컴퓨팅에 이르기까지 실제 수확량을 생성합니다. 사용자는 과일나무를 입양하고, 태양광 발전에 투자하고, 투명한 수익으로 토큰화된 보상을 받을 수 있습니다. 중국 주요 농업 및 태양광 발전 지역에 기반을 둔 AGV는 지속 가능성을 투자 가능하고 검증 가능하며 전 세계적으로 확장 가능하게 만듭니다."
+    },
+    "threeLayer": {
+      "fruitBacked": {
+        "title": "과일이 담긴 NFT",
+        "description": "AGV는 사과 과수원을 토큰화된 자산으로 변환합니다. 각 NFT는 실제 나무에 매핑되어 체인상에서 과일, 수익 및 검증 가능한 수확량을 생산합니다."
+      },
+      "solarDriven": {
+        "title": "태양광 발전 보상",
+        "description": "각 유닛에는 농장뿐만 아니라 엣지 노드와 에너지 지원 토큰 채굴에 전력을 공급하는 6MW의 태양광 발전 용량이 포함되어 있습니다. 즉, '햇빛을 소득으로'라는 뜻입니다."
+      },
+      "depinReady": {
+        "title": "DePIN 지원 인프라",
+        "description": "AGV는 센서, 스마트 계약, 실시간 데이터를 통합하여 엣지 노드에 전력을 공급하고, 탄소를 기록하고, 전 세계적으로 Web3 서비스를 제공합니다."
+      },
+      "title": "3계층 가치 모델"
+    },
+    "fixing": {
+      "title": "실제 토큰화에서 문제가 있는 부분 수정",
+      "description1": "AGV는 과수원과 태양광 농장을 NFT와 토큰으로 전환하여 디지털 세계와 물리적 세계를 연결합니다. 각 자산은 소득 공유, 소유권 및 거버넌스를 자동화하는 스마트 계약에 연결되어 단편화된 데이터, 검증 불가능한 수확량, 불투명한 토지 권리와 같은 문제를 해결합니다.",
+      "description2": "AGV의 핵심은 표준화된 자산 단위, 즉 100무(mu) 규모의 고수확 사과 과수원과 6MW 규모의 태양광 발전 시스템을 사용하는 것입니다. 이 모델은 IoT 기반 성과 데이터와 예측 모델을 기반으로 단위당 연간 18만~28만 달러의 수익을 창출하며, 내부수익률(IRR)은 18~26%입니다.",
+      "description3": "복제하기 어려운 기존 농업 프로젝트와 달리 AGV 장치는 SPV 패키지로 제공되고 DeFi와 호환되며 전 세계적으로 모듈화되어 국경을 넘나드는 빠른 배포와 반복 가능한 확장이 가능합니다."
+    },
+    "exploreAGV": {
+      "title": "AGV의 온체인 인프라 살펴보기",
+      "description": "실제 프로젝트 현장을 방문하여 과수원, 태양광 패널, 그리고 블록체인이 어떻게 조화를 이루는지 직접 확인해 보세요. 중국의 녹지 지대부터 미래의 국제 허브까지, AGV는 온체인 기반의 육상 RWA(재물운송)의 미래를 구축하고 있습니다."
+    },
+    "whyAGV": {
+      "title": "AGV가 실제 생산성 인프라를 위한 청사진인 이유는 무엇인가?",
+      "description": "AGV 프로토콜은 입증된 농업 관행과 최첨단 블록체인 기술을 결합하여 실제 자산 토큰화의 차세대 진화를 나타냅니다.",
+      "description1": "AGV는 일회성 프로젝트가 아닙니다. 실제 토지를 디지털 수확 인프라로 전환하는 복제 가능한 프로토콜입니다.",
+      "description2": "실제 과수원 수확량과 지역 태양광 성능 데이터를 기준으로 볼 때, 모든 AGV 장치는 연간 18만~28만 달러의 수익을 창출할 것으로 예상되며, IRR은 18~26%입니다.",
+      "description3": "우리는 중국의 세계 최고 수준의 농업 및 태양광 자산을 모듈식 SPV 토큰화와 온체인 데이터 아키텍처와 결합하여 모든 물리적 단위를 디지털 방식으로 검증하고 수익을 창출하며 DeFi와 호환되도록 만듭니다."
+    },
+    "blockchainInfrastructure": {
+      "title": "블록체인을 통한 인프라 혁신",
+      "realAssets": {
+        "title": "실제 자산. 실제 수익.",
+        "description": "각 AGV 장치에는 다음이 포함됩니다.",
+        "features": [
+          "100무 고밀도 사과 과수원",
+          "6MW 유틸리티급 태양광 농장",
+          "연간 수익: $180,000 - $280,000",
+          "IRR 목표: 18% - 26%"
+        ],
+        "conclusion": "자산은 토지 기반, 수익 창출 및 인플레이션 방지형입니다 — 합성 토큰이나 투기적 DeFi 실험이 아닙니다."
+      },
+      "onChainData": {
+        "title": "온체인 데이터 인프라",
+        "subtitle": "온체인 데이터 인프라",
+        "description": "모든 유닛에는 다음이 장착되어 있습니다:",
+        "features": [
+          "실시간 수익 및 에너지 데이터를 위한 IoT 센서",
+          "스마트 계약 및 NFT 매핑",
+          "위성 피드와 동기화된 대시보드",
+          "검증된 출력과 연결된 토큰 발행"
+        ],
+        "conclusion": "사용자는 성장, 전력 생산 및 토큰 축적을 모니터링할 수 있습니다 — 모든 것이 투명하게 기록되고 온체인에서 액세스할 수 있습니다."
+      },
+      "builtToScale": {
+        "title": "글로벌 확장을 위한 구축",
+        "description": "각 AGV 장치는 SPV를 통해 표준화되고 토큰화됩니다.",
+        "features": [
+          "배터리 저장 및 엣지 컴퓨팅으로 확장 가능",
+          "모듈식 설계는 관개, AI 노드 또는 탄소 추적을 지원합니다",
+          "아시아, 라틴 아메리카, 아프리카 및 MENA 지역에 적용 가능"
+        ],
+        "conclusion": "CEX 지원, DeFi 호환, ESG 준수를 갖춘 AGV는 글로벌 통합을 위해 구축되었습니다."
+      }
+    },
+    "testimonials": {
+      "title": "인프라의 미래는 실제적이고, 친환경적이며, 온체인입니다",
+      "description": "주요 기관들은 실물 자산, 지속 가능한 에너지, 그리고 블록체인 통합이 향후 수조 달러 규모의 기회를 창출할 것이라는 데 동의합니다. AGV는 이러한 거시적 트렌드의 교차점에 위치하고 있습니다.",
+      "quotes": [
+        {
+          "text": "실제 자산의 토큰화는 2030년까지 10조 달러 시장을 열 수 있습니다.",
+          "source": "보스턴 컨설팅 그룹"
+        },
+        {
+          "text": "ESG 및 에너지 연계 인프라는 향후 10년간 기관 자금 흐름을 지배할 예정입니다.",
+          "source": "블랙록 2024 전망"
+        },
+        {
+          "text": "분산형 친환경 에너지는 장기적 경제 회복력의 기초입니다.",
+          "source": "세계은행"
+        }
+      ],
+      "cta": {
+        "title": "미래는 토지, 태양, 그리고 코드로 구동됩니다",
+        "button": "지금 투자하기",
+        "backToTop": "맨 위로"
+      }
+    },
+    "features": {
+      "multiChain": {
+        "title": "다중 체인 지원",
+        "description": "BSC, Polygon 및 Arbitrum 네트워크에서 NFT를 배포하고 관리합니다."
+      },
+      "secureMinting": {
+        "title": "안전한 채굴",
+        "description": "고급 보안 조치 및 스마트 계약 감사"
+      },
+      "instantRewards": {
+        "title": "즉시 보상",
+        "description": "우리의 스테이킹 시스템을 통해 채굴 후 즉시 보상을 받으세요"
+      }
+    },
+    "community": {
+      "title": "지역 사회",
+      "github": "깃허브",
+      "twitter": "지저귀다",
+      "discord": "불화",
+      "telegram": "전보",
+      "follow": "따르다",
+      "join": "가입하다",
+      "members": "회원들",
+      "followers": "팔로워",
+      "stars": "별"
+    },
+    "hero": {
+      "stats": {
+        "blockchains": "블록체인",
+        "nftCollections": "NFT 컬렉션",
+        "dailyRewards": "rGGP 일일 보상"
+      },
+      "title": "AGV 프로토콜 NFT 생태계",
+      "description": "지속 가능한 보상을 향한 관문, SeedPass, TreePass, SolarPass, ComputePass 독점 NFT를 잠금 해제하세요. 잠금 기간 없이 즉시 스테이킹하고 BSC, Polygon, Arbitrum 네트워크에서 매일 보상을 받으세요.",
+      "startMinting": "채굴 시작",
+      "viewStaking": "스테이킹 보기"
+    },
+    "platformOverview": {
+      "title": "플랫폼 개요",
+      "totalSupply": "총 공급량",
+      "nftsMinted": "NFT 발행",
+      "rewardRate": "보상률",
+      "dailyRewards": "일일 보상",
+      "auditRating": "감사 등급",
+      "securityScore": "보안 점수"
+    },
+    "coreFeatures": {
+      "multiChain": {
+        "title": "다중 체인 지원",
+        "description": "BSC, Polygon 및 Arbitrum 네트워크에서 NFT를 배포하고 관리합니다."
+      },
+      "secureMinting": {
+        "title": "안전한 채굴",
+        "description": "고급 보안 조치 및 스마트 계약 감사"
+      },
+      "instantRewards": {
+        "title": "즉시 보상",
+        "description": "우리의 스테이킹 시스템을 통해 채굴 후 즉시 보상을 받으세요"
+      },
+      "title": "핵심 기능"
+    },
+    "getStarted": {
+      "mintNFTs": {
+        "title": "민트 NFT",
+        "description": "여러 체인에 걸친 Mint AGV 프로토콜 NFT",
+        "button": "채굴 시작"
+      },
+      "stakeEarn": {
+        "title": "스테이크하고 수익 올리기",
+        "description": "NFT를 스테이킹하여 매일 보상을 받으세요",
+        "button": "스테이킹 시작"
+      },
+      "learnMore": {
+        "title": "자세히 알아보기",
+        "description": "토큰 정보 및 문서 탐색",
+        "button": "세부 정보 보기"
+      },
+      "title": "시작하기"
+    },
+    "latestUpdates": {
+      "articles": {
+        "introducing": {
+          "title": "AGV 프로토콜 소개",
+          "description": "AGV 프로토콜 소개: 실제 자산의 미래를 열어드립니다"
+        },
+        "rggpExplained": {
+          "title": "rGGP 설명",
+          "description": "AGV 프로토콜이 실제 수익을 온체인 보상으로 전환하는 방법"
+        }
+      },
+      "title": "최신 업데이트",
+      "readMore": "더 읽어보기"
+    },
+    "footer": {
+      "companyName": "AGRIVOLT PROTOCOL",
+      "tagline": "NFT 발행 플랫폼",
+      "description": "혁신적인 NFT 기술을 통해 탈중앙화 컴퓨팅의 미래를 구축합니다. 여러 블록체인 네트워크에서 독점 AGV NFT를 발행하는 수천 명의 사용자에 합류하세요.",
+      "features": {
+        "secure": "안전하고 신뢰할 수 있음",
+        "fast": "번개처럼 빠름",
+        "multiChain": "다중 체인"
+      },
+      "navigation": {
+        "product": {
+          "title": "제품",
+          "nftMinting": "NFT 발행",
+          "dashboard": "대시보드",
+          "kolProgram": "KOL 프로그램",
+          "analytics": "분석"
+        },
+        "company": {
+          "title": "회사",
+          "aboutUs": "회사 소개",
+          "careers": "채용",
+          "press": "보도자료",
+          "blog": "블로그"
+        },
+        "support": {
+          "title": "지원",
+          "helpCenter": "도움말 센터",
+          "documentation": "문서",
+          "apiReference": "API 참조",
+          "contactSupport": "지원 문의"
+        },
+        "legal": {
+          "title": "법적 고지",
+          "privacyPolicy": "개인정보 보호정책",
+          "termsOfService": "서비스 약관",
+          "cookiePolicy": "쿠키 정책",
+          "gdpr": "GDPR"
+        }
+      },
+      "legal": {
+        "headquarters": "아시아에 본사가 있습니다. 전 세계적으로 운영됩니다. 최고 기업들이 감사합니다.",
+        "description": "모든 실제 자산은 승인된 중국 SPV가 보유하며 법적 승인을 통해 JLL Asset Ltd.(BVI 회사 번호: 2182436)에 매핑됩니다. NFT 발행 및 운영은 iJET Limited(NZBN: 9429049576290)에서 실행됩니다. BVI 기반 AGV DAO로의 거버넌스 전환은 진행 중입니다."
+      },
+      "copyright": "© 2025 AgriVolt Protocol. 모든 권리 보유"
+    }
+  }
+}
