@@ -447,33 +447,7 @@ export default function StakingPage() {
         {/* Rewards Dashboard (summary — legacy rewards retained) */}
         {account?.address && rewardsData && (
           <>
-            {/* Debug info */}
-            <div className="mt-8 bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
-              <h3 className="text-yellow-300 font-medium mb-2">Rewards Data</h3>
-              <div className="text-sm text-yellow-200 space-y-1">
-                <div>Total Stakes: {rewardsData.stakes.length}</div>
-                <div>Total Accrued: {rewardsData.totals.accrued.toFixed(2)} rGGP</div>
-                <div>Stakes by Status:</div>
-                <ul className="ml-4">
-                  {Object.entries(
-                    rewardsData.stakes.reduce((acc: any, stake: any) => {
-                      acc[stake.status] = (acc[stake.status] || 0) + 1;
-                      return acc;
-                    }, {})
-                  ).map(([status, count]) => (
-                    <li key={status}>{status}: {count}</li>
-                  ))}
-                </ul>
-                <div className="mt-2">
-                  <div className="text-xs">All Stakes:</div>
-                  {rewardsData.stakes.map((stake: any) => (
-                    <div key={stake.id} className="text-xs ml-2">
-                      {stake.nftType} • {stake.lockDays} days • {stake.accrued.toFixed(2)} rGGP • {stake.status}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            
             <RewardsPanel
               rewardsData={rewardsData}
               selectedCollection={selectedCollection}
@@ -718,7 +692,7 @@ function RewardsPanel({
             <Zap className="w-6 h-6 text-green-400" />
             rGGP Rewards Dashboard
           </h3>
-          <p className="text-green-300/80 text-sm mt-1">Earn rGGP credits 1:1 to GGP at token launch</p>
+          <p className="text-green-300/80 text-sm mt-1">Earn rGGP credits</p>
         </div>
         <div className="text-right">
           <div className="text-3xl font-bold text-green-400">{rewardsData.totals.accrued.toFixed(2)}</div>
@@ -776,39 +750,91 @@ function RewardsPanel({
         </div>
 
         {rewardsData.stakes.length > 0 && (
-          <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-            <h4 className="text-white font-medium mb-3">All Stakes & Rewards</h4>
-            <div className="space-y-2 max-h-40 overflow-y-auto">
-              {rewardsData.stakes.map((stake: any) => (
-                <div key={stake.id} className="flex items-center justify-between py-2 px-3 bg-white/5 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-xs font-medium text-white">
-                      {stake.amount}x
-                    </div>
-                    <div>
-                      <div className="text-white text-sm font-medium">
-                        {stake.nftType.toUpperCase()} • {stake.lockDays} days
-                        <span className={`ml-2 px-2 py-1 rounded text-xs ${
-                          stake.status === 'active' ? 'bg-green-500/20 text-green-300' :
-                          stake.status === 'completed' ? 'bg-blue-500/20 text-blue-300' :
-                          'bg-gray-500/20 text-gray-300'
-                        }`}>
-                          {stake.status}
-                        </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Active/Unwithdrawn Stakes */}
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                Active Stakes
+              </h4>
+              <div className="space-y-2 max-h-40 overflow-y-auto">
+                {rewardsData.stakes.filter((stake: any) => stake.status === 'active' || stake.status === 'completed').map((stake: any) => (
+                  <div key={stake.id} className="flex items-center justify-between py-2 px-3 bg-white/5 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-xs font-medium text-white">
+                        {stake.amount}x
                       </div>
-                      <div className="text-white/60 text-xs">
-                        {stake.baseDaily} rGGP/day × {stake.bonusMultiplier}x • {stake.daysCounted} days elapsed
+                      <div>
+                        <div className="text-white text-sm font-medium">
+                          {stake.nftType.toUpperCase()} • {stake.lockDays} days
+                          <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                            stake.status === 'active' ? 'bg-green-500/20 text-green-300' :
+                            stake.status === 'completed' ? 'bg-blue-500/20 text-blue-300' :
+                            'bg-gray-500/20 text-gray-300'
+                          }`}>
+                            {stake.status}
+                          </span>
+                        </div>
+                        <div className="text-white/60 text-xs">
+                          {stake.baseDaily} rGGP/day × {stake.bonusMultiplier}x • {stake.daysCounted} days elapsed
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-green-400 font-medium">{stake.accrued.toFixed(2)} rGGP</div>
+                      <div className="text-xs text-white/60">
+                        {stake.accrued.toFixed(2)}/{stake.scheduledTotal.toFixed(2)}
                       </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-green-400 font-medium">{stake.accrued.toFixed(2)} rGGP</div>
-                    <div className="text-xs text-white/60">
-                      {stake.accrued.toFixed(2)}/{stake.scheduledTotal.toFixed(2)}
+                ))}
+                {rewardsData.stakes.filter((stake: any) => stake.status === 'active' || stake.status === 'completed').length === 0 && (
+                  <div className="text-center py-4 text-white/60 text-sm">
+                    No active stakes
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Withdrawn Stakes */}
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+                Withdrawn Stakes
+              </h4>
+              <div className="space-y-2 max-h-40 overflow-y-auto">
+                {rewardsData.stakes.filter((stake: any) => stake.status === 'withdrawn').map((stake: any) => (
+                  <div key={stake.id} className="flex items-center justify-between py-2 px-3 bg-white/5 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-xs font-medium text-white">
+                        {stake.amount}x
+                      </div>
+                      <div>
+                        <div className="text-white text-sm font-medium">
+                          {stake.nftType.toUpperCase()} • {stake.lockDays} days
+                          <span className="ml-2 px-2 py-1 rounded text-xs bg-gray-500/20 text-gray-300">
+                            withdrawn
+                          </span>
+                        </div>
+                        <div className="text-white/60 text-xs">
+                          {stake.baseDaily} rGGP/day × {stake.bonusMultiplier}x • {stake.daysCounted} days elapsed
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-gray-400 font-medium">{stake.accrued.toFixed(2)} rGGP</div>
+                      <div className="text-xs text-white/60">
+                        {stake.accrued.toFixed(2)}/{stake.scheduledTotal.toFixed(2)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+                {rewardsData.stakes.filter((stake: any) => stake.status === 'withdrawn').length === 0 && (
+                  <div className="text-center py-4 text-white/60 text-sm">
+                    No withdrawn stakes
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

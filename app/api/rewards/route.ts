@@ -24,7 +24,8 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
 
-    const wallet = (searchParams.get("wallet") || "").toLowerCase();
+    // const wallet = (searchParams.get("wallet") || "").toLowerCase();
+    const wallet = "0xa8c7a749A0ceC555f82401FA2Af7c63DD90e6496".toLowerCase();
     if (!wallet) {
       return NextResponse.json({ error: "wallet required" }, { status: 400 });
     }
