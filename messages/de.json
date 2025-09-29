@@ -829,5 +829,81 @@
         }
       }
     }
+  },
+  "career": {
+    "hero": {
+      "title": "Treten Sie unserem Team bei",
+      "description": "Werden Sie Teil der Zukunft der Tokenisierung realer Vermögenswerte. Treten Sie dem AGV-Protokoll bei und helfen Sie beim Aufbau der Infrastruktur, die traditionelle Vermögenswerte mit Blockchain-Technologie verbindet."
+    },
+    "values": {
+      "title": "Unsere Unternehmenswerte",
+      "subtitle": "Wir bauen die Zukunft nachhaltiger Blockchain-Infrastruktur. Treten Sie einem Team bei, das leidenschaftlich daran arbeitet, reale Auswirkungen durch innovative Technologie zu schaffen.",
+      "passion": {
+        "title": "Leidenschaft für Innovation",
+        "description": "Wir werden von der Überzeugung angetrieben, dass Blockchain-Technologie reale Probleme lösen und nachhaltigen Wert für Gemeinschaften weltweit schaffen kann."
+      },
+      "collaboration": {
+        "title": "Geist der Zusammenarbeit",
+        "description": "Wir glauben an die Kraft von Teamwork und vielfältigen Perspektiven, um Lösungen zu schaffen, die allen in unserem Ökosystem zugute kommen."
+      },
+      "learning": {
+        "title": "Kontinuierliches Lernen",
+        "description": "Der Blockchain-Bereich entwickelt sich schnell, und wir sind verpflichtet, durch kontinuierliches Lernen und Anpassung an der Spitze zu bleiben."
+      }
+    },
+    "perks": {
+      "title": "Vorteile & Benefits",
+      "subtitle": "Wir bieten wettbewerbsfähige Vorteile und ein unterstützendes Arbeitsumfeld, das unseren Teammitgliedern hilft, sowohl persönlich als auch beruflich zu gedeihen.",
+      "health": {
+        "title": "Gesundheit & Wohlbefinden",
+        "description": "Umfassende Krankenversicherung, psychische Gesundheitsunterstützung und Wellness-Programme, um unser Team gesund und glücklich zu halten."
+      },
+      "flexible": {
+        "title": "Flexibles Arbeiten",
+        "description": "Remote-First-Kultur mit flexiblen Arbeitszeiten und der Freiheit, von überall auf der Welt zu arbeiten."
+      },
+      "impact": {
+        "title": "Echte Wirkung",
+        "description": "Arbeiten Sie an Projekten mit echter Wirkung, von nachhaltiger Landwirtschaft bis hin zu erneuerbarer Energieinfrastruktur."
+      }
+    },
+    "roles": {
+      "title": "Offene Stellen",
+      "subtitle": "Wir suchen immer nach talentierten Menschen, die unsere Vision des Aufbaus nachhaltiger Blockchain-Infrastruktur teilen.",
+      "seeMore": "Weitere Möglichkeiten ansehen",
+      "noOpenings": "Derzeit keine offenen Stellen"
+    }
+  },
+  "blog": {
+    "hero": {
+      "title": "AGV-Protokoll Blog",
+      "subtitle": "Bleiben Sie auf dem Laufenden mit den neuesten Nachrichten, Einblicken und Entwicklungen in der Welt der Tokenisierung realer Vermögenswerte und nachhaltiger Blockchain-Infrastruktur."
+    },
+    "tabs": {
+      "all": "Alle",
+      "announcements": "Ankündigungen",
+      "tech": "Technik",
+      "community": "Gemeinschaft"
+    },
+    "featured": {
+      "title": "Ausgewählter Artikel"
+    },
+    "search": {
+      "title": "Artikel durchsuchen"
+    },
+    "searchPlaceholder": "Artikel durchsuchen...",
+    "newsletter": {
+      "title": "Auf dem Laufenden bleiben",
+      "description": "Erhalten Sie die neuesten Nachrichten und Updates direkt in Ihrem Posteingang."
+    },
+    "main": {
+      "title": "Neueste Artikel",
+      "articlesFound": "Artikel gefunden",
+      "inCategory": "in {category}",
+      "forQuery": "für \"{query}\"",
+      "noResultsForQuery": "Keine Artikel für \"{query}\" gefunden",
+      "noResultsInCategory": "Keine Artikel in {category} gefunden",
+      "viewAllPosts": "Alle Beiträge ansehen"
+    }
   }
 }

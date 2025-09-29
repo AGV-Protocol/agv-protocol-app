@@ -829,5 +829,81 @@
         }
       }
     }
+  },
+  "career": {
+    "hero": {
+      "title": "Join Our Team",
+      "description": "Be part of the future of real-world asset tokenization. Join AGV Protocol and help build the infrastructure that bridges traditional assets with blockchain technology."
+    },
+    "values": {
+      "title": "Our Company Values",
+      "subtitle": "We're building the future of sustainable blockchain infrastructure. Join a team that's passionate about creating real-world impact through innovative technology.",
+      "passion": {
+        "title": "Passion for Innovation",
+        "description": "We're driven by the belief that blockchain technology can solve real-world problems and create sustainable value for communities worldwide."
+      },
+      "collaboration": {
+        "title": "Collaborative Spirit",
+        "description": "We believe in the power of teamwork and diverse perspectives to create solutions that benefit everyone in our ecosystem."
+      },
+      "learning": {
+        "title": "Continuous Learning",
+        "description": "The blockchain space evolves rapidly, and we're committed to staying at the forefront through continuous learning and adaptation."
+      }
+    },
+    "perks": {
+      "title": "Perks & Benefits",
+      "subtitle": "We offer competitive benefits and a supportive work environment that helps our team members thrive both personally and professionally.",
+      "health": {
+        "title": "Health & Wellness",
+        "description": "Comprehensive health insurance, mental health support, and wellness programs to keep our team healthy and happy."
+      },
+      "flexible": {
+        "title": "Flexible Work",
+        "description": "Remote-first culture with flexible hours and the freedom to work from anywhere in the world."
+      },
+      "impact": {
+        "title": "Real Impact",
+        "description": "Work on projects that have real-world impact, from sustainable agriculture to renewable energy infrastructure."
+      }
+    },
+    "roles": {
+      "title": "Open Roles",
+      "subtitle": "We're always looking for talented individuals who share our vision of building sustainable blockchain infrastructure.",
+      "seeMore": "See More Opportunities",
+      "noOpenings": "No current openings"
+    }
+  },
+  "blog": {
+    "hero": {
+      "title": "AGV Protocol Blog",
+      "subtitle": "Stay updated with the latest news, insights, and developments in the world of real-world asset tokenization and sustainable blockchain infrastructure."
+    },
+    "tabs": {
+      "all": "All",
+      "announcements": "Announcements",
+      "tech": "Tech",
+      "community": "Community"
+    },
+    "featured": {
+      "title": "Featured Article"
+    },
+    "search": {
+      "title": "Search Articles"
+    },
+    "searchPlaceholder": "Search articles...",
+    "newsletter": {
+      "title": "Stay Updated",
+      "description": "Get the latest news and updates delivered to your inbox."
+    },
+    "main": {
+      "title": "Latest Articles",
+      "articlesFound": "articles found",
+      "inCategory": "in {category}",
+      "forQuery": "for \"{query}\"",
+      "noResultsForQuery": "No articles found for \"{query}\"",
+      "noResultsInCategory": "No articles found in {category}",
+      "viewAllPosts": "View All Posts"
+    }
   }
 }

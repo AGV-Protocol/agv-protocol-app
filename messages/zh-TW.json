@@ -829,5 +829,81 @@
         }
       }
     }
+  },
+  "career": {
+    "hero": {
+      "title": "加入我們的團隊",
+      "description": "成為現實世界資產代幣化未來的一部分。加入 AGV 協議，幫助構建連接傳統資產與區塊鏈技術的基礎設施。"
+    },
+    "values": {
+      "title": "我們的公司價值觀",
+      "subtitle": "我們正在構建永續區塊鏈基礎設施的未來。加入一個熱衷於通過創新技術創造現實世界影響的團隊。",
+      "passion": {
+        "title": "對創新的熱情",
+        "description": "我們相信區塊鏈技術可以解決現實世界的問題，為全球社區創造永續價值。"
+      },
+      "collaboration": {
+        "title": "協作精神",
+        "description": "我們相信團隊合作和多元化觀點的力量，能夠創造惠及生態系統中每個人的解決方案。"
+      },
+      "learning": {
+        "title": "持續學習",
+        "description": "區塊鏈領域發展迅速，我們致力於通過持續學習和適應保持領先地位。"
+      }
+    },
+    "perks": {
+      "title": "福利與津貼",
+      "subtitle": "我們提供有競爭力的福利和支持性的工作環境，幫助團隊成員在個人和職業方面都能茁壯成長。",
+      "health": {
+        "title": "健康與福祉",
+        "description": "全面的健康保險、心理健康支持和健康計劃，讓我們的團隊保持健康和快樂。"
+      },
+      "flexible": {
+        "title": "彈性工作",
+        "description": "遠程優先文化，工作時間彈性，可以在世界任何地方自由工作。"
+      },
+      "impact": {
+        "title": "真實影響",
+        "description": "從事具有現實世界影響的專案，從永續農業到再生能源基礎設施。"
+      }
+    },
+    "roles": {
+      "title": "開放職位",
+      "subtitle": "我們一直在尋找與我們構建永續區塊鏈基礎設施願景一致的優秀人才。",
+      "seeMore": "查看更多機會",
+      "noOpenings": "暫無空缺職位"
+    }
+  },
+  "blog": {
+    "hero": {
+      "title": "AGV 協議部落格",
+      "subtitle": "了解現實世界資產代幣化和永續區塊鏈基礎設施領域的最新新聞、見解和發展。"
+    },
+    "tabs": {
+      "all": "全部",
+      "announcements": "公告",
+      "tech": "技術",
+      "community": "社區"
+    },
+    "featured": {
+      "title": "精選文章"
+    },
+    "search": {
+      "title": "搜尋文章"
+    },
+    "searchPlaceholder": "搜尋文章...",
+    "newsletter": {
+      "title": "保持更新",
+      "description": "獲取最新新聞和更新，直接發送到您的收件箱。"
+    },
+    "main": {
+      "title": "最新文章",
+      "articlesFound": "找到的文章",
+      "inCategory": "在 {category} 中",
+      "forQuery": "搜尋 \"{query}\"",
+      "noResultsForQuery": "未找到 \"{query}\" 的文章",
+      "noResultsInCategory": "在 {category} 中未找到文章",
+      "viewAllPosts": "查看所有文章"
+    }
   }
 }

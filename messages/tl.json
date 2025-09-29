@@ -829,5 +829,81 @@
         }
       }
     }
+  },
+  "career": {
+    "hero": {
+      "title": "Sumali sa aming koponan",
+      "description": "Maging bahagi ng hinaharap ng real-world asset tokenization. Sumali sa AGV Protocol at tumulong sa pagbuo ng infrastructure na nag-uugnay sa mga tradisyonal na asset sa blockchain technology."
+    },
+    "values": {
+      "title": "Ang aming mga halaga ng kumpanya",
+      "subtitle": "Ginagawa namin ang hinaharap ng sustainable blockchain infrastructure. Sumali sa isang koponan na passionate sa paglikha ng tunay na epekto sa pamamagitan ng makabagong teknolohiya.",
+      "passion": {
+        "title": "Passion para sa inobasyon",
+        "description": "Pinapagana kami ng paniniwala na ang blockchain technology ay maaaring malutas ang mga tunay na problema at lumikha ng sustainable na halaga para sa mga komunidad sa buong mundo."
+      },
+      "collaboration": {
+        "title": "Espiritu ng pakikipagtulungan",
+        "description": "Naniniwala kami sa kapangyarihan ng teamwork at magkakaibang pananaw upang lumikha ng mga solusyon na nakikinabang sa lahat sa aming ecosystem."
+      },
+      "learning": {
+        "title": "Patuloy na pag-aaral",
+        "description": "Ang blockchain space ay mabilis na umuunlad, at nakatuon kami sa pagiging nasa harapan sa pamamagitan ng patuloy na pag-aaral at pag-angkop."
+      }
+    },
+    "perks": {
+      "title": "Mga benepisyo at perks",
+      "subtitle": "Nag-aalok kami ng mga mapagkumpitensyang benepisyo at supportive work environment na tumutulong sa aming mga miyembro ng koponan na umunlad sa personal at propesyonal.",
+      "health": {
+        "title": "Kalusugan at kagalingan",
+        "description": "Comprehensive health insurance, mental health support, at wellness programs upang panatilihing malusog at masaya ang aming koponan."
+      },
+      "flexible": {
+        "title": "Flexible na trabaho",
+        "description": "Remote-first culture na may flexible hours at kalayaan na magtrabaho mula saanman sa mundo."
+      },
+      "impact": {
+        "title": "Tunay na epekto",
+        "description": "Magtrabaho sa mga proyekto na may tunay na epekto, mula sa sustainable agriculture hanggang sa renewable energy infrastructure."
+      }
+    },
+    "roles": {
+      "title": "Mga bukas na posisyon",
+      "subtitle": "Palagi naming hinahanap ang mga talented na indibidwal na nagbabahagi ng aming pananaw sa pagbuo ng sustainable blockchain infrastructure.",
+      "seeMore": "Tingnan ang mas maraming oportunidad",
+      "noOpenings": "Walang kasalukuyang bukas na posisyon"
+    }
+  },
+  "blog": {
+    "hero": {
+      "title": "AGV Protocol Blog",
+      "subtitle": "Manatiling updated sa pinakabagong balita, insights, at mga development sa mundo ng real-world asset tokenization at sustainable blockchain infrastructure."
+    },
+    "tabs": {
+      "all": "Lahat",
+      "announcements": "Mga anunsyo",
+      "tech": "Teknolohiya",
+      "community": "Komunidad"
+    },
+    "featured": {
+      "title": "Featured na artikulo"
+    },
+    "search": {
+      "title": "Maghanap ng mga artikulo"
+    },
+    "searchPlaceholder": "Maghanap ng mga artikulo...",
+    "newsletter": {
+      "title": "Manatiling updated",
+      "description": "Makatanggap ng pinakabagong balita at updates nang direkta sa inyong inbox."
+    },
+    "main": {
+      "title": "Pinakabagong mga artikulo",
+      "articlesFound": "mga artikulo na natagpuan",
+      "inCategory": "sa {category}",
+      "forQuery": "para sa \"{query}\"",
+      "noResultsForQuery": "Walang mga artikulo na natagpuan para sa \"{query}\"",
+      "noResultsInCategory": "Walang mga artikulo na natagpuan sa {category}",
+      "viewAllPosts": "Tingnan ang lahat ng mga post"
+    }
   }
 }
