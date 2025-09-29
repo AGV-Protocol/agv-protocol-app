@@ -5,6 +5,7 @@ import { NftCard } from "./NftCard";
 import { NftType, ChainId } from "../types";
 import { NFT_INFO } from "../constants";
 import { PASS_PRICES } from "@/lib/pricing";
+import { useTranslations } from "@/hooks/useTranslations";
 
 interface NftSelectionProps {
   selectedChain: ChainId;
@@ -19,6 +20,7 @@ export const NftSelection: React.FC<NftSelectionProps> = ({
   getMaxSelectableFor,
   onQuantityChange,
 }) => {
+  const { t } = useTranslations();
   // DUMMY DATA - Replace with real data
   const getDummyData = (type: NftType) => {
     const data = {
@@ -34,8 +36,8 @@ export const NftSelection: React.FC<NftSelectionProps> = ({
     <SectionCard
       icon={Shield}
       iconBg="bg-green-500"
-      title="Select NFT to mint"
-      description="Choose the quantity for each NFT type"
+      title={t('minting.selectNftToMint')}
+      description={t('minting.chooseQuantity')}
     >
       {/* NFT Selection */}
       <div className="space-y-3 sm:space-y-4">

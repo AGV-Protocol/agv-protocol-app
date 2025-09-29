@@ -110,6 +110,16 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
+  /* Arabic font support */
+  [lang="ar"] {
+    font-family: 'Inter', 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+  }
+  
+  /* Japanese font support */
+  [lang="ja"] {
+    font-family: 'Inter', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+  }
+  
   /* Typography Scale */
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;

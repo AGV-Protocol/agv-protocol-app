@@ -29,6 +29,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "wallet required" }, { status: 400 });
     }
 
+    console.log("Rewards API called for wallet:", wallet);
+
     const chainIdFilter = searchParams.get("chainId")
       ? Number(searchParams.get("chainId"))
       : undefined;
@@ -70,6 +72,16 @@ export async function GET(req: NextRequest) {
         if (nftTypeFilter && String(data.nftType).toLowerCase() !== nftTypeFilter) return false;
         return true;
       });
+
+    console.log("Found", snap.docs.length, "total docs,", effectiveItems.length, "after filtering");
+    console.log("Effective items:", effectiveItems.map(item => ({ 
+      id: item.id, 
+      status: item.data.status, 
+      nftType: item.data.nftType, 
+      chainId: item.data.chainId,
+      accrued: item.data.accruedSoFar || 0,
+      lockDays: item.data.lockDays
+    })));
 
     let totalAccrued = 0;
     let totalCap = 0;
@@ -169,6 +181,7 @@ export async function GET(req: NextRequest) {
             status: data.status ?? "active",
             txHash: data.txHash ?? null,
             kolId: data.kolId ?? null,
+            withdrawnAt: data.withdrawnAt ? data.withdrawnAt.toDate().toISOString() : null,
           },
         ];
       } catch (e) {
@@ -192,6 +205,17 @@ export async function GET(req: NextRequest) {
 
     // newest first
     items.sort((a, b) => (a.stakedAt < b.stakedAt ? 1 : -1));
+
+    console.log("Final calculation:");
+    console.log("Total accrued:", totalAccrued);
+    console.log("Total cap:", totalCap);
+    console.log("Items:", items.map(item => ({
+      id: item.id,
+      status: item.status,
+      accrued: item.accrued,
+      nftType: item.nftType,
+      lockDays: item.lockDays
+    })));
 
     return NextResponse.json(
       {

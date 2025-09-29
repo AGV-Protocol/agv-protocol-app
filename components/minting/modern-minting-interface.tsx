@@ -22,6 +22,7 @@ import { parseUnits } from "viem";
 import { recordSuccessfulMintStrict } from "@/lib/recordMint";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { useTranslations } from "@/hooks/useTranslations";
 
 /** ---------------- Types ---------------- **/
 type MintMode = "public" | "agent";
@@ -128,7 +129,7 @@ const SpendingCapModal = ({
           <button
             onClick={onClose}
             style={{ background: "none", border: "none", color: "#9ca3af", cursor: "pointer", padding: "0.25rem" }}
-            aria-label="Close spending cap modal"
+            aria-label={t('minting.closeSpendingCapModal')}
           >
             <X size={20} />
           </button>
@@ -265,7 +266,7 @@ const StakingModal = ({
           <button
             onClick={onClose}
             style={{ background: "none", border: "none", color: "#9ca3af", cursor: "pointer", padding: "0.25rem" }}
-            aria-label="Close staking modal"
+            aria-label={t('minting.closeStakingModal')}
           >
             <X size={20} />
           </button>
@@ -388,7 +389,7 @@ const TransactionProgressModal = ({
   const copyTxHash = async () => {
     if (!txHash) return;
     await navigator.clipboard.writeText(txHash);
-    toast.success("Transaction hash copied");
+    toast.success(t('minting.transactionHashCopied'));
   };
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -419,14 +420,14 @@ const TransactionProgressModal = ({
               <Loader2 style={{ height: "1.5rem", width: "1.5rem", color: "#3b82f6", animation: "spin 1s linear infinite" }} />
             )}
             <h3 style={{ fontSize: "1.125rem", fontWeight: "bold", margin: 0 }}>
-              {stage === "success" ? "Transaction Successful!" : stage === "error" ? "Transaction Failed" : stage === "timeout" ? "Transaction Timeout" : "Transaction Progress"}
+              {stage === "success" ? t('minting.transactionSuccessful') : stage === "error" ? t('minting.transactionFailed') : stage === "timeout" ? t('minting.transactionTimeout') : t('minting.transactionProgress')}
             </h3>
           </div>
           {(stage === "success" || stage === "error" || showTimeoutOption) && (
             <button
               onClick={onClose}
               style={{ background: "none", border: "none", color: "#9ca3af", cursor: "pointer", padding: "0.25rem" }}
-              aria-label="Close progress modal"
+              aria-label={t('minting.closeProgressModal')}
             >
               <X size={20} />
             </button>
@@ -446,7 +447,7 @@ const TransactionProgressModal = ({
               <button
                 onClick={copyTxHash}
                 style={{ background: "none", border: "1px solid #4b5563", borderRadius: "0.25rem", padding: "0.25rem", color: "#9ca3af", cursor: "pointer" }}
-                aria-label="Copy tx hash"
+                aria-label={t('minting.copyTxHash')}
               >
                 <Copy size={14} />
               </button>
@@ -548,12 +549,12 @@ const TransactionProgressModal = ({
 };
 
 /** ---------------- NFT metadata (UI only) ---------------- **/
-const NFT_INFO = {
-  seed: { name: "SeedPass", description: "Access to basic features", color: "bg-blue-500" },
-  tree: { name: "TreePass", description: "Enhanced capabilities", color: "bg-green-500" },
-  solar: { name: "SolarPass", description: "Premium features", color: "bg-yellow-500" },
-  compute: { name: "ComputePass", description: "Full platform access", color: "bg-purple-500" },
-} as const;
+const createNftInfo = (t: (key: string) => string) => ({
+  seed: { name: t('minting.nft.seed.name'), description: t('minting.nft.seed.description'), color: "bg-blue-500" },
+  tree: { name: t('minting.nft.tree.name'), description: t('minting.nft.tree.description'), color: "bg-green-500" },
+  solar: { name: t('minting.nft.solar.name'), description: t('minting.nft.solar.description'), color: "bg-yellow-500" },
+  compute: { name: t('minting.nft.compute.name'), description: t('minting.nft.compute.description'), color: "bg-purple-500" },
+});
 
 /** Correct USDT decimals per chain (fallback) */
 const USDT_DECIMALS_FALLBACK: Record<ChainId, number> = {
@@ -566,8 +567,12 @@ const USDT_DECIMALS_FALLBACK: Record<ChainId, number> = {
 const short = (addr: string) => (addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "");
 
 export default function ModernMintingInterface() {
+  const { t } = useTranslations();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  
+  // Create NFT info with translations
+  const NFT_INFO = createNftInfo(t);
   
   const account = useActiveAccount();
   const activeChain = useActiveWalletChain();          // current wallet network
@@ -1114,13 +1119,13 @@ export default function ModernMintingInterface() {
   const handleCopyReferralLink = () => {
     const link = `${window.location.origin}/mint/${kolDigits}`;
     navigator.clipboard.writeText(link);
-    toast.success("Referral link copied to clipboard");
+    toast.success(t('minting.referralLinkCopied'));
   };
 
   const getMintButtonText = () => {
-    if (isMinting) return "Minting...";
-    if (hasInsufficientGas) return "Insufficient Gas";
-    if (!isConnected) return "Connect Wallet";
+    if (isMinting) return t('minting.minting');
+    if (hasInsufficientGas) return t('minting.insufficientGas');
+    if (!isConnected) return t('minting.connectWallet');
     
     // Check if user is trying to mint whitelist-only NFTs without being whitelisted
     const picked = Object.entries(quantities).filter(([, q]) => q > 0);
@@ -1128,11 +1133,11 @@ export default function ModernMintingInterface() {
       const [pickedType] = picked[0] as [NftType, number];
       const isWhitelistOnly = pickedType === "solar" || pickedType === "compute";
       if (isWhitelistOnly && !wlEligible) {
-        return "Whitelist Required";
+        return t('staking.whitelistRequired');
       }
     }
     
-    return "Mint NFTs";
+    return t('minting.mintNfts');
   };
 
   const getMintButtonDisabled = () => {
@@ -1163,7 +1168,7 @@ export default function ModernMintingInterface() {
               <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
                 <Globe className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-white">Select Network</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-white">{t('minting.selectNetwork')}</h3>
             </div>
             <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-3">
               {Object.entries(CHAINS).map(([chainId, chain]) => (
@@ -1200,9 +1205,9 @@ export default function ModernMintingInterface() {
                 <Zap className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-white">Minting Mode</h3>
+                <h3 className="text-xl font-semibold text-white">{t('minting.mintingMode')}</h3>
                 <p className="text-sm text-white/70">
-                  Mint NFTs directly from the public collection
+                  {t('minting.mintingModeDescription')}
                 </p>
               </div>
             </div>
@@ -1213,13 +1218,13 @@ export default function ModernMintingInterface() {
                     value="public" 
                     className="data-[state=active]:bg-[#4FACFE] data-[state=active]:text-white text-white rounded-full text-sm py-3 font-bold"
                   >
-                    Public Mint
+                    {t('minting.publicMint')}
                   </TabsTrigger>
                   <TabsTrigger 
                     value="agent"
                     className="data-[state=active]:bg-[#4FACFE] data-[state=active]:text-white text-white rounded-full text-sm py-3 font-bold"
                   >
-                    Agent Mint
+                    {t('minting.agentMint')}
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -1233,8 +1238,8 @@ export default function ModernMintingInterface() {
                 <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg sm:text-xl font-semibold text-white">Select NFT to mint</h3>
-                <p className="text-xs sm:text-sm text-white/70">Choose the quantity for each NFT type</p>
+                <h3 className="text-lg sm:text-xl font-semibold text-white">{t('minting.selectNftToMint')}</h3>
+                <p className="text-xs sm:text-sm text-white/70">{t('minting.chooseQuantity')}</p>
               </div>
             </div>
 
@@ -1245,9 +1250,9 @@ export default function ModernMintingInterface() {
                   <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
                     <Zap className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Agent Mint Coming Soon</h3>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">{t('minting.agentMintComingSoon')}</h3>
                   <p className="text-sm sm:text-base text-white/70 max-w-md mx-auto">
-                    The Agent Mint feature is currently under development. Stay tuned for updates!
+                    {t('minting.agentMintDescription')}
                   </p>
                 </div>
                 <div className="flex justify-center">
@@ -1255,7 +1260,7 @@ export default function ModernMintingInterface() {
                     onClick={() => setMintMode("public")}
                     className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-6 py-2"
                   >
-                    Switch to Public Mint
+                    {t('minting.switchToPublicMint')}
                   </Button>
                 </div>
               </div>
@@ -1264,7 +1269,7 @@ export default function ModernMintingInterface() {
             {/* Public Mint Section */}
             {mintMode === "public" && (
               <div className="mb-4 sm:mb-6">
-              <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Public Mint</h4>
+              <h4 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">{t('minting.publicMint')}</h4>
               <div className="space-y-3 sm:space-y-4">
                 {(["seed", "tree"] as NftType[]).map((type) => {
                   const info = NFT_INFO[type];
@@ -1643,10 +1648,10 @@ export default function ModernMintingInterface() {
               <div className="p-1.5 sm:p-2 rounded-lg bg-blue-500 shadow-lg">
                 <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
-              <h3 className="text-base sm:text-lg font-semibold text-white">Referral ID</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-white">{t('minting.referralId')}</h3>
             </div>
             <p className="text-xs sm:text-sm text-white/70 mb-3 sm:mb-4">
-              Input 6 Digit ID (Only input ID provided)
+              {t('minting.input6DigitId')}
             </p>
             <Input
               id="kolDigits"
@@ -1659,7 +1664,7 @@ export default function ModernMintingInterface() {
                 if (kolLocked) return;
                 setKolDigits(e.target.value.replace(/\D/g, "").slice(0, 6));
               }}
-              placeholder="E.g 123456"
+              placeholder={t('minting.referralIdPlaceholder')}
               className={cn(
                 "w-full text-center text-sm sm:text-lg font-mono tracking-wider bg-white/10 border-white/20 text-white placeholder:text-white/50",
                 kolLocked && "bg-white/5 cursor-not-allowed"
@@ -1681,7 +1686,7 @@ export default function ModernMintingInterface() {
               <div className="p-1.5 sm:p-2 rounded-lg shadow-lg">
                 <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
-              <h3 className="text-base sm:text-lg font-semibold text-white">Summary</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-white">{t('minting.summary')}</h3>
             </div>
             <div className="space-y-3 sm:space-y-4">
               {(Object.entries(quantities) as [NftType, number][])
@@ -1711,7 +1716,7 @@ export default function ModernMintingInterface() {
 
               {totalQuantity === 0 && (
                 <p className="text-xs sm:text-sm text-white/70 text-center py-6 sm:py-8">
-                  No items selected yet
+                  {t('minting.noItemsSelected')}
                 </p>
               )}
 
@@ -1759,7 +1764,7 @@ export default function ModernMintingInterface() {
               <div className="p-2 rounded-lg shadow-lg">
                 <Wallet className="h-5 w-5 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-white">Connect & Mint</h3>
+              <h3 className="text-lg font-semibold text-white">{t('minting.connectAndMint')}</h3>
             </div>
             <div className="space-y-4 text-center">
               {/* Wallet Connect Button */}
@@ -1772,13 +1777,13 @@ export default function ModernMintingInterface() {
                 {!isConnected && (
                   <div className="flex items-center space-x-2 text-amber-400">
                     <AlertTriangle className="h-3 w-3" />
-                    <span className="text-xs">Wallet Not Connected</span>
+                    <span className="text-xs">{t('minting.walletNotConnected')}</span>
                   </div>
                 )}
                 {hasInsufficientGas && (
                   <div className="flex items-center space-x-2 text-amber-400">
                     <AlertTriangle className="h-3 w-3" />
-                    <span className="text-xs">Insufficient Gas Balance</span>
+                    <span className="text-xs">{t('minting.insufficientGasBalance')}</span>
                   </div>
                 )}
               </div>
@@ -1831,15 +1836,15 @@ export default function ModernMintingInterface() {
                 {isMinting ? (
                   <>
                     <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                    Minting...
+                    {t('minting.minting')}
                   </>
                 ) : hasInsufficientGas ? (
                   <>
                     <AlertTriangle className="mr-2 h-3 w-3" />
-                    Insufficient Gas
+                    {t('minting.insufficientGas')}
                   </>
                 ) : !isConnected ? (
-                  "Connect Wallet"
+                  t('minting.connectWallet')
                 ) : (() => {
                   const picked = Object.entries(quantities).filter(([, q]) => q > 0);
                   if (picked.length === 1) {

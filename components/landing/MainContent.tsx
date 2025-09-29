@@ -17,26 +17,28 @@ import {
   Twitter
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/hooks/useTranslations";
 import Link from "next/link";
 
 export const MainContent: React.FC = () => {
+  const { t } = useTranslations();
 
   const features = [
     {
-      title: "Multi-Chain Support",
-      description: "Deploy and manage NFTs across BSC, Polygon, and Arbitrum networks",
+      title: t('maincontent.features.multichain.title'),
+      description: t('maincontent.features.multichain.description'),
       icon: <Globe className="h-8 w-8 text-white" />,
       color: "bg-blue-500"
     },
     {
-      title: "Secure Minting",
-      description: "Advanced security measures and smart contract audits",
+      title: t('maincontent.features.secure.title'),
+      description: t('maincontent.features.secure.description'),
       icon: <Shield className="h-8 w-8 text-white" />,
       color: "bg-green-500"
     },
     {
-      title: "Instant Rewards",
-      description: "Earn rewards immediately after minting with our staking system",
+      title: t('maincontent.features.rewards.title'),
+      description: t('maincontent.features.rewards.description'),
       icon: <Zap className="h-8 w-8 text-white" />,
       color: "bg-yellow-500"
     }
@@ -44,25 +46,25 @@ export const MainContent: React.FC = () => {
 
   const socialLinks = [
     {
-      name: "GitHub",
+      name: t('maincontent.social.github'),
       icon: <Github className="h-5 w-5" />,
       url: "https://github.com/AGV-Protocol/",
       stars: "2.1K"
     },
     {
-      name: "Twitter",
+      name: t('maincontent.social.twitter'),
       icon: <Twitter className="h-5 w-5" />,
       url: "https://x.com/AgvProtocol",
       followers: "12.5K"
     },
     {
-      name: "Discord",
+      name: t('maincontent.social.discord'),
       icon: <MessageCircle className="h-5 w-5" />,
       url: "https://discord.gg/JP9RtzM2SC",
       members: "8.2K"
     },
     {
-      name: "Telegram",
+      name: t('maincontent.social.telegram'),
       icon: <Send className="h-5 w-5" />,
       url: "https://t.me/agvprotocol",
       members: "5.8K"
@@ -71,23 +73,23 @@ export const MainContent: React.FC = () => {
 
   const articles = [
     {
-      title: "Introducing AGV Protocol ",
-      description: "Introducing AGV Protocol: Unlocking the Future of Real-World Assets",
+      title: t('maincontent.articles.introducing.title'),
+      description: t('maincontent.articles.introducing.description'),
       url: "https://medium.com/@agvprotocol/introducing-agv-protocol-unlocking-the-future-of-real-world-assets-c0715b23ff63",
       date: "2025-09-14"
     },
     {
-       title: "rGGP Explained",
-       description: "How AGV Protocol Turns Real-World Yields into On-chain Rewards",
+       title: t('maincontent.articles.multichain.title'),
+       description: t('maincontent.articles.multichain.description'),
        url: "https://medium.com/@agvprotocol/rggp-explained-how-agv-protocol-turns-real-world-yields-into-rewards-dacb0a7c31e9",
        date: "2025-09-15"
     },
-    // {
-    //   title: "Security Best Practices",
-    //   description: "How to keep your NFTs and rewards safe",
-    //   url: "#",
-    //   date: "2024-01-05"
-    // }
+    {
+      title: t('maincontent.articles.security.title'),
+      description: t('maincontent.articles.security.description'),
+      url: "#",
+      date: "2024-01-05"
+    }
   ];
   return (
     <section className="relative">
@@ -97,7 +99,7 @@ export const MainContent: React.FC = () => {
           {/* Platform Overview Title */}
             <div className="flex items-center mb-8 sm:mb-12 px-4 sm:px-8 lg:px-24">
               <div className="w-2 h-2 bg-[#3399FF] rounded-full mr-3"></div>
-              <h3 className="text-xl uppercase sm:text-xl font-bold text-[#223256]">PLATFORM OVERVIEW</h3>
+              <h3 className="text-xl uppercase sm:text-xl font-bold text-[#223256]">{t('maincontent.platformOverview')}</h3>
             </div>
         </div>
       </div>
@@ -114,10 +116,10 @@ export const MainContent: React.FC = () => {
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-gray-800">1,299</div>
-                  <div className="text-xs text-gray-500">NFTs Minted</div>
+                  <div className="text-xs text-gray-500">{t('maincontent.stats.nftsMinted')}</div>
                 </div>
               </div>
-              <div className="text-gray-600 font-medium">Total Supply</div>
+              <div className="text-gray-600 font-medium">{t('maincontent.stats.totalSupply')}</div>
             </div>
 
             <div className="relative overflow-hidden rounded-2xl bg-white border border-gray-200 p-6 group hover:shadow-lg transition-all duration-300">
@@ -126,11 +128,11 @@ export const MainContent: React.FC = () => {
                   <Zap className="h-6 w-6 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-800">Upto 50 rGGP</div>
-                  <div className="text-xs text-gray-500">Daily Rewards</div>
+                  <div className="text-2xl font-bold text-gray-800">{t('maincontent.stats.upto50rggp')}</div>
+                  <div className="text-xs text-gray-500">{t('maincontent.stats.dailyRewards')}</div>
                 </div>
               </div>
-              <div className="text-gray-600 font-medium">Reward Rate</div>
+              <div className="text-gray-600 font-medium">{t('maincontent.stats.rewardRate')}</div>
             </div>
 
             <div className="relative overflow-hidden rounded-2xl bg-white border border-gray-200 p-6 group hover:shadow-lg transition-all duration-300">
@@ -140,10 +142,10 @@ export const MainContent: React.FC = () => {
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-gray-800">98%</div>
-                  <div className="text-xs text-gray-500">Security Score</div>
+                  <div className="text-xs text-gray-500">{t('maincontent.stats.securityScore')}</div>
                 </div>
               </div>
-              <div className="text-gray-600 font-medium">Audit Rating</div>
+              <div className="text-gray-600 font-medium">{t('maincontent.stats.auditRating')}</div>
             </div>
           </div>
 
@@ -151,7 +153,7 @@ export const MainContent: React.FC = () => {
           <div className="mb-8">
             <div className="flex items-center mb-8 sm:mb-12">
               <div className="w-2 h-2 bg-[#3399FF] rounded-full mr-3"></div>
-              <h3 className="text-xl uppercase sm:text-xl font-bold text-[#223256]">Core Features</h3>
+              <h3 className="text-xl uppercase sm:text-xl font-bold text-[#223256]">{t('maincontent.coreFeatures')}</h3>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {features.map((feature, index) => (
@@ -282,7 +284,7 @@ export const MainContent: React.FC = () => {
                     className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
                     onClick={() => window.open(article.url, '_blank')}
                   >
-                    Read More
+                    {t('maincontent.articles.readMore')}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
