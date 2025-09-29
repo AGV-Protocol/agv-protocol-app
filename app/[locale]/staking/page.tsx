@@ -162,8 +162,8 @@ export default function StakingPage() {
   const [withdrawing, setWithdrawing] = useState(false);
   const [withdrawRefreshTrigger, setWithdrawRefreshTrigger] = useState(0);
 
-  // Staking duration (minimum 1 day)
-  const [stakingDuration, setStakingDuration] = useState<number>(1);
+  // Staking duration (minimum 7 days)
+  const [stakingDuration, setStakingDuration] = useState<number>(7);
 
   // Selection state (lifted) for legacy rewards preview
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -243,7 +243,7 @@ export default function StakingPage() {
   async function handleStake(tokenIds: bigint[]) {
     if (!account?.address) return toast.error(t('staking.connectWalletFirst'));
     if (tokenIds.length === 0) return toast.error(t('staking.selectAtLeastOneToken'));
-    if (stakingDuration < 1) return toast.error(t('staking.durationMustBeAtLeastOneDay'));
+    if (stakingDuration < 7) return toast.error(t('staking.durationMustBeAtLeastSevenDays'));
 
     try {
       await ensureChain();
@@ -350,7 +350,7 @@ export default function StakingPage() {
     return `${totalRate.toFixed(1)} rGGP / day (${baseRate} × ${b}x bonus)`;
   }, [selectedCollection, stakingDuration]);
 
-  const presetDurations = [1, 7, 14, 30, 90, 180, 365, 730];
+  const presetDurations = [7, 14, 30, 90, 180, 365, 730];
   const handlePresetClick = (days: number) => setStakingDuration(days);
 
   // Build list of unstaked tokenIds as strings for selection grid
@@ -648,10 +648,10 @@ function DurationPanel({
           <input
             id="duration"
             type="number"
-            min="1"
+            min="7"
             max="730"
             value={stakingDuration}
-            onChange={(e) => setStakingDuration(Math.max(1, Number.parseInt(e.target.value) || 1))}
+            onChange={(e) => setStakingDuration(Math.max(7, Number.parseInt(e.target.value) || 7))}
             className="w-20 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-center"
           />
         </div>

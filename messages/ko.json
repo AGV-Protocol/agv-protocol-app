@@ -308,7 +308,8 @@
       "staking": "스테이킹 중…"
     },
     "loadingStakedNfts": "스테이크된 NFT 로딩 중…",
-    "noStakesFoundForNetwork": "이 네트워크와 컬렉션에 대한 스테이크를 찾을 수 없습니다."
+    "noStakesFoundForNetwork": "이 네트워크와 컬렉션에 대한 스테이크를 찾을 수 없습니다.",
+    "durationMustBeAtLeastSevenDays": "스테이킹 기간은 최소 7일이어야 합니다."
   },
   "minting": {
     "title": "AGV 프로토콜 마이닝",

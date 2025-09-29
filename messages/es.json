@@ -308,7 +308,8 @@
       "staking": "Apostando…"
     },
     "loadingStakedNfts": "Cargando NFTs apostados…",
-    "noStakesFoundForNetwork": "No se encontraron apuestas para esta red y colección."
+    "noStakesFoundForNetwork": "No se encontraron apuestas para esta red y colección.",
+    "durationMustBeAtLeastSevenDays": "La duración de la apuesta debe ser de al menos 7 días."
   },
   "minting": {
     "title": "Protocolo de acuñación de AGV",

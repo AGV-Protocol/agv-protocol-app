@@ -309,7 +309,8 @@
       "staking": "质押中…"
     },
     "loadingStakedNfts": "加载质押的 NFT 中…",
-    "noStakesFoundForNetwork": "未找到此网络和收藏的质押。"
+    "noStakesFoundForNetwork": "未找到此网络和收藏的质押。",
+    "durationMustBeAtLeastSevenDays": "质押期限必须至少为 7 天。"
   },
   "minting": {
     "title": "AGV 协议铸造",

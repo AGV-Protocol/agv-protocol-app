@@ -308,7 +308,8 @@
       "staking": "جاري الرهان…"
     },
     "loadingStakedNfts": "جاري تحميل NFT المتراكمة…",
-    "noStakesFoundForNetwork": "لم يتم العثور على رهانات لهذه الشبكة والمجموعة."
+    "noStakesFoundForNetwork": "لم يتم العثور على رهانات لهذه الشبكة والمجموعة.",
+    "durationMustBeAtLeastSevenDays": "يجب أن تكون مدة الرهان 7 أيام على الأقل."
   },
   "minting": {
     "title": "بروتوكول سك العملة AGV",

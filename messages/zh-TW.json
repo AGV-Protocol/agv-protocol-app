@@ -308,7 +308,8 @@
       "staking": "質押中…"
     },
     "loadingStakedNfts": "載入質押的 NFT 中…",
-    "noStakesFoundForNetwork": "未找到此網路和收藏的質押。"
+    "noStakesFoundForNetwork": "未找到此網路和收藏的質押。",
+    "durationMustBeAtLeastSevenDays": "質押期限必須至少為 7 天。"
   },
   "minting": {
     "title": "AGV 協議鑄造",

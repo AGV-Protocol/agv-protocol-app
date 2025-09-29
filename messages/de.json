@@ -308,7 +308,8 @@
       "staking": "Einsetzen…"
     },
     "loadingStakedNfts": "Lade eingesetzte NFTs…",
-    "noStakesFoundForNetwork": "Keine Einsätze für dieses Netzwerk und diese Sammlung gefunden."
+    "noStakesFoundForNetwork": "Keine Einsätze für dieses Netzwerk und diese Sammlung gefunden.",
+    "durationMustBeAtLeastSevenDays": "Die Einsatzdauer muss mindestens 7 Tage betragen."
   },
   "minting": {
     "title": "AGV-Protokollprägung",

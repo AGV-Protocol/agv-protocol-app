@@ -308,7 +308,8 @@
       "staking": "Staking…"
     },
     "loadingStakedNfts": "Loading staked NFTs…",
-    "noStakesFoundForNetwork": "No stakes found for this network and collection."
+    "noStakesFoundForNetwork": "No stakes found for this network and collection.",
+    "durationMustBeAtLeastSevenDays": "Staking duration must be at least 7 days."
   },
   "minting": {
     "title": "AGV Protocol Minting",

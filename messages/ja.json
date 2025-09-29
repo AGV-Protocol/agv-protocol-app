@@ -308,7 +308,8 @@
       "staking": "ステーキング中…"
     },
     "loadingStakedNfts": "ステークされた NFT を読み込み中…",
-    "noStakesFoundForNetwork": "このネットワークとコレクションのステークが見つかりません。"
+    "noStakesFoundForNetwork": "このネットワークとコレクションのステークが見つかりません。",
+    "durationMustBeAtLeastSevenDays": "ステーキング期間は最低 7 日間である必要があります。"
   },
   "minting": {
     "title": "AGVプロトコルの鋳造",

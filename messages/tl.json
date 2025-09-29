@@ -308,7 +308,8 @@
       "staking": "Staking…"
     },
     "loadingStakedNfts": "Loading ang mga staked NFTs…",
-    "noStakesFoundForNetwork": "Walang nahanap na stakes para sa network at collection na ito."
+    "noStakesFoundForNetwork": "Walang nahanap na stakes para sa network at collection na ito.",
+    "durationMustBeAtLeastSevenDays": "Ang tagal ng stake ay dapat na hindi bababa sa 7 araw."
   },
   "minting": {
     "title": "AGV Protocol Minting",

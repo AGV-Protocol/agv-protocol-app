@@ -308,7 +308,8 @@
       "staking": "Mise en jeu…"
     },
     "loadingStakedNfts": "Chargement des NFT misés…",
-    "noStakesFoundForNetwork": "Aucun enjeu trouvé pour ce réseau et cette collection."
+    "noStakesFoundForNetwork": "Aucun enjeu trouvé pour ce réseau et cette collection.",
+    "durationMustBeAtLeastSevenDays": "La durée de mise doit être d'au moins 7 jours."
   },
   "minting": {
     "title": "Protocole AGV",
