@@ -1,475 +1,475 @@
 {
   "common": {
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "submit": "Submit",
-    "cancel": "Cancel",
-    "save": "Save",
-    "edit": "Edit",
-    "delete": "Delete",
-    "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "close": "Close",
-    "confirm": "Confirm",
-    "required": "Required",
-    "optional": "Optional"
+    "loading": "로딩중...",
+    "error": "오류",
+    "success": "성공",
+    "submit": "제출하다",
+    "cancel": "취소",
+    "save": "구하다",
+    "edit": "편집하다",
+    "delete": "삭제",
+    "back": "뒤쪽에",
+    "next": "다음",
+    "previous": "이전의",
+    "close": "닫다",
+    "confirm": "확인하다",
+    "required": "필수의",
+    "optional": "선택 과목"
   },
   "nav": {
-    "home": "Home",
-    "about": "About",
-    "career": "Career",
-    "blog": "Resources",
-    "investors": "Investor Relations"
+    "home": "집",
+    "about": "에 대한",
+    "career": "직업",
+    "blog": "자원",
+    "investors": "투자자 관계"
   },
   "header": {
     "nav": {
-      "home": "Home",
-      "about": "About",
-      "products": "Products",
-      "research": "Research",
-      "investorRelations": "Investor Relations",
-      "dashboard": "Dashboard",
-      "staking": "Staking",
-      "mint": "Mint"
+      "home": "집",
+      "about": "에 대한",
+      "products": "제품",
+      "research": "연구",
+      "investorRelations": "투자자 관계",
+      "dashboard": "계기반",
+      "staking": "스테이킹",
+      "mint": "박하"
     },
-    "connectWallet": "Connect Wallet",
-    "disconnect": "Disconnect"
+    "connectWallet": "지갑 연결",
+    "disconnect": "연결 해제"
   },
   "hero": {
-    "description": "Unlock exclusive SeedPass, TreePass, SolarPass, and ComputePass NFTs, your gateway to sustainable rewards. Stake instantly with no lock-up period and start earning daily rewards across BSC, Polygon, and Arbitrum networks.",
-    "startMinting": "Start Minting",
-    "viewStaking": "View Staking",
-    "blockchains": "Blockchains",
-    "nftCollections": "NFT Collections",
-    "dailyRewards": "Daily Rewards"
+    "description": "지속 가능한 보상을 향한 관문, SeedPass, TreePass, SolarPass, ComputePass 독점 NFT를 잠금 해제하세요. 잠금 기간 없이 즉시 스테이킹하고 BSC, Polygon, Arbitrum 네트워크에서 매일 보상을 받으세요.",
+    "startMinting": "채굴 시작",
+    "viewStaking": "스테이킹 보기",
+    "blockchains": "블록체인",
+    "nftCollections": "NFT 컬렉션",
+    "dailyRewards": "일일 보상"
   },
   "whatisagv": {
-    "title": "What Is AGV?",
-    "description": "AGV (AgriVolt Protocol) is a real-asset-backed Web3 protocol that brings orchards, solar farms, and decentralized nodes onto the blockchain. Each asset unit generates real-world yield from fruit harvests to solar energy and edge computing."
+    "title": "AGV란 무엇인가?",
+    "description": "AGV(AgriVolt Protocol)는 과수원, 태양광 발전소, 그리고 분산형 노드를 블록체인에 연결하는 실물 자산 기반 웹3 프로토콜입니다. 각 자산 단위는 과일 수확부터 태양광 에너지 및 엣지 컴퓨팅에 이르기까지 실제 수확량을 창출합니다."
   },
   "whyagv": {
-    "title": "Why AGV Is a Blueprint for Real Yield Infrastructure?",
-    "description": "AGV is not a one-off project. It's a replicable protocol turning real land into digital yield infrastructure. Every AGV unit is expected to generate $180k–$280k in annual revenue, with an IRR between 18% and 26%, based on actual orchard yields and regional solar performance data."
+    "title": "AGV가 실제 수익성 있는 인프라를 위한 청사진인 이유는 무엇인가?",
+    "description": "AGV는 일회성 프로젝트가 아닙니다. 실제 토지를 디지털 수확 인프라로 전환하는 복제 가능한 프로토콜입니다. 모든 AGV 유닛은 실제 과수원 수확량과 지역 태양광 발전 성능 데이터를 기준으로 연간 18만 달러에서 28만 달러의 수익을 창출할 것으로 예상되며, 내부수익률(IRR)은 18%에서 26% 사이입니다."
   },
   "fixing": {
-    "title": "Fixing What's Broken in Real-World Tokenization",
-    "description1": "AGV bridges the digital and physical worlds by turning orchards and solar farms into NFTs and tokens. Each asset is linked to smart contracts that automate income sharing, ownership, and governance — solving issues like fragmented data, unverifiable yields, and opaque land rights.",
-    "description2": "At its core, AGV uses a standardized asset unit: 100 mu of high-yield apple orchards paired with 6MW of solar. This model delivers $180k–$280k annual income per unit with 18%–26% IRR, backed by IoT-based performance data and predictive models.",
-    "description3": "Unlike traditional agri-projects that are hard to replicate, AGV units are SPV-packaged, DeFi-compatible, and globally modular — enabling fast deployment and repeatable scaling across borders."
+    "title": "실제 토큰화에서 문제가 있는 부분 수정",
+    "description1": "AGV는 과수원과 태양광 농장을 NFT와 토큰으로 전환하여 디지털 세계와 물리적 세계를 연결합니다. 각 자산은 소득 공유, 소유권 및 거버넌스를 자동화하는 스마트 계약에 연결되어 단편화된 데이터, 검증 불가능한 수확량, 불투명한 토지 권리와 같은 문제를 해결합니다.",
+    "description2": "AGV의 핵심은 표준화된 자산 단위, 즉 100무(mu) 규모의 고수확 사과 과수원과 6MW 규모의 태양광 발전 시스템을 사용하는 것입니다. 이 모델은 IoT 기반 성과 데이터와 예측 모델을 기반으로 단위당 연간 18만~28만 달러의 수익을 창출하며, 내부수익률(IRR)은 18~26%입니다.",
+    "description3": "복제하기 어려운 기존 농업 프로젝트와 달리 AGV 장치는 SPV 패키지로 제공되고 DeFi와 호환되며 전 세계적으로 모듈화되어 국경을 넘나드는 빠른 배포와 반복 가능한 확장이 가능합니다."
   },
   "exploreagv": {
-    "title": "Explore AGV's On-Chain Infrastructure",
-    "description": "Come visit our real-world project sites and see how orchards, solar arrays, and blockchain come together. From China's green zones to future international hubs, AGV is building the future of land-based RWA on-chain."
+    "title": "AGV의 온체인 인프라 살펴보기",
+    "description": "실제 프로젝트 현장을 방문하여 과수원, 태양광 패널, 그리고 블록체인이 어떻게 조화를 이루는지 직접 확인해 보세요. 중국의 녹지 지대부터 미래의 국제 허브까지, AGV는 온체인 기반의 육상 RWA(재물운송)의 미래를 구축하고 있습니다."
   },
   "blockchain": {
-    "title": "Revolutionizing Infrastructure with Blockchain",
-    "realAssets": "REAL ASSETS. REAL REVENUE.",
-    "eachUnit": "Each AGV unit includes:",
-    "item1": "100 mu of high-yield apple orchards",
-    "item2": "6MW solar array with grid connection",
-    "item3": "IoT sensors for real-time monitoring",
-    "item4": "Smart contracts for automated revenue sharing",
-    "item5": "Transparent ownership and governance",
-    "item6": "DeFi-compatible tokenization",
-    "assetsDescription": "Assets are land-based, yield-producing, and inflation-resistant — not synthetic tokens or speculative DeFi experiments.",
-    "onChainData": "ON-CHAIN DATA INFRASTRUCTURE",
-    "onChainDataDesc": "Every unit is equipped with:",
-    "onChainItem1": "IoT sensors for real-time yield and energy data",
-    "onChainItem2": "Smart contracts and NFT mapping",
-    "onChainItem3": "Dashboards synced with satellite feeds",
-    "onChainItem4": "Token emission linked to verified output",
-    "onChainDataDesc2": "Users can monitor growth, power generation, and token accrual — all transparently recorded and accessible on-chain.",
-    "builtToScale": "BUILT TO SCALE, GLOBALLY",
-    "builtToScaleDesc": "Each AGV unit is standardized and tokenized via SPV:",
-    "builtItem1": "Expandable with battery storage & edge compute",
-    "builtItem2": "Modular design supports irrigation, AI nodes, or carbon tracking",
-    "builtItem3": "Applicable across Asia, LATAM, Africa, and MENA",
-    "builtToScaleDesc2": "CEX-ready, DeFi-compatible, and ESG-aligned — AGV is built for global integration."
+    "title": "블록체인으로 인프라 혁신",
+    "realAssets": "실제 자산. 실제 수익.",
+    "eachUnit": "각 AGV 장치에는 다음이 포함됩니다.",
+    "item1": "고수확 사과 과수원 100무",
+    "item2": "그리드 연결이 가능한 6MW 태양광 어레이",
+    "item3": "실시간 모니터링을 위한 IoT 센서",
+    "item4": "자동화된 수익 공유를 위한 스마트 계약",
+    "item5": "투명한 소유권과 거버넌스",
+    "item6": "DeFi 호환 토큰화",
+    "assetsDescription": "자산은 토지 기반이며 수익을 창출하고 인플레이션에 강합니다. 합성 토큰이나 투기적 DeFi 실험이 아닙니다.",
+    "onChainData": "온체인 데이터 인프라",
+    "onChainDataDesc": "모든 유닛에는 다음이 갖춰져 있습니다.",
+    "onChainItem1": "실시간 수율 및 에너지 데이터를 위한 IoT 센서",
+    "onChainItem2": "스마트 계약 및 NFT 매핑",
+    "onChainItem3": "위성 피드와 동기화된 대시보드",
+    "onChainItem4": "검증된 출력에 연결된 토큰 발행",
+    "onChainDataDesc2": "사용자는 성장, 발전, 토큰 적립을 모니터링할 수 있으며, 이 모든 내용은 투명하게 기록되고 체인상에서 접근 가능합니다.",
+    "builtToScale": "전 세계적으로 확장 가능하도록 구축",
+    "builtToScaleDesc": "각 AGV 장치는 SPV를 통해 표준화되고 토큰화됩니다.",
+    "builtItem1": "배터리 스토리지 및 엣지 컴퓨팅으로 확장 가능",
+    "builtItem2": "모듈식 설계로 관개, AI 노드 또는 탄소 추적 지원",
+    "builtItem3": "아시아, LATAM, 아프리카 및 MENA 전역에 적용 가능",
+    "builtToScaleDesc2": "CEX 지원, DeFi 호환, ESG 준수를 갖춘 AGV는 글로벌 통합을 위해 구축되었습니다."
   },
   "threelayer": {
-    "title": "Three Layers of Real-World Yield",
+    "title": "실제 수확량의 세 가지 계층",
     "fruit": {
-      "title": "Fruit-Backed NFTs",
-      "description": "AGV transforms apple orchards into tokenized assets. Each NFT maps to a real tree, producing fruit, revenue, and verifiable yield on-chain."
+      "title": "과일이 담긴 NFT",
+      "description": "AGV는 사과 과수원을 토큰화된 자산으로 변환합니다. 각 NFT는 실제 나무에 매핑되어 체인상에서 과일, 수익 및 검증 가능한 수확량을 생산합니다."
     },
     "solar": {
-      "title": "Solar-Driven Rewards",
-      "description": "Each unit includes 6MW of solar capacity powering not only the farm, but also edge nodes and energy-backed token minting — \"sunlight as income.\""
+      "title": "태양광 발전 보상",
+      "description": "각 유닛에는 농장뿐만 아니라 엣지 노드와 에너지 지원 토큰 채굴에 전력을 공급하는 6MW의 태양광 발전 용량이 포함되어 있습니다. 즉, \"햇빛을 소득으로\"라는 뜻입니다."
     },
     "depin": {
-      "title": "DePIN-Ready Infrastructure",
-      "description": "AGV unites sensors, smart contracts, and real-time data to power edge nodes, record carbon, and deliver Web3 services worldwide."
+      "title": "DePIN 지원 인프라",
+      "description": "AGV는 센서, 스마트 계약, 실시간 데이터를 통합하여 엣지 노드에 전력을 공급하고, 탄소를 기록하고, 전 세계적으로 Web3 서비스를 제공합니다."
     }
   },
   "testimonials": {
-    "title1": "The Future of Infrastructure Is Real, Green, and On-Chain",
-    "description": "Top institutions agree: real-world assets, sustainable energy, and blockchain integration are shaping the next trillion-dollar opportunity. AGV is positioned at the intersection of these macro trends.",
-    "quote1": "Tokenization of real-world assets could unlock a $10T market by 2030.",
-    "source1": "Boston Consulting Group",
-    "quote2": "ESG and energy-linked infrastructure are set to dominate institutional flows over the next decade.",
-    "source2": "BlackRock 2024 Outlook",
-    "quote3": "Distributed green energy is the foundation of long-term economic resilience.",
-    "source3": "World Bank",
-    "title2": "The Future Is Powered by Land, Sun, and Code",
-    "investNow": "Invest Now"
+    "title1": "인프라의 미래는 현실적이고 친환경적이며 온체인입니다.",
+    "description": "주요 기관들은 실물 자산, 지속 가능한 에너지, 그리고 블록체인 통합이 향후 수조 달러 규모의 기회를 창출할 것이라는 데 동의합니다. AGV는 이러한 거시적 트렌드의 교차점에 위치하고 있습니다.",
+    "quote1": "실제 자산의 토큰화를 통해 2030년까지 10조 달러 규모의 시장이 형성될 수 있습니다.",
+    "source1": "보스턴 컨설팅 그룹",
+    "quote2": "ESG와 에너지 관련 인프라는 향후 10년 동안 기관 투자 흐름을 주도할 것으로 예상됩니다.",
+    "source2": "블랙록 2024 전망",
+    "quote3": "분산형 친환경 에너지는 장기적인 경제적 회복력의 기반입니다.",
+    "source3": "세계은행",
+    "title2": "미래는 땅, 태양, 코드로 움직인다",
+    "investNow": "지금 투자하세요"
   },
   "maincontent": {
-    "platformOverview": "PLATFORM OVERVIEW",
-    "coreFeatures": "Core Features",
-    "getStarted": "Get Started",
-    "community": "Community",
-    "latestUpdates": "Latest Updates",
+    "platformOverview": "플랫폼 개요",
+    "coreFeatures": "핵심 기능",
+    "getStarted": "시작하기",
+    "community": "지역 사회",
+    "latestUpdates": "최신 업데이트",
     "features": {
       "multichain": {
-        "title": "Multi-Chain Support",
-        "description": "Deploy and manage NFTs across BSC, Polygon, and Arbitrum networks"
+        "title": "다중 체인 지원",
+        "description": "BSC, Polygon 및 Arbitrum 네트워크에서 NFT를 배포하고 관리합니다."
       },
       "secure": {
-        "title": "Secure Minting",
-        "description": "Advanced security measures and smart contract audits"
+        "title": "안전한 채굴",
+        "description": "고급 보안 조치 및 스마트 계약 감사"
       },
       "rewards": {
-        "title": "Instant Rewards",
-        "description": "Earn rewards immediately after minting with our staking system"
+        "title": "즉시 보상",
+        "description": "우리의 스테이킹 시스템을 통해 채굴 후 즉시 보상을 받으세요"
       }
     },
     "stats": {
-      "totalSupply": "Total Supply",
-      "nftsMinted": "NFTs Minted",
-      "rewardRate": "Reward Rate",
-      "dailyRewards": "Daily Rewards",
-      "securityScore": "Security Score",
-      "auditRating": "Audit Rating",
-      "upto50rggp": "Upto 50 rGGP"
+      "totalSupply": "총 공급량",
+      "nftsMinted": "NFT 발행",
+      "rewardRate": "보상률",
+      "dailyRewards": "일일 보상",
+      "securityScore": "보안 점수",
+      "auditRating": "감사 등급",
+      "upto50rggp": "최대 50 rGGP"
     },
     "social": {
-      "github": "GitHub",
-      "twitter": "Twitter",
-      "discord": "Discord",
-      "telegram": "Telegram",
-      "follow": "Follow",
-      "stars": "stars",
-      "followers": "followers",
-      "members": "members"
+      "github": "깃허브",
+      "twitter": "지저귀다",
+      "discord": "불화",
+      "telegram": "전보",
+      "follow": "따르다",
+      "stars": "별",
+      "followers": "팔로워",
+      "members": "회원들"
     },
     "articles": {
       "introducing": {
-        "title": "Introducing AGV Protocol",
-        "description": "Learn how to mint your first NFT and start earning rewards"
+        "title": "AGV 프로토콜 소개",
+        "description": "첫 번째 NFT를 주조하고 보상을 얻는 방법을 알아보세요."
       },
       "multichain": {
-        "title": "Understanding Multi-Chain Staking",
-        "description": "A comprehensive guide to staking across different networks"
+        "title": "멀티 체인 스테이킹 이해",
+        "description": "다양한 네트워크에서 스테이킹을 위한 포괄적인 가이드"
       },
       "security": {
-        "title": "Security Best Practices",
-        "description": "How to keep your NFTs and rewards safe"
+        "title": "보안 모범 사례",
+        "description": "NFT와 보상을 안전하게 보관하는 방법"
       },
-      "readMore": "Read More"
+      "readMore": "더 읽어보기"
     }
   },
   "footer": {
-    "copyright": "© 2024 AGV Protocol. All rights reserved.",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
-    "contact": "Contact Us",
-    "description": "The future of decentralized computing through innovative NFT technology. Join thousands of users minting exclusive AGV NFTs across multiple blockchain networks.",
-    "secure": "Secure & Trusted",
-    "fast": "Lightning Fast",
-    "multichain": "Multi-Chain",
-    "resources": "Resources",
-    "nftMinting": "NFT Minting",
-    "nftStaking": "NFT Staking",
-    "kolProgram": "KOL Program",
-    "company": "Company",
-    "aboutUs": "About Us",
-    "careers": "Careers",
-    "blogs": "Blogs",
-    "support": "Support",
-    "helpCenter": "Help Center",
-    "documentation": "Documentation",
-    "contactSupport": "Contact Support",
-    "legal": "Legal",
-    "cookiePolicy": "Cookie Policy",
+    "copyright": " AGV 프로토콜. 모든 권리 보유.",
+    "privacy": "개인정보 보호정책",
+    "terms": "서비스 약관",
+    "contact": "문의하기",
+    "description": "혁신적인 NFT 기술을 통한 탈중앙화 컴퓨팅의 미래. 여러 블록체인 네트워크에서 독점적인 AGV NFT를 채굴하는 수천 명의 사용자와 함께하세요.",
+    "secure": "안전하고 신뢰할 수 있음",
+    "fast": "번개처럼 빠른",
+    "multichain": "멀티 체인",
+    "resources": "자원",
+    "nftMinting": "NFT 채굴",
+    "nftStaking": "NFT 스테이킹",
+    "kolProgram": "KOL 프로그램",
+    "company": "회사",
+    "aboutUs": "회사 소개",
+    "careers": "경력",
+    "blogs": "블로그",
+    "support": "지원하다",
+    "helpCenter": "도움말 센터",
+    "documentation": "선적 서류 비치",
+    "contactSupport": "지원팀에 문의하세요",
+    "legal": "합법적인",
+    "cookiePolicy": "쿠키 정책",
     "gdpr": "GDPR",
-    "headquarters": "Headquartered in Asia. Operated globally. Audited by top firms.",
-    "legalText": "All real-world assets are held by authorized Chinese SPVs and mapped via legal authorization to JLL Asset Ltd. (BVI Company No. 2182436). NFT issuance and operations are executed by iJET Limited (NZBN: 9429049576290). Governance transition to the BVI-based AGV DAO is in progress."
+    "headquarters": "아시아에 본사를 두고 있으며, 전 세계적으로 운영되고 있습니다. 최고 회계법인의 감사를 받았습니다.",
+    "legalText": "모든 실물 자산은 중국 공인 특수목적법인(SPV)이 보유하고 있으며, JLL Asset Ltd.(BVI 회사 번호 2182436)에 대한 법적 승인을 통해 매핑됩니다. NFT 발행 및 운영은 iJET Limited(NZBN: 9429049576290)가 담당합니다. BVI 기반 AGV DAO로의 거버넌스 전환이 진행 중입니다."
   },
   "staking": {
-    "title": "AGV Protocol Staking",
-    "description": "Stake your NFTs and earn rewards",
-    "protocolTitle": "AGV Protocol Staking",
-    "stakeYour": "Stake your",
-    "nftsOn": "NFTs on",
-    "toEarnRewards": "to earn rewards",
-    "stake": "Stake",
-    "unstake": "Unstake",
-    "rewards": "Rewards",
-    "totalStaked": "Total Staked",
-    "availableRewards": "Available Rewards",
-    "overview": "Staking Overview",
-    "stakedNFTs": "Staked NFTs",
-    "currentlyStaked": "Currently staked",
-    "rggpReadyToClaim": "rGGP ready to claim",
-    "dailyRewards": "Daily Rewards",
-    "perNFTStaked": "Per NFT staked",
-    "selectNetwork": "Select Network",
-    "selectNFTCollection": "Select NFT Collection",
-    "selectNftCollection": "Select NFT Collection",
-    "selectStakingDuration": "Select Staking Duration",
-    "quickSelect": "Quick Select",
-    "day": "day",
-    "days": "days",
-    "durationDays": "Duration (days)",
-    "lockPeriod": "Lock Period",
-    "yourNftsWillBeLocked": "Your NFTs will be locked for",
-    "youCannotWithdraw": "You cannot withdraw until this period ends",
-    "lockPeriodDescription": "Your NFTs will be locked for {duration} day{plural}. You cannot withdraw until this period ends. Minimum staking period is 7 days.",
-    "currentWalletChain": "Current wallet chain",
-    "notConnected": "Not connected",
-    "connectWalletFirst": "Connect wallet first",
-    "selectAtLeastOne": "Select at least one tokenId",
-    "selectAtLeastOneToken": "Select at least one token",
-    "durationMustBeAtLeastOneDay": "Duration must be at least one day",
-    "minimumDuration": "Staking duration must be at least 7 days",
-    "approving": "Approving (if needed)…",
-    "approvingIfNeeded": "Approving (if needed)…",
-    "stakingOnChain": "Staking on-chain…",
-    "recordingStake": "Recording stake…",
-    "stakeSuccess": "Staked for {duration} day{plural}!",
-    "stakeFailed": "Stake failed",
-    "selectAtLeastOneWithdraw": "Select at least one NFT to withdraw",
-    "withdrawingOnChain": "Withdrawing on-chain…",
-    "updatingRecords": "Updating records…",
-    "withdrawSuccess": "Withdrawn!",
-    "withdrawFailed": "Withdraw failed",
-    "selectNftsToStake": "Select NFTs to Stake",
-    "detectedInWallet": "Detected in wallet",
-    "available": "available",
-    "connectYourWallet": "Connect your wallet",
-    "connectToView": "to view your NFTs",
-    "connect": "Connect",
-    "selected": "Selected",
-    "clear": "Clear",
-    "withdrawStakedNfts": "Withdraw Staked NFTs",
-    "selectStakedNftsDescription": "Select staked NFTs to withdraw",
-    "connectWalletToSeeStakedNfts": "Connect wallet to see staked NFTs",
-    "whitelistRequired": "Whitelist required"
+    "title": "AGV 프로토콜 스테이킹",
+    "description": "NFT를 스테이킹하고 보상을 받으세요",
+    "protocolTitle": "AGV 프로토콜 스테이킹",
+    "stakeYour": "당신의 지분을",
+    "nftsOn": "NFT에 대해",
+    "toEarnRewards": "보상을 받으려면",
+    "stake": "말뚝",
+    "unstake": "언스테이크",
+    "rewards": "보상",
+    "totalStaked": "총 스테이크",
+    "availableRewards": "사용 가능한 보상",
+    "overview": "스테이킹 개요",
+    "stakedNFTs": "스테이킹된 NFT",
+    "currentlyStaked": "현재 지분",
+    "rggpReadyToClaim": "rGGP 청구 준비 완료",
+    "dailyRewards": "일일 보상",
+    "perNFTStaked": "NFT 스테이킹당",
+    "selectNetwork": "네트워크 선택",
+    "selectNFTCollection": "NFT 컬렉션 선택",
+    "selectNftCollection": "NFT 컬렉션 선택",
+    "selectStakingDuration": "스테이킹 기간 선택",
+    "quickSelect": "빠른 선택",
+    "day": "낮",
+    "days": "날",
+    "durationDays": "기간(일)",
+    "lockPeriod": "잠금 기간",
+    "yourNftsWillBeLocked": "귀하의 NFT는 잠깁니다.",
+    "youCannotWithdraw": "이 기간이 끝날 때까지 인출할 수 없습니다.",
+    "lockPeriodDescription": "귀하의 NFT는 {duration}일{복수형} 동안 잠금됩니다. 이 기간이 끝날 때까지는 출금할 수 없습니다. 최소 스테이킹 기간은 7일입니다.",
+    "currentWalletChain": "현재 지갑 체인",
+    "notConnected": "연결되지 않음",
+    "connectWalletFirst": "먼저 지갑을 연결하세요",
+    "selectAtLeastOne": "최소한 하나의 토큰 ID를 선택하세요",
+    "selectAtLeastOneToken": "최소한 하나의 토큰을 선택하세요",
+    "durationMustBeAtLeastOneDay": "기간은 최소 1일 이상이어야 합니다.",
+    "minimumDuration": "스테이킹 기간은 최소 7일 이상이어야 합니다.",
+    "approving": "승인(필요한 경우)…",
+    "approvingIfNeeded": "승인(필요한 경우)…",
+    "stakingOnChain": "온체인 스테이킹…",
+    "recordingStake": "기록 지분…",
+    "stakeSuccess": "{duration}일{plural} 동안 스테이킹되었습니다!",
+    "stakeFailed": "스테이크 실패",
+    "selectAtLeastOneWithdraw": "인출할 NFT를 하나 이상 선택하세요",
+    "withdrawingOnChain": "온체인에서 인출…",
+    "updatingRecords": "기록을 업데이트 중입니다…",
+    "withdrawSuccess": "빼는!",
+    "withdrawFailed": "출금 실패",
+    "selectNftsToStake": "스테이킹할 NFT 선택",
+    "detectedInWallet": "지갑에서 감지됨",
+    "available": "사용 가능",
+    "connectYourWallet": "지갑을 연결하세요",
+    "connectToView": "NFT를 보려면",
+    "connect": "연결하다",
+    "selected": "선택된",
+    "clear": "분명한",
+    "withdrawStakedNfts": "스테이킹된 NFT 인출",
+    "selectStakedNftsDescription": "인출할 스테이킹된 NFT를 선택하세요",
+    "connectWalletToSeeStakedNfts": "스테이킹된 NFT를 확인하려면 지갑을 연결하세요.",
+    "whitelistRequired": "허용 목록이 필요합니다"
   },
   "minting": {
-    "title": "AGV Protocol Minting",
-    "description": "Mint exclusive AGV Protocol NFTs across multiple blockchain networks.",
-    "collections": "Choose from SeedPass, TreePass, SolarPass, and ComputePass collections.",
-    "liveMinting": "Live Minting",
-    "multiChain": "Multi-Chain",
-    "usdtPayment": "USDT Payment",
-    "selectNetwork": "Select Network",
-    "mintingMode": "Minting Mode",
-    "mintingModeDescription": "Choose your minting mode",
-    "publicMint": "Public Mint",
-    "agentMint": "Agent Mint",
-    "selectNftToMint": "Select NFT to Mint",
-    "chooseQuantity": "Choose Quantity",
+    "title": "AGV 프로토콜 마이닝",
+    "description": "여러 블록체인 네트워크에서 독점적인 AGV 프로토콜 NFT를 생성하세요.",
+    "collections": "SeedPass, TreePass, SolarPass, ComputePass 컬렉션 중에서 선택하세요.",
+    "liveMinting": "라이브 주조",
+    "multiChain": "멀티 체인",
+    "usdtPayment": "USDT 결제",
+    "selectNetwork": "네트워크 선택",
+    "mintingMode": "채굴 모드",
+    "mintingModeDescription": "채굴 모드를 선택하세요",
+    "publicMint": "공공 조폐국",
+    "agentMint": "에이전트 민트",
+    "selectNftToMint": "NFT를 선택하여 Mint하세요",
+    "chooseQuantity": "수량을 선택하세요",
     "nft": {
       "seed": {
-        "name": "SeedPass NFT",
-        "description": "Access to sustainable farming rewards and exclusive benefits"
+        "name": "시드패스 NFT",
+        "description": "지속 가능한 농업 보상 및 독점 혜택에 대한 접근"
       },
       "tree": {
-        "name": "TreePass NFT",
-        "description": "Premium tree adoption with enhanced rewards"
+        "name": "트리패스 NFT",
+        "description": "향상된 보상과 함께 프리미엄 트리 도입"
       },
       "solar": {
-        "name": "SolarPass NFT",
-        "description": "Solar energy rewards and green infrastructure access"
+        "name": "솔라패스 NFT",
+        "description": "태양열 에너지 보상 및 녹색 인프라 접근"
       },
       "compute": {
-        "name": "ComputePass NFT",
-        "description": "Edge computing rewards and DePIN infrastructure access"
+        "name": "컴퓨트패스 NFT",
+        "description": "엣지 컴퓨팅 보상 및 DePIN 인프라 액세스"
       }
     },
-    "referralId": "Referral ID",
-    "input6DigitId": "Input 6-digit ID",
-    "referralIdPlaceholder": "Enter referral ID",
-    "summary": "Summary",
-    "noItemsSelected": "No items selected",
-    "connectAndMint": "Connect and Mint",
-    "connectWallet": "Connect Wallet",
-    "walletNotConnected": "Wallet not connected",
-    "insufficientGasBalance": "Insufficient gas balance",
-    "insufficientGas": "Insufficient gas",
-    "mint": "Mint",
-    "minting": "Minting...",
-    "mintNfts": "Mint NFTs",
-    "referralLinkCopied": "Referral link copied",
-    "whitelistRequired": "Whitelist required",
-    "price": "Price",
-    "supply": "Supply",
-    "remaining": "Remaining"
+    "referralId": "추천 ID",
+    "input6DigitId": "6자리 ID를 입력하세요",
+    "referralIdPlaceholder": "추천 ID를 입력하세요",
+    "summary": "요약",
+    "noItemsSelected": "선택된 항목이 없습니다",
+    "connectAndMint": "연결하고 민트하세요",
+    "connectWallet": "지갑 연결",
+    "walletNotConnected": "지갑이 연결되지 않았습니다",
+    "insufficientGasBalance": "가스 균형이 부족합니다",
+    "insufficientGas": "가스가 부족합니다",
+    "mint": "박하",
+    "minting": "주조 중...",
+    "mintNfts": "민트 NFT",
+    "referralLinkCopied": "추천 링크가 복사되었습니다.",
+    "whitelistRequired": "허용 목록이 필요합니다",
+    "price": "가격",
+    "supply": "공급",
+    "remaining": "남은"
   },
   "dashboard": {
-    "title": "Dashboard",
-    "description": "Overview of your AGV Protocol activities and performance",
-    "overview": "Overview",
-    "analytics": "Analytics",
-    "performance": "Performance",
-    "activity": "Activity"
+    "title": "계기반",
+    "description": "AGV 프로토콜 활동 및 성과 개요",
+    "overview": "개요",
+    "analytics": "해석학",
+    "performance": "성능",
+    "activity": "활동"
   },
   "landing": {
     "hero": {
-      "title": "AGV PROTOCOL NFT ECOSYSTEM",
-      "description": "Unlock exclusive SeedPass, TreePass, SolarPass, and ComputePass NFTs, your gateway to sustainable rewards. Stake instantly with no lock-up period and start earning daily rewards across BSC, Polygon, and Arbitrum networks.",
-      "startMinting": "Start Minting",
-      "viewStaking": "View Staking",
+      "title": "AGV 프로토콜 NFT 생태계",
+      "description": "지속 가능한 보상을 향한 관문, SeedPass, TreePass, SolarPass, ComputePass 독점 NFT를 잠금 해제하세요. 잠금 기간 없이 즉시 스테이킹하고 BSC, Polygon, Arbitrum 네트워크에서 매일 보상을 받으세요.",
+      "startMinting": "채굴 시작",
+      "viewStaking": "스테이킹 보기",
       "stats": {
-        "blockchains": "Blockchains",
-        "nftCollections": "NFT Collections",
-        "dailyRewards": "rGGP Daily Rewards"
+        "blockchains": "블록체인",
+        "nftCollections": "NFT 컬렉션",
+        "dailyRewards": "rGGP 일일 보상"
       }
     },
     "platformOverview": {
-      "title": "PLATFORM OVERVIEW",
-      "totalSupply": "Total Supply",
-      "nftsMinted": "NFTs Minted",
-      "rewardRate": "Reward Rate",
-      "dailyRewards": "Daily Rewards",
-      "auditRating": "Audit Rating",
-      "securityScore": "Security Score"
+      "title": "플랫폼 개요",
+      "totalSupply": "총 공급량",
+      "nftsMinted": "NFT 발행",
+      "rewardRate": "보상률",
+      "dailyRewards": "일일 보상",
+      "auditRating": "감사 등급",
+      "securityScore": "보안 점수"
     },
     "coreFeatures": {
-      "title": "Core Features",
+      "title": "핵심 기능",
       "multiChain": {
-        "title": "Multi-Chain Support",
-        "description": "Deploy and manage NFTs across BSC, Polygon, and Arbitrum networks"
+        "title": "다중 체인 지원",
+        "description": "BSC, Polygon 및 Arbitrum 네트워크에서 NFT를 배포하고 관리합니다."
       },
       "secureMinting": {
-        "title": "Secure Minting",
-        "description": "Advanced security measures and smart contract audits"
+        "title": "안전한 채굴",
+        "description": "고급 보안 조치 및 스마트 계약 감사"
       },
       "instantRewards": {
-        "title": "Instant Rewards",
-        "description": "Earn rewards immediately after minting with our staking system"
+        "title": "즉시 보상",
+        "description": "우리의 스테이킹 시스템을 통해 채굴 후 즉시 보상을 받으세요"
       }
     },
     "getStarted": {
-      "title": "Get Started",
+      "title": "시작하기",
       "mintNFTs": {
-        "title": "Mint NFTs",
-        "description": "Mint AGV Protocol NFTs across multiple chains",
-        "button": "Start Minting"
+        "title": "민트 NFT",
+        "description": "여러 체인에 걸친 Mint AGV 프로토콜 NFT",
+        "button": "채굴 시작"
       },
       "stakeEarn": {
-        "title": "Stake & Earn",
-        "description": "Stake your NFTs to earn daily rewards",
-        "button": "Start Staking"
+        "title": "스테이크하고 수익 올리기",
+        "description": "NFT를 스테이킹하여 매일 보상을 받으세요",
+        "button": "스테이킹 시작"
       },
       "learnMore": {
-        "title": "Learn More",
-        "description": "Explore token information and documentation",
-        "button": "View Details"
+        "title": "자세히 알아보기",
+        "description": "토큰 정보 및 문서 탐색",
+        "button": "세부 정보 보기"
       }
     },
     "community": {
-      "title": "Community",
-      "github": "GitHub",
-      "twitter": "Twitter",
-      "discord": "Discord",
-      "telegram": "Telegram",
-      "follow": "Follow",
-      "members": "members",
-      "followers": "followers",
-      "stars": "stars"
+      "title": "지역 사회",
+      "github": "깃허브",
+      "twitter": "지저귀다",
+      "discord": "불화",
+      "telegram": "전보",
+      "follow": "따르다",
+      "members": "회원들",
+      "followers": "팔로워",
+      "stars": "별"
     },
     "latestUpdates": {
-      "title": "Latest Updates",
-      "readMore": "Read More",
+      "title": "최신 업데이트",
+      "readMore": "더 읽어보기",
       "articles": {
         "introducing": {
-          "title": "Introducing AGV Protocol",
-          "description": "Introducing AGV Protocol: Unlocking the Future of Real-World Assets"
+          "title": "AGV 프로토콜 소개",
+          "description": "AGV 프로토콜 소개: 실제 자산의 미래를 열어드립니다"
         },
         "rggpExplained": {
-          "title": "rGGP Explained",
-          "description": "How AGV Protocol Turns Real-World Yields into On-chain Rewards"
+          "title": "rGGP 설명",
+          "description": "AGV 프로토콜이 실제 수익을 온체인 보상으로 전환하는 방법"
         }
       }
     },
     "whatIsAGV": {
-      "title": "What Is AGV?",
-      "description": "AGV (AgriVolt Protocol) is a real-asset-backed Web3 protocol that brings orchards, solar farms, and decentralized nodes onto the blockchain. Each asset unit generates real-world yield from fruit harvests to solar energy and edge computing. Users can adopt fruit trees, stake in solar, and earn tokenized rewards with transparent returns. Rooted in China's leading agricultural and solar regions, AGV makes sustainability investable, verifiable, and globally scalable."
+      "title": "AGV란 무엇인가?",
+      "description": "AGV(AgriVolt Protocol)는 과수원, 태양광 발전소, 그리고 분산형 노드를 블록체인에 연결하는 실물 자산 기반 웹3 프로토콜입니다. 각 자산 단위는 과일 수확부터 태양광 에너지 및 엣지 컴퓨팅에 이르기까지 실제 수확량을 생성합니다. 사용자는 과일나무를 입양하고, 태양광 발전에 투자하고, 투명한 수익으로 토큰화된 보상을 받을 수 있습니다. 중국 주요 농업 및 태양광 발전 지역에 기반을 둔 AGV는 지속가능성을 투자 가능하고, 검증 가능하며, 전 세계적으로 확장 가능하게 만듭니다."
     },
     "threeLayer": {
-      "title": "Three Layers of Real-World Yield",
+      "title": "실제 수확량의 세 가지 계층",
       "fruitBacked": {
-        "title": "Fruit-Backed NFTs",
-        "description": "AGV transforms apple orchards into tokenized assets.Each NFT maps to a real tree, producing fruit, revenue, and verifiable yield on- chain."
+        "title": "과일이 담긴 NFT",
+        "description": "AGV는 사과 과수원을 토큰화된 자산으로 변환합니다. 각 NFT는 실제 나무에 매핑되어 체인상에서 과일, 수익 및 검증 가능한 수확량을 생산합니다."
       },
       "solarDriven": {
-        "title": "Solar-Driven Rewards",
-        "description": "Each unit includes 6MW of solar capacity powering not only the farm,but also edge nodes and energy- backed token minting — \"sunlight as income.\""
+        "title": "태양광 발전 보상",
+        "description": "각 유닛에는 농장뿐만 아니라 엣지 노드와 에너지 지원 토큰 채굴에 전력을 공급하는 6MW의 태양광 발전 용량이 포함되어 있습니다. 즉, \"햇빛을 수입으로\"라는 뜻입니다."
       },
       "depinReady": {
-        "title": "DePIN-Ready Infrastructure",
-        "description": "AGV unites sensors, smart contracts, and real-time data to power edge nodes, record carbon, and deliver Web3 services worldwide."
+        "title": "DePIN 지원 인프라",
+        "description": "AGV는 센서, 스마트 계약, 실시간 데이터를 통합하여 엣지 노드에 전력을 공급하고, 탄소를 기록하고, 전 세계적으로 Web3 서비스를 제공합니다."
       }
     },
     "fixing": {
-      "title": "Fixing What's Broken in Real-World Tokenization",
-      "description1": "AGV bridges the digital and physical worlds by turning orchards and solar farms into NFTs and tokens. Each asset is linked to smart contracts that automate income sharing, ownership, and governance — solving issues like fragmented data, unverifiable yields, and opaque land rights.",
-      "description2": "At its core, AGV uses a standardized asset unit: 100 mu of high-yield apple orchards paired with 6MW of solar. This model delivers $180k–$280k annual income per unit with 18%–26% IRR, backed by IoT-based performance data and predictive models.",
-      "description3": "Unlike traditional agri-projects that are hard to replicate, AGV units are SPV-packaged, DeFi-compatible, and globally modular — enabling fast deployment and repeatable scaling across borders."
+      "title": "실제 토큰화에서 문제가 있는 부분 수정",
+      "description1": "AGV는 과수원과 태양광 농장을 NFT와 토큰으로 전환하여 디지털 세계와 물리적 세계를 연결합니다. 각 자산은 소득 공유, 소유권 및 거버넌스를 자동화하는 스마트 계약에 연결되어 단편화된 데이터, 검증 불가능한 수확량, 불투명한 토지 권리와 같은 문제를 해결합니다.",
+      "description2": "AGV의 핵심은 표준화된 자산 단위, 즉 100무(mu) 규모의 고수확 사과 과수원과 6MW 규모의 태양광 발전 시스템을 사용하는 것입니다. 이 모델은 IoT 기반 성과 데이터와 예측 모델을 기반으로 단위당 연간 18만~28만 달러의 수익을 창출하며, 내부수익률(IRR)은 18~26%입니다.",
+      "description3": "복제하기 어려운 기존 농업 프로젝트와 달리 AGV 장치는 SPV 패키지로 제공되고 DeFi와 호환되며 전 세계적으로 모듈화되어 국경을 넘나드는 빠른 배포와 반복 가능한 확장이 가능합니다."
     },
     "exploreAGV": {
-      "title": "Explore AGV's On-Chain Infrastructure",
-      "description": "Come visit our real-world project sites and see how orchards, solar arrays, and blockchain come together. From China's green zones to future international hubs, AGV is building the future of land-based RWA on-chain."
+      "title": "AGV의 온체인 인프라 살펴보기",
+      "description": "실제 프로젝트 현장을 방문하여 과수원, 태양광 패널, 그리고 블록체인이 어떻게 조화를 이루는지 직접 확인해 보세요. 중국의 녹지 지대부터 미래의 국제 허브까지, AGV는 온체인 기반의 육상 RWA(재물운송)의 미래를 구축하고 있습니다."
     },
     "whyAGV": {
-      "title": "Why AGV Is a Blueprint for Real Yield Infrastructure?",
-      "description1": "AGV is not a one-off project. It's a replicable protocol turning real land into digital yield infrastructure.",
-      "description2": "Every AGV unit is expected to generate $180k–$280k in annual revenue, with an IRR between 18% and 26%, based on actual orchard yields and regional solar performance data.",
-      "description3": "We combine China's world-leading agricultural and solar assets with modular SPV tokenization and on-chain data architecture, making every physical unit digitally verifiable, yield-bearing, and DeFi-compatible."
+      "title": "AGV가 실제 생산성 인프라를 위한 청사진인 이유는 무엇인가?",
+      "description1": "AGV는 일회성 프로젝트가 아닙니다. 실제 토지를 디지털 수확 인프라로 전환하는 복제 가능한 프로토콜입니다.",
+      "description2": "실제 과수원 수확량과 지역 태양광 성능 데이터를 기준으로 볼 때, 모든 AGV 장치는 연간 18만~28만 달러의 수익을 창출할 것으로 예상되며, IRR은 18~26%입니다.",
+      "description3": "우리는 중국의 세계 최고 수준의 농업 및 태양광 자산을 모듈식 SPV 토큰화와 온체인 데이터 아키텍처와 결합하여 모든 물리적 단위를 디지털 방식으로 검증하고 수익을 창출하며 DeFi와 호환되도록 만듭니다."
     },
     "blockchainInfrastructure": {
-      "title": "Revolutionizing Infrastructure with Blockchain",
+      "title": "블록체인으로 인프라 혁신",
       "realAssets": {
-        "title": "REAL ASSETS. REAL REVENUE.",
-        "description": "Each AGV unit includes:",
+        "title": "실제 자산. 실제 수익.",
+        "description": "각 AGV 장치에는 다음이 포함됩니다.",
         "features": [
-          "100 mu high-density apple orchards",
-          "6MW utility-grade solar farm",
-          "Annual revenue: $180,000 - $280,000",
-          "IRR target: 18% - 26%"
+          "100무 고밀도 사과 과수원",
+          "6MW 유틸리티급 태양광 발전소",
+          "연간 수익: $180,000 - $280,000",
+          "IRR 목표: 18% - 26%"
         ],
-        "conclusion": "Assets are land-based, yield-producing, and inflation-resistant — not synthetic tokens or speculative DeFi experiments."
+        "conclusion": "자산은 토지 기반이며 수익을 창출하고 인플레이션에 강합니다. 합성 토큰이나 투기적 DeFi 실험이 아닙니다."
       },
       "onChainData": {
-        "title": "ON-CHAIN DATA INFRASTRUCTURE",
-        "subtitle": "On-Chain Data Infrastructure",
-        "description": "Every unit is equipped with:",
+        "title": "온체인 데이터 인프라",
+        "subtitle": "온체인 데이터 인프라",
+        "description": "모든 유닛에는 다음이 갖춰져 있습니다.",
         "features": [
-          "IoT sensors for real-time yield and energy data",
-          "Smart contracts and NFT mapping",
-          "Dashboards synced with satellite feeds",
-          "Token emission linked to verified output"
+          "실시간 수율 및 에너지 데이터를 위한 IoT 센서",
+          "스마트 계약 및 NFT 매핑",
+          "위성 피드와 동기화된 대시보드",
+          "검증된 출력에 연결된 토큰 발행"
         ],
-        "conclusion": "Users can monitor growth, power generation, and token accrual — all transparently recorded and accessible on-chain."
+        "conclusion": "사용자는 성장, 발전, 토큰 적립을 모니터링할 수 있으며, 이 모든 내용은 투명하게 기록되고 체인상에서 접근 가능합니다."
       },
       "builtToScale": {
-        "title": "BUILT TO SCALE, GLOBALLY",
-        "description": "Each AGV unit is standardized and tokenized via SPV:",
+        "title": "전 세계적으로 확장 가능하도록 구축",
+        "description": "각 AGV 장치는 SPV를 통해 표준화되고 토큰화됩니다.",
         "features": [
-          "Expandable with battery storage & edge compute",
-          "Modular design supports irrigation, AI nodes, or carbon tracking",
-          "Applicable across Asia, LATAM, Africa, and MENA"
+          "배터리 스토리지 및 엣지 컴퓨팅으로 확장 가능",
+          "모듈식 설계로 관개, AI 노드 또는 탄소 추적 지원",
+          "아시아, LATAM, 아프리카 및 MENA 전역에 적용 가능"
         ],
-        "conclusion": "CEX-ready, DeFi-compatible, and ESG-aligned — AGV is built for global integration."
+        "conclusion": "CEX 지원, DeFi 호환, ESG 준수를 갖춘 AGV는 글로벌 통합을 위해 구축되었습니다."
       }
     },
     "testimonials": {
-      "title": "The Future of Infrastructure Is Real, Green, and On-Chain",
-      "description": "Top institutions agree: real-world assets, sustainable energy, and blockchain integration are shaping the next trillion-dollar opportunity. AGV is positioned at the intersection of these macro trends.",
+      "title": "인프라의 미래는 현실적이고 친환경적이며 체인에 기반을 두고 있습니다.",
+      "description": "주요 기관들은 실물 자산, 지속 가능한 에너지, 그리고 블록체인 통합이 향후 수조 달러 규모의 기회를 창출할 것이라는 데 동의합니다. AGV는 이러한 거시적 트렌드의 교차점에 위치하고 있습니다.",
       "quotes": [
         {
           "text": "Tokenization of real-world assets could unlock a $10T market by 2030.",
@@ -485,347 +485,347 @@
         }
       ],
       "cta": {
-        "title": "The Future Is Powered by Land, Sun, and Code",
-        "button": "Invest Now",
-        "backToTop": "Back to top"
+        "title": "미래는 땅, 태양, 코드로 움직인다",
+        "button": "지금 투자하세요",
+        "backToTop": "맨 위로"
       }
     },
     "footer": {
-      "companyName": "AGRIVOLT PROTOCOL",
-      "tagline": "NFT Minting Platform",
-      "description": "The future of decentralized computing through innovative NFT technology. Join thousands of users minting exclusive AGV NFTs across multiple blockchain networks.",
+      "companyName": "AGRIVOLT 프로토콜",
+      "tagline": "NFT 채굴 플랫폼",
+      "description": "혁신적인 NFT 기술을 통한 탈중앙화 컴퓨팅의 미래. 여러 블록체인 네트워크에서 독점적인 AGV NFT를 채굴하는 수천 명의 사용자와 함께하세요.",
       "features": {
-        "secure": "Secure & Trusted",
-        "fast": "Lightning Fast",
-        "multiChain": "Multi-Chain"
+        "secure": "안전하고 신뢰할 수 있음",
+        "fast": "번개처럼 빠른",
+        "multiChain": "멀티 체인"
       },
       "navigation": {
         "product": {
-          "title": "Product",
-          "nftMinting": "NFT Minting",
-          "dashboard": "Dashboard",
-          "kolProgram": "KOL Program",
-          "analytics": "Analytics"
+          "title": "제품",
+          "nftMinting": "NFT 채굴",
+          "dashboard": "계기반",
+          "kolProgram": "KOL 프로그램",
+          "analytics": "해석학"
         },
         "company": {
-          "title": "Company",
-          "aboutUs": "About Us",
-          "careers": "Careers",
-          "press": "Press",
-          "blog": "Blog"
+          "title": "회사",
+          "aboutUs": "회사 소개",
+          "careers": "경력",
+          "press": "누르다",
+          "blog": "블로그"
         },
         "support": {
-          "title": "Support",
-          "helpCenter": "Help Center",
-          "documentation": "Documentation",
-          "apiReference": "API Reference",
-          "contactSupport": "Contact Support"
+          "title": "지원하다",
+          "helpCenter": "도움말 센터",
+          "documentation": "선적 서류 비치",
+          "apiReference": "API 참조",
+          "contactSupport": "지원팀에 문의하세요"
         },
         "legal": {
-          "title": "Legal",
-          "privacyPolicy": "Privacy Policy",
-          "termsOfService": "Terms of Service",
-          "cookiePolicy": "Cookie Policy",
+          "title": "합법적인",
+          "privacyPolicy": "개인정보 보호정책",
+          "termsOfService": "서비스 약관",
+          "cookiePolicy": "쿠키 정책",
           "gdpr": "GDPR"
         }
       },
       "legal": {
-        "headquarters": "Headquartered in Asia. Operated globally. Audited by top firms.",
-        "description": "All real-world assets are held by authorized Chinese SPVs and mapped via legal authorization to JLL Asset Ltd. (BVI Company No. 2182436). NFT issuance and operations are executed by iJET Limited (NZBN: 9429049576290). Governance transition to the BVI-based AGV DAO is in progress."
+        "headquarters": "아시아에 본사를 두고 있으며, 전 세계적으로 운영되고 있습니다. 최고 회계법인의 감사를 받았습니다.",
+        "description": "모든 실물 자산은 중국 공인 특수목적법인(SPV)이 보유하고 있으며, JLL Asset Ltd.(BVI 회사 번호 2182436)에 대한 법적 승인을 통해 매핑됩니다. NFT 발행 및 운영은 iJET Limited(NZBN: 9429049576290)가 담당합니다. BVI 기반 AGV DAO로의 거버넌스 전환이 진행 중입니다."
       },
-      "copyright": "© 2025 AgriVolt Protocol. All rights reserved"
+      "copyright": "© 2025 AgriVolt Protocol. 모든 권리 보유"
     },
     "admin": {
       "hero": {
-        "title": "System Dashboard",
-        "description": "Monitor and track all AGV Protocol functionalities. Real-time analytics, performance metrics, and system health monitoring."
+        "title": "시스템 대시보드",
+        "description": "모든 AGV 프로토콜 기능을 모니터링하고 추적합니다. 실시간 분석, 성능 지표 및 시스템 상태 모니터링을 제공합니다."
       },
       "status": {
-        "online": "System Online",
-        "secure": "Secure Access",
-        "adminOnly": "Admin Only"
+        "online": "시스템 온라인",
+        "secure": "보안 액세스",
+        "adminOnly": "관리자 전용"
       },
       "sections": {
         "systemOverview": {
-          "title": "System Overview"
+          "title": "시스템 개요"
         },
         "functionalityMonitoring": {
-          "title": "Functionality Monitoring"
+          "title": "기능 모니터링"
         },
         "quickAccess": {
-          "title": "Quick Access"
+          "title": "빠른 접근"
         }
       },
       "features": {
         "userAnalytics": {
-          "title": "User Analytics",
-          "description": "Track user engagement, growth metrics, and platform adoption"
+          "title": "사용자 분석",
+          "description": "사용자 참여, 성장 지표 및 플랫폼 도입을 추적합니다."
         },
         "performanceAnalytics": {
-          "title": "Performance Analytics",
-          "description": "Monitor platform performance, response times, and system health"
+          "title": "성과 분석",
+          "description": "플랫폼 성능, 응답 시간 및 시스템 상태를 모니터링합니다."
         },
         "kolTracking": {
-          "title": "KOL Tracking",
-          "description": "Monitor Key Opinion Leader performance and referral metrics"
+          "title": "KOL 추적",
+          "description": "주요 의견 리더 성과 및 추천 지표 모니터링"
         },
         "activityMonitoring": {
-          "title": "Activity Monitoring",
-          "description": "Real-time tracking of user activities and system events"
+          "title": "활동 모니터링",
+          "description": "사용자 활동 및 시스템 이벤트의 실시간 추적"
         },
         "performanceMetrics": {
-          "title": "Performance Metrics",
-          "description": "Track minting, staking, and token performance across all chains"
+          "title": "성과 지표",
+          "description": "모든 체인에서 채굴, 스테이킹 및 토큰 성과를 추적합니다."
         },
         "systemMonitoring": {
-          "title": "System Monitoring",
-          "description": "Monitor system configuration and operational parameters"
+          "title": "시스템 모니터링",
+          "description": "시스템 구성 및 운영 매개변수 모니터링"
         }
       },
       "stats": {
         "activeUsers": {
-          "title": "Active Users",
+          "title": "활성 사용자",
           "value": "2,847",
           "change": "+12%"
         },
         "mintingActivity": {
-          "title": "Minting Activity",
+          "title": "주조 활동",
           "value": "1,234",
           "change": "+8%"
         },
         "stakingVolume": {
-          "title": "Staking Volume",
+          "title": "스테이킹 볼륨",
           "value": "5,678",
           "change": "+15%"
         },
         "systemUptime": {
-          "title": "System Uptime",
+          "title": "시스템 가동 시간",
           "value": "99.8%",
           "change": "+0.2%"
         }
       },
       "quickAccess": {
         "dashboard": {
-          "title": "Dashboard",
-          "description": "View main dashboard"
+          "title": "계기반",
+          "description": "메인 대시보드 보기"
         },
         "users": {
-          "title": "Users",
-          "description": "Manage users"
+          "title": "사용자",
+          "description": "사용자 관리"
         },
         "analytics": {
-          "title": "Analytics",
-          "description": "View analytics"
+          "title": "해석학",
+          "description": "분석 보기"
         },
         "settings": {
-          "title": "Settings",
-          "description": "Configure system"
+          "title": "설정",
+          "description": "시스템 구성"
         }
       },
       "buttons": {
-        "viewMetrics": "View Metrics"
+        "viewMetrics": "메트릭 보기"
       },
       "systemStatus": {
-        "title": "System Status",
-        "description": "This dashboard provides real-time monitoring of all AGV Protocol functionalities. All metrics are updated automatically and provide insights into platform performance, user activity, and system health across all features."
+        "title": "시스템 상태",
+        "description": "이 대시보드는 모든 AGV 프로토콜 기능을 실시간으로 모니터링합니다. 모든 지표는 자동으로 업데이트되며 모든 기능의 플랫폼 성능, 사용자 활동 및 시스템 상태에 대한 통찰력을 제공합니다."
       }
     },
     "comingSoon": {
-      "logo": "AGRIVOLT PROTOCOL",
-      "title": "Coming Soon",
-      "subtitle": "We're working hard to bring you something amazing.\nStay tuned for updates!",
+      "logo": "AGRIVOLT 프로토콜",
+      "title": "곧 출시 예정",
+      "subtitle": "여러분께 놀라운 서비스를 제공하기 위해 최선을 다하고 있습니다.\n새로운 소식을 기대해 주세요!",
       "features": {
-        "lightningFast": "Lightning Fast",
-        "multiChain": "Multi-Chain",
-        "community": "Community",
-        "secure": "Secure"
+        "lightningFast": "번개처럼 빠른",
+        "multiChain": "멀티 체인",
+        "community": "지역 사회",
+        "secure": "안전한"
       },
-      "backButton": "Back to Home",
-      "footer": "Follow us for updates on our journey to revolutionize real-world asset tokenization"
+      "backButton": "홈으로 돌아가기",
+      "footer": "실제 자산 토큰화를 혁신하기 위한 우리의 여정에 대한 최신 소식을 받아보려면 저희를 팔로우하세요."
     },
     "token": {
-      "copySuccess": "{label} copied to clipboard",
+      "copySuccess": "{label}이 클립보드에 복사되었습니다.",
       "hero": {
-        "title": "AGV Protocol Tokens",
-        "description": "Discover GVT (Governance Token) and rGGP (Reward Token) - the dual-token ecosystem powering the AGV Protocol. Earn rGGP rewards through staking and participate in governance with GVT."
+        "title": "AGV 프로토콜 토큰",
+        "description": "AGV 프로토콜을 구동하는 듀얼 토큰 생태계인 GVT(거버넌스 토큰)와 rGGP(리워드 토큰)를 만나보세요. 스테이킹을 통해 rGGP 보상을 획득하고 GVT와 함께 거버넌스에 참여하세요."
       },
       "status": {
-        "liveEcosystem": "Live Ecosystem",
-        "multiChain": "Multi-Chain",
-        "secure": "Secure"
+        "liveEcosystem": "라이브 생태계",
+        "multiChain": "멀티 체인",
+        "secure": "안전한"
       },
       "sections": {
         "ecosystemOverview": {
-          "title": "Ecosystem Overview"
+          "title": "생태계 개요"
         }
       },
       "stats": {
         "tokenHolders": {
-          "title": "GVT Holders",
+          "title": "GVT 보유자",
           "value": "2,847",
-          "label": "Token Holders"
+          "label": "토큰 보유자"
         },
         "activeStakers": {
-          "title": "rGGP Earners",
+          "title": "rGGP 수혜자",
           "value": "1,234",
-          "label": "Active Stakers"
+          "label": "활성 스테이커"
         },
         "dailyEmission": {
-          "title": "rGGP Rewards",
-          "value": "50,000",
-          "label": "Daily Emission"
+          "title": "rGGP 보상",
+          "value": "5만",
+          "label": "일일 배출량"
         },
         "networks": {
-          "title": "Multi-Chain",
+          "title": "멀티 체인",
           "value": "3",
-          "label": "Networks"
+          "label": "네트워크"
         }
       },
       "tabs": {
-        "overview": "Overview",
-        "contracts": "Contracts",
-        "staking": "Staking",
-        "resources": "Resources"
+        "overview": "개요",
+        "contracts": "계약",
+        "staking": "스테이킹",
+        "resources": "자원"
       },
       "overview": {
         "aboutTokens": {
-          "title": "About GVT & rGGP",
-          "description": "The AGV Protocol operates on a dual-token system designed to separate governance and reward mechanisms. GVT serves as the governance token while rGGP functions as the reward token for ecosystem participation.",
+          "title": "GVT 및 rGGP 정보",
+          "description": "AGV 프로토콜은 거버넌스와 보상 메커니즘을 분리하도록 설계된 이중 토큰 시스템으로 운영됩니다. GVT는 거버넌스 토큰 역할을 하고, rGGP는 생태계 참여에 대한 보상 토큰 역할을 합니다.",
           "tokenRoles": {
-            "title": "Token Roles:",
-            "gvt": "GVT: Protocol governance and voting rights",
-            "rggp": "rGGP: Staking rewards and ecosystem incentives",
-            "multiChain": "Multi-chain deployment across major networks",
-            "decentralized": "Decentralized and community-driven ecosystem"
+            "title": "토큰 역할:",
+            "gvt": "GVT: 프로토콜 거버넌스 및 투표권",
+            "rggp": "rGGP: 스테이킹 보상 및 생태계 인센티브",
+            "multiChain": "주요 네트워크 전반에 걸친 멀티체인 배포",
+            "decentralized": "분산화되고 커뮤니티 중심의 생태계"
           }
         },
         "tokenEconomics": {
-          "title": "Token Economics",
+          "title": "토큰 경제학",
           "gvt": {
-            "title": "GVT (Governance Token)",
-            "totalSupply": "Total Supply",
+            "title": "GVT(거버넌스 토큰)",
+            "totalSupply": "총 공급량",
             "totalSupplyValue": "1,000,000",
-            "circulating": "Circulating",
-            "circulatingValue": "750,000",
-            "useCase": "Use Case",
-            "useCaseValue": "Governance"
+            "circulating": "순환",
+            "circulatingValue": "75만",
+            "useCase": "사용 사례",
+            "useCaseValue": "통치"
           },
           "rggp": {
-            "title": "rGGP (Reward Token)",
-            "dailyEmission": "Daily Emission",
-            "dailyEmissionValue": "50,000",
-            "perStakeReward": "Per Stake Reward",
-            "perStakeRewardValue": "50 rGGP/day",
-            "useCase": "Use Case",
-            "useCaseValue": "Staking Rewards"
+            "title": "rGGP(보상 토큰)",
+            "dailyEmission": "일일 배출량",
+            "dailyEmissionValue": "5만",
+            "perStakeReward": "스테이크당 보상",
+            "perStakeRewardValue": "50 rGGP/일",
+            "useCase": "사용 사례",
+            "useCaseValue": "스테이킹 보상"
           }
         },
         "benefits": {
-          "title": "Dual-Token Ecosystem Benefits",
+          "title": "듀얼 토큰 생태계의 이점",
           "earnRewards": {
-            "title": "Earn rGGP Rewards",
-            "description": "Stake tokens to earn rGGP rewards daily with no lock-up period."
+            "title": "rGGP 리워드를 받으세요",
+            "description": "잠금 기간 없이 매일 rGGP 보상을 받으려면 토큰을 스테이킹하세요."
           },
           "governance": {
-            "title": "GVT Governance",
-            "description": "Use GVT tokens to vote on protocol proposals and shape the future of AGV."
+            "title": "GVT 거버넌스",
+            "description": "GVT 토큰을 사용하여 프로토콜 제안에 투표하고 AGV의 미래를 형성하세요."
           },
           "exclusiveAccess": {
-            "title": "Exclusive Access",
-            "description": "Get early access to new features, airdrops, and ecosystem updates."
+            "title": "독점 액세스",
+            "description": "새로운 기능, 에어드랍, 생태계 업데이트에 먼저 접근해 보세요."
           },
           "multiChainSupport": {
-            "title": "Multi-Chain Support",
-            "description": "Access both tokens across BSC, Arbitrum, and Polygon networks."
+            "title": "다중 체인 지원",
+            "description": "BSC, Arbitrum, Polygon 네트워크에서 두 토큰에 모두 액세스하세요."
           }
         }
       },
       "contracts": {
-        "title": "Contract Addresses",
-        "description": "Official contract addresses for GVT and rGGP tokens across different networks",
-        "networks": "{network} Network",
-        "gvtToken": "GVT Token",
-        "rggpToken": "rGGP Token",
-        "stakingContract": "Staking Contract"
+        "title": "계약 주소",
+        "description": "다양한 네트워크에서 GVT 및 rGGP 토큰에 대한 공식 계약 주소",
+        "networks": "{네트워크} 네트워크",
+        "gvtToken": "GVT 토큰",
+        "rggpToken": "rGGP 토큰",
+        "stakingContract": "스테이킹 계약"
       },
       "staking": {
         "howToStake": {
-          "title": "How to Stake Tokens",
+          "title": "토큰 스테이킹 방법",
           "step1": {
-            "title": "Connect Wallet",
-            "description": "Connect your wallet that contains GVT or rGGP tokens"
+            "title": "지갑 연결",
+            "description": "GVT 또는 rGGP 토큰이 포함된 지갑을 연결하세요"
           },
           "step2": {
-            "title": "Select Network",
-            "description": "Choose BSC, Arbitrum, or Polygon network"
+            "title": "네트워크 선택",
+            "description": "BSC, Arbitrum 또는 Polygon 네트워크를 선택하세요"
           },
           "step3": {
-            "title": "Stake Tokens",
-            "description": "Select and stake your tokens to start earning rewards"
+            "title": "스테이크 토큰",
+            "description": "토큰을 선택하고 스테이킹하여 보상을 받으세요"
           }
         },
-        "startStaking": "Start Staking",
+        "startStaking": "스테이킹 시작",
         "dualTokenRewards": {
-          "title": "Dual-Token Rewards"
+          "title": "듀얼 토큰 보상"
         },
         "rewards": {
           "rggp": {
-            "title": "rGGP Rewards",
-            "dailyRate": "Daily Rate",
-            "dailyRateValue": "50 rGGP per stake",
-            "compounding": "Compounding",
-            "compoundingValue": "Automatic",
-            "withdrawal": "Withdrawal",
-            "withdrawalValue": "Anytime"
+            "title": "rGGP 보상",
+            "dailyRate": "일일 요금",
+            "dailyRateValue": "스테이크당 50 rGGP",
+            "compounding": "복리",
+            "compoundingValue": "오토매틱",
+            "withdrawal": "철수",
+            "withdrawalValue": "언제든지"
           },
           "gvt": {
-            "title": "GVT Governance",
-            "votingPower": "Voting Power",
-            "votingPowerValue": "1 GVT = 1 Vote",
-            "proposalRights": "Proposal Rights",
+            "title": "GVT 거버넌스",
+            "votingPower": "투표권",
+            "votingPowerValue": "1 GVT = 1 투표",
+            "proposalRights": "제안 권리",
             "proposalRightsValue": "10,000 GVT",
-            "minimumStake": "Minimum Stake",
-            "minimumStakeValue": "100 tokens"
+            "minimumStake": "최소 스테이크",
+            "minimumStakeValue": "100개 토큰"
           }
         },
         "exampleCalculation": {
-          "title": "Example Calculation",
-          "description": "Staking 1000 tokens for 30 days = 1000 × 0.05 × 30 = 1,500 rGGP rewards",
-          "note": "Plus governance voting power with GVT tokens"
+          "title": "계산 예",
+          "description": "30일 동안 1000개 토큰을 스테이킹하면 1000 × 0.05 × 30 = 1,500 rGGP 보상을 받게 됩니다.",
+          "note": "GVT 토큰을 통한 플러스 거버넌스 투표권"
         }
       },
       "resources": {
         "socialMedia": {
-          "title": "Social Media",
-          "platforms": "{platform}"
+          "title": "소셜 미디어",
+          "platforms": "{플랫폼}"
         },
         "documentation": {
-          "title": "Documentation",
-          "tokenHandbook": "Token Handbook",
-          "stakingGuide": "Staking Guide",
-          "securityAudit": "Security Audit"
+          "title": "선적 서류 비치",
+          "tokenHandbook": "토큰 핸드북",
+          "stakingGuide": "스테이킹 가이드",
+          "securityAudit": "보안 감사"
         },
         "latestArticles": {
-          "title": "Latest Articles",
-          "readMore": "Read More"
+          "title": "최신 기사",
+          "readMore": "더 읽어보기"
         }
       },
       "articles": {
         "dualTokenStaking": {
-          "title": "Dual-Token Staking Guide",
-          "description": "Learn how to stake GVT and rGGP tokens to maximize your rewards"
+          "title": "듀얼 토큰 스테이킹 가이드",
+          "description": "보상을 극대화하기 위해 GVT 및 rGGP 토큰을 스테이킹하는 방법을 알아보세요."
         },
         "rggpRewards": {
-          "title": "Understanding rGGP Rewards",
-          "description": "Everything you need to know about rGGP reward mechanics and distribution"
+          "title": "rGGP 보상 이해하기",
+          "description": "rGGP 보상 메커니즘 및 분배에 대해 알아야 할 모든 것"
         },
         "gvtGovernance": {
-          "title": "GVT Governance Guide",
-          "description": "How to participate in protocol governance with GVT tokens"
+          "title": "GVT 거버넌스 가이드",
+          "description": "GVT 토큰을 사용하여 프로토콜 거버넌스에 참여하는 방법"
         },
         "multiChainStrategy": {
-          "title": "Multi-Chain Token Strategy",
-          "description": "Maximize your rewards across BSC, Arbitrum, and Polygon networks"
+          "title": "멀티체인 토큰 전략",
+          "description": "BSC, Arbitrum 및 Polygon 네트워크에서 보상을 극대화하세요"
         }
       }
     }

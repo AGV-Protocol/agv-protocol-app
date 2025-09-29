@@ -1,475 +1,475 @@
 {
   "common": {
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "submit": "Submit",
-    "cancel": "Cancel",
-    "save": "Save",
-    "edit": "Edit",
-    "delete": "Delete",
-    "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "close": "Close",
-    "confirm": "Confirm",
-    "required": "Required",
-    "optional": "Optional"
+    "loading": "تحميل...",
+    "error": "خطأ",
+    "success": "نجاح",
+    "submit": "يُقدِّم",
+    "cancel": "يلغي",
+    "save": "يحفظ",
+    "edit": "يحرر",
+    "delete": "يمسح",
+    "back": "خلف",
+    "next": "التالي",
+    "previous": "سابق",
+    "close": "يغلق",
+    "confirm": "يتأكد",
+    "required": "مطلوب",
+    "optional": "خياري"
   },
   "nav": {
-    "home": "Home",
-    "about": "About",
-    "career": "Career",
-    "blog": "Resources",
-    "investors": "Investor Relations"
+    "home": "بيت",
+    "about": "عن",
+    "career": "حياة مهنية",
+    "blog": "موارد",
+    "investors": "علاقات المستثمرين"
   },
   "header": {
     "nav": {
-      "home": "Home",
-      "about": "About",
-      "products": "Products",
-      "research": "Research",
-      "investorRelations": "Investor Relations",
-      "dashboard": "Dashboard",
-      "staking": "Staking",
-      "mint": "Mint"
+      "home": "بيت",
+      "about": "عن",
+      "products": "منتجات",
+      "research": "بحث",
+      "investorRelations": "علاقات المستثمرين",
+      "dashboard": "لوحة القيادة",
+      "staking": "المراهنة",
+      "mint": "النعناع"
     },
-    "connectWallet": "Connect Wallet",
-    "disconnect": "Disconnect"
+    "connectWallet": "ربط المحفظة",
+    "disconnect": "قطع الاتصال"
   },
   "hero": {
-    "description": "Unlock exclusive SeedPass, TreePass, SolarPass, and ComputePass NFTs, your gateway to sustainable rewards. Stake instantly with no lock-up period and start earning daily rewards across BSC, Polygon, and Arbitrum networks.",
-    "startMinting": "Start Minting",
-    "viewStaking": "View Staking",
-    "blockchains": "Blockchains",
-    "nftCollections": "NFT Collections",
-    "dailyRewards": "Daily Rewards"
+    "description": "احصل على رموز SeedPass وTreePass وSolarPass وComputePass NFTs الحصرية، بوابتك إلى مكافآت مستدامة. راهن فورًا دون أي فترة حظر، وابدأ بكسب مكافآت يومية عبر شبكات BSC وPolygon وArbitrum.",
+    "startMinting": "ابدأ في سك العملة",
+    "viewStaking": "عرض المشاركة",
+    "blockchains": "سلاسل الكتل",
+    "nftCollections": "مجموعات NFT",
+    "dailyRewards": "المكافآت اليومية"
   },
   "whatisagv": {
-    "title": "What Is AGV?",
-    "description": "AGV (AgriVolt Protocol) is a real-asset-backed Web3 protocol that brings orchards, solar farms, and decentralized nodes onto the blockchain. Each asset unit generates real-world yield from fruit harvests to solar energy and edge computing."
+    "title": "ما هو AGV؟",
+    "description": "AGV (بروتوكول AgriVolt) هو بروتوكول Web3 مدعوم بأصول حقيقية، يجمع البساتين ومزارع الطاقة الشمسية والعقد اللامركزية على سلسلة الكتل (blockchain). تُولّد كل وحدة أصول عائدًا حقيقيًا من حصاد الفاكهة إلى الطاقة الشمسية والحوسبة الطرفية."
   },
   "whyagv": {
-    "title": "Why AGV Is a Blueprint for Real Yield Infrastructure?",
-    "description": "AGV is not a one-off project. It's a replicable protocol turning real land into digital yield infrastructure. Every AGV unit is expected to generate $180k–$280k in annual revenue, with an IRR between 18% and 26%, based on actual orchard yields and regional solar performance data."
+    "title": "لماذا تعتبر المركبات الموجهة آليًا بمثابة مخطط للبنية التحتية ذات العائد الحقيقي؟",
+    "description": "AGV ليس مشروعًا منفردًا، بل هو بروتوكول قابل للتكرار يُحوّل الأراضي الحقيقية إلى بنية تحتية رقمية للإنتاج. من المتوقع أن تُحقق كل وحدة AGV إيرادات سنوية تتراوح بين 180 ألف و280 ألف دولار أمريكي، بمعدل عائد داخلي يتراوح بين 18% و26%، بناءً على إنتاجية البساتين الفعلية وبيانات أداء الطاقة الشمسية الإقليمية."
   },
   "fixing": {
-    "title": "Fixing What's Broken in Real-World Tokenization",
-    "description1": "AGV bridges the digital and physical worlds by turning orchards and solar farms into NFTs and tokens. Each asset is linked to smart contracts that automate income sharing, ownership, and governance — solving issues like fragmented data, unverifiable yields, and opaque land rights.",
-    "description2": "At its core, AGV uses a standardized asset unit: 100 mu of high-yield apple orchards paired with 6MW of solar. This model delivers $180k–$280k annual income per unit with 18%–26% IRR, backed by IoT-based performance data and predictive models.",
-    "description3": "Unlike traditional agri-projects that are hard to replicate, AGV units are SPV-packaged, DeFi-compatible, and globally modular — enabling fast deployment and repeatable scaling across borders."
+    "title": "إصلاح ما هو معطل في عملية الرمزنة في العالم الحقيقي",
+    "description1": "تربط AGV بين العالمين الرقمي والمادي بتحويل البساتين ومزارع الطاقة الشمسية إلى رموز غير قابلة للاستبدال (NFTs) ورموز مميزة. يرتبط كل أصل بعقود ذكية تُؤتمت مشاركة الدخل والملكية والحوكمة، مما يُحل مشكلات مثل البيانات المجزأة، وعدم إمكانية التحقق من العائدات، وعدم وضوح حقوق الأراضي.",
+    "description2": "في جوهره، يعتمد نظام AGV على وحدة أصول موحدة: 100 مو من بساتين التفاح عالية الغلة، مقترنة بـ 6 ميجاوات من الطاقة الشمسية. يُحقق هذا النموذج دخلاً سنويًا يتراوح بين 180 ألف و280 ألف دولار أمريكي لكل وحدة، بمعدل عائد داخلي يتراوح بين 18% و26%، مدعومًا ببيانات أداء قائمة على إنترنت الأشياء ونماذج تنبؤية.",
+    "description3": "على عكس المشاريع الزراعية التقليدية التي يصعب تكرارها، فإن وحدات AGV هي عبارة عن حزمة SPV، ومتوافقة مع DeFi، ومعيارية عالميًا - مما يتيح النشر السريع والتوسع المتكرر عبر الحدود."
   },
   "exploreagv": {
-    "title": "Explore AGV's On-Chain Infrastructure",
-    "description": "Come visit our real-world project sites and see how orchards, solar arrays, and blockchain come together. From China's green zones to future international hubs, AGV is building the future of land-based RWA on-chain."
+    "title": "استكشف البنية التحتية لسلسلة AGV",
+    "description": "تفضل بزيارة مواقع مشاريعنا الواقعية وشاهد كيف تتكامل البساتين والألواح الشمسية وتقنية البلوك تشين. من المناطق الخضراء في الصين إلى المراكز الدولية المستقبلية، تبني AGV مستقبل أنظمة الري بالتنقيط الأرضي على السلسلة."
   },
   "blockchain": {
-    "title": "Revolutionizing Infrastructure with Blockchain",
-    "realAssets": "REAL ASSETS. REAL REVENUE.",
-    "eachUnit": "Each AGV unit includes:",
-    "item1": "100 mu of high-yield apple orchards",
-    "item2": "6MW solar array with grid connection",
-    "item3": "IoT sensors for real-time monitoring",
-    "item4": "Smart contracts for automated revenue sharing",
-    "item5": "Transparent ownership and governance",
-    "item6": "DeFi-compatible tokenization",
-    "assetsDescription": "Assets are land-based, yield-producing, and inflation-resistant — not synthetic tokens or speculative DeFi experiments.",
-    "onChainData": "ON-CHAIN DATA INFRASTRUCTURE",
-    "onChainDataDesc": "Every unit is equipped with:",
-    "onChainItem1": "IoT sensors for real-time yield and energy data",
-    "onChainItem2": "Smart contracts and NFT mapping",
-    "onChainItem3": "Dashboards synced with satellite feeds",
-    "onChainItem4": "Token emission linked to verified output",
-    "onChainDataDesc2": "Users can monitor growth, power generation, and token accrual — all transparently recorded and accessible on-chain.",
-    "builtToScale": "BUILT TO SCALE, GLOBALLY",
-    "builtToScaleDesc": "Each AGV unit is standardized and tokenized via SPV:",
-    "builtItem1": "Expandable with battery storage & edge compute",
-    "builtItem2": "Modular design supports irrigation, AI nodes, or carbon tracking",
-    "builtItem3": "Applicable across Asia, LATAM, Africa, and MENA",
-    "builtToScaleDesc2": "CEX-ready, DeFi-compatible, and ESG-aligned — AGV is built for global integration."
+    "title": "إحداث ثورة في البنية التحتية باستخدام تقنية البلوكشين",
+    "realAssets": "الأصول الحقيقية. الإيرادات الحقيقية.",
+    "eachUnit": "تتضمن كل وحدة AGV ما يلي:",
+    "item1": "100 مو من بساتين التفاح عالية الغلة",
+    "item2": "مجموعة شمسية بقدرة 6 ميجاوات متصلة بالشبكة",
+    "item3": "أجهزة استشعار إنترنت الأشياء للمراقبة في الوقت الفعلي",
+    "item4": "العقود الذكية لتقاسم الإيرادات تلقائيًا",
+    "item5": "الملكية والحوكمة الشفافة",
+    "item6": "الرمز المميز المتوافق مع DeFi",
+    "assetsDescription": "الأصول تعتمد على الأرض، وتنتج عوائد، ومقاومة للتضخم - وليست رموزًا اصطناعية أو تجارب DeFi مضاربة.",
+    "onChainData": "البنية التحتية للبيانات على السلسلة",
+    "onChainDataDesc": "كل وحدة مجهزة بـ:",
+    "onChainItem1": "أجهزة استشعار إنترنت الأشياء لبيانات العائد والطاقة في الوقت الفعلي",
+    "onChainItem2": "العقود الذكية ورسم الخرائط NFT",
+    "onChainItem3": "لوحات المعلومات متزامنة مع موجزات الأقمار الصناعية",
+    "onChainItem4": "إصدار الرمز مرتبط بالإخراج الذي تم التحقق منه",
+    "onChainDataDesc2": "يمكن للمستخدمين مراقبة النمو وتوليد الطاقة واستحقاق الرمز المميز - وكل ذلك مسجل بشكل شفاف ويمكن الوصول إليه على السلسلة.",
+    "builtToScale": "صُممت لتناسب نطاقًا عالميًا",
+    "builtToScaleDesc": "يتم توحيد كل وحدة AGV ورمزها عبر SPV:",
+    "builtItem1": "قابلة للتوسعة باستخدام تخزين البطارية والحوسبة الحافة",
+    "builtItem2": "يدعم التصميم المعياري الري أو عقد الذكاء الاصطناعي أو تتبع الكربون",
+    "builtItem3": "ينطبق في جميع أنحاء آسيا وأمريكا اللاتينية وأفريقيا والشرق الأوسط وشمال أفريقيا",
+    "builtToScaleDesc2": "جاهز لـ CEX ومتوافق مع DeFi ومتوافق مع ESG - تم تصميم AGV للتكامل العالمي."
   },
   "threelayer": {
-    "title": "Three Layers of Real-World Yield",
+    "title": "ثلاث طبقات من العائد في العالم الحقيقي",
     "fruit": {
-      "title": "Fruit-Backed NFTs",
-      "description": "AGV transforms apple orchards into tokenized assets. Each NFT maps to a real tree, producing fruit, revenue, and verifiable yield on-chain."
+      "title": "رموز NFT المدعومة بالفاكهة",
+      "description": "تُحوّل AGV بساتين التفاح إلى أصول مُرمزة. يرتبط كل رمز غير قابل للاستبدال بشجرة حقيقية، مما يُنتج ثمارًا وإيرادات وعوائد قابلة للتحقق على السلسلة."
     },
     "solar": {
-      "title": "Solar-Driven Rewards",
-      "description": "Each unit includes 6MW of solar capacity powering not only the farm, but also edge nodes and energy-backed token minting — \"sunlight as income.\""
+      "title": "المكافآت المعتمدة على الطاقة الشمسية",
+      "description": "تشتمل كل وحدة على 6 ميجاوات من الطاقة الشمسية التي لا تعمل على تغذية المزرعة فحسب، بل أيضًا العقد الطرفية وسك الرموز المدعومة بالطاقة - \"ضوء الشمس كدخل\"."
     },
     "depin": {
-      "title": "DePIN-Ready Infrastructure",
-      "description": "AGV unites sensors, smart contracts, and real-time data to power edge nodes, record carbon, and deliver Web3 services worldwide."
+      "title": "البنية التحتية الجاهزة لـ DePIN",
+      "description": "توحد AGV أجهزة الاستشعار والعقود الذكية والبيانات في الوقت الفعلي لتشغيل العقد الطرفية وتسجيل الكربون وتقديم خدمات Web3 في جميع أنحاء العالم."
     }
   },
   "testimonials": {
-    "title1": "The Future of Infrastructure Is Real, Green, and On-Chain",
-    "description": "Top institutions agree: real-world assets, sustainable energy, and blockchain integration are shaping the next trillion-dollar opportunity. AGV is positioned at the intersection of these macro trends.",
-    "quote1": "Tokenization of real-world assets could unlock a $10T market by 2030.",
-    "source1": "Boston Consulting Group",
-    "quote2": "ESG and energy-linked infrastructure are set to dominate institutional flows over the next decade.",
-    "source2": "BlackRock 2024 Outlook",
-    "quote3": "Distributed green energy is the foundation of long-term economic resilience.",
-    "source3": "World Bank",
-    "title2": "The Future Is Powered by Land, Sun, and Code",
-    "investNow": "Invest Now"
+    "title1": "مستقبل البنية التحتية حقيقي، وأخضر، ومرتبط بالسلسلة",
+    "description": "تتفق المؤسسات الكبرى على أن الأصول الحقيقية، والطاقة المستدامة، وتكامل تقنية البلوك تشين، تُشكّل فرصًا استثمارية بقيمة تريليون دولار. وتتمتع AGV بموقع استراتيجي في قلب هذه الاتجاهات الكبرى.",
+    "quote1": "قد يؤدي تحويل الأصول الرقمية إلى رموز في العالم الحقيقي إلى سوق بقيمة 10 تريليون دولار بحلول عام 2030.",
+    "source1": "مجموعة بوسطن الاستشارية",
+    "quote2": "ومن المتوقع أن تهيمن البيئة والمجتمع والحوكمة والبنية الأساسية المرتبطة بالطاقة على التدفقات المؤسسية خلال العقد المقبل.",
+    "source2": "توقعات بلاك روك لعام 2024",
+    "quote3": "تشكل الطاقة الخضراء الموزعة الأساس للمرونة الاقتصادية على المدى الطويل.",
+    "source3": "البنك الدولي",
+    "title2": "المستقبل مدعوم بالأرض والشمس والبرمجيات",
+    "investNow": "استثمر الآن"
   },
   "maincontent": {
-    "platformOverview": "PLATFORM OVERVIEW",
-    "coreFeatures": "Core Features",
-    "getStarted": "Get Started",
-    "community": "Community",
-    "latestUpdates": "Latest Updates",
+    "platformOverview": "نظرة عامة على المنصة",
+    "coreFeatures": "الميزات الأساسية",
+    "getStarted": "البدء",
+    "community": "مجتمع",
+    "latestUpdates": "آخر التحديثات",
     "features": {
       "multichain": {
-        "title": "Multi-Chain Support",
-        "description": "Deploy and manage NFTs across BSC, Polygon, and Arbitrum networks"
+        "title": "دعم متعدد السلاسل",
+        "description": "نشر وإدارة NFTs عبر شبكات BSC وPolygon وArbitrum"
       },
       "secure": {
-        "title": "Secure Minting",
-        "description": "Advanced security measures and smart contract audits"
+        "title": "سك آمن",
+        "description": "إجراءات أمنية متقدمة وعمليات تدقيق العقود الذكية"
       },
       "rewards": {
-        "title": "Instant Rewards",
-        "description": "Earn rewards immediately after minting with our staking system"
+        "title": "مكافآت فورية",
+        "description": "احصل على مكافآت فورًا بعد سك العملة باستخدام نظام المراهنة الخاص بنا"
       }
     },
     "stats": {
-      "totalSupply": "Total Supply",
-      "nftsMinted": "NFTs Minted",
-      "rewardRate": "Reward Rate",
-      "dailyRewards": "Daily Rewards",
-      "securityScore": "Security Score",
-      "auditRating": "Audit Rating",
-      "upto50rggp": "Upto 50 rGGP"
+      "totalSupply": "العرض الإجمالي",
+      "nftsMinted": "NFTs تم سكها",
+      "rewardRate": "معدل المكافأة",
+      "dailyRewards": "المكافآت اليومية",
+      "securityScore": "درجة الأمان",
+      "auditRating": "تقييم التدقيق",
+      "upto50rggp": "حتى 50 rGGP"
     },
     "social": {
-      "github": "GitHub",
-      "twitter": "Twitter",
-      "discord": "Discord",
-      "telegram": "Telegram",
-      "follow": "Follow",
-      "stars": "stars",
-      "followers": "followers",
-      "members": "members"
+      "github": "جيثب",
+      "twitter": "تغريد",
+      "discord": "ديسكورد",
+      "telegram": "برقية",
+      "follow": "يتبع",
+      "stars": "النجوم",
+      "followers": "المتابعين",
+      "members": "أعضاء"
     },
     "articles": {
       "introducing": {
-        "title": "Introducing AGV Protocol",
-        "description": "Learn how to mint your first NFT and start earning rewards"
+        "title": "مقدمة لبروتوكول AGV",
+        "description": "تعرف على كيفية سك أول NFT الخاص بك والبدء في كسب المكافآت"
       },
       "multichain": {
-        "title": "Understanding Multi-Chain Staking",
-        "description": "A comprehensive guide to staking across different networks"
+        "title": "فهم المشاركة متعددة السلاسل",
+        "description": "دليل شامل للتداول عبر الشبكات المختلفة"
       },
       "security": {
-        "title": "Security Best Practices",
-        "description": "How to keep your NFTs and rewards safe"
+        "title": "أفضل ممارسات الأمان",
+        "description": "كيفية الحفاظ على أمان NFTs والمكافآت الخاصة بك"
       },
-      "readMore": "Read More"
+      "readMore": "اقرأ المزيد"
     }
   },
   "footer": {
-    "copyright": "© 2024 AGV Protocol. All rights reserved.",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
-    "contact": "Contact Us",
-    "description": "The future of decentralized computing through innovative NFT technology. Join thousands of users minting exclusive AGV NFTs across multiple blockchain networks.",
-    "secure": "Secure & Trusted",
-    "fast": "Lightning Fast",
-    "multichain": "Multi-Chain",
-    "resources": "Resources",
-    "nftMinting": "NFT Minting",
-    "nftStaking": "NFT Staking",
-    "kolProgram": "KOL Program",
-    "company": "Company",
-    "aboutUs": "About Us",
-    "careers": "Careers",
-    "blogs": "Blogs",
-    "support": "Support",
-    "helpCenter": "Help Center",
-    "documentation": "Documentation",
-    "contactSupport": "Contact Support",
-    "legal": "Legal",
-    "cookiePolicy": "Cookie Policy",
-    "gdpr": "GDPR",
-    "headquarters": "Headquartered in Asia. Operated globally. Audited by top firms.",
-    "legalText": "All real-world assets are held by authorized Chinese SPVs and mapped via legal authorization to JLL Asset Ltd. (BVI Company No. 2182436). NFT issuance and operations are executed by iJET Limited (NZBN: 9429049576290). Governance transition to the BVI-based AGV DAO is in progress."
+    "copyright": "© ٢٠٢٤ AGV Protocol. جميع الحقوق محفوظة.",
+    "privacy": "سياسة الخصوصية",
+    "terms": "شروط الخدمة",
+    "contact": "اتصل بنا",
+    "description": "مستقبل الحوسبة اللامركزية من خلال تقنية NFT المبتكرة. انضم إلى آلاف المستخدمين الذين يصنعون رموز AGV NFT حصرية عبر شبكات بلوكتشين متعددة.",
+    "secure": "آمن وموثوق",
+    "fast": "سريع كالبرق",
+    "multichain": "متعدد السلاسل",
+    "resources": "موارد",
+    "nftMinting": "سك NFT",
+    "nftStaking": "مشاركة NFT",
+    "kolProgram": "برنامج KOL",
+    "company": "شركة",
+    "aboutUs": "معلومات عنا",
+    "careers": "الوظائف",
+    "blogs": "المدونات",
+    "support": "يدعم",
+    "helpCenter": "مركز المساعدة",
+    "documentation": "التوثيق",
+    "contactSupport": "اتصل بالدعم",
+    "legal": "قانوني",
+    "cookiePolicy": "سياسة ملفات تعريف الارتباط",
+    "gdpr": "اللائحة العامة لحماية البيانات",
+    "headquarters": "مقرها الرئيسي في آسيا. تعمل عالميًا. تخضع لتدقيق شركات رائدة.",
+    "legalText": "جميع الأصول الحقيقية مملوكة لشركات صينية ذات أغراض خاصة مُرخصة، ومرتبطة بترخيص قانوني بشركة JLL Asset Ltd. (شركة جزر فيرجن البريطانية رقم 2182436). تُنفذ شركة iJET Limited (NZBN: 9429049576290) عملية إصدار الرموز غير القابلة للاستبدال (NFT) وعملياتها. ويجري حاليًا نقل الحوكمة إلى منظمة AGV DAO المستقلة في جزر فيرجن البريطانية."
   },
   "staking": {
-    "title": "AGV Protocol Staking",
-    "description": "Stake your NFTs and earn rewards",
-    "protocolTitle": "AGV Protocol Staking",
-    "stakeYour": "Stake your",
-    "nftsOn": "NFTs on",
-    "toEarnRewards": "to earn rewards",
-    "stake": "Stake",
-    "unstake": "Unstake",
-    "rewards": "Rewards",
-    "totalStaked": "Total Staked",
-    "availableRewards": "Available Rewards",
-    "overview": "Staking Overview",
-    "stakedNFTs": "Staked NFTs",
-    "currentlyStaked": "Currently staked",
-    "rggpReadyToClaim": "rGGP ready to claim",
-    "dailyRewards": "Daily Rewards",
-    "perNFTStaked": "Per NFT staked",
-    "selectNetwork": "Select Network",
-    "selectNFTCollection": "Select NFT Collection",
-    "selectNftCollection": "Select NFT Collection",
-    "selectStakingDuration": "Select Staking Duration",
-    "quickSelect": "Quick Select",
-    "day": "day",
-    "days": "days",
-    "durationDays": "Duration (days)",
-    "lockPeriod": "Lock Period",
-    "yourNftsWillBeLocked": "Your NFTs will be locked for",
-    "youCannotWithdraw": "You cannot withdraw until this period ends",
-    "lockPeriodDescription": "Your NFTs will be locked for {duration} day{plural}. You cannot withdraw until this period ends. Minimum staking period is 7 days.",
-    "currentWalletChain": "Current wallet chain",
-    "notConnected": "Not connected",
-    "connectWalletFirst": "Connect wallet first",
-    "selectAtLeastOne": "Select at least one tokenId",
-    "selectAtLeastOneToken": "Select at least one token",
-    "durationMustBeAtLeastOneDay": "Duration must be at least one day",
-    "minimumDuration": "Staking duration must be at least 7 days",
-    "approving": "Approving (if needed)…",
-    "approvingIfNeeded": "Approving (if needed)…",
-    "stakingOnChain": "Staking on-chain…",
-    "recordingStake": "Recording stake…",
-    "stakeSuccess": "Staked for {duration} day{plural}!",
-    "stakeFailed": "Stake failed",
-    "selectAtLeastOneWithdraw": "Select at least one NFT to withdraw",
-    "withdrawingOnChain": "Withdrawing on-chain…",
-    "updatingRecords": "Updating records…",
-    "withdrawSuccess": "Withdrawn!",
-    "withdrawFailed": "Withdraw failed",
-    "selectNftsToStake": "Select NFTs to Stake",
-    "detectedInWallet": "Detected in wallet",
-    "available": "available",
-    "connectYourWallet": "Connect your wallet",
-    "connectToView": "to view your NFTs",
-    "connect": "Connect",
-    "selected": "Selected",
-    "clear": "Clear",
-    "withdrawStakedNfts": "Withdraw Staked NFTs",
-    "selectStakedNftsDescription": "Select staked NFTs to withdraw",
-    "connectWalletToSeeStakedNfts": "Connect wallet to see staked NFTs",
-    "whitelistRequired": "Whitelist required"
+    "title": "مشاركة بروتوكول AGV",
+    "description": "راهن على NFTs الخاصة بك واكسب المكافآت",
+    "protocolTitle": "مشاركة بروتوكول AGV",
+    "stakeYour": "راهن على",
+    "nftsOn": "NFTs على",
+    "toEarnRewards": "لكسب المكافآت",
+    "stake": "حصة",
+    "unstake": "إلغاء الرهان",
+    "rewards": "المكافآت",
+    "totalStaked": "إجمالي الرهان",
+    "availableRewards": "المكافآت المتاحة",
+    "overview": "نظرة عامة على التخزين",
+    "stakedNFTs": "NFTs المراهنة",
+    "currentlyStaked": "مراهنة حاليا",
+    "rggpReadyToClaim": "rGGP جاهز للمطالبة",
+    "dailyRewards": "المكافآت اليومية",
+    "perNFTStaked": "لكل NFT مراهنة",
+    "selectNetwork": "حدد الشبكة",
+    "selectNFTCollection": "حدد مجموعة NFT",
+    "selectNftCollection": "حدد مجموعة NFT",
+    "selectStakingDuration": "حدد مدة الرهان",
+    "quickSelect": "اختيار سريع",
+    "day": "يوم",
+    "days": "أيام",
+    "durationDays": "المدة (أيام)",
+    "lockPeriod": "فترة القفل",
+    "yourNftsWillBeLocked": "سيتم قفل NFTs الخاصة بك",
+    "youCannotWithdraw": "لا يمكنك الانسحاب حتى تنتهي هذه الفترة",
+    "lockPeriodDescription": "سيتم قفل رموزك غير القابلة للاستبدال (NFTs) لمدة {duration} يوم{plural}. لا يمكنك السحب حتى انتهاء هذه الفترة. الحد الأدنى لفترة المراهنة هو 7 أيام.",
+    "currentWalletChain": "سلسلة المحفظة الحالية",
+    "notConnected": "غير متصل",
+    "connectWalletFirst": "قم بتوصيل المحفظة أولاً",
+    "selectAtLeastOne": "حدد معرف رمز واحد على الأقل",
+    "selectAtLeastOneToken": "حدد رمزًا واحدًا على الأقل",
+    "durationMustBeAtLeastOneDay": "يجب أن تكون المدة يومًا واحدًا على الأقل",
+    "minimumDuration": "يجب أن تكون مدة الرهان 7 أيام على الأقل",
+    "approving": "الموافقة (إذا لزم الأمر)…",
+    "approvingIfNeeded": "الموافقة (إذا لزم الأمر)…",
+    "stakingOnChain": "المراهنة على السلسلة…",
+    "recordingStake": "تسجيل الحصة…",
+    "stakeSuccess": "مُعلق لمدة {duration} يوم{plural}!",
+    "stakeFailed": "فشلت الحصة",
+    "selectAtLeastOneWithdraw": "حدد NFT واحدًا على الأقل للسحب",
+    "withdrawingOnChain": "سحب على السلسلة…",
+    "updatingRecords": "تحديث السجلات…",
+    "withdrawSuccess": "منسحب!",
+    "withdrawFailed": "فشل السحب",
+    "selectNftsToStake": "اختر NFTs للمراهنة",
+    "detectedInWallet": "تم اكتشافه في المحفظة",
+    "available": "متاح",
+    "connectYourWallet": "قم بتوصيل محفظتك",
+    "connectToView": "لعرض NFTs الخاصة بك",
+    "connect": "يتصل",
+    "selected": "مُختار",
+    "clear": "واضح",
+    "withdrawStakedNfts": "سحب NFTs المتراكمة",
+    "selectStakedNftsDescription": "حدد NFTs المتراكمة للسحب",
+    "connectWalletToSeeStakedNfts": "قم بتوصيل المحفظة لرؤية NFTs المتراكمة",
+    "whitelistRequired": "القائمة البيضاء مطلوبة"
   },
   "minting": {
-    "title": "AGV Protocol Minting",
-    "description": "Mint exclusive AGV Protocol NFTs across multiple blockchain networks.",
-    "collections": "Choose from SeedPass, TreePass, SolarPass, and ComputePass collections.",
-    "liveMinting": "Live Minting",
-    "multiChain": "Multi-Chain",
-    "usdtPayment": "USDT Payment",
-    "selectNetwork": "Select Network",
-    "mintingMode": "Minting Mode",
-    "mintingModeDescription": "Choose your minting mode",
-    "publicMint": "Public Mint",
-    "agentMint": "Agent Mint",
-    "selectNftToMint": "Select NFT to Mint",
-    "chooseQuantity": "Choose Quantity",
+    "title": "بروتوكول سك العملة AGV",
+    "description": "بروتوكول AGV الحصري من Mint NFTs عبر شبكات blockchain المتعددة.",
+    "collections": "اختر من مجموعات SeedPass، وTreePass، وSolarPass، وComputePass.",
+    "liveMinting": "سك النقود الحية",
+    "multiChain": "متعدد السلاسل",
+    "usdtPayment": "دفع USDT",
+    "selectNetwork": "حدد الشبكة",
+    "mintingMode": "وضع السك",
+    "mintingModeDescription": "اختر وضع سك العملة الخاص بك",
+    "publicMint": "دار سك العملة العامة",
+    "agentMint": "العميل مينت",
+    "selectNftToMint": "اختر NFT للنعناع",
+    "chooseQuantity": "اختر الكمية",
     "nft": {
       "seed": {
-        "name": "SeedPass NFT",
-        "description": "Access to sustainable farming rewards and exclusive benefits"
+        "name": "سيدباس NFT",
+        "description": "الوصول إلى مكافآت الزراعة المستدامة والمزايا الحصرية"
       },
       "tree": {
-        "name": "TreePass NFT",
-        "description": "Premium tree adoption with enhanced rewards"
+        "name": "تري باس NFT",
+        "description": "اعتماد شجرة مميزة مع مكافآت معززة"
       },
       "solar": {
-        "name": "SolarPass NFT",
-        "description": "Solar energy rewards and green infrastructure access"
+        "name": "سولار باس NFT",
+        "description": "مكافآت الطاقة الشمسية والوصول إلى البنية التحتية الخضراء"
       },
       "compute": {
-        "name": "ComputePass NFT",
-        "description": "Edge computing rewards and DePIN infrastructure access"
+        "name": "كومبيوت باس NFT",
+        "description": "مكافآت الحوسبة الحافة والوصول إلى البنية التحتية DePIN"
       }
     },
-    "referralId": "Referral ID",
-    "input6DigitId": "Input 6-digit ID",
-    "referralIdPlaceholder": "Enter referral ID",
-    "summary": "Summary",
-    "noItemsSelected": "No items selected",
-    "connectAndMint": "Connect and Mint",
-    "connectWallet": "Connect Wallet",
-    "walletNotConnected": "Wallet not connected",
-    "insufficientGasBalance": "Insufficient gas balance",
-    "insufficientGas": "Insufficient gas",
-    "mint": "Mint",
-    "minting": "Minting...",
-    "mintNfts": "Mint NFTs",
-    "referralLinkCopied": "Referral link copied",
-    "whitelistRequired": "Whitelist required",
-    "price": "Price",
-    "supply": "Supply",
-    "remaining": "Remaining"
+    "referralId": "معرف الإحالة",
+    "input6DigitId": "أدخل معرفًا مكونًا من 6 أرقام",
+    "referralIdPlaceholder": "أدخل معرف الإحالة",
+    "summary": "ملخص",
+    "noItemsSelected": "لم يتم تحديد أي عناصر",
+    "connectAndMint": "الاتصال والنعناع",
+    "connectWallet": "ربط المحفظة",
+    "walletNotConnected": "المحفظة غير متصلة",
+    "insufficientGasBalance": "عدم كفاية توازن الغاز",
+    "insufficientGas": "غاز غير كافي",
+    "mint": "النعناع",
+    "minting": "سك النقود...",
+    "mintNfts": "رموز NFT النعناع",
+    "referralLinkCopied": "تم نسخ رابط الإحالة",
+    "whitelistRequired": "القائمة البيضاء مطلوبة",
+    "price": "سعر",
+    "supply": "إمداد",
+    "remaining": "متبقي"
   },
   "dashboard": {
-    "title": "Dashboard",
-    "description": "Overview of your AGV Protocol activities and performance",
-    "overview": "Overview",
-    "analytics": "Analytics",
-    "performance": "Performance",
-    "activity": "Activity"
+    "title": "لوحة القيادة",
+    "description": "نظرة عامة على أنشطة وأداء بروتوكول AGV الخاص بك",
+    "overview": "ملخص",
+    "analytics": "التحليلات",
+    "performance": "أداء",
+    "activity": "نشاط"
   },
   "landing": {
     "hero": {
-      "title": "AGV PROTOCOL NFT ECOSYSTEM",
-      "description": "Unlock exclusive SeedPass, TreePass, SolarPass, and ComputePass NFTs, your gateway to sustainable rewards. Stake instantly with no lock-up period and start earning daily rewards across BSC, Polygon, and Arbitrum networks.",
-      "startMinting": "Start Minting",
-      "viewStaking": "View Staking",
+      "title": "نظام AGV PROTOCOL NFT البيئي",
+      "description": "احصل على رموز SeedPass وTreePass وSolarPass وComputePass NFTs الحصرية، بوابتك إلى مكافآت مستدامة. راهن فورًا دون أي فترة حظر، وابدأ بكسب مكافآت يومية عبر شبكات BSC وPolygon وArbitrum.",
+      "startMinting": "ابدأ في سك العملة",
+      "viewStaking": "عرض المشاركة",
       "stats": {
-        "blockchains": "Blockchains",
-        "nftCollections": "NFT Collections",
-        "dailyRewards": "rGGP Daily Rewards"
+        "blockchains": "سلاسل الكتل",
+        "nftCollections": "مجموعات NFT",
+        "dailyRewards": "مكافآت rGGP اليومية"
       }
     },
     "platformOverview": {
-      "title": "PLATFORM OVERVIEW",
-      "totalSupply": "Total Supply",
-      "nftsMinted": "NFTs Minted",
-      "rewardRate": "Reward Rate",
-      "dailyRewards": "Daily Rewards",
-      "auditRating": "Audit Rating",
-      "securityScore": "Security Score"
+      "title": "نظرة عامة على المنصة",
+      "totalSupply": "العرض الإجمالي",
+      "nftsMinted": "NFTs تم سكها",
+      "rewardRate": "معدل المكافأة",
+      "dailyRewards": "المكافآت اليومية",
+      "auditRating": "تقييم التدقيق",
+      "securityScore": "درجة الأمان"
     },
     "coreFeatures": {
-      "title": "Core Features",
+      "title": "الميزات الأساسية",
       "multiChain": {
-        "title": "Multi-Chain Support",
-        "description": "Deploy and manage NFTs across BSC, Polygon, and Arbitrum networks"
+        "title": "دعم متعدد السلاسل",
+        "description": "نشر وإدارة NFTs عبر شبكات BSC وPolygon وArbitrum"
       },
       "secureMinting": {
-        "title": "Secure Minting",
-        "description": "Advanced security measures and smart contract audits"
+        "title": "سك آمن",
+        "description": "إجراءات أمنية متقدمة وعمليات تدقيق العقود الذكية"
       },
       "instantRewards": {
-        "title": "Instant Rewards",
-        "description": "Earn rewards immediately after minting with our staking system"
+        "title": "مكافآت فورية",
+        "description": "احصل على مكافآت فورًا بعد سك العملة باستخدام نظام المراهنة الخاص بنا"
       }
     },
     "getStarted": {
-      "title": "Get Started",
+      "title": "البدء",
       "mintNFTs": {
-        "title": "Mint NFTs",
-        "description": "Mint AGV Protocol NFTs across multiple chains",
-        "button": "Start Minting"
+        "title": "رموز NFT النعناع",
+        "description": "بروتوكول Mint AGV NFTs عبر سلاسل متعددة",
+        "button": "ابدأ في سك العملة"
       },
       "stakeEarn": {
-        "title": "Stake & Earn",
-        "description": "Stake your NFTs to earn daily rewards",
-        "button": "Start Staking"
+        "title": "راهن واربح",
+        "description": "راهن على NFTs الخاصة بك لكسب مكافآت يومية",
+        "button": "ابدأ بالمشاركة"
       },
       "learnMore": {
-        "title": "Learn More",
-        "description": "Explore token information and documentation",
-        "button": "View Details"
+        "title": "يتعلم أكثر",
+        "description": "استكشاف معلومات الرمز والوثائق",
+        "button": "عرض التفاصيل"
       }
     },
     "community": {
-      "title": "Community",
-      "github": "GitHub",
-      "twitter": "Twitter",
-      "discord": "Discord",
-      "telegram": "Telegram",
-      "follow": "Follow",
-      "members": "members",
-      "followers": "followers",
-      "stars": "stars"
+      "title": "مجتمع",
+      "github": "جيثب",
+      "twitter": "تغريد",
+      "discord": "ديسكورد",
+      "telegram": "برقية",
+      "follow": "يتبع",
+      "members": "أعضاء",
+      "followers": "المتابعين",
+      "stars": "النجوم"
     },
     "latestUpdates": {
-      "title": "Latest Updates",
-      "readMore": "Read More",
+      "title": "آخر التحديثات",
+      "readMore": "اقرأ المزيد",
       "articles": {
         "introducing": {
-          "title": "Introducing AGV Protocol",
-          "description": "Introducing AGV Protocol: Unlocking the Future of Real-World Assets"
+          "title": "مقدمة لبروتوكول AGV",
+          "description": "تقديم بروتوكول AGV: فتح آفاق مستقبل الأصول في العالم الحقيقي"
         },
         "rggpExplained": {
-          "title": "rGGP Explained",
-          "description": "How AGV Protocol Turns Real-World Yields into On-chain Rewards"
+          "title": "شرح rGGP",
+          "description": "كيف يحوّل بروتوكول AGV العائدات الحقيقية إلى مكافآت على السلسلة"
         }
       }
     },
     "whatIsAGV": {
-      "title": "What Is AGV?",
-      "description": "AGV (AgriVolt Protocol) is a real-asset-backed Web3 protocol that brings orchards, solar farms, and decentralized nodes onto the blockchain. Each asset unit generates real-world yield from fruit harvests to solar energy and edge computing. Users can adopt fruit trees, stake in solar, and earn tokenized rewards with transparent returns. Rooted in China's leading agricultural and solar regions, AGV makes sustainability investable, verifiable, and globally scalable."
+      "title": "ما هو AGV؟",
+      "description": "AGV (بروتوكول AgriVolt) هو بروتوكول Web3 مدعوم بأصول حقيقية، يجمع البساتين ومزارع الطاقة الشمسية والعقد اللامركزية على سلسلة الكتل (blockchain). تُولّد كل وحدة أصول عائدًا حقيقيًا من حصاد الفاكهة إلى الطاقة الشمسية والحوسبة الطرفية. يُمكن للمستخدمين تبني أشجار الفاكهة، والمراهنة في الطاقة الشمسية، وكسب مكافآت رمزية بعوائد شفافة. بفضل جذوره في المناطق الزراعية والطاقة الشمسية الرائدة في الصين، يجعل AGV الاستدامة قابلة للاستثمار والتحقق والتوسع عالميًا."
     },
     "threeLayer": {
-      "title": "Three Layers of Real-World Yield",
+      "title": "ثلاث طبقات من العائد في العالم الحقيقي",
       "fruitBacked": {
-        "title": "Fruit-Backed NFTs",
-        "description": "AGV transforms apple orchards into tokenized assets.Each NFT maps to a real tree, producing fruit, revenue, and verifiable yield on- chain."
+        "title": "رموز NFT المدعومة بالفاكهة",
+        "description": "تقوم AGV بتحويل بساتين التفاح إلى أصول مميزة. يتم ربط كل NFT بشجرة حقيقية، مما ينتج الفاكهة والإيرادات والعائدات القابلة للتحقق على السلسلة."
       },
       "solarDriven": {
-        "title": "Solar-Driven Rewards",
-        "description": "Each unit includes 6MW of solar capacity powering not only the farm,but also edge nodes and energy- backed token minting — \"sunlight as income.\""
+        "title": "المكافآت المعتمدة على الطاقة الشمسية",
+        "description": "تشتمل كل وحدة على 6 ميجاوات من الطاقة الشمسية التي لا تعمل على تغذية المزرعة فحسب، بل أيضًا العقد الطرفية وسك الرموز المدعومة بالطاقة - \"ضوء الشمس كدخل\"."
       },
       "depinReady": {
-        "title": "DePIN-Ready Infrastructure",
-        "description": "AGV unites sensors, smart contracts, and real-time data to power edge nodes, record carbon, and deliver Web3 services worldwide."
+        "title": "البنية التحتية الجاهزة لـ DePIN",
+        "description": "توحد AGV أجهزة الاستشعار والعقود الذكية والبيانات في الوقت الفعلي لتشغيل العقد الطرفية وتسجيل الكربون وتقديم خدمات Web3 في جميع أنحاء العالم."
       }
     },
     "fixing": {
-      "title": "Fixing What's Broken in Real-World Tokenization",
-      "description1": "AGV bridges the digital and physical worlds by turning orchards and solar farms into NFTs and tokens. Each asset is linked to smart contracts that automate income sharing, ownership, and governance — solving issues like fragmented data, unverifiable yields, and opaque land rights.",
-      "description2": "At its core, AGV uses a standardized asset unit: 100 mu of high-yield apple orchards paired with 6MW of solar. This model delivers $180k–$280k annual income per unit with 18%–26% IRR, backed by IoT-based performance data and predictive models.",
-      "description3": "Unlike traditional agri-projects that are hard to replicate, AGV units are SPV-packaged, DeFi-compatible, and globally modular — enabling fast deployment and repeatable scaling across borders."
+      "title": "إصلاح ما هو معطل في عملية الرمزنة في العالم الحقيقي",
+      "description1": "تربط AGV بين العالمين الرقمي والمادي بتحويل البساتين ومزارع الطاقة الشمسية إلى رموز غير قابلة للاستبدال (NFTs) ورموز مميزة. يرتبط كل أصل بعقود ذكية تُؤتمت مشاركة الدخل والملكية والحوكمة، مما يُحل مشكلات مثل البيانات المجزأة، وعدم إمكانية التحقق من العائدات، وعدم وضوح حقوق الأراضي.",
+      "description2": "في جوهره، يعتمد نظام AGV على وحدة أصول موحدة: 100 مو من بساتين التفاح عالية الغلة، مقترنة بـ 6 ميجاوات من الطاقة الشمسية. يُحقق هذا النموذج دخلاً سنويًا يتراوح بين 180 ألف و280 ألف دولار أمريكي لكل وحدة، بمعدل عائد داخلي يتراوح بين 18% و26%، مدعومًا ببيانات أداء قائمة على إنترنت الأشياء ونماذج تنبؤية.",
+      "description3": "على عكس المشاريع الزراعية التقليدية التي يصعب تكرارها، فإن وحدات AGV هي عبارة عن حزمة SPV، ومتوافقة مع DeFi، ومعيارية عالميًا - مما يتيح النشر السريع والتوسع المتكرر عبر الحدود."
     },
     "exploreAGV": {
-      "title": "Explore AGV's On-Chain Infrastructure",
-      "description": "Come visit our real-world project sites and see how orchards, solar arrays, and blockchain come together. From China's green zones to future international hubs, AGV is building the future of land-based RWA on-chain."
+      "title": "استكشف البنية التحتية لسلسلة AGV",
+      "description": "تفضل بزيارة مواقع مشاريعنا الواقعية وشاهد كيف تتكامل البساتين والألواح الشمسية وتقنية البلوك تشين. من المناطق الخضراء في الصين إلى المراكز الدولية المستقبلية، تبني AGV مستقبل أنظمة الري بالتنقيط الأرضي على السلسلة."
     },
     "whyAGV": {
-      "title": "Why AGV Is a Blueprint for Real Yield Infrastructure?",
-      "description1": "AGV is not a one-off project. It's a replicable protocol turning real land into digital yield infrastructure.",
-      "description2": "Every AGV unit is expected to generate $180k–$280k in annual revenue, with an IRR between 18% and 26%, based on actual orchard yields and regional solar performance data.",
-      "description3": "We combine China's world-leading agricultural and solar assets with modular SPV tokenization and on-chain data architecture, making every physical unit digitally verifiable, yield-bearing, and DeFi-compatible."
+      "title": "لماذا تعتبر المركبات الموجهة آليًا بمثابة مخطط للبنية التحتية ذات العائد الحقيقي؟",
+      "description1": "AGV ليس مشروعًا منفردًا، بل هو بروتوكول قابل للتكرار يُحوّل الأراضي الحقيقية إلى بنية تحتية رقمية للإنتاج.",
+      "description2": "من المتوقع أن تولد كل وحدة AGV إيرادات سنوية تتراوح بين 180 ألف دولار و280 ألف دولار، مع معدل عائد داخلي يتراوح بين 18% و26%، استنادًا إلى غلة البساتين الفعلية وبيانات أداء الطاقة الشمسية الإقليمية.",
+      "description3": "نحن نجمع بين الأصول الزراعية والطاقة الشمسية الرائدة عالميًا في الصين مع رمز SPV المعياري وهندسة البيانات على السلسلة، مما يجعل كل وحدة مادية قابلة للتحقق رقميًا ومنتجة للعائد ومتوافقة مع DeFi."
     },
     "blockchainInfrastructure": {
-      "title": "Revolutionizing Infrastructure with Blockchain",
+      "title": "إحداث ثورة في البنية التحتية باستخدام تقنية البلوكشين",
       "realAssets": {
-        "title": "REAL ASSETS. REAL REVENUE.",
-        "description": "Each AGV unit includes:",
+        "title": "الأصول الحقيقية. الإيرادات الحقيقية.",
+        "description": "تتضمن كل وحدة AGV ما يلي:",
         "features": [
-          "100 mu high-density apple orchards",
-          "6MW utility-grade solar farm",
-          "Annual revenue: $180,000 - $280,000",
-          "IRR target: 18% - 26%"
+          "بساتين التفاح عالية الكثافة بمساحة 100 ميكرو",
+          "مزرعة طاقة شمسية بقدرة 6 ميجاوات",
+          "الإيرادات السنوية: 180,000 دولار - 280,000 دولار",
+          "هدف معدل العائد الداخلي: 18% - 26%"
         ],
-        "conclusion": "Assets are land-based, yield-producing, and inflation-resistant — not synthetic tokens or speculative DeFi experiments."
+        "conclusion": "الأصول تعتمد على الأرض، وتنتج عوائد، ومقاومة للتضخم - وليست رموزًا اصطناعية أو تجارب DeFi مضاربة."
       },
       "onChainData": {
-        "title": "ON-CHAIN DATA INFRASTRUCTURE",
-        "subtitle": "On-Chain Data Infrastructure",
-        "description": "Every unit is equipped with:",
+        "title": "البنية التحتية للبيانات على السلسلة",
+        "subtitle": "البنية التحتية للبيانات على السلسلة",
+        "description": "كل وحدة مجهزة بـ:",
         "features": [
-          "IoT sensors for real-time yield and energy data",
-          "Smart contracts and NFT mapping",
-          "Dashboards synced with satellite feeds",
-          "Token emission linked to verified output"
+          "أجهزة استشعار إنترنت الأشياء لبيانات العائد والطاقة في الوقت الفعلي",
+          "العقود الذكية ورسم الخرائط NFT",
+          "لوحات المعلومات متزامنة مع موجزات الأقمار الصناعية",
+          "إصدار الرمز مرتبط بالإخراج الذي تم التحقق منه"
         ],
-        "conclusion": "Users can monitor growth, power generation, and token accrual — all transparently recorded and accessible on-chain."
+        "conclusion": "يمكن للمستخدمين مراقبة النمو وتوليد الطاقة واستحقاق الرمز المميز - وكل ذلك مسجل بشكل شفاف ويمكن الوصول إليه على السلسلة."
       },
       "builtToScale": {
-        "title": "BUILT TO SCALE, GLOBALLY",
-        "description": "Each AGV unit is standardized and tokenized via SPV:",
+        "title": "صُممت لتناسب نطاقًا عالميًا",
+        "description": "يتم توحيد كل وحدة AGV ورمزها عبر SPV:",
         "features": [
-          "Expandable with battery storage & edge compute",
-          "Modular design supports irrigation, AI nodes, or carbon tracking",
-          "Applicable across Asia, LATAM, Africa, and MENA"
+          "قابلة للتوسعة باستخدام تخزين البطارية والحوسبة الحافة",
+          "يدعم التصميم المعياري الري أو عقد الذكاء الاصطناعي أو تتبع الكربون",
+          "ينطبق في جميع أنحاء آسيا وأمريكا اللاتينية وأفريقيا والشرق الأوسط وشمال أفريقيا"
         ],
-        "conclusion": "CEX-ready, DeFi-compatible, and ESG-aligned — AGV is built for global integration."
+        "conclusion": "جاهز لـ CEX ومتوافق مع DeFi ومتوافق مع ESG - تم تصميم AGV للتكامل العالمي."
       }
     },
     "testimonials": {
-      "title": "The Future of Infrastructure Is Real, Green, and On-Chain",
-      "description": "Top institutions agree: real-world assets, sustainable energy, and blockchain integration are shaping the next trillion-dollar opportunity. AGV is positioned at the intersection of these macro trends.",
+      "title": "مستقبل البنية التحتية حقيقي، وأخضر، ومرتبط بالسلسلة",
+      "description": "تتفق المؤسسات الكبرى على أن الأصول الحقيقية، والطاقة المستدامة، وتكامل تقنية البلوك تشين، تُشكّل فرصًا استثمارية بقيمة تريليون دولار. وتتمتع AGV بموقع استراتيجي في قلب هذه الاتجاهات الكبرى.",
       "quotes": [
         {
           "text": "Tokenization of real-world assets could unlock a $10T market by 2030.",
@@ -485,145 +485,145 @@
         }
       ],
       "cta": {
-        "title": "The Future Is Powered by Land, Sun, and Code",
-        "button": "Invest Now",
-        "backToTop": "Back to top"
+        "title": "المستقبل مدعوم بالأرض والشمس والبرمجيات",
+        "button": "استثمر الآن",
+        "backToTop": "العودة إلى الأعلى"
       }
     },
     "footer": {
-      "companyName": "AGRIVOLT PROTOCOL",
-      "tagline": "NFT Minting Platform",
-      "description": "The future of decentralized computing through innovative NFT technology. Join thousands of users minting exclusive AGV NFTs across multiple blockchain networks.",
+      "companyName": "بروتوكول أجريفولت",
+      "tagline": "منصة سك العملات غير القابلة للاستبدال",
+      "description": "مستقبل الحوسبة اللامركزية من خلال تقنية NFT المبتكرة. انضم إلى آلاف المستخدمين الذين يصنعون رموز AGV NFT حصرية عبر شبكات بلوكتشين متعددة.",
       "features": {
-        "secure": "Secure & Trusted",
-        "fast": "Lightning Fast",
-        "multiChain": "Multi-Chain"
+        "secure": "آمن وموثوق",
+        "fast": "سريع كالبرق",
+        "multiChain": "متعدد السلاسل"
       },
       "navigation": {
         "product": {
-          "title": "Product",
-          "nftMinting": "NFT Minting",
-          "dashboard": "Dashboard",
-          "kolProgram": "KOL Program",
-          "analytics": "Analytics"
+          "title": "منتج",
+          "nftMinting": "سك NFT",
+          "dashboard": "لوحة القيادة",
+          "kolProgram": "برنامج KOL",
+          "analytics": "التحليلات"
         },
         "company": {
-          "title": "Company",
-          "aboutUs": "About Us",
-          "careers": "Careers",
-          "press": "Press",
-          "blog": "Blog"
+          "title": "شركة",
+          "aboutUs": "معلومات عنا",
+          "careers": "الوظائف",
+          "press": "يضعط",
+          "blog": "مدونة"
         },
         "support": {
-          "title": "Support",
-          "helpCenter": "Help Center",
-          "documentation": "Documentation",
-          "apiReference": "API Reference",
-          "contactSupport": "Contact Support"
+          "title": "يدعم",
+          "helpCenter": "مركز المساعدة",
+          "documentation": "التوثيق",
+          "apiReference": "مرجع واجهة برمجة التطبيقات",
+          "contactSupport": "اتصل بالدعم"
         },
         "legal": {
-          "title": "Legal",
-          "privacyPolicy": "Privacy Policy",
-          "termsOfService": "Terms of Service",
-          "cookiePolicy": "Cookie Policy",
-          "gdpr": "GDPR"
+          "title": "قانوني",
+          "privacyPolicy": "سياسة الخصوصية",
+          "termsOfService": "شروط الخدمة",
+          "cookiePolicy": "سياسة ملفات تعريف الارتباط",
+          "gdpr": "اللائحة العامة لحماية البيانات"
         }
       },
       "legal": {
-        "headquarters": "Headquartered in Asia. Operated globally. Audited by top firms.",
-        "description": "All real-world assets are held by authorized Chinese SPVs and mapped via legal authorization to JLL Asset Ltd. (BVI Company No. 2182436). NFT issuance and operations are executed by iJET Limited (NZBN: 9429049576290). Governance transition to the BVI-based AGV DAO is in progress."
+        "headquarters": "مقرها الرئيسي في آسيا. تعمل عالميًا. تخضع لتدقيق شركات رائدة.",
+        "description": "جميع الأصول الحقيقية مملوكة لشركات صينية ذات أغراض خاصة مُرخصة، ومرتبطة بترخيص قانوني بشركة JLL Asset Ltd. (شركة جزر فيرجن البريطانية رقم 2182436). تُنفذ شركة iJET Limited (NZBN: 9429049576290) عملية إصدار الرموز غير القابلة للاستبدال (NFT) وعملياتها. ويجري حاليًا نقل الحوكمة إلى منظمة AGV DAO المستقلة في جزر فيرجن البريطانية."
       },
-      "copyright": "© 2025 AgriVolt Protocol. All rights reserved"
+      "copyright": "© ٢٠٢٥ بروتوكول أجريفولت. جميع الحقوق محفوظة."
     },
     "admin": {
       "hero": {
-        "title": "System Dashboard",
-        "description": "Monitor and track all AGV Protocol functionalities. Real-time analytics, performance metrics, and system health monitoring."
+        "title": "لوحة معلومات النظام",
+        "description": "راقب وتتبّع جميع وظائف بروتوكول AGV. تحليلات آنية، ومقاييس أداء، ومراقبة حالة النظام."
       },
       "status": {
-        "online": "System Online",
-        "secure": "Secure Access",
-        "adminOnly": "Admin Only"
+        "online": "النظام عبر الإنترنت",
+        "secure": "الوصول الآمن",
+        "adminOnly": "للمسؤولين فقط"
       },
       "sections": {
         "systemOverview": {
-          "title": "System Overview"
+          "title": "نظرة عامة على النظام"
         },
         "functionalityMonitoring": {
-          "title": "Functionality Monitoring"
+          "title": "مراقبة الوظائف"
         },
         "quickAccess": {
-          "title": "Quick Access"
+          "title": "الوصول السريع"
         }
       },
       "features": {
         "userAnalytics": {
-          "title": "User Analytics",
-          "description": "Track user engagement, growth metrics, and platform adoption"
+          "title": "تحليلات المستخدم",
+          "description": "تتبع تفاعل المستخدم ومقاييس النمو وتبني المنصة"
         },
         "performanceAnalytics": {
-          "title": "Performance Analytics",
-          "description": "Monitor platform performance, response times, and system health"
+          "title": "تحليلات الأداء",
+          "description": "مراقبة أداء المنصة وأوقات الاستجابة وصحة النظام"
         },
         "kolTracking": {
-          "title": "KOL Tracking",
-          "description": "Monitor Key Opinion Leader performance and referral metrics"
+          "title": "تتبع KOL",
+          "description": "مراقبة أداء قادة الرأي الرئيسيين ومقاييس الإحالة"
         },
         "activityMonitoring": {
-          "title": "Activity Monitoring",
-          "description": "Real-time tracking of user activities and system events"
+          "title": "مراقبة النشاط",
+          "description": "التتبع في الوقت الحقيقي لأنشطة المستخدم وأحداث النظام"
         },
         "performanceMetrics": {
-          "title": "Performance Metrics",
-          "description": "Track minting, staking, and token performance across all chains"
+          "title": "مقاييس الأداء",
+          "description": "تتبع أداء سك العملة، والتخزين، والرموز عبر جميع السلاسل"
         },
         "systemMonitoring": {
-          "title": "System Monitoring",
-          "description": "Monitor system configuration and operational parameters"
+          "title": "مراقبة النظام",
+          "description": "مراقبة تكوين النظام والمعلمات التشغيلية"
         }
       },
       "stats": {
         "activeUsers": {
-          "title": "Active Users",
+          "title": "المستخدمون النشطون",
           "value": "2,847",
           "change": "+12%"
         },
         "mintingActivity": {
-          "title": "Minting Activity",
+          "title": "نشاط سك العملة",
           "value": "1,234",
           "change": "+8%"
         },
         "stakingVolume": {
-          "title": "Staking Volume",
+          "title": "حجم الرهان",
           "value": "5,678",
           "change": "+15%"
         },
         "systemUptime": {
-          "title": "System Uptime",
+          "title": "وقت تشغيل النظام",
           "value": "99.8%",
           "change": "+0.2%"
         }
       },
       "quickAccess": {
         "dashboard": {
-          "title": "Dashboard",
-          "description": "View main dashboard"
+          "title": "لوحة القيادة",
+          "description": "عرض لوحة المعلومات الرئيسية"
         },
         "users": {
-          "title": "Users",
-          "description": "Manage users"
+          "title": "المستخدمون",
+          "description": "إدارة المستخدمين"
         },
         "analytics": {
-          "title": "Analytics",
-          "description": "View analytics"
+          "title": "التحليلات",
+          "description": "عرض التحليلات"
         },
         "settings": {
-          "title": "Settings",
-          "description": "Configure system"
+          "title": "إعدادات",
+          "description": "تكوين النظام"
         }
       },
       "buttons": {
-        "viewMetrics": "View Metrics"
+        "viewMetrics": "عرض المقاييس"
       },
       "systemStatus": {
         "title": "System Status",
@@ -637,195 +637,195 @@
       "features": {
         "lightningFast": "Lightning Fast",
         "multiChain": "Multi-Chain",
-        "community": "Community",
-        "secure": "Secure"
+        "community": "مجتمع",
+        "secure": "يؤمن"
       },
-      "backButton": "Back to Home",
-      "footer": "Follow us for updates on our journey to revolutionize real-world asset tokenization"
+      "backButton": "العودة إلى الصفحة الرئيسية",
+      "footer": "تابعونا للحصول على آخر المستجدات حول رحلتنا لإحداث ثورة في رمزية الأصول في العالم الحقيقي"
     },
     "token": {
-      "copySuccess": "{label} copied to clipboard",
+      "copySuccess": "تم نسخ {label} إلى الحافظة",
       "hero": {
-        "title": "AGV Protocol Tokens",
-        "description": "Discover GVT (Governance Token) and rGGP (Reward Token) - the dual-token ecosystem powering the AGV Protocol. Earn rGGP rewards through staking and participate in governance with GVT."
+        "title": "رموز بروتوكول AGV",
+        "description": "اكتشف GVT (رمز الحوكمة) وrGGP (رمز المكافأة) - النظام البيئي ثنائي الرموز الذي يدعم بروتوكول AGV. اربح مكافآت rGGP من خلال المشاركة، وشارك في الحوكمة مع GVT."
       },
       "status": {
-        "liveEcosystem": "Live Ecosystem",
-        "multiChain": "Multi-Chain",
-        "secure": "Secure"
+        "liveEcosystem": "النظام البيئي الحي",
+        "multiChain": "متعدد السلاسل",
+        "secure": "يؤمن"
       },
       "sections": {
         "ecosystemOverview": {
-          "title": "Ecosystem Overview"
+          "title": "نظرة عامة على النظام البيئي"
         }
       },
       "stats": {
         "tokenHolders": {
-          "title": "GVT Holders",
+          "title": "حاملي ضريبة القيمة المضافة",
           "value": "2,847",
-          "label": "Token Holders"
+          "label": "حاملي الرموز"
         },
         "activeStakers": {
-          "title": "rGGP Earners",
+          "title": "أصحاب الدخل من برنامج rGGP",
           "value": "1,234",
-          "label": "Active Stakers"
+          "label": "أصحاب المصلحة النشطين"
         },
         "dailyEmission": {
-          "title": "rGGP Rewards",
+          "title": "مكافآت rGGP",
           "value": "50,000",
-          "label": "Daily Emission"
+          "label": "الانبعاث اليومي"
         },
         "networks": {
-          "title": "Multi-Chain",
+          "title": "متعدد السلاسل",
           "value": "3",
-          "label": "Networks"
+          "label": "الشبكات"
         }
       },
       "tabs": {
-        "overview": "Overview",
-        "contracts": "Contracts",
-        "staking": "Staking",
-        "resources": "Resources"
+        "overview": "ملخص",
+        "contracts": "العقود",
+        "staking": "المراهنة",
+        "resources": "موارد"
       },
       "overview": {
         "aboutTokens": {
-          "title": "About GVT & rGGP",
-          "description": "The AGV Protocol operates on a dual-token system designed to separate governance and reward mechanisms. GVT serves as the governance token while rGGP functions as the reward token for ecosystem participation.",
+          "title": "حول GVT و rGGP",
+          "description": "يعمل بروتوكول AGV بنظام رمز مزدوج مصمم لفصل آليات الحوكمة والمكافآت. يعمل GVT كرمز للحوكمة، بينما يعمل rGGP كرمز مكافأة للمشاركة في النظام البيئي.",
           "tokenRoles": {
-            "title": "Token Roles:",
-            "gvt": "GVT: Protocol governance and voting rights",
-            "rggp": "rGGP: Staking rewards and ecosystem incentives",
-            "multiChain": "Multi-chain deployment across major networks",
-            "decentralized": "Decentralized and community-driven ecosystem"
+            "title": "أدوار الرمز:",
+            "gvt": "GVT: حوكمة البروتوكول وحقوق التصويت",
+            "rggp": "rGGP: مكافآت المشاركة وحوافز النظام البيئي",
+            "multiChain": "نشر سلاسل متعددة عبر الشبكات الرئيسية",
+            "decentralized": "نظام بيئي لامركزي وموجه نحو المجتمع"
           }
         },
         "tokenEconomics": {
-          "title": "Token Economics",
+          "title": "اقتصاد الرمز",
           "gvt": {
-            "title": "GVT (Governance Token)",
-            "totalSupply": "Total Supply",
-            "totalSupplyValue": "1,000,000",
-            "circulating": "Circulating",
+            "title": "GVT (رمز الحوكمة)",
+            "totalSupply": "العرض الإجمالي",
+            "totalSupplyValue": "مليون",
+            "circulating": "متداول",
             "circulatingValue": "750,000",
-            "useCase": "Use Case",
-            "useCaseValue": "Governance"
+            "useCase": "حالة الاستخدام",
+            "useCaseValue": "الحوكمة"
           },
           "rggp": {
-            "title": "rGGP (Reward Token)",
-            "dailyEmission": "Daily Emission",
+            "title": "rGGP (رمز المكافأة)",
+            "dailyEmission": "الانبعاث اليومي",
             "dailyEmissionValue": "50,000",
-            "perStakeReward": "Per Stake Reward",
-            "perStakeRewardValue": "50 rGGP/day",
-            "useCase": "Use Case",
-            "useCaseValue": "Staking Rewards"
+            "perStakeReward": "مكافأة لكل حصة",
+            "perStakeRewardValue": "50 rGGP/يوم",
+            "useCase": "حالة الاستخدام",
+            "useCaseValue": "مكافآت الرهان"
           }
         },
         "benefits": {
-          "title": "Dual-Token Ecosystem Benefits",
+          "title": "فوائد نظام الرموز المزدوجة",
           "earnRewards": {
-            "title": "Earn rGGP Rewards",
-            "description": "Stake tokens to earn rGGP rewards daily with no lock-up period."
+            "title": "احصل على مكافآت rGGP",
+            "description": "قم بجمع الرموز لكسب مكافآت rGGP يوميًا دون فترة قفل."
           },
           "governance": {
-            "title": "GVT Governance",
-            "description": "Use GVT tokens to vote on protocol proposals and shape the future of AGV."
+            "title": "حوكمة GVT",
+            "description": "استخدم رموز GVT للتصويت على مقترحات البروتوكول وتشكيل مستقبل AGV."
           },
           "exclusiveAccess": {
-            "title": "Exclusive Access",
-            "description": "Get early access to new features, airdrops, and ecosystem updates."
+            "title": "الوصول الحصري",
+            "description": "احصل على وصول مبكر إلى الميزات الجديدة وعمليات الإنزال الجوي وتحديثات النظام البيئي."
           },
           "multiChainSupport": {
-            "title": "Multi-Chain Support",
-            "description": "Access both tokens across BSC, Arbitrum, and Polygon networks."
+            "title": "دعم متعدد السلاسل",
+            "description": "يمكنك الوصول إلى كلا الرمزين عبر شبكات BSC وArbitrum وPolygon."
           }
         }
       },
       "contracts": {
-        "title": "Contract Addresses",
-        "description": "Official contract addresses for GVT and rGGP tokens across different networks",
-        "networks": "{network} Network",
-        "gvtToken": "GVT Token",
-        "rggpToken": "rGGP Token",
-        "stakingContract": "Staking Contract"
+        "title": "عناوين العقد",
+        "description": "عناوين العقود الرسمية لرموز GVT وrGGP عبر شبكات مختلفة",
+        "networks": "{شبكة} شبكة",
+        "gvtToken": "رمز GVT",
+        "rggpToken": "رمز rGGP",
+        "stakingContract": "عقد المراهنة"
       },
       "staking": {
         "howToStake": {
-          "title": "How to Stake Tokens",
+          "title": "كيفية وضع الرموز",
           "step1": {
-            "title": "Connect Wallet",
-            "description": "Connect your wallet that contains GVT or rGGP tokens"
+            "title": "ربط المحفظة",
+            "description": "قم بتوصيل محفظتك التي تحتوي على رموز GVT أو rGGP"
           },
           "step2": {
-            "title": "Select Network",
-            "description": "Choose BSC, Arbitrum, or Polygon network"
+            "title": "حدد الشبكة",
+            "description": "اختر شبكة BSC أو Arbitrum أو Polygon"
           },
           "step3": {
-            "title": "Stake Tokens",
-            "description": "Select and stake your tokens to start earning rewards"
+            "title": "رموز الرهان",
+            "description": "حدد رموزك وقم بمشاركتها لبدء كسب المكافآت"
           }
         },
-        "startStaking": "Start Staking",
+        "startStaking": "ابدأ بالمشاركة",
         "dualTokenRewards": {
-          "title": "Dual-Token Rewards"
+          "title": "مكافآت الرمز المزدوج"
         },
         "rewards": {
           "rggp": {
-            "title": "rGGP Rewards",
-            "dailyRate": "Daily Rate",
-            "dailyRateValue": "50 rGGP per stake",
-            "compounding": "Compounding",
-            "compoundingValue": "Automatic",
-            "withdrawal": "Withdrawal",
-            "withdrawalValue": "Anytime"
+            "title": "مكافآت rGGP",
+            "dailyRate": "السعر اليومي",
+            "dailyRateValue": "50 rGGP لكل حصة",
+            "compounding": "التركيب",
+            "compoundingValue": "أوتوماتيكي",
+            "withdrawal": "انسحاب",
+            "withdrawalValue": "في أي وقت"
           },
           "gvt": {
-            "title": "GVT Governance",
-            "votingPower": "Voting Power",
-            "votingPowerValue": "1 GVT = 1 Vote",
-            "proposalRights": "Proposal Rights",
-            "proposalRightsValue": "10,000 GVT",
-            "minimumStake": "Minimum Stake",
-            "minimumStakeValue": "100 tokens"
+            "title": "حوكمة GVT",
+            "votingPower": "قوة التصويت",
+            "votingPowerValue": "1 GVT = 1 صوت",
+            "proposalRights": "حقوق الاقتراح",
+            "proposalRightsValue": "10,000 ضريبة القيمة المضافة",
+            "minimumStake": "الحد الأدنى للرهان",
+            "minimumStakeValue": "100 رمز"
           }
         },
         "exampleCalculation": {
-          "title": "Example Calculation",
-          "description": "Staking 1000 tokens for 30 days = 1000 × 0.05 × 30 = 1,500 rGGP rewards",
-          "note": "Plus governance voting power with GVT tokens"
+          "title": "مثال حسابي",
+          "description": "وضع 1000 رمز لمدة 30 يومًا = 1000 × 0.05 × 30 = 1500 مكافأة rGGP",
+          "note": "قوة تصويت إضافية للحوكمة مع رموز GVT"
         }
       },
       "resources": {
         "socialMedia": {
-          "title": "Social Media",
-          "platforms": "{platform}"
+          "title": "وسائل التواصل الاجتماعي",
+          "platforms": "{منصة}"
         },
         "documentation": {
-          "title": "Documentation",
-          "tokenHandbook": "Token Handbook",
-          "stakingGuide": "Staking Guide",
-          "securityAudit": "Security Audit"
+          "title": "التوثيق",
+          "tokenHandbook": "دليل الرموز",
+          "stakingGuide": "دليل المراهنة",
+          "securityAudit": "التدقيق الأمني"
         },
         "latestArticles": {
-          "title": "Latest Articles",
-          "readMore": "Read More"
+          "title": "أحدث المقالات",
+          "readMore": "اقرأ المزيد"
         }
       },
       "articles": {
         "dualTokenStaking": {
-          "title": "Dual-Token Staking Guide",
-          "description": "Learn how to stake GVT and rGGP tokens to maximize your rewards"
+          "title": "دليل المراهنة على الرمز المزدوج",
+          "description": "تعرف على كيفية وضع رموز GVT وrGGP لتحقيق أقصى قدر من المكافآت الخاصة بك"
         },
         "rggpRewards": {
-          "title": "Understanding rGGP Rewards",
-          "description": "Everything you need to know about rGGP reward mechanics and distribution"
+          "title": "فهم مكافآت rGGP",
+          "description": "كل ما تحتاج إلى معرفته حول آليات مكافأة rGGP وتوزيعها"
         },
         "gvtGovernance": {
-          "title": "GVT Governance Guide",
-          "description": "How to participate in protocol governance with GVT tokens"
+          "title": "دليل حوكمة GVT",
+          "description": "كيفية المشاركة في حوكمة البروتوكول باستخدام رموز GVT"
         },
         "multiChainStrategy": {
-          "title": "Multi-Chain Token Strategy",
-          "description": "Maximize your rewards across BSC, Arbitrum, and Polygon networks"
+          "title": "استراتيجية الرمز متعدد السلاسل",
+          "description": "احصل على أقصى قدر من المكافآت عبر شبكات BSC وArbitrum وPolygon"
         }
       }
     }

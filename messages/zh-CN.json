@@ -1,475 +1,476 @@
 {
   "common": {
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "submit": "Submit",
-    "cancel": "Cancel",
-    "save": "Save",
-    "edit": "Edit",
-    "delete": "Delete",
-    "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "close": "Close",
-    "confirm": "Confirm",
-    "required": "Required",
-    "optional": "Optional"
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "submit": "提交",
+    "cancel": "取消",
+    "save": "节省",
+    "edit": "编辑",
+    "delete": "删除",
+    "back": "后退",
+    "next": "下一个",
+    "previous": "以前的",
+    "close": "关闭",
+    "confirm": "确认",
+    "required": "必需的",
+    "optional": "选修的"
   },
   "nav": {
-    "home": "Home",
-    "about": "About",
-    "career": "Career",
-    "blog": "Resources",
-    "investors": "Investor Relations"
+    "home": "家",
+    "about": "关于",
+    "career": "职业",
+    "blog": "资源",
+    "investors": "投资者关系",
+    "dashboard": "仪表板"
   },
   "header": {
     "nav": {
-      "home": "Home",
-      "about": "About",
-      "products": "Products",
-      "research": "Research",
-      "investorRelations": "Investor Relations",
-      "dashboard": "Dashboard",
-      "staking": "Staking",
-      "mint": "Mint"
+      "home": "家",
+      "about": "关于",
+      "products": "产品",
+      "research": "研究",
+      "investorRelations": "投资者关系",
+      "dashboard": "仪表板",
+      "staking": "质押",
+      "mint": "薄荷"
     },
-    "connectWallet": "Connect Wallet",
-    "disconnect": "Disconnect"
+    "connectWallet": "连接钱包",
+    "disconnect": "断开"
   },
   "hero": {
-    "description": "Unlock exclusive SeedPass, TreePass, SolarPass, and ComputePass NFTs, your gateway to sustainable rewards. Stake instantly with no lock-up period and start earning daily rewards across BSC, Polygon, and Arbitrum networks.",
-    "startMinting": "Start Minting",
-    "viewStaking": "View Staking",
-    "blockchains": "Blockchains",
-    "nftCollections": "NFT Collections",
-    "dailyRewards": "Daily Rewards"
+    "description": "解锁专属 SeedPass、TreePass、SolarPass 和 ComputePass NFT，开启您获得可持续奖励的大门。立即质押，无锁定期，并开始在 BSC、Polygon 和 Arbitrum 网络上赚取每日奖励。",
+    "startMinting": "开始铸造",
+    "viewStaking": "查看 Staking",
+    "blockchains": "区块链",
+    "nftCollections": "NFT 收藏品",
+    "dailyRewards": "每日奖励"
   },
   "whatisagv": {
-    "title": "What Is AGV?",
-    "description": "AGV (AgriVolt Protocol) is a real-asset-backed Web3 protocol that brings orchards, solar farms, and decentralized nodes onto the blockchain. Each asset unit generates real-world yield from fruit harvests to solar energy and edge computing."
+    "title": "什么是 AGV？",
+    "description": "AGV（AgriVolt 协议）是一个基于真实资产的 Web3 协议，它将果园、太阳能农场和去中心化节点接入区块链。每个资产单位都能产生现实世界的收益，涵盖水果收成、太阳能和边缘计算等诸多领域。"
   },
   "whyagv": {
-    "title": "Why AGV Is a Blueprint for Real Yield Infrastructure?",
-    "description": "AGV is not a one-off project. It's a replicable protocol turning real land into digital yield infrastructure. Every AGV unit is expected to generate $180k–$280k in annual revenue, with an IRR between 18% and 26%, based on actual orchard yields and regional solar performance data."
+    "title": "为什么AGV是真正收益基础设施的蓝图？",
+    "description": "AGV 并非一次性项目。它是一个可复制的协议，将真实土地转化为数字化的收益基础设施。根据实际果园产量和区域太阳能性能数据，预计每台 AGV 单元每年可创造 18 万至 28 万美元的收入，内部收益率 (IRR) 在 18% 至 26% 之间。"
   },
   "fixing": {
-    "title": "Fixing What's Broken in Real-World Tokenization",
-    "description1": "AGV bridges the digital and physical worlds by turning orchards and solar farms into NFTs and tokens. Each asset is linked to smart contracts that automate income sharing, ownership, and governance — solving issues like fragmented data, unverifiable yields, and opaque land rights.",
-    "description2": "At its core, AGV uses a standardized asset unit: 100 mu of high-yield apple orchards paired with 6MW of solar. This model delivers $180k–$280k annual income per unit with 18%–26% IRR, backed by IoT-based performance data and predictive models.",
-    "description3": "Unlike traditional agri-projects that are hard to replicate, AGV units are SPV-packaged, DeFi-compatible, and globally modular — enabling fast deployment and repeatable scaling across borders."
+    "title": "修复现实世界标记化中的问题",
+    "description1": "AGV 通过将果园和太阳能农场转化为 NFT 和代币，连接数字世界和现实世界。每项资产都与智能合约挂钩，从而实现收益共享、所有权和治理的自动化，从而解决数据碎片化、产量无法验证以及土地权不透明等问题。",
+    "description2": "AGV 的核心是采用标准化资产单位：100 亩高产苹果园搭配 6 兆瓦太阳能发电。该模式每单位年收入可达 18 万至 28 万美元，内部收益率 (IRR) 为 18% 至 26%，并由基于物联网的绩效数据和预测模型提供支持。",
+    "description3": "与难以复制的传统农业项目不同，AGV 单元采用 SPV 封装、兼容 DeFi 且全球模块化，从而实现快速部署和跨境可重复扩展。"
   },
   "exploreagv": {
-    "title": "Explore AGV's On-Chain Infrastructure",
-    "description": "Come visit our real-world project sites and see how orchards, solar arrays, and blockchain come together. From China's green zones to future international hubs, AGV is building the future of land-based RWA on-chain."
+    "title": "探索 AGV 的链上基础设施",
+    "description": "欢迎参观我们的实际项目现场，了解果园、太阳能电池板和区块链如何融合。从中国的绿色区域到未来的国际枢纽，AGV 正在构建链上陆基 RWA 的未来。"
   },
   "blockchain": {
-    "title": "Revolutionizing Infrastructure with Blockchain",
-    "realAssets": "REAL ASSETS. REAL REVENUE.",
-    "eachUnit": "Each AGV unit includes:",
-    "item1": "100 mu of high-yield apple orchards",
-    "item2": "6MW solar array with grid connection",
-    "item3": "IoT sensors for real-time monitoring",
-    "item4": "Smart contracts for automated revenue sharing",
-    "item5": "Transparent ownership and governance",
-    "item6": "DeFi-compatible tokenization",
-    "assetsDescription": "Assets are land-based, yield-producing, and inflation-resistant — not synthetic tokens or speculative DeFi experiments.",
-    "onChainData": "ON-CHAIN DATA INFRASTRUCTURE",
-    "onChainDataDesc": "Every unit is equipped with:",
-    "onChainItem1": "IoT sensors for real-time yield and energy data",
-    "onChainItem2": "Smart contracts and NFT mapping",
-    "onChainItem3": "Dashboards synced with satellite feeds",
-    "onChainItem4": "Token emission linked to verified output",
-    "onChainDataDesc2": "Users can monitor growth, power generation, and token accrual — all transparently recorded and accessible on-chain.",
-    "builtToScale": "BUILT TO SCALE, GLOBALLY",
-    "builtToScaleDesc": "Each AGV unit is standardized and tokenized via SPV:",
-    "builtItem1": "Expandable with battery storage & edge compute",
-    "builtItem2": "Modular design supports irrigation, AI nodes, or carbon tracking",
-    "builtItem3": "Applicable across Asia, LATAM, Africa, and MENA",
-    "builtToScaleDesc2": "CEX-ready, DeFi-compatible, and ESG-aligned — AGV is built for global integration."
+    "title": "利用区块链彻底改变基础设施",
+    "realAssets": "真实资产。真实收入。",
+    "eachUnit": "每个 AGV 单元包括：",
+    "item1": "100亩高产苹果园",
+    "item2": "6MW太阳能电池阵列并网",
+    "item3": "用于实时监控的物联网传感器",
+    "item4": "自动收益共享的智能合约",
+    "item5": "透明的所有权和治理",
+    "item6": "与 DeFi 兼容的代币化",
+    "assetsDescription": "资产是基于土地的、能产生收益的、能抗通胀的——而不是合成代币或投机性的 DeFi 实验。",
+    "onChainData": "链上数据基础设施",
+    "onChainDataDesc": "每个单位都配备：",
+    "onChainItem1": "用于实时产量和能源数据的物联网传感器",
+    "onChainItem2": "智能合约和 NFT 映射",
+    "onChainItem3": "仪表板与卫星信息同步",
+    "onChainItem4": "代币发行与已验证的输出挂钩",
+    "onChainDataDesc2": "用户可以监控增长、发电量和代币累积——所有这些都透明地记录并可在链上访问。",
+    "builtToScale": "在全球范围内扩大规模",
+    "builtToScaleDesc": "每个 AGV 单元都通过 SPV 进行标准化和标记化：",
+    "builtItem1": "可通过电池存储和边缘计算进行扩展",
+    "builtItem2": "模块化设计支持灌溉、AI节点或碳追踪",
+    "builtItem3": "适用于亚洲、拉丁美洲、非洲和中东及北非地区",
+    "builtToScaleDesc2": "支持 CEX、兼容 DeFi 且符合 ESG 要求 — AGV 专为全球整合而构建。"
   },
   "threelayer": {
-    "title": "Three Layers of Real-World Yield",
+    "title": "现实世界收益率的三个层次",
     "fruit": {
-      "title": "Fruit-Backed NFTs",
-      "description": "AGV transforms apple orchards into tokenized assets. Each NFT maps to a real tree, producing fruit, revenue, and verifiable yield on-chain."
+      "title": "水果支持的NFT",
+      "description": "AGV 将苹果园转化为代币化资产。每个 NFT 都对应一棵真实的树，在链上产出果实、产生收益并进行可验证的收益。"
     },
     "solar": {
-      "title": "Solar-Driven Rewards",
-      "description": "Each unit includes 6MW of solar capacity powering not only the farm, but also edge nodes and energy-backed token minting — \"sunlight as income.\""
+      "title": "太阳能驱动的奖励",
+      "description": "每个单元都包含 6MW 的太阳能容量，不仅为农场供电，还为边缘节点和能源支持的代币铸造供电——“阳光作为收入”。"
     },
     "depin": {
-      "title": "DePIN-Ready Infrastructure",
-      "description": "AGV unites sensors, smart contracts, and real-time data to power edge nodes, record carbon, and deliver Web3 services worldwide."
+      "title": "DePIN 就绪基础设施",
+      "description": "AGV 结合传感器、智能合约和实时数据，为边缘节点供电、记录碳排放并在全球范围内提供 Web3 服务。"
     }
   },
   "testimonials": {
-    "title1": "The Future of Infrastructure Is Real, Green, and On-Chain",
-    "description": "Top institutions agree: real-world assets, sustainable energy, and blockchain integration are shaping the next trillion-dollar opportunity. AGV is positioned at the intersection of these macro trends.",
-    "quote1": "Tokenization of real-world assets could unlock a $10T market by 2030.",
-    "source1": "Boston Consulting Group",
-    "quote2": "ESG and energy-linked infrastructure are set to dominate institutional flows over the next decade.",
-    "source2": "BlackRock 2024 Outlook",
-    "quote3": "Distributed green energy is the foundation of long-term economic resilience.",
-    "source3": "World Bank",
-    "title2": "The Future Is Powered by Land, Sun, and Code",
-    "investNow": "Invest Now"
+    "title1": "基础设施的未来是真实的、绿色的、链上的",
+    "description": "顶级机构一致认为：实体资产、可持续能源和区块链融合正在塑造下一个万亿美元的机遇。AGV 正处于这些宏观趋势的交汇点。",
+    "quote1": "到 2030 年，现实世界资产的代币化可能会开启一个价值 10 万亿美元的市场。",
+    "source1": "波士顿咨询集团",
+    "quote2": "ESG 和能源相关基础设施将在未来十年主导机构流动。",
+    "source2": "贝莱德2024年展望",
+    "quote3": "分布式绿色能源是长期经济复原力的基础。",
+    "source3": "世界银行",
+    "title2": "未来由土地、阳光和代码驱动",
+    "investNow": "立即投资"
   },
   "maincontent": {
-    "platformOverview": "PLATFORM OVERVIEW",
-    "coreFeatures": "Core Features",
-    "getStarted": "Get Started",
-    "community": "Community",
-    "latestUpdates": "Latest Updates",
+    "platformOverview": "平台概述",
+    "coreFeatures": "核心功能",
+    "getStarted": "开始",
+    "community": "社区",
+    "latestUpdates": "最新更新",
     "features": {
       "multichain": {
-        "title": "Multi-Chain Support",
-        "description": "Deploy and manage NFTs across BSC, Polygon, and Arbitrum networks"
+        "title": "多链支持",
+        "description": "在 BSC、Polygon 和 Arbitrum 网络上部署和管理 NFT"
       },
       "secure": {
-        "title": "Secure Minting",
-        "description": "Advanced security measures and smart contract audits"
+        "title": "安全铸造",
+        "description": "先进的安全措施和智能合约审计"
       },
       "rewards": {
-        "title": "Instant Rewards",
-        "description": "Earn rewards immediately after minting with our staking system"
+        "title": "即时奖励",
+        "description": "使用我们的权益系统铸造后立即获得奖励"
       }
     },
     "stats": {
-      "totalSupply": "Total Supply",
-      "nftsMinted": "NFTs Minted",
-      "rewardRate": "Reward Rate",
-      "dailyRewards": "Daily Rewards",
-      "securityScore": "Security Score",
-      "auditRating": "Audit Rating",
-      "upto50rggp": "Upto 50 rGGP"
+      "totalSupply": "总供应量",
+      "nftsMinted": "NFT 铸造",
+      "rewardRate": "奖励率",
+      "dailyRewards": "每日奖励",
+      "securityScore": "安全评分",
+      "auditRating": "审计评级",
+      "upto50rggp": "高达 50 rGGP"
     },
     "social": {
       "github": "GitHub",
-      "twitter": "Twitter",
-      "discord": "Discord",
-      "telegram": "Telegram",
-      "follow": "Follow",
-      "stars": "stars",
-      "followers": "followers",
-      "members": "members"
+      "twitter": "叽叽喳喳",
+      "discord": "不和谐",
+      "telegram": "电报",
+      "follow": "跟随",
+      "stars": "星星",
+      "followers": "追随者",
+      "members": "成员"
     },
     "articles": {
       "introducing": {
-        "title": "Introducing AGV Protocol",
-        "description": "Learn how to mint your first NFT and start earning rewards"
+        "title": "AGV协议介绍",
+        "description": "了解如何铸造您的第一个 NFT 并开始赚取奖励"
       },
       "multichain": {
-        "title": "Understanding Multi-Chain Staking",
-        "description": "A comprehensive guide to staking across different networks"
+        "title": "了解多链质押",
+        "description": "跨不同网络质押的综合指南"
       },
       "security": {
-        "title": "Security Best Practices",
-        "description": "How to keep your NFTs and rewards safe"
+        "title": "安全最佳实践",
+        "description": "如何保障你的 NFT 和奖励安全"
       },
-      "readMore": "Read More"
+      "readMore": "阅读更多"
     }
   },
   "footer": {
-    "copyright": "© 2024 AGV Protocol. All rights reserved.",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
-    "contact": "Contact Us",
-    "description": "The future of decentralized computing through innovative NFT technology. Join thousands of users minting exclusive AGV NFTs across multiple blockchain networks.",
-    "secure": "Secure & Trusted",
-    "fast": "Lightning Fast",
-    "multichain": "Multi-Chain",
-    "resources": "Resources",
-    "nftMinting": "NFT Minting",
-    "nftStaking": "NFT Staking",
-    "kolProgram": "KOL Program",
-    "company": "Company",
-    "aboutUs": "About Us",
-    "careers": "Careers",
-    "blogs": "Blogs",
-    "support": "Support",
-    "helpCenter": "Help Center",
-    "documentation": "Documentation",
-    "contactSupport": "Contact Support",
-    "legal": "Legal",
-    "cookiePolicy": "Cookie Policy",
+    "copyright": " AGV 协议。保留所有权利。",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "contact": "联系我们",
+    "description": "通过创新的 NFT 技术，实现去中心化计算的未来。加入成千上万的用户，在多个区块链网络上铸造专属的 AGV NFT。",
+    "secure": "安全可靠",
+    "fast": "闪电般快速",
+    "multichain": "多链",
+    "resources": "资源",
+    "nftMinting": "NFT铸造",
+    "nftStaking": "NFT 质押",
+    "kolProgram": "KOL计划",
+    "company": "公司",
+    "aboutUs": "关于我们",
+    "careers": "职业发展",
+    "blogs": "博客",
+    "support": "支持",
+    "helpCenter": "帮助中心",
+    "documentation": "文档",
+    "contactSupport": "联系支持",
+    "legal": "合法的",
+    "cookiePolicy": "Cookie 政策",
     "gdpr": "GDPR",
-    "headquarters": "Headquartered in Asia. Operated globally. Audited by top firms.",
-    "legalText": "All real-world assets are held by authorized Chinese SPVs and mapped via legal authorization to JLL Asset Ltd. (BVI Company No. 2182436). NFT issuance and operations are executed by iJET Limited (NZBN: 9429049576290). Governance transition to the BVI-based AGV DAO is in progress."
+    "headquarters": "总部位于亚洲，业务遍及全球，并由顶级公司审计。",
+    "legalText": "所有现实世界资产均由授权的中国特殊目的公司持有，并通过法律授权映射到JLL Asset Ltd.（英属维尔京群岛公司编号：2182436）。NFT的发行和运营由iJET Limited（NZBN：9429049576290）负责。目前，AGV DAO的治理过渡正在进行中。"
   },
   "staking": {
-    "title": "AGV Protocol Staking",
-    "description": "Stake your NFTs and earn rewards",
-    "protocolTitle": "AGV Protocol Staking",
-    "stakeYour": "Stake your",
-    "nftsOn": "NFTs on",
-    "toEarnRewards": "to earn rewards",
-    "stake": "Stake",
-    "unstake": "Unstake",
-    "rewards": "Rewards",
-    "totalStaked": "Total Staked",
-    "availableRewards": "Available Rewards",
-    "overview": "Staking Overview",
-    "stakedNFTs": "Staked NFTs",
-    "currentlyStaked": "Currently staked",
-    "rggpReadyToClaim": "rGGP ready to claim",
-    "dailyRewards": "Daily Rewards",
-    "perNFTStaked": "Per NFT staked",
-    "selectNetwork": "Select Network",
-    "selectNFTCollection": "Select NFT Collection",
-    "selectNftCollection": "Select NFT Collection",
-    "selectStakingDuration": "Select Staking Duration",
-    "quickSelect": "Quick Select",
-    "day": "day",
-    "days": "days",
-    "durationDays": "Duration (days)",
-    "lockPeriod": "Lock Period",
-    "yourNftsWillBeLocked": "Your NFTs will be locked for",
-    "youCannotWithdraw": "You cannot withdraw until this period ends",
-    "lockPeriodDescription": "Your NFTs will be locked for {duration} day{plural}. You cannot withdraw until this period ends. Minimum staking period is 7 days.",
-    "currentWalletChain": "Current wallet chain",
-    "notConnected": "Not connected",
-    "connectWalletFirst": "Connect wallet first",
-    "selectAtLeastOne": "Select at least one tokenId",
-    "selectAtLeastOneToken": "Select at least one token",
-    "durationMustBeAtLeastOneDay": "Duration must be at least one day",
-    "minimumDuration": "Staking duration must be at least 7 days",
-    "approving": "Approving (if needed)…",
-    "approvingIfNeeded": "Approving (if needed)…",
-    "stakingOnChain": "Staking on-chain…",
-    "recordingStake": "Recording stake…",
-    "stakeSuccess": "Staked for {duration} day{plural}!",
-    "stakeFailed": "Stake failed",
-    "selectAtLeastOneWithdraw": "Select at least one NFT to withdraw",
-    "withdrawingOnChain": "Withdrawing on-chain…",
-    "updatingRecords": "Updating records…",
-    "withdrawSuccess": "Withdrawn!",
-    "withdrawFailed": "Withdraw failed",
-    "selectNftsToStake": "Select NFTs to Stake",
-    "detectedInWallet": "Detected in wallet",
-    "available": "available",
-    "connectYourWallet": "Connect your wallet",
-    "connectToView": "to view your NFTs",
-    "connect": "Connect",
-    "selected": "Selected",
-    "clear": "Clear",
-    "withdrawStakedNfts": "Withdraw Staked NFTs",
-    "selectStakedNftsDescription": "Select staked NFTs to withdraw",
-    "connectWalletToSeeStakedNfts": "Connect wallet to see staked NFTs",
-    "whitelistRequired": "Whitelist required"
+    "title": "AGV 协议质押",
+    "description": "质押您的 NFT 并赚取奖励",
+    "protocolTitle": "AGV 协议质押",
+    "stakeYour": "质押你的",
+    "nftsOn": "NFT 上",
+    "toEarnRewards": "获得奖励",
+    "stake": "赌注",
+    "unstake": "取消质押",
+    "rewards": "奖励",
+    "totalStaked": "总质押量",
+    "availableRewards": "可用奖励",
+    "overview": "质押概览",
+    "stakedNFTs": "质押 NFT",
+    "currentlyStaked": "目前质押",
+    "rggpReadyToClaim": "rGGP 已准备好领取",
+    "dailyRewards": "每日奖励",
+    "perNFTStaked": "每个 NFT 质押",
+    "selectNetwork": "选择网络",
+    "selectNFTCollection": "选择 NFT 收藏",
+    "selectNftCollection": "选择 NFT 收藏",
+    "selectStakingDuration": "选择质押期限",
+    "quickSelect": "快速选择",
+    "day": "天",
+    "days": "天",
+    "durationDays": "持续时间（天）",
+    "lockPeriod": "锁定期",
+    "yourNftsWillBeLocked": "您的 NFT 将被锁定",
+    "youCannotWithdraw": "在此期限结束之前您不能提款",
+    "lockPeriodDescription": "您的 NFT 将被锁定 {duration} 天{plural}。锁定期结束前，您无法提现。最短质押期限为 7 天。",
+    "currentWalletChain": "当前钱包链",
+    "notConnected": "未连接",
+    "connectWalletFirst": "首先连接钱包",
+    "selectAtLeastOne": "请选择至少一个 tokenId",
+    "selectAtLeastOneToken": "至少选择一个令牌",
+    "durationMustBeAtLeastOneDay": "持续时间必须至少为一天",
+    "minimumDuration": "质押时长必须至少为 7 天",
+    "approving": "批准（如果需要）...",
+    "approvingIfNeeded": "批准（如果需要）...",
+    "stakingOnChain": "链上质押……",
+    "recordingStake": "记录股份…",
+    "stakeSuccess": "已质押 {duration} 天{plural}！",
+    "stakeFailed": "质押失败",
+    "selectAtLeastOneWithdraw": "选择至少一个 NFT 进行提取",
+    "withdrawingOnChain": "链上提现……",
+    "updatingRecords": "正在更新记录...",
+    "withdrawSuccess": "撤回！",
+    "withdrawFailed": "提现失败",
+    "selectNftsToStake": "选择要质押的 NFT",
+    "detectedInWallet": "在钱包中检测到",
+    "available": "可用的",
+    "connectYourWallet": "连接你的钱包",
+    "connectToView": "查看你的 NFT",
+    "connect": "连接",
+    "selected": "选定",
+    "clear": "清除",
+    "withdrawStakedNfts": "提取质押的 NFT",
+    "selectStakedNftsDescription": "选择要提取的质押 NFT",
+    "connectWalletToSeeStakedNfts": "连接钱包查看已质押的 NFT",
+    "whitelistRequired": "需要白名单"
   },
   "minting": {
-    "title": "AGV Protocol Minting",
-    "description": "Mint exclusive AGV Protocol NFTs across multiple blockchain networks.",
-    "collections": "Choose from SeedPass, TreePass, SolarPass, and ComputePass collections.",
-    "liveMinting": "Live Minting",
-    "multiChain": "Multi-Chain",
-    "usdtPayment": "USDT Payment",
-    "selectNetwork": "Select Network",
-    "mintingMode": "Minting Mode",
-    "mintingModeDescription": "Choose your minting mode",
-    "publicMint": "Public Mint",
-    "agentMint": "Agent Mint",
-    "selectNftToMint": "Select NFT to Mint",
-    "chooseQuantity": "Choose Quantity",
+    "title": "AGV 协议铸造",
+    "description": "Mint 跨多个区块链网络的独家 AGV 协议 NFT。",
+    "collections": "从 SeedPass、TreePass、SolarPass 和 ComputePass 集合中进行选择。",
+    "liveMinting": "实时铸造",
+    "multiChain": "多链",
+    "usdtPayment": "USDT支付",
+    "selectNetwork": "选择网络",
+    "mintingMode": "铸币模式",
+    "mintingModeDescription": "选择您的铸造模式",
+    "publicMint": "公共铸币厂",
+    "agentMint": "特工薄荷",
+    "selectNftToMint": "选择要铸造的 NFT",
+    "chooseQuantity": "选择数量",
     "nft": {
       "seed": {
         "name": "SeedPass NFT",
-        "description": "Access to sustainable farming rewards and exclusive benefits"
+        "description": "获得可持续农业奖励和专属福利"
       },
       "tree": {
         "name": "TreePass NFT",
-        "description": "Premium tree adoption with enhanced rewards"
+        "description": "优质树木领养，奖励更丰厚"
       },
       "solar": {
         "name": "SolarPass NFT",
-        "description": "Solar energy rewards and green infrastructure access"
+        "description": "太阳能奖励和绿色基础设施使用"
       },
       "compute": {
         "name": "ComputePass NFT",
-        "description": "Edge computing rewards and DePIN infrastructure access"
+        "description": "边缘计算奖励和 DePIN 基础设施访问"
       }
     },
-    "referralId": "Referral ID",
-    "input6DigitId": "Input 6-digit ID",
-    "referralIdPlaceholder": "Enter referral ID",
-    "summary": "Summary",
-    "noItemsSelected": "No items selected",
-    "connectAndMint": "Connect and Mint",
-    "connectWallet": "Connect Wallet",
-    "walletNotConnected": "Wallet not connected",
-    "insufficientGasBalance": "Insufficient gas balance",
-    "insufficientGas": "Insufficient gas",
-    "mint": "Mint",
-    "minting": "Minting...",
-    "mintNfts": "Mint NFTs",
-    "referralLinkCopied": "Referral link copied",
-    "whitelistRequired": "Whitelist required",
-    "price": "Price",
-    "supply": "Supply",
-    "remaining": "Remaining"
+    "referralId": "推荐人 ID",
+    "input6DigitId": "输入6位ID",
+    "referralIdPlaceholder": "输入推荐人ID",
+    "summary": "概括",
+    "noItemsSelected": "未选择任何商品",
+    "connectAndMint": "连接并铸造",
+    "connectWallet": "连接钱包",
+    "walletNotConnected": "钱包未连接",
+    "insufficientGasBalance": "气体平衡不足",
+    "insufficientGas": "气体不足",
+    "mint": "薄荷",
+    "minting": "正在铸造...",
+    "mintNfts": "Mint NFT",
+    "referralLinkCopied": "推荐链接已复制",
+    "whitelistRequired": "需要白名单",
+    "price": "价格",
+    "supply": "供应",
+    "remaining": "其余的"
   },
   "dashboard": {
-    "title": "Dashboard",
-    "description": "Overview of your AGV Protocol activities and performance",
-    "overview": "Overview",
-    "analytics": "Analytics",
-    "performance": "Performance",
-    "activity": "Activity"
+    "title": "仪表板",
+    "description": "AGV 协议活动和性能概述",
+    "overview": "概述",
+    "analytics": "分析",
+    "performance": "表现",
+    "activity": "活动"
   },
   "landing": {
     "hero": {
-      "title": "AGV PROTOCOL NFT ECOSYSTEM",
-      "description": "Unlock exclusive SeedPass, TreePass, SolarPass, and ComputePass NFTs, your gateway to sustainable rewards. Stake instantly with no lock-up period and start earning daily rewards across BSC, Polygon, and Arbitrum networks.",
-      "startMinting": "Start Minting",
-      "viewStaking": "View Staking",
+      "title": "AGV 协议 NFT 生态系统",
+      "description": "解锁专属 SeedPass、TreePass、SolarPass 和 ComputePass NFT，开启您获得可持续奖励的大门。立即质押，无锁定期，并开始在 BSC、Polygon 和 Arbitrum 网络上赚取每日奖励。",
+      "startMinting": "开始铸造",
+      "viewStaking": "查看 Staking",
       "stats": {
-        "blockchains": "Blockchains",
-        "nftCollections": "NFT Collections",
-        "dailyRewards": "rGGP Daily Rewards"
+        "blockchains": "区块链",
+        "nftCollections": "NFT 收藏品",
+        "dailyRewards": "rGGP 每日奖励"
       }
     },
     "platformOverview": {
-      "title": "PLATFORM OVERVIEW",
-      "totalSupply": "Total Supply",
-      "nftsMinted": "NFTs Minted",
-      "rewardRate": "Reward Rate",
-      "dailyRewards": "Daily Rewards",
-      "auditRating": "Audit Rating",
-      "securityScore": "Security Score"
+      "title": "平台概述",
+      "totalSupply": "总供应量",
+      "nftsMinted": "NFT 铸造",
+      "rewardRate": "奖励率",
+      "dailyRewards": "每日奖励",
+      "auditRating": "审计评级",
+      "securityScore": "安全评分"
     },
     "coreFeatures": {
-      "title": "Core Features",
+      "title": "核心功能",
       "multiChain": {
-        "title": "Multi-Chain Support",
-        "description": "Deploy and manage NFTs across BSC, Polygon, and Arbitrum networks"
+        "title": "多链支持",
+        "description": "在 BSC、Polygon 和 Arbitrum 网络上部署和管理 NFT"
       },
       "secureMinting": {
-        "title": "Secure Minting",
-        "description": "Advanced security measures and smart contract audits"
+        "title": "安全铸造",
+        "description": "先进的安全措施和智能合约审计"
       },
       "instantRewards": {
-        "title": "Instant Rewards",
-        "description": "Earn rewards immediately after minting with our staking system"
+        "title": "即时奖励",
+        "description": "使用我们的权益系统铸造后立即获得奖励"
       }
     },
     "getStarted": {
-      "title": "Get Started",
+      "title": "开始",
       "mintNFTs": {
-        "title": "Mint NFTs",
-        "description": "Mint AGV Protocol NFTs across multiple chains",
-        "button": "Start Minting"
+        "title": "Mint NFT",
+        "description": "跨多链铸造 AGV 协议 NFT",
+        "button": "开始铸造"
       },
       "stakeEarn": {
-        "title": "Stake & Earn",
-        "description": "Stake your NFTs to earn daily rewards",
-        "button": "Start Staking"
+        "title": "质押并赚取",
+        "description": "质押您的 NFT 来赚取每日奖励",
+        "button": "开始质押"
       },
       "learnMore": {
-        "title": "Learn More",
-        "description": "Explore token information and documentation",
-        "button": "View Details"
+        "title": "了解更多",
+        "description": "探索代币信息和文档",
+        "button": "查看详情"
       }
     },
     "community": {
-      "title": "Community",
+      "title": "社区",
       "github": "GitHub",
-      "twitter": "Twitter",
-      "discord": "Discord",
-      "telegram": "Telegram",
-      "follow": "Follow",
-      "members": "members",
-      "followers": "followers",
-      "stars": "stars"
+      "twitter": "叽叽喳喳",
+      "discord": "不和谐",
+      "telegram": "电报",
+      "follow": "跟随",
+      "members": "成员",
+      "followers": "追随者",
+      "stars": "星星"
     },
     "latestUpdates": {
-      "title": "Latest Updates",
-      "readMore": "Read More",
+      "title": "最新更新",
+      "readMore": "阅读更多",
       "articles": {
         "introducing": {
-          "title": "Introducing AGV Protocol",
-          "description": "Introducing AGV Protocol: Unlocking the Future of Real-World Assets"
+          "title": "AGV协议介绍",
+          "description": "AGV协议简介：解锁现实世界资产的未来"
         },
         "rggpExplained": {
-          "title": "rGGP Explained",
-          "description": "How AGV Protocol Turns Real-World Yields into On-chain Rewards"
+          "title": "rGGP 解释",
+          "description": "AGV 协议如何将现实世界的收益转化为链上奖励"
         }
       }
     },
     "whatIsAGV": {
-      "title": "What Is AGV?",
-      "description": "AGV (AgriVolt Protocol) is a real-asset-backed Web3 protocol that brings orchards, solar farms, and decentralized nodes onto the blockchain. Each asset unit generates real-world yield from fruit harvests to solar energy and edge computing. Users can adopt fruit trees, stake in solar, and earn tokenized rewards with transparent returns. Rooted in China's leading agricultural and solar regions, AGV makes sustainability investable, verifiable, and globally scalable."
+      "title": "什么是 AGV？",
+      "description": "AGV（AgriVolt 协议）是一个基于真实资产的 Web3 协议，它将果园、太阳能农场和去中心化节点接入区块链。每个资产单元都能产生现实世界的收益，涵盖水果收成、太阳能发电和边缘计算。用户可以认养果树、参与太阳能项目，并获得代币化奖励，收益透明。AGV 扎根于中国领先的农业和太阳能地区，使可持续性变得可投资、可验证，并在全球范围内具有可扩展性。"
     },
     "threeLayer": {
-      "title": "Three Layers of Real-World Yield",
+      "title": "现实世界收益率的三个层次",
       "fruitBacked": {
-        "title": "Fruit-Backed NFTs",
-        "description": "AGV transforms apple orchards into tokenized assets.Each NFT maps to a real tree, producing fruit, revenue, and verifiable yield on- chain."
+        "title": "水果支持的NFT",
+        "description": "AGV 将苹果园转变为代币化资产。每个 NFT 都映射到一棵真实的树上，在链上产生果实、收入和可验证的收益。"
       },
       "solarDriven": {
-        "title": "Solar-Driven Rewards",
-        "description": "Each unit includes 6MW of solar capacity powering not only the farm,but also edge nodes and energy- backed token minting — \"sunlight as income.\""
+        "title": "太阳能驱动的奖励",
+        "description": "每个单元包括 6MW 的太阳能容量，不仅为农场供电，还为边缘节点和能源支持的代币铸造供电——“阳光作为收入”。"
       },
       "depinReady": {
-        "title": "DePIN-Ready Infrastructure",
-        "description": "AGV unites sensors, smart contracts, and real-time data to power edge nodes, record carbon, and deliver Web3 services worldwide."
+        "title": "DePIN 就绪基础设施",
+        "description": "AGV 结合传感器、智能合约和实时数据，为边缘节点供电、记录碳排放并在全球范围内提供 Web3 服务。"
       }
     },
     "fixing": {
-      "title": "Fixing What's Broken in Real-World Tokenization",
-      "description1": "AGV bridges the digital and physical worlds by turning orchards and solar farms into NFTs and tokens. Each asset is linked to smart contracts that automate income sharing, ownership, and governance — solving issues like fragmented data, unverifiable yields, and opaque land rights.",
-      "description2": "At its core, AGV uses a standardized asset unit: 100 mu of high-yield apple orchards paired with 6MW of solar. This model delivers $180k–$280k annual income per unit with 18%–26% IRR, backed by IoT-based performance data and predictive models.",
-      "description3": "Unlike traditional agri-projects that are hard to replicate, AGV units are SPV-packaged, DeFi-compatible, and globally modular — enabling fast deployment and repeatable scaling across borders."
+      "title": "修复现实世界标记化中的问题",
+      "description1": "AGV 通过将果园和太阳能农场转化为 NFT 和代币，连接数字世界和现实世界。每项资产都与智能合约挂钩，从而实现收益共享、所有权和治理的自动化，从而解决数据碎片化、产量无法验证以及土地权不透明等问题。",
+      "description2": "AGV 的核心是采用标准化资产单位：100 亩高产苹果园搭配 6 兆瓦太阳能发电。该模式每单位年收入可达 18 万至 28 万美元，内部收益率 (IRR) 为 18% 至 26%，并由基于物联网的绩效数据和预测模型提供支持。",
+      "description3": "与难以复制的传统农业项目不同，AGV 单元采用 SPV 封装、兼容 DeFi 且全球模块化，从而实现快速部署和跨境可重复扩展。"
     },
     "exploreAGV": {
-      "title": "Explore AGV's On-Chain Infrastructure",
-      "description": "Come visit our real-world project sites and see how orchards, solar arrays, and blockchain come together. From China's green zones to future international hubs, AGV is building the future of land-based RWA on-chain."
+      "title": "探索 AGV 的链上基础设施",
+      "description": "欢迎参观我们的实际项目现场，了解果园、太阳能电池板和区块链如何融合。从中国的绿色区域到未来的国际枢纽，AGV 正在构建链上陆基 RWA 的未来。"
     },
     "whyAGV": {
-      "title": "Why AGV Is a Blueprint for Real Yield Infrastructure?",
-      "description1": "AGV is not a one-off project. It's a replicable protocol turning real land into digital yield infrastructure.",
-      "description2": "Every AGV unit is expected to generate $180k–$280k in annual revenue, with an IRR between 18% and 26%, based on actual orchard yields and regional solar performance data.",
-      "description3": "We combine China's world-leading agricultural and solar assets with modular SPV tokenization and on-chain data architecture, making every physical unit digitally verifiable, yield-bearing, and DeFi-compatible."
+      "title": "为什么AGV是真正收益基础设施的蓝图？",
+      "description1": "AGV 并非一次性项目。它是一种可复制的协议，将真实土地转化为数字化收益基础设施。",
+      "description2": "根据实际果园产量和区域太阳能性能数据，每个 AGV 单元预计每年可产生 18 万至 28 万美元的收入，内部收益率在 18% 至 26% 之间。",
+      "description3": "我们将中国世界领先的农业和太阳能资产与模块化 SPV 代币化和链上数据架构相结合，使每个物理单元都具有数字可验证性、收益性和 DeFi 兼容性。"
     },
     "blockchainInfrastructure": {
-      "title": "Revolutionizing Infrastructure with Blockchain",
+      "title": "利用区块链彻底改变基础设施",
       "realAssets": {
-        "title": "REAL ASSETS. REAL REVENUE.",
-        "description": "Each AGV unit includes:",
+        "title": "真实资产。真实收入。",
+        "description": "每个 AGV 单元包括：",
         "features": [
-          "100 mu high-density apple orchards",
-          "6MW utility-grade solar farm",
-          "Annual revenue: $180,000 - $280,000",
-          "IRR target: 18% - 26%"
+          "100亩高密度苹果园",
+          "6MW公用事业级太阳能发电场",
+          "年收入：18万至28万美元",
+          "内部收益率目标：18% - 26%"
         ],
-        "conclusion": "Assets are land-based, yield-producing, and inflation-resistant — not synthetic tokens or speculative DeFi experiments."
+        "conclusion": "资产是基于土地的、能产生收益的、能抗通胀的——而不是合成代币或投机性的 DeFi 实验。"
       },
       "onChainData": {
-        "title": "ON-CHAIN DATA INFRASTRUCTURE",
-        "subtitle": "On-Chain Data Infrastructure",
-        "description": "Every unit is equipped with:",
+        "title": "链上数据基础设施",
+        "subtitle": "链上数据基础设施",
+        "description": "每个单位都配备：",
         "features": [
-          "IoT sensors for real-time yield and energy data",
-          "Smart contracts and NFT mapping",
-          "Dashboards synced with satellite feeds",
-          "Token emission linked to verified output"
+          "用于实时产量和能源数据的物联网传感器",
+          "智能合约和 NFT 映射",
+          "仪表板与卫星信息同步",
+          "代币发行与已验证的输出挂钩"
         ],
-        "conclusion": "Users can monitor growth, power generation, and token accrual — all transparently recorded and accessible on-chain."
+        "conclusion": "用户可以监控增长、发电量和代币累积——所有这些都透明地记录并可在链上访问。"
       },
       "builtToScale": {
-        "title": "BUILT TO SCALE, GLOBALLY",
-        "description": "Each AGV unit is standardized and tokenized via SPV:",
+        "title": "在全球范围内扩大规模",
+        "description": "每个 AGV 单元都通过 SPV 进行标准化和标记化：",
         "features": [
-          "Expandable with battery storage & edge compute",
-          "Modular design supports irrigation, AI nodes, or carbon tracking",
-          "Applicable across Asia, LATAM, Africa, and MENA"
+          "可通过电池存储和边缘计算进行扩展",
+          "模块化设计支持灌溉、AI节点或碳追踪",
+          "适用于亚洲、拉丁美洲、非洲和中东及北非地区"
         ],
-        "conclusion": "CEX-ready, DeFi-compatible, and ESG-aligned — AGV is built for global integration."
+        "conclusion": "支持 CEX、兼容 DeFi 且符合 ESG 要求 — AGV 专为全球整合而构建。"
       }
     },
     "testimonials": {
-      "title": "The Future of Infrastructure Is Real, Green, and On-Chain",
-      "description": "Top institutions agree: real-world assets, sustainable energy, and blockchain integration are shaping the next trillion-dollar opportunity. AGV is positioned at the intersection of these macro trends.",
+      "title": "基础设施的未来是真实的、绿色的、链上的",
+      "description": "顶级机构一致认为：实体资产、可持续能源和区块链融合正在塑造下一个万亿美元的机遇。AGV 正处于这些宏观趋势的交汇点。",
       "quotes": [
         {
           "text": "Tokenization of real-world assets could unlock a $10T market by 2030.",
@@ -485,347 +486,347 @@
         }
       ],
       "cta": {
-        "title": "The Future Is Powered by Land, Sun, and Code",
-        "button": "Invest Now",
-        "backToTop": "Back to top"
+        "title": "未来由土地、阳光和代码驱动",
+        "button": "立即投资",
+        "backToTop": "返回顶部"
       }
     },
     "footer": {
-      "companyName": "AGRIVOLT PROTOCOL",
-      "tagline": "NFT Minting Platform",
-      "description": "The future of decentralized computing through innovative NFT technology. Join thousands of users minting exclusive AGV NFTs across multiple blockchain networks.",
+      "companyName": "AGRIVOLT 协议",
+      "tagline": "NFT铸造平台",
+      "description": "通过创新的 NFT 技术，实现去中心化计算的未来。加入成千上万的用户，在多个区块链网络上铸造专属的 AGV NFT。",
       "features": {
-        "secure": "Secure & Trusted",
-        "fast": "Lightning Fast",
-        "multiChain": "Multi-Chain"
+        "secure": "安全可靠",
+        "fast": "闪电般快速",
+        "multiChain": "多链"
       },
       "navigation": {
         "product": {
-          "title": "Product",
-          "nftMinting": "NFT Minting",
-          "dashboard": "Dashboard",
-          "kolProgram": "KOL Program",
-          "analytics": "Analytics"
+          "title": "产品",
+          "nftMinting": "NFT铸造",
+          "dashboard": "仪表板",
+          "kolProgram": "KOL计划",
+          "analytics": "分析"
         },
         "company": {
-          "title": "Company",
-          "aboutUs": "About Us",
-          "careers": "Careers",
-          "press": "Press",
-          "blog": "Blog"
+          "title": "公司",
+          "aboutUs": "关于我们",
+          "careers": "职业发展",
+          "press": "按",
+          "blog": "博客"
         },
         "support": {
-          "title": "Support",
-          "helpCenter": "Help Center",
-          "documentation": "Documentation",
-          "apiReference": "API Reference",
-          "contactSupport": "Contact Support"
+          "title": "支持",
+          "helpCenter": "帮助中心",
+          "documentation": "文档",
+          "apiReference": "API 参考",
+          "contactSupport": "联系支持"
         },
         "legal": {
-          "title": "Legal",
-          "privacyPolicy": "Privacy Policy",
-          "termsOfService": "Terms of Service",
-          "cookiePolicy": "Cookie Policy",
+          "title": "合法的",
+          "privacyPolicy": "隐私政策",
+          "termsOfService": "服务条款",
+          "cookiePolicy": "Cookie 政策",
           "gdpr": "GDPR"
         }
       },
       "legal": {
-        "headquarters": "Headquartered in Asia. Operated globally. Audited by top firms.",
-        "description": "All real-world assets are held by authorized Chinese SPVs and mapped via legal authorization to JLL Asset Ltd. (BVI Company No. 2182436). NFT issuance and operations are executed by iJET Limited (NZBN: 9429049576290). Governance transition to the BVI-based AGV DAO is in progress."
+        "headquarters": "总部位于亚洲，业务遍及全球，并由顶级公司审计。",
+        "description": "所有现实世界资产均由授权的中国特殊目的公司持有，并通过法律授权映射到JLL Asset Ltd.（英属维尔京群岛公司编号：2182436）。NFT的发行和运营由iJET Limited（NZBN：9429049576290）负责。目前，AGV DAO的治理过渡正在进行中。"
       },
-      "copyright": "© 2025 AgriVolt Protocol. All rights reserved"
+      "copyright": "© 2025 AgriVolt Protocol. 保留所有权利"
     },
     "admin": {
       "hero": {
-        "title": "System Dashboard",
-        "description": "Monitor and track all AGV Protocol functionalities. Real-time analytics, performance metrics, and system health monitoring."
+        "title": "系统仪表板",
+        "description": "监控并跟踪所有 AGV 协议功能。实时分析、性能指标和系统健康监控。"
       },
       "status": {
-        "online": "System Online",
-        "secure": "Secure Access",
-        "adminOnly": "Admin Only"
+        "online": "系统在线",
+        "secure": "安全访问",
+        "adminOnly": "仅限管理员"
       },
       "sections": {
         "systemOverview": {
-          "title": "System Overview"
+          "title": "系统概述"
         },
         "functionalityMonitoring": {
-          "title": "Functionality Monitoring"
+          "title": "功能监控"
         },
         "quickAccess": {
-          "title": "Quick Access"
+          "title": "快速访问"
         }
       },
       "features": {
         "userAnalytics": {
-          "title": "User Analytics",
-          "description": "Track user engagement, growth metrics, and platform adoption"
+          "title": "用户分析",
+          "description": "跟踪用户参与度、增长指标和平台采用率"
         },
         "performanceAnalytics": {
-          "title": "Performance Analytics",
-          "description": "Monitor platform performance, response times, and system health"
+          "title": "性能分析",
+          "description": "监控平台性能、响应时间和系统健康状况"
         },
         "kolTracking": {
-          "title": "KOL Tracking",
-          "description": "Monitor Key Opinion Leader performance and referral metrics"
+          "title": "KOL追踪",
+          "description": "监控关键意见领袖的表现和推荐指标"
         },
         "activityMonitoring": {
-          "title": "Activity Monitoring",
-          "description": "Real-time tracking of user activities and system events"
+          "title": "活动监控",
+          "description": "实时跟踪用户活动和系统事件"
         },
         "performanceMetrics": {
-          "title": "Performance Metrics",
-          "description": "Track minting, staking, and token performance across all chains"
+          "title": "绩效指标",
+          "description": "跟踪所有链上的铸造、质押和代币表现"
         },
         "systemMonitoring": {
-          "title": "System Monitoring",
-          "description": "Monitor system configuration and operational parameters"
+          "title": "系统监控",
+          "description": "监控系统配置和操作参数"
         }
       },
       "stats": {
         "activeUsers": {
-          "title": "Active Users",
+          "title": "活跃用户",
           "value": "2,847",
-          "change": "+12%"
+          "change": "+12％"
         },
         "mintingActivity": {
-          "title": "Minting Activity",
+          "title": "铸币活动",
           "value": "1,234",
           "change": "+8%"
         },
         "stakingVolume": {
-          "title": "Staking Volume",
+          "title": "质押量",
           "value": "5,678",
-          "change": "+15%"
+          "change": "+15％"
         },
         "systemUptime": {
-          "title": "System Uptime",
+          "title": "系统正常运行时间",
           "value": "99.8%",
           "change": "+0.2%"
         }
       },
       "quickAccess": {
         "dashboard": {
-          "title": "Dashboard",
-          "description": "View main dashboard"
+          "title": "仪表板",
+          "description": "查看主仪表板"
         },
         "users": {
-          "title": "Users",
-          "description": "Manage users"
+          "title": "用户",
+          "description": "管理用户"
         },
         "analytics": {
-          "title": "Analytics",
-          "description": "View analytics"
+          "title": "分析",
+          "description": "查看分析"
         },
         "settings": {
-          "title": "Settings",
-          "description": "Configure system"
+          "title": "设置",
+          "description": "配置系统"
         }
       },
       "buttons": {
-        "viewMetrics": "View Metrics"
+        "viewMetrics": "查看指标"
       },
       "systemStatus": {
-        "title": "System Status",
-        "description": "This dashboard provides real-time monitoring of all AGV Protocol functionalities. All metrics are updated automatically and provide insights into platform performance, user activity, and system health across all features."
+        "title": "系统状态",
+        "description": "该仪表板提供所有 AGV 协议功能的实时监控。所有指标均自动更新，并提供有关平台性能、用户活动以及所有功能系统运行状况的洞察。"
       }
     },
     "comingSoon": {
-      "logo": "AGRIVOLT PROTOCOL",
-      "title": "Coming Soon",
-      "subtitle": "We're working hard to bring you something amazing.\nStay tuned for updates!",
+      "logo": "AGRIVOLT 协议",
+      "title": "即将推出",
+      "subtitle": "我们正在努力为您带来精彩内容。\n敬请关注最新动态！",
       "features": {
-        "lightningFast": "Lightning Fast",
-        "multiChain": "Multi-Chain",
-        "community": "Community",
-        "secure": "Secure"
+        "lightningFast": "闪电般快速",
+        "multiChain": "多链",
+        "community": "社区",
+        "secure": "安全的"
       },
-      "backButton": "Back to Home",
-      "footer": "Follow us for updates on our journey to revolutionize real-world asset tokenization"
+      "backButton": "返回首页",
+      "footer": "关注我们，了解我们革新现实世界资产代币化的历程"
     },
     "token": {
-      "copySuccess": "{label} copied to clipboard",
+      "copySuccess": "{label} 已复制到剪贴板",
       "hero": {
-        "title": "AGV Protocol Tokens",
-        "description": "Discover GVT (Governance Token) and rGGP (Reward Token) - the dual-token ecosystem powering the AGV Protocol. Earn rGGP rewards through staking and participate in governance with GVT."
+        "title": "AGV协议代币",
+        "description": "探索 GVT（治理代币）和 rGGP（奖励代币）—— AGV 协议的双代币生态系统。通过质押赚取 rGGP 奖励，并通过 GVT 参与治理。"
       },
       "status": {
-        "liveEcosystem": "Live Ecosystem",
-        "multiChain": "Multi-Chain",
-        "secure": "Secure"
+        "liveEcosystem": "活生态系统",
+        "multiChain": "多链",
+        "secure": "安全的"
       },
       "sections": {
         "ecosystemOverview": {
-          "title": "Ecosystem Overview"
+          "title": "生态系统概述"
         }
       },
       "stats": {
         "tokenHolders": {
-          "title": "GVT Holders",
+          "title": "GVT持有者",
           "value": "2,847",
-          "label": "Token Holders"
+          "label": "代币持有者"
         },
         "activeStakers": {
-          "title": "rGGP Earners",
+          "title": "rGGP 收入者",
           "value": "1,234",
-          "label": "Active Stakers"
+          "label": "活跃质押者"
         },
         "dailyEmission": {
-          "title": "rGGP Rewards",
-          "value": "50,000",
-          "label": "Daily Emission"
+          "title": "rGGP奖励",
+          "value": "5万",
+          "label": "每日排放量"
         },
         "networks": {
-          "title": "Multi-Chain",
+          "title": "多链",
           "value": "3",
-          "label": "Networks"
+          "label": "网络"
         }
       },
       "tabs": {
-        "overview": "Overview",
-        "contracts": "Contracts",
-        "staking": "Staking",
-        "resources": "Resources"
+        "overview": "概述",
+        "contracts": "合同",
+        "staking": "质押",
+        "resources": "资源"
       },
       "overview": {
         "aboutTokens": {
-          "title": "About GVT & rGGP",
-          "description": "The AGV Protocol operates on a dual-token system designed to separate governance and reward mechanisms. GVT serves as the governance token while rGGP functions as the reward token for ecosystem participation.",
+          "title": "关于GVT和rGGP",
+          "description": "AGV 协议采用双代币系统，旨在分离治理机制和奖励机制。GVT 作为治理代币，rGGP 作为生态系统参与的奖励代币。",
           "tokenRoles": {
-            "title": "Token Roles:",
-            "gvt": "GVT: Protocol governance and voting rights",
-            "rggp": "rGGP: Staking rewards and ecosystem incentives",
-            "multiChain": "Multi-chain deployment across major networks",
-            "decentralized": "Decentralized and community-driven ecosystem"
+            "title": "令牌角色：",
+            "gvt": "GVT：协议治理和投票权",
+            "rggp": "rGGP：权益奖励和生态系统激励",
+            "multiChain": "跨主要网络的多链部署",
+            "decentralized": "去中心化、社区驱动的生态系统"
           }
         },
         "tokenEconomics": {
-          "title": "Token Economics",
+          "title": "代币经济学",
           "gvt": {
-            "title": "GVT (Governance Token)",
-            "totalSupply": "Total Supply",
+            "title": "GVT（治理代币）",
+            "totalSupply": "总供应量",
             "totalSupplyValue": "1,000,000",
-            "circulating": "Circulating",
-            "circulatingValue": "750,000",
-            "useCase": "Use Case",
-            "useCaseValue": "Governance"
+            "circulating": "循环",
+            "circulatingValue": "75万",
+            "useCase": "用例",
+            "useCaseValue": "治理"
           },
           "rggp": {
-            "title": "rGGP (Reward Token)",
-            "dailyEmission": "Daily Emission",
-            "dailyEmissionValue": "50,000",
-            "perStakeReward": "Per Stake Reward",
-            "perStakeRewardValue": "50 rGGP/day",
-            "useCase": "Use Case",
-            "useCaseValue": "Staking Rewards"
+            "title": "rGGP（奖励代币）",
+            "dailyEmission": "每日排放量",
+            "dailyEmissionValue": "5万",
+            "perStakeReward": "每笔权益奖励",
+            "perStakeRewardValue": "50 rGGP/天",
+            "useCase": "用例",
+            "useCaseValue": "质押奖励"
           }
         },
         "benefits": {
-          "title": "Dual-Token Ecosystem Benefits",
+          "title": "双代币生态系统优势",
           "earnRewards": {
-            "title": "Earn rGGP Rewards",
-            "description": "Stake tokens to earn rGGP rewards daily with no lock-up period."
+            "title": "赚取 rGGP 奖励",
+            "description": "质押代币即可每天赚取 rGGP 奖励，无需锁定期。"
           },
           "governance": {
-            "title": "GVT Governance",
-            "description": "Use GVT tokens to vote on protocol proposals and shape the future of AGV."
+            "title": "GVT治理",
+            "description": "使用 GVT 代币对协议提案进行投票并塑造 AGV 的未来。"
           },
           "exclusiveAccess": {
-            "title": "Exclusive Access",
-            "description": "Get early access to new features, airdrops, and ecosystem updates."
+            "title": "独家访问",
+            "description": "抢先体验新功能、空投和生态系统更新。"
           },
           "multiChainSupport": {
-            "title": "Multi-Chain Support",
-            "description": "Access both tokens across BSC, Arbitrum, and Polygon networks."
+            "title": "多链支持",
+            "description": "通过 BSC、Arbitrum 和 Polygon 网络访问这两个令牌。"
           }
         }
       },
       "contracts": {
-        "title": "Contract Addresses",
-        "description": "Official contract addresses for GVT and rGGP tokens across different networks",
-        "networks": "{network} Network",
-        "gvtToken": "GVT Token",
-        "rggpToken": "rGGP Token",
-        "stakingContract": "Staking Contract"
+        "title": "合约地址",
+        "description": "跨不同网络的 GVT 和 rGGP 代币官方合约地址",
+        "networks": "{network} 网络",
+        "gvtToken": "GVT代币",
+        "rggpToken": "rGGP代币",
+        "stakingContract": "质押合约"
       },
       "staking": {
         "howToStake": {
-          "title": "How to Stake Tokens",
+          "title": "如何质押代币",
           "step1": {
-            "title": "Connect Wallet",
-            "description": "Connect your wallet that contains GVT or rGGP tokens"
+            "title": "连接钱包",
+            "description": "连接包含 GVT 或 rGGP 代币的钱包"
           },
           "step2": {
-            "title": "Select Network",
-            "description": "Choose BSC, Arbitrum, or Polygon network"
+            "title": "选择网络",
+            "description": "选择 BSC、Arbitrum 或 Polygon 网络"
           },
           "step3": {
-            "title": "Stake Tokens",
-            "description": "Select and stake your tokens to start earning rewards"
+            "title": "权益代币",
+            "description": "选择并质押您的代币以开始赚取奖励"
           }
         },
-        "startStaking": "Start Staking",
+        "startStaking": "开始质押",
         "dualTokenRewards": {
-          "title": "Dual-Token Rewards"
+          "title": "双代币奖励"
         },
         "rewards": {
           "rggp": {
-            "title": "rGGP Rewards",
-            "dailyRate": "Daily Rate",
-            "dailyRateValue": "50 rGGP per stake",
-            "compounding": "Compounding",
-            "compoundingValue": "Automatic",
-            "withdrawal": "Withdrawal",
-            "withdrawalValue": "Anytime"
+            "title": "rGGP奖励",
+            "dailyRate": "日费率",
+            "dailyRateValue": "每份股份 50 rGGP",
+            "compounding": "复合",
+            "compoundingValue": "自动的",
+            "withdrawal": "提款",
+            "withdrawalValue": "任何时间"
           },
           "gvt": {
-            "title": "GVT Governance",
-            "votingPower": "Voting Power",
-            "votingPowerValue": "1 GVT = 1 Vote",
-            "proposalRights": "Proposal Rights",
+            "title": "GVT治理",
+            "votingPower": "投票权",
+            "votingPowerValue": "1 GVT = 1 票",
+            "proposalRights": "提案权",
             "proposalRightsValue": "10,000 GVT",
-            "minimumStake": "Minimum Stake",
-            "minimumStakeValue": "100 tokens"
+            "minimumStake": "最低投注额",
+            "minimumStakeValue": "100个代币"
           }
         },
         "exampleCalculation": {
-          "title": "Example Calculation",
-          "description": "Staking 1000 tokens for 30 days = 1000 × 0.05 × 30 = 1,500 rGGP rewards",
-          "note": "Plus governance voting power with GVT tokens"
+          "title": "示例计算",
+          "description": "质押 1000 个代币，期限为 30 天 = 1000 × 0.05 × 30 = 1,500 rGGP 奖励",
+          "note": "加上 GVT 代币的治理投票权"
         }
       },
       "resources": {
         "socialMedia": {
-          "title": "Social Media",
-          "platforms": "{platform}"
+          "title": "社交媒体",
+          "platforms": "{平台}"
         },
         "documentation": {
-          "title": "Documentation",
-          "tokenHandbook": "Token Handbook",
-          "stakingGuide": "Staking Guide",
-          "securityAudit": "Security Audit"
+          "title": "文档",
+          "tokenHandbook": "代币手册",
+          "stakingGuide": "质押指南",
+          "securityAudit": "安全审计"
         },
         "latestArticles": {
-          "title": "Latest Articles",
-          "readMore": "Read More"
+          "title": "最新文章",
+          "readMore": "阅读更多"
         }
       },
       "articles": {
         "dualTokenStaking": {
-          "title": "Dual-Token Staking Guide",
-          "description": "Learn how to stake GVT and rGGP tokens to maximize your rewards"
+          "title": "双币质押指南",
+          "description": "了解如何质押 GVT 和 rGGP 代币以最大化您的奖励"
         },
         "rggpRewards": {
-          "title": "Understanding rGGP Rewards",
-          "description": "Everything you need to know about rGGP reward mechanics and distribution"
+          "title": "了解 rGGP 奖励",
+          "description": "关于 rGGP 奖励机制和分配你需要知道的一切"
         },
         "gvtGovernance": {
-          "title": "GVT Governance Guide",
-          "description": "How to participate in protocol governance with GVT tokens"
+          "title": "GVT治理指南",
+          "description": "如何使用 GVT 代币参与协议治理"
         },
         "multiChainStrategy": {
-          "title": "Multi-Chain Token Strategy",
-          "description": "Maximize your rewards across BSC, Arbitrum, and Polygon networks"
+          "title": "多链代币策略",
+          "description": "在 BSC、Arbitrum 和 Polygon 网络上最大化您的奖励"
         }
       }
     }

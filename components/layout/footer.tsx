@@ -44,13 +44,13 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
     company: [
       { name: t('footer.aboutUs'), href: "/coming-soon" },
       { name: t('footer.careers'), href: "/coming-soon" },
-      { name: "Press", href: "/coming-soon" },
+      { name: t('landing.footer.navigation.company.press'), href: "/coming-soon" },
       { name: t('footer.blogs'), href: "/coming-soon" },
     ],
     support: [
       { name: t('footer.helpCenter'), href: "/coming-soon" },
       { name: t('footer.documentation'), href: "/coming-soon" },
-      { name: "API Reference", href: "/coming-soon" },
+      { name: t('landing.footer.navigation.support.apiReference'), href: "/coming-soon" },
       { name: t('footer.contactSupport'), href: "/coming-soon" },
     ],
     legal: [
@@ -177,7 +177,7 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
           <div className="lg:col-span-3 grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {/* Product Links */}
             <div className="space-y-3 md:space-y-4">
-              <h4 className={`font-semibold text-sm md:text-base ${textColorClass}`}>Product</h4>
+              <h4 className={`font-semibold text-sm md:text-base ${textColorClass}`}>{t('header.nav.products')}</h4>
               <ul className="space-y-2 md:space-y-3">
                 {footerLinks.product.map((link) => (
                   <li key={link.name}>
@@ -194,7 +194,7 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
 
             {/* Company Links */}
             <div className="space-y-3 md:space-y-4">
-              <h4 className={`font-semibold text-sm md:text-base ${textColorClass}`}>Company</h4>
+              <h4 className={`font-semibold text-sm md:text-base ${textColorClass}`}>{t('footer.company')}</h4>
               <ul className="space-y-2 md:space-y-3">
                 {footerLinks.company.map((link) => (
                   <li key={link.name}>
@@ -211,7 +211,7 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
 
             {/* Support Links */}
             <div className="space-y-3 md:space-y-4">
-              <h4 className={`font-semibold text-sm md:text-base ${textColorClass}`}>Support</h4>
+              <h4 className={`font-semibold text-sm md:text-base ${textColorClass}`}>{t('footer.support')}</h4>
               <ul className="space-y-2 md:space-y-3">
                 {footerLinks.support.map((link) => (
                   <li key={link.name}>
@@ -228,7 +228,7 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
 
             {/* Legal Links */}
             <div className="space-y-3 md:space-y-4">
-              <h4 className={`font-semibold text-sm md:text-base ${textColorClass}`}>Legal</h4>
+              <h4 className={`font-semibold text-sm md:text-base ${textColorClass}`}>{t('footer.legal')}</h4>
               <ul className="space-y-2 md:space-y-3">
                 {footerLinks.legal.map((link) => (
                   <li key={link.name}>
@@ -254,7 +254,7 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
           <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-center md:text-left">
               <p className={`text-xs md:text-sm ${textColorClass === 'text-white' ? 'text-white/70' : 'text-muted-foreground'}`}>
-                © {currentYear} AGV Protocol. All rights reserved.
+                © {currentYear} {t('footer.copyright')}
               </p>
               <div className={`flex items-center space-x-1 text-xs md:text-sm ${textColorClass === 'text-white' ? 'text-white/70' : 'text-muted-foreground'}`}>
                 <span>Made with</span>

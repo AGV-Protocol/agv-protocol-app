@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { Footer } from "@/components/layout/footer";
 import { useTranslations } from "@/hooks/useTranslations";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import {
   ConnectButton,
   useActiveAccount,
@@ -381,8 +382,11 @@ export default function StakingPage() {
                   {t('staking.toEarnRewards')}
                 </p>
               </div>
-              <div className="hidden sm:block">
-                <ConnectButton client={client} />
+              <div className="flex items-center gap-3">
+                <LanguageSwitcher className="bg-white/10 border-white/20 text-white hover:bg-white/20" />
+                <div className="hidden sm:block">
+                  <ConnectButton client={client} />
+                </div>
               </div>
             </header>
           </div>
@@ -417,7 +421,7 @@ export default function StakingPage() {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StatCard
-              title={t('staking.stakedNfts')}
+              title={t('staking.stakedNFTs')}
               value={stakedCount.toString()}
               subtitle={t('staking.currentlyStaked')}
               icon={<Lock className="w-6 h-6 text-white" />}
@@ -626,7 +630,7 @@ function DurationPanel({
                     : "bg-white/10 text-white/80 hover:bg-white/20 border border-white/20"
                 }`}
               >
-                {days} day{days > 1 ? "s" : ""}
+                {days} {t('staking.day')}{days > 1 ? t('staking.days') : ""}
               </button>
             ))}
           </div>
@@ -972,7 +976,7 @@ function StakeFlow({
             </div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-white/80 text-sm">Duration</span>
-              <span className="text-white font-medium">{stakingDuration} day{stakingDuration > 1 ? "s" : ""}</span>
+              <span className="text-white font-medium">{stakingDuration} {t('staking.day')}{stakingDuration > 1 ? t('staking.days') : ""}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-white/80 text-sm">Scheduled Total (selection × days)</span>
@@ -1062,7 +1066,7 @@ function StakesFromRewards({
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-white font-medium capitalize">
-                    {s.nftType} • {s.lockDays} days
+                    {s.nftType} • {s.lockDays} {t('staking.days')}
                   </div>
                   <div className="text-xs text-white/60">Token #{s.tokenId ?? "—"}</div>
                 </div>
@@ -1091,7 +1095,7 @@ function StakesFromRewards({
                 </div>
 
                 <div className="mt-3 text-xs text-white/60">
-                  Rate: {s.baseDaily} rGGP/day × {s.bonusMultiplier}x • Counted {s.daysCounted} days
+                  Rate: {s.baseDaily} rGGP/day × {s.bonusMultiplier}x • Counted {s.daysCounted} {t('staking.days')}
                 </div>
               </div>
             );

@@ -5,19 +5,19 @@ export type NftType = "seed" | "tree" | "solar" | "compute";
 export const DAY_MS = 86_400_000;
 
 export const BASE_DAILY_RRGP: Record<NftType, number> = {
-  seed: 1,       // SeedPass ($29)  -> 1 rGGP/day
-  tree: 5,       // TreePass ($59)  -> 5 rGGP/day
+  seed: 1,       // SeedPass ($29)  -> 5 rGGP/day
+  tree: 5,       // TreePass ($59)  -> 10 rGGP/day
   solar: 25,     // SolarPass ($299)-> 25 rGGP/day
   compute: 100,  // ComputePass($899)-> 100 rGGP/day
 };
 
 const BRACKETS = [
   { days: 730, mult: 5.0 }, // 2 years
-  { days: 365, mult: 3.0 }, // 1 year
-  { days: 180, mult: 2.0 }, // 180 days
-  { days: 90,  mult: 1.5 }, // 90 days
-  { days: 30,  mult: 1.2 }, // 30 days
-  { days: 7,   mult: 1.0 }, // 7 days (minimum)
+  { days: 365, mult: 4.5 }, // 1 year
+  { days: 180, mult: 4.0 }, // 180 days
+  { days: 90, mult: 3.0 }, // 90 days
+  { days: 30, mult: 1.5 }, // 30 days
+  { days: 7, mult: 1.0 }, // 7 days (minimum)
 ];
 
 export function normalizeLockDays(raw: number): number {
