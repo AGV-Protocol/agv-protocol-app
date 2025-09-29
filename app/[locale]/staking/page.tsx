@@ -201,7 +201,7 @@ export default function StakingPage() {
     }
   }
 
-  const [stakedCount, setStakedCount] = useState<bigint>(0n);
+  const [stakedCount, setStakedCount] = useState<bigint>(BigInt(0));
   async function refreshStats() {
     if (!account?.address) return;
     try {
@@ -279,7 +279,7 @@ export default function StakingPage() {
       toast.success(`Staked for ${stakingDuration} day${stakingDuration > 1 ? "s" : ""}!`);
 
       clearSelection();
-      await Promise.all([refreshStats(), refetchRewards?.(), refetchStakingView?.()]);
+      await Promise.all([refreshStats(), refetchStakingView?.()]);
     } catch (err: any) {
       toast.dismiss();
       toast.error(err?.shortMessage || err?.message || t('staking.stakeFailed'));
@@ -320,7 +320,7 @@ export default function StakingPage() {
       toast.dismiss();
       toast.success(t('staking.withdrawn'));
 
-      await Promise.all([refreshStats(), refetchRewards?.(), refetchStakingView?.()]);
+      await Promise.all([refreshStats(), refetchStakingView?.()]);
       // Trigger refresh of withdraw section
       setWithdrawRefreshTrigger(prev => prev + 1);
     } catch (err: any) {
@@ -478,6 +478,7 @@ export default function StakingPage() {
             wallet={account.address}
             filterChainId={CHAIN_CONFIG[chainKey].id}
             filterCollection={selectedCollection}
+            t={t}
           />
         ) : null}
 
@@ -630,7 +631,7 @@ function DurationPanel({
                     : "bg-white/10 text-white/80 hover:bg-white/20 border border-white/20"
                 }`}
               >
-                {days} {t('staking.day')}{days > 1 ? t('staking.days') : ""}
+                {days} {days > 1 ? t('staking.days') : ""}
               </button>
             ))}
           </div>
@@ -999,10 +1000,12 @@ function StakesFromRewards({
   wallet,
   filterChainId,
   filterCollection,
+  t,
 }: {
   wallet: string;
   filterChainId: number;
   filterCollection: "seed" | "tree" | "solar" | "compute";
+  t: (key: string) => string;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -1032,7 +1035,7 @@ function StakesFromRewards({
         setLoading(false);
       }
     })();
-  }, [wallet, filterChainId, filterCollection]);
+  }, [wallet, filterChainId, filterCollection, t]);
 
   return (
     <div className="mt-8 bg-white/5 rounded-2xl border border-white/10 p-6">
@@ -1253,7 +1256,7 @@ function WithdrawSection({
         setLoading(false);
       }
     })();
-  }, [accountAddress, chainKey, selectedCollection, refreshTrigger]);
+  }, [accountAddress, chainKey, selectedCollection, refreshTrigger, t]);
 
   const unlockedItems = useMemo(() => activeItems.filter((i) => i.unlocked), [activeItems]);
   const lockedItems = useMemo(() => activeItems.filter((i) => !i.unlocked), [activeItems]);
