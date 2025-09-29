@@ -446,12 +446,41 @@ export default function StakingPage() {
 
         {/* Rewards Dashboard (summary — legacy rewards retained) */}
         {account?.address && rewardsData && (
-          <RewardsPanel
-            rewardsData={rewardsData}
-            selectedCollection={selectedCollection}
-            stakingDuration={stakingDuration}
-            claiming={false}
-          />
+          <>
+            {/* Debug info */}
+            <div className="mt-8 bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
+              <h3 className="text-yellow-300 font-medium mb-2">Rewards Data</h3>
+              <div className="text-sm text-yellow-200 space-y-1">
+                <div>Total Stakes: {rewardsData.stakes.length}</div>
+                <div>Total Accrued: {rewardsData.totals.accrued.toFixed(2)} rGGP</div>
+                <div>Stakes by Status:</div>
+                <ul className="ml-4">
+                  {Object.entries(
+                    rewardsData.stakes.reduce((acc: any, stake: any) => {
+                      acc[stake.status] = (acc[stake.status] || 0) + 1;
+                      return acc;
+                    }, {})
+                  ).map(([status, count]) => (
+                    <li key={status}>{status}: {count}</li>
+                  ))}
+                </ul>
+                <div className="mt-2">
+                  <div className="text-xs">All Stakes:</div>
+                  {rewardsData.stakes.map((stake: any) => (
+                    <div key={stake.id} className="text-xs ml-2">
+                      {stake.nftType} • {stake.lockDays} days • {stake.accrued.toFixed(2)} rGGP • {stake.status}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <RewardsPanel
+              rewardsData={rewardsData}
+              selectedCollection={selectedCollection}
+              stakingDuration={stakingDuration}
+              claiming={false}
+            />
+          </>
         )}
 
         {/* Stake Flow (select NFTs) + Legacy Rewards Preview (dynamic) */}
@@ -748,7 +777,7 @@ function RewardsPanel({
 
         {rewardsData.stakes.length > 0 && (
           <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-            <h4 className="text-white font-medium mb-3">Active Stakes & Rewards</h4>
+            <h4 className="text-white font-medium mb-3">All Stakes & Rewards</h4>
             <div className="space-y-2 max-h-40 overflow-y-auto">
               {rewardsData.stakes.map((stake: any) => (
                 <div key={stake.id} className="flex items-center justify-between py-2 px-3 bg-white/5 rounded-lg">
@@ -757,7 +786,16 @@ function RewardsPanel({
                       {stake.amount}x
                     </div>
                     <div>
-                      <div className="text-white text-sm font-medium">{stake.nftType.toUpperCase()} • {stake.lockDays} days</div>
+                      <div className="text-white text-sm font-medium">
+                        {stake.nftType.toUpperCase()} • {stake.lockDays} days
+                        <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                          stake.status === 'active' ? 'bg-green-500/20 text-green-300' :
+                          stake.status === 'completed' ? 'bg-blue-500/20 text-blue-300' :
+                          'bg-gray-500/20 text-gray-300'
+                        }`}>
+                          {stake.status}
+                        </span>
+                      </div>
                       <div className="text-white/60 text-xs">
                         {stake.baseDaily} rGGP/day × {stake.bonusMultiplier}x • {stake.daysCounted} days elapsed
                       </div>
