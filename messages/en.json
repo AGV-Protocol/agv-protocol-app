@@ -38,7 +38,9 @@
     "disconnect": "Disconnect"
   },
   "hero": {
-    "description": "Unlock exclusive SeedPass, TreePass, SolarPass, and ComputePass NFTs, your gateway to sustainable rewards. Stake instantly with no lock-up period and start earning daily rewards across BSC, Polygon, and Arbitrum networks.",
+    "title1": "The Leading RWA",
+    "title2": "Protocol for AI Power",
+    "description": "Unlock clean energy and compute yield by turning verified electricity and edge‑compute capacity into investable on‑chain assets.",
     "startMinting": "Start Minting",
     "viewStaking": "View Staking",
     "blockchains": "Blockchains",
@@ -46,8 +48,8 @@
     "dailyRewards": "Daily Rewards"
   },
   "whatisagv": {
-    "title": "What Is AGV?",
-    "description": "AGV (AgriVolt Protocol) is a real-asset-backed Web3 protocol that brings orchards, solar farms, and decentralized nodes onto the blockchain. Each asset unit generates real-world yield from fruit harvests to solar energy and edge computing."
+    "title": "What We Do",
+    "description": "AGV Protocol is a dePIN RWA infrastructure protocol that transforms orchards, solar farms and edge-compute clusters into verifiable, yield‑backed digital assets. Every unit of energy and compute output is monitored by IoT devices, anchored on-chain, and only then tokenized. This Power-to-Mint mechanism ensures a 1:1 link between physical productivity and digital value, unlocking sustainable returns for on-chain investors. AGV currently anchors yield to verified orchards, solar plants and compute nodes in Shaanxi, China—the world's largest energy and AI infrastructure zone"
   },
   "whyagv": {
     "title": "Why AGV Is a Blueprint for Real Yield Infrastructure?",
@@ -68,9 +70,9 @@
     "realAssets": "REAL ASSETS. REAL REVENUE.",
     "eachUnit": "Each AGV unit includes:",
     "item1": "100 mu of high-yield apple orchards",
-    "item2": "6MW solar array with grid connection",
-    "item3": "IoT sensors for real-time monitoring",
-    "item4": "Smart contracts for automated revenue sharing",
+    "item2": "6MW utility-grade solar farm",
+    "item3": "Annual revenue: $180,000 – $280,000",
+    "item4": "IRR target: 18% – 26%",
     "item5": "Transparent ownership and governance",
     "item6": "DeFi-compatible tokenization",
     "assetsDescription": "Assets are land-based, yield-producing, and inflation-resistant — not synthetic tokens or speculative DeFi experiments.",
@@ -88,19 +90,57 @@
     "builtItem3": "Applicable across Asia, LATAM, Africa, and MENA",
     "builtToScaleDesc2": "CEX-ready, DeFi-compatible, and ESG-aligned — AGV is built for global integration."
   },
-  "threelayer": {
-    "title": "Three Layers of Real-World Yield",
-    "fruit": {
-      "title": "Fruit-Backed NFTs",
-      "description": "AGV transforms apple orchards into tokenized assets. Each NFT maps to a real tree, producing fruit, revenue, and verifiable yield on-chain."
+  "whatWeBuilding": {
+    "title": "What We're Building",
+    "assetBackedNFT": {
+      "title": "Asset-Backed NFT",
+      "description": "SeedPass, TreePass, SolarPass and ComputePass represent fractional ownership in orchards, solar units and compute capacity. Holders earn real-world yield from their pro-rata share of output."
     },
-    "solar": {
-      "title": "Solar-Driven Rewards",
-      "description": "Each unit includes 6MW of solar capacity powering not only the farm, but also edge nodes and energy-backed token minting — \"sunlight as income.\""
+    "powerToMint": {
+      "title": "Power-to-Mint",
+      "description": "Tokens are minted only after IoT verification of electricity and compute, ensuring real‑world backing and preventing inflation."
     },
-    "depin": {
-      "title": "DePIN-Ready Infrastructure",
-      "description": "AGV unites sensors, smart contracts, and real-time data to power edge nodes, record carbon, and deliver Web3 services worldwide."
+    "dualTokenSystem": {
+      "title": "Dual-Token System",
+      "description": "GVT (Green Value Token) is minted from verified yield; rGGP (Reward Token) incentivizes adoption and can be converted into GVT. Airdrops and distributions are merit‑based community rewards, not guaranteed returns."
+    },
+    "daoCompliance": {
+      "title": "DAO & Compliance",
+      "description": "AGV operates via a cross-border DAO with multi-sig and score-to-vote governance."
+    }
+  },
+  "howWeDiffer": {
+    "title": "How We’re Different",
+    "realAssets": {
+      "title": "Real Assets",
+      "description": "AGV’s underlying orchards, solar capacity and edge compute clusters provide tangible, measurable yield."
+    },
+    "tokenization": {
+      "title": "Tokenization",
+      "description": "Output data is measured by IoT devices and committed on‑chain; only then can tokens be minted (Power‑to‑Mint), ensuring a trustless 1:1 relationship."
+    },
+    "yieldDistribution": {
+      "title": "Yield Distribution",
+      "description": "Investors receive yield from orchards, solar and compute according to their NFT holdings. Target blended IRR is 18-26%, outperforming many traditional renewable funds."
+    },
+    "scalableSustainability": {
+      "title": "Scalable Sustainability",
+      "description": "Distributed mini‑grid architecture scales across Asia/MENA, reducing grid strain, lowering latency for AI workloads and advancing sustainability goals. Each new asset unit increases both yield and valuation."
+    }
+  },
+  "executionProofs": {
+    "title": "Execution Proofs",
+    "solarPlantOnline": {
+      "title": "Solar Plant Online",
+      "description": "The first 6 MWp CdTe PV plant has been commissioned and connected to the local grid."
+    },
+    "ppaInProgress": {
+      "title": "PPA in Progress",
+      "description": " Long‑term Power Purchase Agreements are being finalized with regional grid operators; draft contracts have been reviewed."
+    },
+    "computeNodeRunning": {
+      "title": "Compute Node Running",
+      "description": "The initial 1.5 MW edge compute cluster is installed and actively processing pilot workloads; IoT telemetry is already recording on‑chain."
     }
   },
   "testimonials": {
@@ -137,12 +177,13 @@
     },
     "stats": {
       "totalSupply": "Total Supply",
+      "nftCount": "1,234",
       "nftsMinted": "NFTs Minted",
       "rewardRate": "Reward Rate",
-      "dailyRewards": "Daily Rewards",
+      "dailyRewards": "rGGP/Day",
       "securityScore": "Security Score",
       "auditRating": "Audit Rating",
-      "upto50rggp": "Upto 50 rGGP"
+      "upto50rggp": "50.00"
     },
     "social": {
       "github": "GitHub",
@@ -415,7 +456,7 @@
       },
       "stakeEarn": {
         "title": "Stake & Earn",
-        "description": "Stake your NFTs to earn daily rewards",
+        "description": "Stake your NFTs to earn daily\nrewards",
         "button": "Start Staking"
       },
       "learnMore": {
@@ -447,25 +488,6 @@
           "title": "rGGP Explained",
           "description": "How AGV Protocol Turns Real-World Yields into On-chain Rewards"
         }
-      }
-    },
-    "whatIsAGV": {
-      "title": "What Is AGV?",
-      "description": "AGV (AgriVolt Protocol) is a real-asset-backed Web3 protocol that brings orchards, solar farms, and decentralized nodes onto the blockchain. Each asset unit generates real-world yield from fruit harvests to solar energy and edge computing. Users can adopt fruit trees, stake in solar, and earn tokenized rewards with transparent returns. Rooted in China's leading agricultural and solar regions, AGV makes sustainability investable, verifiable, and globally scalable."
-    },
-    "threeLayer": {
-      "title": "Three Layers of Real-World Yield",
-      "fruitBacked": {
-        "title": "Fruit-Backed NFTs",
-        "description": "AGV transforms apple orchards into tokenized assets.Each NFT maps to a real tree, producing fruit, revenue, and verifiable yield on- chain."
-      },
-      "solarDriven": {
-        "title": "Solar-Driven Rewards",
-        "description": "Each unit includes 6MW of solar capacity powering not only the farm,but also edge nodes and energy- backed token minting — \"sunlight as income.\""
-      },
-      "depinReady": {
-        "title": "DePIN-Ready Infrastructure",
-        "description": "AGV unites sensors, smart contracts, and real-time data to power edge nodes, record carbon, and deliver Web3 services worldwide."
       }
     },
     "fixing": {

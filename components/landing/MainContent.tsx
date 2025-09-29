@@ -14,7 +14,8 @@ import {
   BookOpen,
   ExternalLink,
   Globe,
-  Twitter
+  Twitter,
+  Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "@/hooks/useTranslations";
@@ -115,7 +116,7 @@ export const MainContent: React.FC = () => {
                   <Database className="h-6 w-6 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-800">1,299</div>
+                  <div className="text-2xl font-bold text-gray-800">{t('maincontent.stats.nftCount')}</div>
                   <div className="text-xs text-gray-500">{t('maincontent.stats.nftsMinted')}</div>
                 </div>
               </div>
@@ -174,20 +175,20 @@ export const MainContent: React.FC = () => {
           <div className="mb-8">
             <div className="flex items-center mb-8 sm:mb-12">
               <div className="w-2 h-2 bg-[#3399FF] rounded-full mr-3"></div>
-              <h3 className="text-xl uppercase sm:text-xl font-bold text-[#223256]">Get Started</h3>
+              <h3 className="text-xl uppercase sm:text-xl font-bold text-[#223256]">{t('maincontent.getStarted')}</h3>
             </div>
             <div className="grid gap-6 md:grid-cols-3">
               <div className="bg-white border border-gray-200 rounded-2xl p-6 group hover:shadow-lg transition-all duration-300">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
+                  <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-950 shadow-lg">
                     <Coins className="h-6 w-6 text-white" />
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-800">Mint NFTs</h4>
+                  <h4 className="text-lg font-semibold text-gray-800">{t('landing.getStarted.mintNFTs.title')}</h4>
                 </div>
-                <p className="text-gray-600 text-sm mb-4">Mint AGV Protocol NFTs across multiple chains</p>
+                <p className="text-gray-600 text-sm mb-4">{t('landing.getStarted.mintNFTs.description')}</p>
                 <Link href="/mint">
-                  <Button className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white">
-                    Start Minting
+                  <Button className="w-full border border-[#223256] hover:bg-[#223256] hover:text-white text-[#223256] px-8 py-3 text-sm bg-white rounded-md">
+                    {t('landing.getStarted.mintNFTs.button')}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
@@ -198,12 +199,12 @@ export const MainContent: React.FC = () => {
                   <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg">
                     <Zap className="h-6 w-6 text-white" />
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-800">Stake & Earn</h4>
+                  <h4 className="text-lg font-semibold text-gray-800">{t('landing.getStarted.stakeEarn.title')}</h4>
                 </div>
-                <p className="text-gray-600 text-sm mb-4">Stake your NFTs to earn daily rewards</p>
+                <p className="text-gray-600 text-sm mb-4">{t('landing.getStarted.stakeEarn.description')}</p>
                 <Link href="/staking">
-                  <Button className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white">
-                    Start Staking
+                  <Button className="w-full border border-[#223256] hover:bg-[#223256] hover:text-white text-[#223256] px-8 py-3 text-sm bg-white rounded-md">
+                    {t('landing.getStarted.stakeEarn.button')}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
@@ -212,14 +213,14 @@ export const MainContent: React.FC = () => {
               <div className="bg-white border border-gray-200 rounded-2xl p-6 group hover:shadow-lg transition-all duration-300">
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg">
-                    <BookOpen className="h-6 w-6 text-white" />
+                    <Info className="h-6 w-6 text-white" />
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-800">Learn More</h4>
+                  <h4 className="text-lg font-semibold text-gray-800">{t('landing.getStarted.learnMore.title')}</h4>
                 </div>
-                <p className="text-gray-600 text-sm mb-4">Explore token information and documentation</p>
+                <p className="text-gray-600 text-sm mb-4">{t('landing.getStarted.learnMore.description')}</p>
                 <Link href="/token">
-                  <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
-                    View Details
+                  <Button className="w-full border border-[#223256] hover:bg-[#223256] hover:text-white text-[#223256] px-8 py-3 text-sm bg-white rounded-md">
+                    {t('landing.getStarted.learnMore.button')}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>

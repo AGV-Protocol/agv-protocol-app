@@ -25,9 +25,9 @@ export const HeroSection: React.FC = () => {
               {/* Main Heading */}
               <div className="space-y-3 sm:space-y-4">
                 <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold leading-tight">
-                  AGV PROTOCOL
+                  {t('hero.title1')}
                   <br />
-                  NFT ECOSYSTEM
+                  {t('hero.title2')}
                 </h1>
 
                 {/* Description */}
