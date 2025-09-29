@@ -437,7 +437,7 @@ export default function StakingPage() {
             <StatCard
               title={t('staking.dailyRewards')}
               value={dailyRewardHint}
-              subtitle={t('staking.perNftStaked')}
+              subtitle={t('staking.perNFTStaked')}
               icon={<ArrowRightLeft className="w-6 h-6 text-white" />}
               gradient="from-blue-500 to-cyan-500"
             />
@@ -977,7 +977,7 @@ function StakeFlow({
             </div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-white/80 text-sm">Duration</span>
-              <span className="text-white font-medium">{stakingDuration} {t('staking.day')}{stakingDuration > 1 ? t('staking.days') : ""}</span>
+              <span className="text-white font-medium">{stakingDuration} {stakingDuration > 1 ? t('staking.days') :  t('staking.day') }</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-white/80 text-sm">Scheduled Total (selection × days)</span>
