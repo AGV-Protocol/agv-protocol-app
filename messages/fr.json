@@ -256,7 +256,59 @@
     "withdrawStakedNfts": "Retirer les NFT mis en jeu",
     "selectStakedNftsDescription": "Sélectionnez les NFT mis en jeu à retirer",
     "connectWalletToSeeStakedNfts": "Connectez votre portefeuille pour voir les NFT mis en jeu",
-    "whitelistRequired": "Liste blanche requise"
+    "whitelistRequired": "Liste blanche requise",
+    "rewardsDashboard": {
+      "title": "Tableau de Bord des Récompenses rGGP",
+      "subtitle": "Gagnez des crédits rGGP",
+      "available": "rGGP Disponible",
+      "remaining": "restant",
+      "collection": "Collection",
+      "baseRate": "Taux de Base",
+      "bonusMultiplier": "Multiplicateur de Bonus",
+      "activeStakes": "Enjeux Actifs",
+      "readyToClaim": "Prêt à Réclamer",
+      "claimAllRewards": "Réclamer Toutes les Récompenses",
+      "claiming": "Réclamation...",
+      "activeStakesTitle": "Enjeux Actifs",
+      "withdrawnStakesTitle": "Enjeux Retirés",
+      "noActiveStakes": "Aucun enjeu actif",
+      "noWithdrawnStakes": "Aucun enjeu retiré"
+    },
+    "legacyRewards": {
+      "title": "Aperçu des Récompenses Legacy",
+      "selection": "Sélection",
+      "baseDailyPerNft": "Base Quotidienne (par NFT)",
+      "bonusMultiplier": "Multiplicateur de Bonus",
+      "perNftDaily": "Par NFT Quotidien",
+      "totalDailyAllSelected": "Total Quotidien (tous sélectionnés)",
+      "duration": "Durée",
+      "scheduledTotal": "Total Programmé (sélection × jours)",
+      "description": "Ceci est une estimation de récompenses legacy basée sur la sélection actuelle et la durée de verrouillage."
+    },
+    "yourStakes": {
+      "title": "Vos Enjeux",
+      "connectWalletToView": "Connectez votre portefeuille pour voir vos enjeux",
+      "loadingStakes": "Chargement de vos enjeux...",
+      "noStakesFound": "Aucun enjeu trouvé pour ce réseau et cette collection.",
+      "staked": "Misé",
+      "unlocks": "Déverrouille",
+      "unlocked": "Déverrouillé",
+      "left": "restant",
+      "accrued": "Accumulé",
+      "rate": "Taux",
+      "counted": "Compté"
+    },
+    "nftSelection": {
+      "noNftsFound": "Aucun NFT AGV trouvé",
+      "noNftsDescription": "Vous n'avez aucun NFT {collection} dans votre portefeuille connecté sur {network}.",
+      "mintFirstNft": "Frappez votre premier NFT",
+      "selected": "Sélectionné",
+      "clear": "Effacer",
+      "stake": "Enjeu",
+      "staking": "Mise en jeu…"
+    },
+    "loadingStakedNfts": "Chargement des NFT misés…",
+    "noStakesFoundForNetwork": "Aucun enjeu trouvé pour ce réseau et cette collection."
   },
   "minting": {
     "title": "Protocole AGV",

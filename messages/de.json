@@ -256,7 +256,59 @@
     "withdrawStakedNfts": "Abheben von eingesetzten NFTs",
     "selectStakedNftsDescription": "Wählen Sie gestaked NFTs zum Abheben aus",
     "connectWalletToSeeStakedNfts": "Verbinden Sie die Brieftasche, um eingesetzte NFTs anzuzeigen",
-    "whitelistRequired": "Whitelist erforderlich"
+    "whitelistRequired": "Whitelist erforderlich",
+    "rewardsDashboard": {
+      "title": "rGGP Belohnungen Dashboard",
+      "subtitle": "Verdienen Sie rGGP-Guthaben",
+      "available": "rGGP verfügbar",
+      "remaining": "verbleibend",
+      "collection": "Sammlung",
+      "baseRate": "Grundrate",
+      "bonusMultiplier": "Bonus-Multiplikator",
+      "activeStakes": "Aktive Einsätze",
+      "readyToClaim": "Bereit zum Einfordern",
+      "claimAllRewards": "Alle Belohnungen einfordern",
+      "claiming": "Einfordern...",
+      "activeStakesTitle": "Aktive Einsätze",
+      "withdrawnStakesTitle": "Abgezogene Einsätze",
+      "noActiveStakes": "Keine aktiven Einsätze",
+      "noWithdrawnStakes": "Keine abgezogenen Einsätze"
+    },
+    "legacyRewards": {
+      "title": "Legacy-Belohnungen Vorschau",
+      "selection": "Auswahl",
+      "baseDailyPerNft": "Tägliche Basis (pro NFT)",
+      "bonusMultiplier": "Bonus-Multiplikator",
+      "perNftDaily": "Pro NFT täglich",
+      "totalDailyAllSelected": "Tägliche Gesamtsumme (alle ausgewählt)",
+      "duration": "Dauer",
+      "scheduledTotal": "Geplante Gesamtsumme (Auswahl × Tage)",
+      "description": "Dies ist eine Legacy-Belohnungsschätzung basierend auf der aktuellen Auswahl und Sperrzeit."
+    },
+    "yourStakes": {
+      "title": "Ihre Einsätze",
+      "connectWalletToView": "Wallet verbinden, um Ihre Einsätze anzuzeigen",
+      "loadingStakes": "Lade Ihre Einsätze...",
+      "noStakesFound": "Keine Einsätze für dieses Netzwerk und diese Sammlung gefunden.",
+      "staked": "Eingesetzt",
+      "unlocks": "Entsperrt",
+      "unlocked": "Entsperrt",
+      "left": "verbleibend",
+      "accrued": "Angesammelt",
+      "rate": "Rate",
+      "counted": "Gezählt"
+    },
+    "nftSelection": {
+      "noNftsFound": "Keine AGV NFTs gefunden",
+      "noNftsDescription": "Sie haben keine {collection} NFTs in Ihrer verbundenen Wallet auf {network}.",
+      "mintFirstNft": "Ihr erstes NFT prägen",
+      "selected": "Ausgewählt",
+      "clear": "Löschen",
+      "stake": "Einsatz",
+      "staking": "Einsetzen…"
+    },
+    "loadingStakedNfts": "Lade eingesetzte NFTs…",
+    "noStakesFoundForNetwork": "Keine Einsätze für dieses Netzwerk und diese Sammlung gefunden."
   },
   "minting": {
     "title": "AGV-Protokollprägung",

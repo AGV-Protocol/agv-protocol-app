@@ -256,7 +256,59 @@
     "withdrawStakedNfts": "I-withdraw ang mga Staked NFT",
     "selectStakedNftsDescription": "Pumili ng mga staked na NFT na aalisin",
     "connectWalletToSeeStakedNfts": "Ikonekta ang wallet para makita ang mga staked na NFT",
-    "whitelistRequired": "Kinakailangan ang whitelist"
+    "whitelistRequired": "Kinakailangan ang whitelist",
+    "rewardsDashboard": {
+      "title": "rGGP Rewards Dashboard",
+      "subtitle": "Kumita ng rGGP credits",
+      "available": "rGGP Available",
+      "remaining": "natitira",
+      "collection": "Collection",
+      "baseRate": "Base Rate",
+      "bonusMultiplier": "Bonus Multiplier",
+      "activeStakes": "Active Stakes",
+      "readyToClaim": "Ready to Claim",
+      "claimAllRewards": "Claim All Rewards",
+      "claiming": "Claiming...",
+      "activeStakesTitle": "Active Stakes",
+      "withdrawnStakesTitle": "Withdrawn Stakes",
+      "noActiveStakes": "Walang active stakes",
+      "noWithdrawnStakes": "Walang withdrawn stakes"
+    },
+    "legacyRewards": {
+      "title": "Legacy Rewards Preview",
+      "selection": "Selection",
+      "baseDailyPerNft": "Base Daily (per NFT)",
+      "bonusMultiplier": "Bonus Multiplier",
+      "perNftDaily": "Per NFT Daily",
+      "totalDailyAllSelected": "Total Daily (all selected)",
+      "duration": "Duration",
+      "scheduledTotal": "Scheduled Total (selection × days)",
+      "description": "Ito ay legacy rewards estimate batay sa current selection at lock duration."
+    },
+    "yourStakes": {
+      "title": "Ang inyong mga stakes",
+      "connectWalletToView": "Ikonekta ang wallet para makita ang inyong mga stakes",
+      "loadingStakes": "Loading ang inyong mga stakes...",
+      "noStakesFound": "Walang nahanap na stakes para sa network at collection na ito.",
+      "staked": "Staked",
+      "unlocks": "Unlocks",
+      "unlocked": "Unlocked",
+      "left": "natitira",
+      "accrued": "Accrued",
+      "rate": "Rate",
+      "counted": "Counted"
+    },
+    "nftSelection": {
+      "noNftsFound": "Walang nahanap na AGV NFTs",
+      "noNftsDescription": "Wala kayong {collection} NFTs sa inyong nakakonektang wallet sa {network}.",
+      "mintFirstNft": "Mint ang inyong unang NFT",
+      "selected": "Napili",
+      "clear": "I-clear",
+      "stake": "Stake",
+      "staking": "Staking…"
+    },
+    "loadingStakedNfts": "Loading ang mga staked NFTs…",
+    "noStakesFoundForNetwork": "Walang nahanap na stakes para sa network at collection na ito."
   },
   "minting": {
     "title": "AGV Protocol Minting",

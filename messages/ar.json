@@ -256,7 +256,59 @@
     "withdrawStakedNfts": "سحب NFTs المتراكمة",
     "selectStakedNftsDescription": "حدد NFTs المتراكمة للسحب",
     "connectWalletToSeeStakedNfts": "قم بتوصيل المحفظة لرؤية NFTs المتراكمة",
-    "whitelistRequired": "القائمة البيضاء مطلوبة"
+    "whitelistRequired": "القائمة البيضاء مطلوبة",
+    "rewardsDashboard": {
+      "title": "لوحة تحكم مكافآت rGGP",
+      "subtitle": "اكسب رصيد rGGP",
+      "available": "rGGP متاح",
+      "remaining": "متبقي",
+      "collection": "المجموعة",
+      "baseRate": "المعدل الأساسي",
+      "bonusMultiplier": "مضاعف المكافأة",
+      "activeStakes": "الرهانات النشطة",
+      "readyToClaim": "جاهز للمطالبة",
+      "claimAllRewards": "مطالبة جميع المكافآت",
+      "claiming": "جاري المطالبة...",
+      "activeStakesTitle": "الرهانات النشطة",
+      "withdrawnStakesTitle": "الرهانات المسحوبة",
+      "noActiveStakes": "لا توجد رهانات نشطة",
+      "noWithdrawnStakes": "لا توجد رهانات مسحوبة"
+    },
+    "legacyRewards": {
+      "title": "معاينة المكافآت القديمة",
+      "selection": "الاختيار",
+      "baseDailyPerNft": "اليومي الأساسي (لكل NFT)",
+      "bonusMultiplier": "مضاعف المكافأة",
+      "perNftDaily": "لكل NFT يومياً",
+      "totalDailyAllSelected": "المجموع اليومي (جميع المحدد)",
+      "duration": "المدة",
+      "scheduledTotal": "المجموع المجدول (الاختيار × الأيام)",
+      "description": "هذا تقدير للمكافآت القديمة بناءً على الاختيار الحالي ومدة القفل."
+    },
+    "yourStakes": {
+      "title": "رهاناتك",
+      "connectWalletToView": "اتصل بالمحفظة لعرض رهاناتك",
+      "loadingStakes": "جاري تحميل رهاناتك...",
+      "noStakesFound": "لم يتم العثور على رهانات لهذه الشبكة والمجموعة.",
+      "staked": "مرهون",
+      "unlocks": "يفتح",
+      "unlocked": "مفتوح",
+      "left": "متبقي",
+      "accrued": "متراكم",
+      "rate": "المعدل",
+      "counted": "محسوب"
+    },
+    "nftSelection": {
+      "noNftsFound": "لم يتم العثور على NFT من AGV",
+      "noNftsDescription": "ليس لديك أي {collection} NFT في محفظتك المتصلة على {network}.",
+      "mintFirstNft": "سك أول NFT",
+      "selected": "محدد",
+      "clear": "واضح",
+      "stake": "رهان",
+      "staking": "جاري الرهان…"
+    },
+    "loadingStakedNfts": "جاري تحميل NFT المتراكمة…",
+    "noStakesFoundForNetwork": "لم يتم العثور على رهانات لهذه الشبكة والمجموعة."
   },
   "minting": {
     "title": "بروتوكول سك العملة AGV",

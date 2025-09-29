@@ -257,7 +257,59 @@
     "withdrawStakedNfts": "提取质押的 NFT",
     "selectStakedNftsDescription": "选择要提取的质押 NFT",
     "connectWalletToSeeStakedNfts": "连接钱包查看已质押的 NFT",
-    "whitelistRequired": "需要白名单"
+    "whitelistRequired": "需要白名单",
+    "rewardsDashboard": {
+      "title": "rGGP 奖励仪表板",
+      "subtitle": "赚取 rGGP 积分",
+      "available": "rGGP 可用",
+      "remaining": "剩余",
+      "collection": "收藏",
+      "baseRate": "基础费率",
+      "bonusMultiplier": "奖励倍数",
+      "activeStakes": "活跃质押",
+      "readyToClaim": "准备领取",
+      "claimAllRewards": "领取所有奖励",
+      "claiming": "领取中...",
+      "activeStakesTitle": "活跃质押",
+      "withdrawnStakesTitle": "已提取质押",
+      "noActiveStakes": "无活跃质押",
+      "noWithdrawnStakes": "无已提取质押"
+    },
+    "legacyRewards": {
+      "title": "传统奖励预览",
+      "selection": "选择",
+      "baseDailyPerNft": "每日基础（每个 NFT）",
+      "bonusMultiplier": "奖励倍数",
+      "perNftDaily": "每个 NFT 每日",
+      "totalDailyAllSelected": "每日总计（所有选中）",
+      "duration": "持续时间",
+      "scheduledTotal": "计划总计（选择 × 天数）",
+      "description": "这是基于当前选择和时间锁定的传统奖励估算。"
+    },
+    "yourStakes": {
+      "title": "您的质押",
+      "connectWalletToView": "连接钱包查看您的质押",
+      "loadingStakes": "加载您的质押中...",
+      "noStakesFound": "未找到此网络和收藏的质押。",
+      "staked": "质押",
+      "unlocks": "解锁",
+      "unlocked": "已解锁",
+      "left": "剩余",
+      "accrued": "已累积",
+      "rate": "费率",
+      "counted": "已计算"
+    },
+    "nftSelection": {
+      "noNftsFound": "未找到 AGV NFT",
+      "noNftsDescription": "您在 {network} 上连接的钱包中没有 {collection} NFT。",
+      "mintFirstNft": "铸造您的第一个 NFT",
+      "selected": "已选择",
+      "clear": "清除",
+      "stake": "质押",
+      "staking": "质押中…"
+    },
+    "loadingStakedNfts": "加载质押的 NFT 中…",
+    "noStakesFoundForNetwork": "未找到此网络和收藏的质押。"
   },
   "minting": {
     "title": "AGV 协议铸造",

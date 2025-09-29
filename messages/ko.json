@@ -256,7 +256,59 @@
     "withdrawStakedNfts": "스테이킹된 NFT 인출",
     "selectStakedNftsDescription": "인출할 스테이킹된 NFT를 선택하세요",
     "connectWalletToSeeStakedNfts": "스테이킹된 NFT를 확인하려면 지갑을 연결하세요.",
-    "whitelistRequired": "허용 목록이 필요합니다"
+    "whitelistRequired": "허용 목록이 필요합니다",
+    "rewardsDashboard": {
+      "title": "rGGP 보상 대시보드",
+      "subtitle": "rGGP 크레딧 획득",
+      "available": "rGGP 사용 가능",
+      "remaining": "남은",
+      "collection": "컬렉션",
+      "baseRate": "기본 요금",
+      "bonusMultiplier": "보너스 배수",
+      "activeStakes": "활성 스테이크",
+      "readyToClaim": "청구 준비 완료",
+      "claimAllRewards": "모든 보상 청구",
+      "claiming": "청구 중...",
+      "activeStakesTitle": "활성 스테이크",
+      "withdrawnStakesTitle": "인출된 스테이크",
+      "noActiveStakes": "활성 스테이크 없음",
+      "noWithdrawnStakes": "인출된 스테이크 없음"
+    },
+    "legacyRewards": {
+      "title": "레거시 보상 미리보기",
+      "selection": "선택",
+      "baseDailyPerNft": "일일 기본 (NFT당)",
+      "bonusMultiplier": "보너스 배수",
+      "perNftDaily": "NFT당 일일",
+      "totalDailyAllSelected": "일일 총계 (모두 선택됨)",
+      "duration": "기간",
+      "scheduledTotal": "예정된 총계 (선택 × 일수)",
+      "description": "이는 현재 선택과 잠금 기간을 기반으로 한 레거시 보상 추정치입니다."
+    },
+    "yourStakes": {
+      "title": "귀하의 스테이크",
+      "connectWalletToView": "지갑을 연결하여 스테이크 보기",
+      "loadingStakes": "스테이크 로딩 중...",
+      "noStakesFound": "이 네트워크와 컬렉션에 대한 스테이크를 찾을 수 없습니다.",
+      "staked": "스테이크됨",
+      "unlocks": "잠금 해제",
+      "unlocked": "잠금 해제됨",
+      "left": "남은",
+      "accrued": "누적됨",
+      "rate": "요금",
+      "counted": "계산됨"
+    },
+    "nftSelection": {
+      "noNftsFound": "AGV NFT를 찾을 수 없음",
+      "noNftsDescription": "{network}에서 연결된 지갑에 {collection} NFT가 없습니다.",
+      "mintFirstNft": "첫 번째 NFT 민트",
+      "selected": "선택됨",
+      "clear": "지우기",
+      "stake": "스테이크",
+      "staking": "스테이킹 중…"
+    },
+    "loadingStakedNfts": "스테이크된 NFT 로딩 중…",
+    "noStakesFoundForNetwork": "이 네트워크와 컬렉션에 대한 스테이크를 찾을 수 없습니다."
   },
   "minting": {
     "title": "AGV 프로토콜 마이닝",

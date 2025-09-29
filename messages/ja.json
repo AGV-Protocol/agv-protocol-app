@@ -256,7 +256,59 @@
     "withdrawStakedNfts": "ステークされたNFTを出金する",
     "selectStakedNftsDescription": "出金するステークしたNFTを選択する",
     "connectWalletToSeeStakedNfts": "ウォレットを接続してステークされたNFTを確認します",
-    "whitelistRequired": "ホワイトリストが必要です"
+    "whitelistRequired": "ホワイトリストが必要です",
+    "rewardsDashboard": {
+      "title": "rGGP 報酬ダッシュボード",
+      "subtitle": "rGGP クレジットを獲得",
+      "available": "rGGP 利用可能",
+      "remaining": "残り",
+      "collection": "コレクション",
+      "baseRate": "基本レート",
+      "bonusMultiplier": "ボーナス倍率",
+      "activeStakes": "アクティブステーク",
+      "readyToClaim": "請求準備完了",
+      "claimAllRewards": "すべての報酬を請求",
+      "claiming": "請求中...",
+      "activeStakesTitle": "アクティブステーク",
+      "withdrawnStakesTitle": "引き出し済みステーク",
+      "noActiveStakes": "アクティブステークなし",
+      "noWithdrawnStakes": "引き出し済みステークなし"
+    },
+    "legacyRewards": {
+      "title": "レガシー報酬プレビュー",
+      "selection": "選択",
+      "baseDailyPerNft": "基本日次（NFT あたり）",
+      "bonusMultiplier": "ボーナス倍率",
+      "perNftDaily": "NFT あたり日次",
+      "totalDailyAllSelected": "日次合計（すべて選択済み）",
+      "duration": "期間",
+      "scheduledTotal": "予定合計（選択 × 日数）",
+      "description": "これは現在の選択とロック期間に基づくレガシー報酬の見積もりです。"
+    },
+    "yourStakes": {
+      "title": "あなたのステーク",
+      "connectWalletToView": "ウォレットを接続してステークを表示",
+      "loadingStakes": "ステークを読み込み中...",
+      "noStakesFound": "このネットワークとコレクションのステークが見つかりません。",
+      "staked": "ステーク済み",
+      "unlocks": "アンロック",
+      "unlocked": "アンロック済み",
+      "left": "残り",
+      "accrued": "累積",
+      "rate": "レート",
+      "counted": "カウント済み"
+    },
+    "nftSelection": {
+      "noNftsFound": "AGV NFT が見つかりません",
+      "noNftsDescription": "{network} 上の接続されたウォレットに {collection} NFT がありません。",
+      "mintFirstNft": "最初の NFT をミント",
+      "selected": "選択済み",
+      "clear": "クリア",
+      "stake": "ステーク",
+      "staking": "ステーキング中…"
+    },
+    "loadingStakedNfts": "ステークされた NFT を読み込み中…",
+    "noStakesFoundForNetwork": "このネットワークとコレクションのステークが見つかりません。"
   },
   "minting": {
     "title": "AGVプロトコルの鋳造",

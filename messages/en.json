@@ -256,7 +256,59 @@
     "withdrawStakedNfts": "Withdraw Staked NFTs",
     "selectStakedNftsDescription": "Select staked NFTs to withdraw",
     "connectWalletToSeeStakedNfts": "Connect wallet to see staked NFTs",
-    "whitelistRequired": "Whitelist required"
+    "whitelistRequired": "Whitelist required",
+    "rewardsDashboard": {
+      "title": "rGGP Rewards Dashboard",
+      "subtitle": "Earn rGGP credits",
+      "available": "rGGP Available",
+      "remaining": "remaining",
+      "collection": "Collection",
+      "baseRate": "Base Rate",
+      "bonusMultiplier": "Bonus Multiplier",
+      "activeStakes": "Active Stakes",
+      "readyToClaim": "Ready to Claim",
+      "claimAllRewards": "Claim All Rewards",
+      "claiming": "Claiming...",
+      "activeStakesTitle": "Active Stakes",
+      "withdrawnStakesTitle": "Withdrawn Stakes",
+      "noActiveStakes": "No active stakes",
+      "noWithdrawnStakes": "No withdrawn stakes"
+    },
+    "legacyRewards": {
+      "title": "Legacy Rewards Preview",
+      "selection": "Selection",
+      "baseDailyPerNft": "Base Daily (per NFT)",
+      "bonusMultiplier": "Bonus Multiplier",
+      "perNftDaily": "Per NFT Daily",
+      "totalDailyAllSelected": "Total Daily (all selected)",
+      "duration": "Duration",
+      "scheduledTotal": "Scheduled Total (selection × days)",
+      "description": "This is a legacy rewards estimate based on current selection and lock duration."
+    },
+    "yourStakes": {
+      "title": "Your Stakes",
+      "connectWalletToView": "Connect wallet to view your stakes",
+      "loadingStakes": "Loading your stakes…",
+      "noStakesFound": "No stakes found for this network and collection.",
+      "staked": "Staked",
+      "unlocks": "Unlocks",
+      "unlocked": "Unlocked",
+      "left": "left",
+      "accrued": "Accrued",
+      "rate": "Rate",
+      "counted": "Counted"
+    },
+    "nftSelection": {
+      "noNftsFound": "No AGV NFTs Found",
+      "noNftsDescription": "You don't have any {collection} NFTs in your connected wallet on {network}.",
+      "mintFirstNft": "Mint your first NFT",
+      "selected": "Selected",
+      "clear": "Clear",
+      "stake": "Stake",
+      "staking": "Staking…"
+    },
+    "loadingStakedNfts": "Loading staked NFTs…",
+    "noStakesFoundForNetwork": "No stakes found for this network and collection."
   },
   "minting": {
     "title": "AGV Protocol Minting",

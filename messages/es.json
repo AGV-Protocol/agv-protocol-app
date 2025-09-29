@@ -256,7 +256,59 @@
     "withdrawStakedNfts": "Retirar NFT apostados",
     "selectStakedNftsDescription": "Seleccione NFT apostados para retirar",
     "connectWalletToSeeStakedNfts": "Conectar la billetera para ver los NFT en stake",
-    "whitelistRequired": "Se requiere lista blanca"
+    "whitelistRequired": "Se requiere lista blanca",
+    "rewardsDashboard": {
+      "title": "Panel de Recompensas rGGP",
+      "subtitle": "Gana créditos rGGP",
+      "available": "rGGP Disponible",
+      "remaining": "restante",
+      "collection": "Colección",
+      "baseRate": "Tasa Base",
+      "bonusMultiplier": "Multiplicador de Bonificación",
+      "activeStakes": "Apuestas Activas",
+      "readyToClaim": "Listo para Reclamar",
+      "claimAllRewards": "Reclamar Todas las Recompensas",
+      "claiming": "Reclamando...",
+      "activeStakesTitle": "Apuestas Activas",
+      "withdrawnStakesTitle": "Apuestas Retiradas",
+      "noActiveStakes": "Sin apuestas activas",
+      "noWithdrawnStakes": "Sin apuestas retiradas"
+    },
+    "legacyRewards": {
+      "title": "Vista Previa de Recompensas Legacy",
+      "selection": "Selección",
+      "baseDailyPerNft": "Base Diaria (por NFT)",
+      "bonusMultiplier": "Multiplicador de Bonificación",
+      "perNftDaily": "Por NFT Diario",
+      "totalDailyAllSelected": "Total Diario (todos seleccionados)",
+      "duration": "Duración",
+      "scheduledTotal": "Total Programado (selección × días)",
+      "description": "Esta es una estimación de recompensas legacy basada en la selección actual y duración del bloqueo."
+    },
+    "yourStakes": {
+      "title": "Tus Apuestas",
+      "connectWalletToView": "Conecta tu monedero para ver tus apuestas",
+      "loadingStakes": "Cargando tus apuestas...",
+      "noStakesFound": "No se encontraron apuestas para esta red y colección.",
+      "staked": "Apostado",
+      "unlocks": "Desbloquea",
+      "unlocked": "Desbloqueado",
+      "left": "restante",
+      "accrued": "Acumulado",
+      "rate": "Tasa",
+      "counted": "Contado"
+    },
+    "nftSelection": {
+      "noNftsFound": "No se encontraron NFTs de AGV",
+      "noNftsDescription": "No tienes ningún NFT de {collection} en tu monedero conectado en {network}.",
+      "mintFirstNft": "Acuñar tu primer NFT",
+      "selected": "Seleccionado",
+      "clear": "Limpiar",
+      "stake": "Apostar",
+      "staking": "Apostando…"
+    },
+    "loadingStakedNfts": "Cargando NFTs apostados…",
+    "noStakesFoundForNetwork": "No se encontraron apuestas para esta red y colección."
   },
   "minting": {
     "title": "Protocolo de acuñación de AGV",

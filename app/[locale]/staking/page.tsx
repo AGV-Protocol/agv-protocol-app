@@ -453,6 +453,7 @@ export default function StakingPage() {
               selectedCollection={selectedCollection}
               stakingDuration={stakingDuration}
               claiming={false}
+              t={t}
             />
           </>
         )}
@@ -678,11 +679,13 @@ function RewardsPanel({
   selectedCollection,
   stakingDuration,
   claiming,
+  t,
 }: {
   rewardsData: any;
   selectedCollection: "seed" | "tree" | "solar" | "compute";
   stakingDuration: number;
   claiming: boolean;
+  t: (key: string) => string;
 }) {
   return (
     <div className="mt-8 bg-gradient-to-r from-green-500/10 to-emerald-500/10 backdrop-blur-xl rounded-2xl border border-green-500/20 p-6">
@@ -690,14 +693,14 @@ function RewardsPanel({
         <div>
           <h3 className="text-xl font-semibold text-white flex items-center gap-2">
             <Zap className="w-6 h-6 text-green-400" />
-            rGGP Rewards Dashboard
+            {t('staking.rewardsDashboard.title')}
           </h3>
-          <p className="text-green-300/80 text-sm mt-1">Earn rGGP credits</p>
+          <p className="text-green-300/80 text-sm mt-1">{t('staking.rewardsDashboard.subtitle')}</p>
         </div>
         <div className="text-right">
           <div className="text-3xl font-bold text-green-400">{rewardsData.totals.accrued.toFixed(2)}</div>
-          <div className="text-sm text-green-300/80">rGGP Available</div>
-          <div className="text-xs text-green-300/60 mt-1">{rewardsData.totals.remaining.toFixed(2)} remaining</div>
+          <div className="text-sm text-green-300/80">{t('staking.rewardsDashboard.available')}</div>
+          <div className="text-xs text-green-300/60 mt-1">{rewardsData.totals.remaining.toFixed(2)} {t('staking.rewardsDashboard.remaining')}</div>
         </div>
       </div>
 
@@ -705,19 +708,19 @@ function RewardsPanel({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white/5 rounded-xl p-4 border border-white/10">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-white/80 text-sm">Collection</span>
+              <span className="text-white/80 text-sm">{t('staking.rewardsDashboard.collection')}</span>
               <span className="text-white font-medium capitalize">{selectedCollection}</span>
             </div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-white/80 text-sm">Base Rate</span>
+              <span className="text-white/80 text-sm">{t('staking.rewardsDashboard.baseRate')}</span>
               <span className="text-green-400 font-medium">{BASE_DAILY_RRGP[selectedCollection]} rGGP/day</span>
             </div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-white/80 text-sm">Bonus Multiplier</span>
+              <span className="text-white/80 text-sm">{t('staking.rewardsDashboard.bonusMultiplier')}</span>
               <span className="text-yellow-400 font-medium">{bonusFor(stakingDuration)}x</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-white/80 text-sm">Active Stakes</span>
+              <span className="text-white/80 text-sm">{t('staking.rewardsDashboard.activeStakes')}</span>
               <span className="text-white font-medium">{rewardsData.stakes.length}</span>
             </div>
           </div>
@@ -727,7 +730,7 @@ function RewardsPanel({
               <div className="text-2xl font-bold text-green-400 mb-2">
                 {rewardsData.totals.accrued.toFixed(2)} rGGP
               </div>
-              <div className="text-sm text-white/60 mb-4">Ready to Claim</div>
+              <div className="text-sm text-white/60 mb-4">{t('staking.rewardsDashboard.readyToClaim')}</div>
               <button
                 onClick={() => toast.info("rGGP rewards will be claimable when GGP token launches!")}
                 className="w-full px-4 py-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -736,12 +739,12 @@ function RewardsPanel({
                 {claiming ? (
                   <div className="flex items-center justify-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Claiming...
+                    {t('staking.rewardsDashboard.claiming')}
                   </div>
                 ) : (
                   <div className="flex items-center justify-center gap-2">
                     <Gift className="w-4 h-4" />
-                    Claim All Rewards
+                    {t('staking.rewardsDashboard.claimAllRewards')}
                   </div>
                 )}
               </button>
@@ -755,7 +758,7 @@ function RewardsPanel({
             <div className="bg-white/5 rounded-xl p-4 border border-white/10">
               <h4 className="text-white font-medium mb-3 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-400"></div>
-                Active Stakes
+                {t('staking.rewardsDashboard.activeStakesTitle')}
               </h4>
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 {rewardsData.stakes.filter((stake: any) => stake.status === 'active' || stake.status === 'completed').map((stake: any) => (
@@ -790,7 +793,7 @@ function RewardsPanel({
                 ))}
                 {rewardsData.stakes.filter((stake: any) => stake.status === 'active' || stake.status === 'completed').length === 0 && (
                   <div className="text-center py-4 text-white/60 text-sm">
-                    No active stakes
+                    {t('staking.rewardsDashboard.noActiveStakes')}
                   </div>
                 )}
               </div>
@@ -800,7 +803,7 @@ function RewardsPanel({
             <div className="bg-white/5 rounded-xl p-4 border border-white/10">
               <h4 className="text-white font-medium mb-3 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-                Withdrawn Stakes
+                {t('staking.rewardsDashboard.withdrawnStakesTitle')}
               </h4>
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 {rewardsData.stakes.filter((stake: any) => stake.status === 'withdrawn').map((stake: any) => (
@@ -831,7 +834,7 @@ function RewardsPanel({
                 ))}
                 {rewardsData.stakes.filter((stake: any) => stake.status === 'withdrawn').length === 0 && (
                   <div className="text-center py-4 text-white/60 text-sm">
-                    No withdrawn stakes
+                    {t('staking.rewardsDashboard.noWithdrawnStakes')}
                   </div>
                 )}
               </div>
@@ -920,15 +923,15 @@ function StakeFlow({
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
               <AlertTriangle className="w-8 h-8 text-white/60" />
             </div>
-            <h4 className="text-white font-medium mb-2">No AGV NFTs Found</h4>
+            <h4 className="text-white font-medium mb-2">{t('staking.nftSelection.noNftsFound')}</h4>
             <p className="text-white/60 text-sm mb-4">
-              You don’t have any {selectedCollection} NFTs in your connected wallet on {CHAIN_CONFIG[chainKey].label}.
+              {t('staking.nftSelection.noNftsDescription').replace('{collection}', selectedCollection).replace('{network}', CHAIN_CONFIG[chainKey].label)}
             </p>
             <Link
               href="/mint"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium transition-all"
             >
-              Mint your first NFT
+              {t('staking.nftSelection.mintFirstNft')}
             </Link>
           </div>
         ) : (
@@ -979,7 +982,7 @@ function StakeFlow({
         {/* Action bar */}
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <div className="text-white/70 text-sm">
-            Selected: <span className="text-white font-medium">{selectedIds.length}</span>
+            {t('staking.nftSelection.selected')}: <span className="text-white font-medium">{selectedIds.length}</span>
           </div>
           <div className="flex gap-2">
             <button
@@ -987,7 +990,7 @@ function StakeFlow({
               disabled={selectedIds.length === 0}
               className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/90 border border-white/20 disabled:opacity-50"
             >
-              Clear
+              {t('staking.nftSelection.clear')}
             </button>
             <button
               onClick={() => onStake(selectedIds.map((s) => BigInt(s)))}
@@ -997,10 +1000,10 @@ function StakeFlow({
               {staking ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Staking…
+                  {t('staking.nftSelection.staking')}
                 </span>
               ) : (
-                `Stake ${selectedIds.length || ""}`.trim()
+                `${t('staking.nftSelection.stake')} ${selectedIds.length || ""}`.trim()
               )}
             </button>
           </div>
@@ -1011,46 +1014,46 @@ function StakeFlow({
       <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
         <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
           <TrendingUp className="w-6 h-6 text-yellow-300" />
-          Legacy Rewards Preview
+          {t('staking.legacyRewards.title')}
         </h3>
 
         <div className="grid grid-cols-1 gap-4">
           <div className="bg-white/5 rounded-xl p-4 border border-white/10">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-white/80 text-sm">Selection</span>
+              <span className="text-white/80 text-sm">{t('staking.legacyRewards.selection')}</span>
               <span className="text-white font-medium">{rewardPreview.count} NFT{rewardPreview.count === 1 ? "" : "s"}</span>
             </div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-white/80 text-sm">Base Daily (per NFT)</span>
+              <span className="text-white/80 text-sm">{t('staking.legacyRewards.baseDailyPerNft')}</span>
               <span className="text-green-400 font-medium">{rewardPreview.base} rGGP</span>
             </div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-white/80 text-sm">Bonus Multiplier</span>
+              <span className="text-white/80 text-sm">{t('staking.legacyRewards.bonusMultiplier')}</span>
               <span className="text-yellow-400 font-medium">{rewardPreview.mult}x</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-white/80 text-sm">Per NFT Daily</span>
+              <span className="text-white/80 text-sm">{t('staking.legacyRewards.perNftDaily')}</span>
               <span className="text-white font-medium">{rewardPreview.perNftDaily.toFixed(2)} rGGP</span>
             </div>
           </div>
 
           <div className="bg-white/5 rounded-xl p-4 border border-white/10">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-white/80 text-sm">Total Daily (all selected)</span>
+              <span className="text-white/80 text-sm">{t('staking.legacyRewards.totalDailyAllSelected')}</span>
               <span className="text-cyan-300 font-semibold">{rewardPreview.totalDaily.toFixed(2)} rGGP</span>
             </div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-white/80 text-sm">Duration</span>
+              <span className="text-white/80 text-sm">{t('staking.legacyRewards.duration')}</span>
               <span className="text-white font-medium">{stakingDuration} {stakingDuration > 1 ? t('staking.days') :  t('staking.day') }</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-white/80 text-sm">Scheduled Total (selection × days)</span>
+              <span className="text-white/80 text-sm">{t('staking.legacyRewards.scheduledTotal')}</span>
               <span className="text-emerald-300 font-bold">{rewardPreview.scheduledTotal.toFixed(2)} rGGP</span>
             </div>
           </div>
 
           <p className="text-xs text-white/50">
-            This is a legacy rewards estimate based on current selection and lock duration.
+            {t('staking.legacyRewards.description')}
           </p>
         </div>
       </div>
@@ -1103,14 +1106,14 @@ function StakesFromRewards({
 
   return (
     <div className="mt-8 bg-white/5 rounded-2xl border border-white/10 p-6">
-      <h2 className="text-xl text-white font-semibold mb-4">Your Stakes</h2>
+      <h2 className="text-xl text-white font-semibold mb-4">{t('staking.yourStakes.title')}</h2>
 
       {!wallet ? (
-        <p className="text-white/60">{t('staking.connectWalletToViewStakes')}</p>
+        <p className="text-white/60">{t('staking.yourStakes.connectWalletToView')}</p>
       ) : loading ? (
         <div className="text-center py-8">
           <Loader2 className="w-8 h-8 animate-spin mx-auto text-white/60" />
-          <p className="text-white/60 mt-2">Loading your stakes…</p>
+          <p className="text-white/60 mt-2">{t('staking.yourStakes.loadingStakes')}</p>
         </div>
       ) : error ? (
         <div className="text-center py-8">
@@ -1118,7 +1121,7 @@ function StakesFromRewards({
           <p className="text-yellow-300 mt-2">{error}</p>
         </div>
       ) : stakes.length === 0 ? (
-        <p className="text-white/60">No stakes found for this network and collection.</p>
+        <p className="text-white/60">{t('staking.yourStakes.noStakesFound')}</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {stakes.map((s) => {
@@ -1139,16 +1142,16 @@ function StakesFromRewards({
                 </div>
 
                 <div className="text-white/70 text-sm">
-                  <div>Staked: {new Date(s.stakedAt).toLocaleDateString()}</div>
-                  <div>Unlocks: {new Date(s.unlockAt).toLocaleDateString()}</div>
+                  <div>{t('staking.yourStakes.staked')}: {new Date(s.stakedAt).toLocaleDateString()}</div>
+                  <div>{t('staking.yourStakes.unlocks')}: {new Date(s.unlockAt).toLocaleDateString()}</div>
                   <div className={`mt-1 text-xs ${unlocked ? "text-green-300" : "text-yellow-300"}`}>
-                    {unlocked ? "Unlocked" : `${remaining} left`}
+                    {unlocked ? t('staking.yourStakes.unlocked') : `${remaining} ${t('staking.yourStakes.left')}`}
                   </div>
                 </div>
 
                 <div className="mt-3">
                   <div className="flex items-center justify-between text-xs text-white/60 mb-1">
-                    <span>Accrued</span>
+                    <span>{t('staking.yourStakes.accrued')}</span>
                     <span>
                       {s.accrued.toFixed(2)} / {s.scheduledTotal.toFixed(2)} rGGP
                     </span>
@@ -1162,7 +1165,7 @@ function StakesFromRewards({
                 </div>
 
                 <div className="mt-3 text-xs text-white/60">
-                  Rate: {s.baseDaily} rGGP/day × {s.bonusMultiplier}x • Counted {s.daysCounted} {t('staking.days')}
+                  {t('staking.yourStakes.rate')}: {s.baseDaily} rGGP/day × {s.bonusMultiplier}x • {t('staking.yourStakes.counted')} {s.daysCounted} {t('staking.days')}
                 </div>
               </div>
             );
@@ -1354,7 +1357,7 @@ function WithdrawSection({
           <p className="text-yellow-300 mt-2">{error}</p>
         </div>
       ) : activeItems.length === 0 && withdrawnItems.length === 0 ? (
-        <div className="text-white/60">No stakes found for this network and collection.</div>
+        <div className="text-white/60">{t('staking.noStakesFoundForNetwork')}</div>
       ) : (
         <>
           {/* Active Stakes */}

@@ -256,7 +256,59 @@
     "withdrawStakedNfts": "提取質押的 NFT",
     "selectStakedNftsDescription": "選擇要提取的質押 NFT",
     "connectWalletToSeeStakedNfts": "連接錢包查看已質押的 NFT",
-    "whitelistRequired": "需要白名單"
+    "whitelistRequired": "需要白名單",
+    "rewardsDashboard": {
+      "title": "rGGP 獎勵儀表板",
+      "subtitle": "賺取 rGGP 積分",
+      "available": "rGGP 可用",
+      "remaining": "剩餘",
+      "collection": "收藏",
+      "baseRate": "基礎費率",
+      "bonusMultiplier": "獎勵倍數",
+      "activeStakes": "活躍質押",
+      "readyToClaim": "準備領取",
+      "claimAllRewards": "領取所有獎勵",
+      "claiming": "領取中...",
+      "activeStakesTitle": "活躍質押",
+      "withdrawnStakesTitle": "已提取質押",
+      "noActiveStakes": "無活躍質押",
+      "noWithdrawnStakes": "無已提取質押"
+    },
+    "legacyRewards": {
+      "title": "傳統獎勵預覽",
+      "selection": "選擇",
+      "baseDailyPerNft": "每日基礎（每個 NFT）",
+      "bonusMultiplier": "獎勵倍數",
+      "perNftDaily": "每個 NFT 每日",
+      "totalDailyAllSelected": "每日總計（所有選中）",
+      "duration": "持續時間",
+      "scheduledTotal": "計劃總計（選擇 × 天數）",
+      "description": "這是基於當前選擇和時間鎖定的傳統獎勵估算。"
+    },
+    "yourStakes": {
+      "title": "您的質押",
+      "connectWalletToView": "連接錢包查看您的質押",
+      "loadingStakes": "載入您的質押中...",
+      "noStakesFound": "未找到此網路和收藏的質押。",
+      "staked": "質押",
+      "unlocks": "解鎖",
+      "unlocked": "已解鎖",
+      "left": "剩餘",
+      "accrued": "已累積",
+      "rate": "費率",
+      "counted": "已計算"
+    },
+    "nftSelection": {
+      "noNftsFound": "未找到 AGV NFT",
+      "noNftsDescription": "您在 {network} 上連接的錢包中沒有 {collection} NFT。",
+      "mintFirstNft": "鑄造您的第一個 NFT",
+      "selected": "已選擇",
+      "clear": "清除",
+      "stake": "質押",
+      "staking": "質押中…"
+    },
+    "loadingStakedNfts": "載入質押的 NFT 中…",
+    "noStakesFoundForNetwork": "未找到此網路和收藏的質押。"
   },
   "minting": {
     "title": "AGV 協議鑄造",
