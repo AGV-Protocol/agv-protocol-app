@@ -29,10 +29,10 @@ export const Header: React.FC = () => {
         {/* Navigation */}
         <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
           <a href={`/${locale}/landing`} className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">{t('nav.home')}</a>
-          <a href={`/${locale}/coming-soon`} className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">{t('nav.about')}</a>
+          <a href={`/${locale}/about`} className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">{t('nav.about')}</a>
           <a href={`/${locale}/career`} className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">{t('nav.career')}</a>
           <a href={`/${locale}/blog`} className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">{t('nav.blog')}</a>
-          <a href={`/${locale}/coming-soon`} className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">{t('nav.investors')}</a>
+          <a href={`/${locale}/team`} className="text-white hover:text-white/80 transition-colors text-sm xl:text-base">{t('nav.investors')}</a>
         </nav>
 
         {/* Right side - Language Switcher and Wallet Connect */}

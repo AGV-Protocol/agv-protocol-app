@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/hooks/useTranslations";
 import Image from "next/image";
 
 interface FeaturedArticleCardProps {
@@ -16,33 +17,34 @@ export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({
   description, 
   onReadMore 
 }) => {
+  const { t } = useTranslations();
   return (
-    <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6 p-6 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+    <div className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-6 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
       {/* Article Image */}
-      <div className="flex-shrink-0 w-full sm:w-auto">
+      <div className="flex-1 w-full lg:w-auto">
         <Image
           src={image}
           alt={title}
-          width={200}
-          height={150}
-          className="w-full sm:w-48 h-48 sm:h-36 object-cover rounded-lg"
+          width={400}
+          height={250}
+          className="w-full h-88 sm:h-56 lg:h-88 object-cover rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none"
         />
       </div>
       
       {/* Content */}
-      <div className="flex-1 space-y-4">
-        <h3 className="text-lg sm:text-xl font-bold text-[#223256]">{title}</h3>
-        <p className="text-sm text-[#223256] leading-relaxed">{description}</p>
+      <div className="flex-1 space-y-3 sm:space-y-4 p-4 sm:p-6">
+        <h3 className="text-base sm:text-lg lg:text-xl font-bold text-[#223256] leading-tight">{title}</h3>
+        <p className="text-xs sm:text-sm text-[#223256] leading-relaxed">{description}</p>
         
         {/* Read More Button */}
         <Button
           variant="ghost"
           size="sm"
           onClick={onReadMore}
-          className="p-0 h-auto text-[#223256] hover:text-[#223256]/80 font-medium flex items-center space-x-1 transition-colors duration-300"
+          className="bg-white border border-[#223256] text-[#223256] hover:bg-[#223256] hover:text-white transition-all duration-300 px-6 sm:px-8 py-2 sm:py-3 rounded-md font-semibold flex items-center space-x-2 text-xs sm:text-sm"
         >
-          <span>Read More</span>
-          <ArrowRight className="w-4 h-4" />
+          <span>{t('common.readMore') || 'Read More'}</span>
+          <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
         </Button>
       </div>
     </div>

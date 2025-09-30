@@ -9,7 +9,9 @@ import { ExploreAGV } from "@/components/landing/ExploreAGV";
 import { BlockchainInfrastructure } from "@/components/landing/BlockchainInfrastructure";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { Footer } from "@/components/landing/Footer";
-import { ThreeLayer } from "@/components/landing/ThreeLayer";
+import { WhatWeBuilding } from "@/components/landing/WhatWeBuilding";
+import { HowWeDiffer } from "@/components/landing/HowWeDiffer";
+import { ExecutionProofs } from "@/components/landing/ExecutionProofs";
 
 export default function LandingPage() {
   return (
@@ -25,9 +27,18 @@ export default function LandingPage() {
       
       {/* What Is AGV */}
       <WhatIsAGV />
-      
-      {/* Why AGV */}
-      <WhyAGV />
+
+      {/* Three Layer */}
+      <WhatWeBuilding />
+
+      {/* How We Differ */}
+      <HowWeDiffer />
+
+      {/* Execution Proofs */}
+      <ExecutionProofs />
+
+      {/* Blockchain Infrastructure */}
+      <BlockchainInfrastructure />
       
       {/* Fixing Section */}
       <Fixing />
@@ -35,11 +46,7 @@ export default function LandingPage() {
       {/* Explore AGV */}
       <ExploreAGV />
       
-      {/* Blockchain Infrastructure */}
-      <BlockchainInfrastructure />
       
-      {/* Three Layer */}
-      <ThreeLayer />
       
       {/* Testimonials */}
       <TestimonialsSection />

@@ -33,16 +33,6 @@ export const Fixing: React.FC = () => {
         >
           {t('fixing.description3')}
         </p>
-        <div className="w-full h-full">
-          <Image
-            src="/whyAgv.png"
-            alt="AGV Hero"
-            width={1000}
-            height={0}
-            className="rounded-lg w-full h-[35pc]"
-          />
-        </div>
-        
       </div>
     </section>
   );

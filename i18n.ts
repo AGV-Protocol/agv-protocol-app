@@ -21,7 +21,7 @@ export const localeNames: Record<Locale, string> = {
 export const localeFlags: Record<Locale, string> = {
   en: '🇺🇸',
   'zh-CN': '🇨🇳',
-  'zh-TW': '🇹🇼',
+  'zh-TW': '🇨🇳',
   ko: '🇰🇷',
   tl: '🇵🇭',
   fr: '🇫🇷',
@@ -34,9 +34,9 @@ export const localeFlags: Record<Locale, string> = {
 // Country to locale mapping for geo-detection
 export const COUNTRY_TO_LOCALE: Partial<Record<string, Locale>> = {
   CN: 'zh-CN', 
-  TW: 'zh-TW', 
-  HK: 'zh-TW', 
-  MO: 'zh-TW',
+  TW: 'zh-CN', 
+  HK: 'zh-CN', 
+  MO: 'zh-CN',
   KR: 'ko', 
   PH: 'tl', 
   FR: 'fr', 

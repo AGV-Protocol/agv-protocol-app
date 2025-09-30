@@ -30,7 +30,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
         placeholder={placeholder}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="pl-10 w-full border-gray-300 focus:border-[#223256] focus:ring-[#223256]"
+        className="pl-10 w-[20pc] border-gray-300 focus:border-[#223256] focus:ring-[#223256]"
       />
     </div>
   );

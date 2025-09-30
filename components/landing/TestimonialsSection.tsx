@@ -56,7 +56,7 @@ export function TestimonialsSection() {
 
                 {/* Call to Action Section */}
                 <div className="text-center">
-                    <h3 className="text-4xl text-center md:text-5xl font-bold text-[#223256] mb-8 text-balance">
+                    <h3 className="text-2xl text-center md:text-5xl font-bold text-[#223256] mb-8 uppercase">
                         {t('testimonials.title2')}
                     </h3>
                     <FastLink href={`/${locale}/mint`}>
