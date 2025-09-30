@@ -238,9 +238,9 @@ export const MainContent: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-gray-800">{social.name}</h4>
                       <p className="text-gray-500 text-sm">
-                        {social.followers && `${social.followers} followers`}
-                        {social.members && `${social.members} members`}
-                        {social.stars && `${social.stars} stars`}
+                        {social.followers && `${social.followers} ${t('maincontent.social.followers')}`}
+                        {social.members && `${social.members} ${t('maincontent.social.members')}`}
+                        {social.stars && `${social.stars} ${t('maincontent.social.stars')}`}
                       </p>
                     </div>
                   </div>

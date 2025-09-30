@@ -1037,6 +1037,14 @@
       "spotlight": {
         "title": "커뮤니티 스포트라이트: 성공 사례",
         "description": "AGV 프로토콜을 사용한 커뮤니티 구성원의 경험을 들어보세요."
+      },
+      "introducingAGVProtocol": {
+        "title": "AGV 프로토콜 소개:",
+        "description": "실제 자산의 미래 열기"
+      },
+      "rGGPExplained": {
+        "title": "rGGP 설명",
+        "description": "AGV 프로토콜이 실제 수확량을 보상으로 전환하는 방법"
       }
     }
   },
@@ -1202,6 +1210,44 @@
         "name": "솔직한",
         "role": "마케팅 및 홍보"
       }
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "연락하세요",
+      "subtitle": "우리는 당신을 돕기 위해 여기에 있습니다"
+    },
+    "section": {
+      "title": "연락처 정보",
+      "description": "가장 필요한 지원을 원하시면 저희 전문팀에 문의하세요. 이메일을 클릭하여 클립보드에 복사하세요."
+    },
+    "general": {
+      "title": "일반 연락처",
+      "description": "일반적인 문의 및 조정을 위해."
+    },
+    "investor": {
+      "title": "투자자 관계(IR)",
+      "description": "VC/FO/기관 커뮤니케이션 및 데이터 룸용입니다."
+    },
+    "business": {
+      "title": "사업 개발 / 커뮤니티",
+      "description": "KOL, 파트너, 캠페인(TaskOn/Zealy), 커뮤니티 운영자를 위한 것입니다."
+    },
+    "technology": {
+      "title": "기술",
+      "description": "제품, 웹사이트, 통합, 배포 및 지원에 관한 것입니다."
+    },
+    "onchain": {
+      "title": "온체인/스마트 계약",
+      "description": "온체인 문제, 감사, 검증 및 계약에 관한 것입니다."
+    },
+    "external": {
+      "title": "대외 관계",
+      "description": "거래소, 시장 조성자, 런치패드 및 미디어 파트너를 위한 정보입니다."
+    },
+    "additional": {
+      "title": "더 많은 정보가 필요하신가요?",
+      "description": "일반적인 문의 사항이 있거나 어떤 팀에 연락해야 할지 확실하지 않은 경우, 일반 연락처 이메일로 문의해 주세요. 문의하신 내용이 담당자에게 전달되도록 최선을 다하겠습니다."
     }
   }
 }

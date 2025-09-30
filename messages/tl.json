@@ -50,7 +50,7 @@
   },
   "whatisagv": {
     "title": "Ang Ginagawa Namin",
-    "description": "Ang AGV Protocol ay isang dePIN RWA infrastructure protocol na nagpapalit ng mga halamanan, solar farm, at edge-compute clusters sa mga nabe-verify at naka-back up na digital asset. Ang bawat unit ng enerhiya at compute na output ay sinusubaybayan ng mga IoT device, naka-angkla sa chain, at pagkatapos ay na-tokenize lang. Tinitiyak ng mekanismong ito ng Power-to-Mint ang isang 1:1 na link sa pagitan ng pisikal na produktibidad at digital na halaga, na nag-a-unlock ng mga napapanatiling pagbabalik para sa mga on-chain na namumuhunan. Kasalukuyang nagbubunga ang AGV sa mga na-verify na halamanan, solar plants at compute node sa Shaanxi, China—ang pinakamalaking energy at AI infrastructure zone sa mundo"
+    "description": "Ang AGV Protocol ay isang dePIN RWA infrastructure protocol na nagpapalit ng mga halamanan, solar farm, at edge-compute clusters sa mga nabe-verify at naka-back up na digital asset. Ang bawat unit ng enerhiya at compute na output ay sinusubaybayan ng mga IoT device, naka-angkla sa chain, at pagkatapos ay tokenized lang. Tinitiyak ng mekanismong ito ng Power-to-Mint ang isang 1:1 na link sa pagitan ng pisikal na produktibidad at digital na halaga, na nag-a-unlock ng mga napapanatiling pagbabalik para sa mga on-chain na namumuhunan. Kasalukuyang nagbubunga ang AGV sa mga na-verify na halamanan, solar plants at compute node sa Shaanxi, China—ang pinakamalaking energy at AI infrastructure zone sa mundo"
   },
   "whyagv": {
     "title": "Bakit Isang Blueprint ang AGV para sa Real Yield Infrastructure?",
@@ -58,7 +58,7 @@
   },
   "fixing": {
     "title": "Pag-aayos sa Kung Ano ang Nasira sa Real-World Tokenization",
-    "description1": "Tinutulay ng AGV ang digital at pisikal na mundo sa pamamagitan ng paggawa ng mga halamanan at solar farm sa mga NFT at token. Ang bawat asset ay naka-link sa mga matalinong kontrata na nag-o-automate ng pagbabahagi ng kita, pagmamay-ari, at pamamahala — paglutas ng mga isyu tulad ng pira-pirasong data, hindi nabe-verify na mga ani, at mga opaque na karapatan sa lupa.",
+    "description1": "Tinutulay ng AGV ang digital at pisikal na mundo sa pamamagitan ng paggawa ng mga halamanan at solar farm sa mga NFT at token. Naka-link ang bawat asset sa mga matalinong kontrata na nag-o-automate ng pagbabahagi ng kita, pagmamay-ari, at pamamahala — paglutas ng mga isyu tulad ng pira-pirasong data, hindi nabe-verify na mga ani, at mga opaque na karapatan sa lupa.",
     "description2": "Sa kaibuturan nito, ang AGV ay gumagamit ng isang standardized asset unit: 100 mu ng high-yield apple orchards na ipinares sa 6MW ng solar. Ang modelong ito ay naghahatid ng $180k–$280k taunang kita bawat unit na may 18%–26% IRR, na sinusuportahan ng data ng pagganap na nakabatay sa IoT at mga predictive na modelo.",
     "description3": "Hindi tulad ng mga tradisyonal na agri-project na mahirap kopyahin, ang mga unit ng AGV ay SPV-packaged, DeFi-compatible, at globally modular — nagbibigay-daan sa mabilis na pag-deploy at paulit-ulit na pag-scale sa mga hangganan."
   },
@@ -127,7 +127,7 @@
     "features": {
       "multichain": {
         "title": "Multi-Chain Support",
-        "description": "I-deploy at pamahalaan ang mga NFT sa buong BSC, Polygon, at Arbitrum network"
+        "description": "I-deploy at pamahalaan ang mga NFT sa BSC, Polygon, at Arbitrum network"
       },
       "secure": {
         "title": "Secure Minting",
@@ -145,7 +145,7 @@
       "dailyRewards": "rGGP/Araw",
       "securityScore": "Marka ng Seguridad",
       "auditRating": "Rating ng Audit",
-      "upto50rggp": "50.00",
+      "upto50rggp": "Hanggang 50.00",
       "nftCount": "1,234"
     },
     "social": {
@@ -161,15 +161,15 @@
     "articles": {
       "introducing": {
         "title": "Ipinapakilala ang AGV Protocol",
-        "description": "Alamin kung paano i-mint ang iyong unang NFT at magsimulang makakuha ng mga reward"
+        "description": "Pag-unlock sa Kinabukasan ng Mga Real-World na Asset"
       },
       "multichain": {
-        "title": "Pag-unawa sa Multi-Chain Staking",
-        "description": "Isang komprehensibong gabay sa staking sa iba't ibang network"
+        "title": "Ipinaliwanag ng rGGP",
+        "description": "Paano Ginagawa ng AGV Protocol ang Real-World yields sa Rewards"
       },
       "security": {
-        "title": "Pinakamahusay na Kasanayan sa Seguridad",
-        "description": "Paano panatilihing ligtas ang iyong mga NFT at reward"
+        "title": "Ipinaliwanag ng rGGP",
+        "description": "Paano Ginagawa ng AGV Protocol ang Real-World yields sa Rewards"
       },
       "readMore": "Magbasa pa"
     }
@@ -228,7 +228,7 @@
     "days": "araw",
     "durationDays": "Tagal (araw)",
     "lockPeriod": "Panahon ng Lock",
-    "yourNftsWillBeLocked": "Ila-lock ang iyong mga NFT",
+    "yourNftsWillBeLocked": "Mala-lock ang iyong mga NFT",
     "youCannotWithdraw": "Hindi ka maaaring mag-withdraw hanggang sa matapos ang panahong ito",
     "lockPeriodDescription": "Mala-lock ang iyong mga NFT sa loob ng {duration} araw{plural}. Hindi ka maaaring mag-withdraw hanggang sa matapos ang panahong ito. Ang minimum na panahon ng staking ay 7 araw.",
     "currentWalletChain": "Kasalukuyang wallet chain",
@@ -332,7 +332,7 @@
     "nft": {
       "seed": {
         "name": "SeedPass NFT",
-        "description": "Access sa sustainable farming reward at eksklusibong benepisyo"
+        "description": "Access sa sustainable farming rewards at eksklusibong benepisyo"
       },
       "tree": {
         "name": "TreePass NFT",
@@ -340,11 +340,11 @@
       },
       "solar": {
         "name": "SolarPass NFT",
-        "description": "Mga gantimpala sa solar energy at access sa berdeng imprastraktura"
+        "description": "Mga gantimpala sa enerhiya ng solar at access sa berdeng imprastraktura"
       },
       "compute": {
         "name": "ComputePass NFT",
-        "description": "Mga gantimpala sa Edge computing at access sa imprastraktura ng DePIN"
+        "description": "Mga reward sa Edge computing at access sa imprastraktura ng DePIN"
       }
     },
     "referralId": "Referral ID",
@@ -389,7 +389,7 @@
     "platformOverview": {
       "title": "PANGKALAHATANG-IDEYA sa PLATFORM",
       "totalSupply": "Kabuuang Supply",
-      "nftsMinted": "NFTs Minted",
+      "nftsMinted": "Kabuuang mga NFT",
       "rewardRate": "Rate ng Gantimpala",
       "dailyRewards": "Pang-araw-araw na Gantimpala",
       "auditRating": "Rating ng Audit",
@@ -399,7 +399,7 @@
       "title": "Mga Pangunahing Tampok",
       "multiChain": {
         "title": "Multi-Chain Support",
-        "description": "I-deploy at pamahalaan ang mga NFT sa BSC, Polygon, at Arbitrum network"
+        "description": "I-deploy at pamahalaan ang mga NFT sa buong BSC, Polygon, at Arbitrum network"
       },
       "secureMinting": {
         "title": "Secure Minting",
@@ -448,7 +448,7 @@
           "description": "Ipinapakilala ang AGV Protocol: Pag-unlock sa Kinabukasan ng Mga Real-World na Asset"
         },
         "rggpExplained": {
-          "title": "Ipinaliwanag ng rGGP",
+          "title": "Ipinaliwanag ang rGGP",
           "description": "Paano Ginagawa ng AGV Protocol ang Real-World yields sa On-chain Rewards"
         }
       }
@@ -474,12 +474,12 @@
     },
     "fixing": {
       "title": "Pag-aayos sa Kung Ano ang Nasira sa Real-World Tokenization",
-      "description1": "Tinutulay ng AGV ang digital at pisikal na mundo sa pamamagitan ng paggawa ng mga halamanan at solar farm sa mga NFT at token. Ang bawat asset ay naka-link sa mga matalinong kontrata na nag-o-automate ng pagbabahagi ng kita, pagmamay-ari, at pamamahala — paglutas ng mga isyu tulad ng pira-pirasong data, hindi nabe-verify na mga ani, at mga opaque na karapatan sa lupa.",
+      "description1": "Tinutulay ng AGV ang digital at pisikal na mundo sa pamamagitan ng paggawa ng mga halamanan at solar farm sa mga NFT at token. Naka-link ang bawat asset sa mga matalinong kontrata na nag-o-automate ng pagbabahagi ng kita, pagmamay-ari, at pamamahala — paglutas ng mga isyu tulad ng pira-pirasong data, hindi nabe-verify na mga ani, at mga opaque na karapatan sa lupa.",
       "description2": "Sa kaibuturan nito, ang AGV ay gumagamit ng isang standardized asset unit: 100 mu ng high-yield apple orchards na ipinares sa 6MW ng solar. Ang modelong ito ay naghahatid ng $180k–$280k taunang kita bawat unit na may 18%–26% IRR, na sinusuportahan ng data ng pagganap na nakabatay sa IoT at mga predictive na modelo.",
       "description3": "Hindi tulad ng mga tradisyonal na agri-project na mahirap kopyahin, ang mga unit ng AGV ay SPV-packaged, DeFi-compatible, at globally modular — nagbibigay-daan sa mabilis na pag-deploy at paulit-ulit na pag-scale sa mga hangganan."
     },
     "exploreAGV": {
-      "title": "I-explore ang On-Chain Infrastructure ng AGV",
+      "title": "Galugarin ang On-Chain Infrastructure ng AGV",
       "description": "Halina't bisitahin ang aming real-world na mga site ng proyekto at tingnan kung paano nagsasama-sama ang mga halamanan, solar array, at blockchain. Mula sa mga green zone ng China hanggang sa hinaharap na mga international hub, itinatayo ng AGV ang hinaharap ng land-based na RWA on-chain."
     },
     "whyAGV": {
@@ -542,7 +542,7 @@
         }
       ],
       "cta": {
-        "title": "The Future is Powered by Land, Sun, and Code",
+        "title": "Ang Hinaharap ay Pinapatakbo ng Land, Sun, at Code",
         "button": "Mamuhunan Ngayon",
         "backToTop": "Bumalik sa itaas"
       }
@@ -781,7 +781,7 @@
           "title": "Mga Benepisyo ng Dual-Token Ecosystem",
           "earnRewards": {
             "title": "Makakuha ng rGGP Rewards",
-            "description": "Mga token ng stake para makakuha ng mga reward na rGGP araw-araw na walang lock-up period."
+            "description": "Mga stake token para makakuha ng rGGP rewards araw-araw na walang lock-up period."
           },
           "governance": {
             "title": "Pamamahala ng GVT",
@@ -859,7 +859,7 @@
         "documentation": {
           "title": "Dokumentasyon",
           "tokenHandbook": "Handbook ng Token",
-          "stakingGuide": "Patnubay sa Staking",
+          "stakingGuide": "Staking Guide",
           "securityAudit": "Pag-audit ng Seguridad"
         },
         "latestArticles": {
@@ -882,7 +882,7 @@
         },
         "multiChainStrategy": {
           "title": "Multi-Chain Token Strategy",
-          "description": "I-maximize ang iyong mga reward sa buong BSC, Arbitrum, at Polygon network"
+          "description": "I-maximize ang iyong mga reward sa BSC, Arbitrum, at Polygon network"
         }
       }
     }
@@ -909,7 +909,7 @@
       },
       "sustainability": {
         "title": "Sustainability",
-        "description": "Pinangangasiwaan namin ang mga mapagkukunan para sa pangmatagalang panahon. Mula sa mga halamanan hanggang sa solar at mag-compute, inihanay namin ang mga insentibo upang ang on-chain growth ay sumasalamin sa real-world productivity at environmental responsibility."
+        "description": "Pinangangasiwaan namin ang mga mapagkukunan para sa mahabang panahon. Mula sa mga halamanan hanggang sa solar at mag-compute, inihanay namin ang mga insentibo upang ang on-chain growth ay sumasalamin sa real-world productivity at environmental responsibility."
       },
       "innovation": {
         "title": "Inobasyon",
@@ -1008,7 +1008,7 @@
       },
       "tokenization": {
         "title": "Real-World Asset Tokenization",
-        "description": "Paano namin tinutulungan ang agwat sa pagitan ng tradisyonal na mga asset at teknolohiya ng blockchain para sa napapanatiling paglago."
+        "description": "Kung paano namin tinutulungan ang agwat sa pagitan ng mga tradisyonal na asset at teknolohiya ng blockchain para sa napapanatiling paglago."
       },
       "security": {
         "title": "Seguridad at Transparency",
@@ -1028,7 +1028,7 @@
       },
       "partnership": {
         "title": "Announcement ng Partnership",
-        "description": "Nasasabik kaming ipahayag ang aming bagong pakikipagsosyo sa mga nangungunang provider ng imprastraktura ng blockchain."
+        "description": "Nasasabik kaming i-anunsyo ang aming bagong partnership sa mga nangungunang provider ng imprastraktura ng blockchain."
       },
       "smartContracts": {
         "title": "Teknikal na Deep Dive: Mga Matalinong Kontrata",
@@ -1037,6 +1037,14 @@
       "spotlight": {
         "title": "Spotlight ng Komunidad: Mga Kwento ng Tagumpay",
         "description": "Pakinggan mula sa aming mga miyembro ng komunidad ang tungkol sa kanilang mga karanasan sa AGV Protocol."
+      },
+      "introducingAGVProtocol": {
+        "title": "Ipinapakilala ang AGV Protocol:",
+        "description": "Pag-unlock sa Kinabukasan ng Mga Real-World na Asset"
+      },
+      "rGGPExplained": {
+        "title": "Ipinaliwanag ang rGGP",
+        "description": "Paano Ginagawa ng AGV Protocol ang Real-World yields sa Rewards"
       }
     }
   },
@@ -1062,7 +1070,7 @@
   "howWeDiffer": {
     "realAssets": {
       "title": "Mga Tunay na Asset",
-      "description": "Ang pinagbabatayan ng mga halamanan, solar capacity at edge compute cluster ng AGV ay nagbibigay ng nasasalat, nasusukat na ani."
+      "description": "Ang pinagbabatayan ng mga halamanan ng AGV, solar capacity at edge compute cluster ay nagbibigay ng nasasalat, nasusukat na ani."
     },
     "tokenization": {
       "title": "Tokenization",
@@ -1074,7 +1082,7 @@
     },
     "scalableSustainability": {
       "title": "Nasusukat na Sustainability",
-      "description": "Ibinahagi ang mga scale ng mini-grid architecture sa buong Asia/MENA, binabawasan ang grid strain, pagpapababa ng latency para sa mga workload ng AI at pagsusulong ng mga layunin sa pagpapanatili. Ang bawat bagong asset unit ay nagtataas ng parehong yield at valuation."
+      "description": "Ibinahagi ang mga scale ng mini-grid architecture sa buong Asia/MENA, binabawasan ang grid strain, pinapababa ang latency para sa mga workload ng AI at pagsusulong ng mga layunin sa pagpapanatili. Ang bawat bagong yunit ng asset ay nagtataas ng parehong ani at pagpapahalaga."
     },
     "title": "Paano Tayo Magkaiba"
   },
@@ -1099,12 +1107,12 @@
       "subtitle": "MGA TUNAY NA ASSET — ON-CHAIN."
     },
     "mission": {
-      "title": "MISSION",
+      "title": "MISYON",
       "description": "Ang aming misyon ay gawing puhunan ang kuryente at pagkalkula para sa lahat sa pamamagitan ng paggawa ng na-verify na real-world na output sa mga transparent, on-chain na asset."
     },
     "story": {
       "title": "ANG ATING KWENTO",
-      "description": "Sa panahon na pinapagana ng AI, ang demand sa kuryente at compute ay lumalaki nang husto. Tinutugunan ito ng AGV Protocol sa pamamagitan ng pagpapares ng mga orchard, solar farm, at edge compute mini-grids sa IoT telemetry at on-chain na pag-verify upang lumikha ng mga token na sustainable at yield-backed. Ang aming mga unang asset ay nasa Shaanxi, China, na may mga plano sa pagpapalawak sa buong Asia at higit pa."
+      "description": "Sa panahon na pinapagana ng AI, ang demand sa kuryente at compute ay lumalaki nang husto. Tinutugunan ito ng AGV Protocol sa pamamagitan ng pagpapares ng mga orchard, solar farm, at edge compute mini-grids sa IoT telemetry at on-chain na pag-verify para lumikha ng mga token na sustainable at yield-backed. Ang aming mga unang asset ay nasa Shaanxi, China, na may mga plano sa pagpapalawak sa buong Asia at higit pa."
     },
     "whatWeBuild": {
       "cleanEnergy": {
@@ -1132,11 +1140,11 @@
       },
       "verify": {
         "title": "I-verify",
-        "description": "Kinokolekta sa real-time ang data ng output ng enerhiya at compute, na na-validate ng mga auditor at naka-angkla sa chain."
+        "description": "Ang data ng output ng enerhiya at compute ay kinokolekta sa real-time, na-validate ng mga auditor at naka-angkla sa chain."
       },
       "mint": {
         "title": "Mint",
-        "description": "Ang mga token ay mined lamang pagkatapos ma-verify ang output. Ang GVT ay nakuha mula sa na-verify na ani; Ang rGGP ay ibinahagi bilang isang insentibo na nakabatay sa merit at maaaring i-convert sa GVT. Eksaktong nakikita ng mga mamumuhunan kung gaano kalaki ang real-world na output sa bawat token."
+        "description": "Ang mga token ay mined lamang pagkatapos ma-verify ang output. Ang GVT ay nakuha mula sa na-verify na ani; Ang rGGP ay ibinahagi bilang isang insentibo na nakabatay sa merit at maaaring i-convert sa GVT. Eksaktong nakikita ng mga mamumuhunan kung gaano karaming real-world na output ang itinataguyod ng bawat token."
       },
       "title": "PAANO ITO GUMAGANA - POWER-TO-MINT"
     },
@@ -1202,6 +1210,44 @@
         "name": "Frank",
         "role": "Marketing at PR"
       }
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "MAKIPAG-UGNAYAN",
+      "subtitle": "NANDITO KAMI PARA TUMULONG"
+    },
+    "section": {
+      "title": "IMPORMASYON SA CONTACT",
+      "description": "Makipag-ugnayan sa aming mga dalubhasang koponan para sa pinakanauugnay na tulong. Mag-click sa anumang email upang kopyahin ito sa iyong clipboard."
+    },
+    "general": {
+      "title": "Pangkalahatang Pakikipag-ugnayan",
+      "description": "Para sa pangkalahatang mga katanungan at koordinasyon."
+    },
+    "investor": {
+      "title": "Investor Relations (IR)",
+      "description": "Para sa VC/FO/Institutional na komunikasyon at data room."
+    },
+    "business": {
+      "title": "Pagpapaunlad ng Negosyo / Komunidad",
+      "description": "Para sa mga KOL, partner, campaign (TaskOn/Zealy), at community ops."
+    },
+    "technology": {
+      "title": "Teknolohiya",
+      "description": "Para sa produkto, website, mga pagsasama, deployment, at suporta."
+    },
+    "onchain": {
+      "title": "On-chain / Smart Contracts",
+      "description": "Para sa on-chain na usapin, pag-audit, pag-verify, at kontrata."
+    },
+    "external": {
+      "title": "Panlabas na Relasyon",
+      "description": "Para sa mga exchange, market makers, launchpads, at media partners."
+    },
+    "additional": {
+      "title": "Kailangan ng Higit pang Impormasyon?",
+      "description": "Para sa mga pangkalahatang tanong o kung hindi ka sigurado kung aling koponan ang makikipag-ugnayan, mangyaring makipag-ugnayan sa aming pangkalahatang email sa pakikipag-ugnayan. Sisiguraduhin naming makakarating ang iyong pagtatanong sa tamang tao."
     }
   }
 }

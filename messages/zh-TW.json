@@ -1037,6 +1037,14 @@
       "spotlight": {
         "title": "社區焦點：成功案例",
         "description": "聽聽我們的社群成員關於他們使用 AGV 協議的經驗。"
+      },
+      "introducingAGVProtocol": {
+        "title": "AGV協議介紹：",
+        "description": "解鎖現實世界資產的未來"
+      },
+      "rGGPExplained": {
+        "title": "rGGP 解釋",
+        "description": "AGV 協議如何將現實世界的收益轉化為回報"
       }
     }
   },
@@ -1202,6 +1210,44 @@
         "name": "坦白",
         "role": "行銷與公關"
       }
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "聯絡我們",
+      "subtitle": "我們隨時為您提供協助"
+    },
+    "section": {
+      "title": "聯絡資訊",
+      "description": "聯絡我們的專業團隊，以獲得最相關的協助。點擊任何電子郵件即可將其複製到剪貼簿。"
+    },
+    "general": {
+      "title": "一般聯絡方式",
+      "description": "用於一般查詢和協調。"
+    },
+    "investor": {
+      "title": "投資者關係（IR）",
+      "description": "適用於 VC/FO/機構通訊和資料室。"
+    },
+    "business": {
+      "title": "業務發展/社區",
+      "description": "適用於 KOL、合作夥伴、活動（TaskOn/Zealy）和社區運作。"
+    },
+    "technology": {
+      "title": "科技",
+      "description": "適用於產品、網站、整合、部署和支援。"
+    },
+    "onchain": {
+      "title": "鏈上/智能合約",
+      "description": "對於鏈上事務、審計、驗證和合約。"
+    },
+    "external": {
+      "title": "對外關係",
+      "description": "適用於交易所、做市商、啟動平台和媒體合作夥伴。"
+    },
+    "additional": {
+      "title": "需要更多資訊嗎？",
+      "description": "如果您有一般性問題，或不確定該聯絡哪個團隊，請聯絡我們的常規聯絡信箱。我們會確保您的諮詢聯繫到合適的人員。"
     }
   }
 }

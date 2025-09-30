@@ -1038,6 +1038,14 @@
       "spotlight": {
         "title": "社区焦点：成功案例",
         "description": "听听我们的社区成员关于他们使用 AGV 协议的经验。"
+      },
+      "introducingAGVProtocol": {
+        "title": "AGV协议介绍：",
+        "description": "解锁现实世界资产的未来"
+      },
+      "rGGPExplained": {
+        "title": "rGGP 解释",
+        "description": "AGV 协议如何将现实世界的收益转化为回报"
       }
     }
   },
@@ -1203,6 +1211,44 @@
         "name": "坦率",
         "role": "市场营销与公关"
       }
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "联系我们",
+      "subtitle": "我们随时为您提供帮助"
+    },
+    "section": {
+      "title": "联系信息",
+      "description": "联系我们的专业团队，获取最相关的帮助。点击任意电子邮件即可将其复制到剪贴板。"
+    },
+    "general": {
+      "title": "一般联系方式",
+      "description": "用于一般查询和协调。"
+    },
+    "investor": {
+      "title": "投资者关系（IR）",
+      "description": "适用于 VC/FO/机构通信和数据室。"
+    },
+    "business": {
+      "title": "业务发展/社区",
+      "description": "适用于 KOL、合作伙伴、活动（TaskOn/Zealy）和社区运营。"
+    },
+    "technology": {
+      "title": "技术",
+      "description": "适用于产品、网站、集成、部署和支持。"
+    },
+    "onchain": {
+      "title": "链上/智能合约",
+      "description": "对于链上事务、审计、验证和合同。"
+    },
+    "external": {
+      "title": "对外关系",
+      "description": "适用于交易所、做市商、启动平台和媒体合作伙伴。"
+    },
+    "additional": {
+      "title": "需要更多信息吗？",
+      "description": "如果您有一般性问题，或者不确定该联系哪个团队，请联系我们的常规联系邮箱。我们会确保您的咨询联系到合适的人员。"
     }
   }
 }

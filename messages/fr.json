@@ -1037,6 +1037,14 @@
       "spotlight": {
         "title": "Pleins feux sur la communauté : Histoires de réussite",
         "description": "Écoutez les membres de notre communauté parler de leurs expériences avec le protocole AGV."
+      },
+      "introducingAGVProtocol": {
+        "title": "Présentation du protocole AGV :",
+        "description": "Débloquer l'avenir des actifs du monde réel"
+      },
+      "rGGPExplained": {
+        "title": "rGGP expliqué",
+        "description": "Comment le protocole AGV transforme les rendements réels en récompenses"
       }
     }
   },
@@ -1180,7 +1188,7 @@
     "members": {
       "susan": {
         "name": "Suzanne",
-        "role": "General Director"
+        "role": "Directeur général"
       },
       "tyler": {
         "name": "Tyler",
@@ -1202,6 +1210,44 @@
         "name": "Franc",
         "role": "Marketing et relations publiques"
       }
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "ENTRER EN CONTACT",
+      "subtitle": "NOUS SOMMES ICI POUR VOUS AIDER"
+    },
+    "section": {
+      "title": "COORDONNÉES",
+      "description": "Contactez nos équipes spécialisées pour obtenir l'assistance la plus pertinente. Cliquez sur un e-mail pour le copier dans votre presse-papiers."
+    },
+    "general": {
+      "title": "Contact général",
+      "description": "Pour des demandes générales et de coordination."
+    },
+    "investor": {
+      "title": "Relations avec les investisseurs (RI)",
+      "description": "Pour les communications VC/FO/institutionnelles et les salles de données."
+    },
+    "business": {
+      "title": "Développement des affaires / Communauté",
+      "description": "Pour les KOL, les partenaires, les campagnes (TaskOn/Zealy) et les opérations communautaires."
+    },
+    "technology": {
+      "title": "Technologie",
+      "description": "Pour les produits, les sites Web, les intégrations, les déploiements et l'assistance."
+    },
+    "onchain": {
+      "title": "Contrats sur chaîne / intelligents",
+      "description": "Pour les questions liées à la chaîne, les audits, les vérifications et les contrats."
+    },
+    "external": {
+      "title": "Relations extérieures",
+      "description": "Pour les bourses, les teneurs de marché, les rampes de lancement et les partenaires médias."
+    },
+    "additional": {
+      "title": "Besoin de plus d'informations?",
+      "description": "Pour toute question d'ordre général ou si vous ne savez pas quelle équipe contacter, veuillez utiliser notre adresse e-mail générale. Nous veillerons à ce que votre demande parvienne à la bonne personne."
     }
   }
 }
