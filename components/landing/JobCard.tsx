@@ -11,7 +11,7 @@ interface JobCardProps {
 
 export const JobCard: React.FC<JobCardProps> = ({ icon: Icon, title, description, onReadMore }) => {
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
       {/* Icon Circle */}
       <div className="w-12 h-12 bg-[#3399FF] rounded-full flex items-center justify-center mb-4">
         <Icon className="w-6 h-6 text-white" />

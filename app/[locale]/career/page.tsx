@@ -83,7 +83,15 @@ export default function CareerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Left semicircle */}
+        <div className="absolute top-[70pc] left-0 w-[1000px] h-[1000px] bg-[#4FACFE]/10 rounded-full -translate-x-[600px] -translate-y-[600px]"></div>
+        {/* Right semicircle */}
+        <div className="absolute top-[100pc] right-0 w-[1000px] h-[1000px] bg-[#4FACFE]/10 rounded-full translate-x-[500px] -translate-y-[500px]"></div>
+      </div>
+      
       {/* Header */}
       <Header />
       
@@ -115,7 +123,7 @@ export default function CareerPage() {
       </section>
 
       {/* Our Company Values Section */}
-      <section className="py-16 sm:py-20 bg-gray-50">
+      <section className="py-16 sm:py-20 bg-transparent relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-left mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#223256] mb-4 text-center uppercase">
@@ -137,7 +145,7 @@ export default function CareerPage() {
       </section>
 
       {/* Perks & Benefits Section */}
-      <section className="py-16 sm:py-20 bg-white ">
+      <section className="py-16 sm:py-20 bg-transparent relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#223256] mb-4 uppercase">
@@ -159,7 +167,7 @@ export default function CareerPage() {
       </section>
 
       {/* Open Roles Section */}
-      <section className="py-16 sm:py-20 bg-gray-50">
+      <section className="py-16 sm:py-20 bg-transparent relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#223256] mb-4 text-center uppercase">

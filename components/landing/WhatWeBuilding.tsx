@@ -9,26 +9,26 @@ export const WhatWeBuilding: React.FC = () => {
     
     const articles = [
         {
-            title: t('whatWeBuilding.assetBackedNFT.title'),
-            description: t('whatWeBuilding.assetBackedNFT.description'),
+            title: t('whatWeBuilding.assetBackedNFT.title') || 'Asset-Backed NFTs',
+            description: t('whatWeBuilding.assetBackedNFT.description') || 'Description for asset-backed NFTs',
         },
         {
-            title: t('whatWeBuilding.powerToMint.title'),
-            description: t('whatWeBuilding.powerToMint.description'),
+            title: t('whatWeBuilding.powerToMint.title') || 'Power to Mint',
+            description: t('whatWeBuilding.powerToMint.description') || 'Description for power to mint',
         },
         {
-            title: t('whatWeBuilding.dualTokenSystem.title'),
-            description: t('whatWeBuilding.dualTokenSystem.description'),
+            title: t('whatWeBuilding.dualTokenSystem.title') || 'Dual Token System',
+            description: t('whatWeBuilding.dualTokenSystem.description') || 'Description for dual token system',
         },
         {
-            title: t('whatWeBuilding.daoCompliance.title'),
-            description: t('whatWeBuilding.daoCompliance.description'),
+            title: t('whatWeBuilding.daoCompliance.title') || 'DAO Compliance',
+            description: t('whatWeBuilding.daoCompliance.description') || 'Description for DAO compliance',
         }
     ];
 
     return (
         <ThreeLayer
-            title={t('whatWeBuilding.title')}
+            title={t('whatWeBuilding.title') || 'What We Are Building'}
             articles={articles}
             icon={<FileText className="text-4xl text-gray-600" />}
         />

@@ -30,7 +30,7 @@ export const ThreeLayer: React.FC<ThreeLayerProps> = ({
 
                 <div className="mb-8">
                     <div className="grid gap-10 md:grid-cols-4">
-                        {articles.map((article, index) => (
+                        {articles && articles.length > 0 ? articles.map((article, index) => (
                             <div key={index} className="bg-white border border-gray-200 rounded-2xl p-6 group hover:shadow-lg transition-all duration-300 text-center">
                                 <div className="flex items-center space-x-3 mb-3 justify-center">
                                     <div className="p-2 rounded-lg bg-gray-100">
@@ -40,7 +40,11 @@ export const ThreeLayer: React.FC<ThreeLayerProps> = ({
                                 <h4 className="font-semibold text-[#223256] mb-2 text-center">{article.title}</h4>
                                 <p className="text-[#223256] text-sm mb-4 tracking-widest">{article.description}</p>
                             </div>
-                        ))}
+                        )) : (
+                            <div className="col-span-full text-center text-gray-500">
+                                No articles available
+                            </div>
+                        )}
                     </div>
                 </div>
 

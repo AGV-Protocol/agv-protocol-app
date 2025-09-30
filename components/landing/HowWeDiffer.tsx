@@ -9,26 +9,26 @@ export const HowWeDiffer: React.FC = () => {
     
     const articles = [
         {
-            title: t('howWeDiffer.realAssets.title'),
-            description: t('howWeDiffer.realAssets.description'),
+            title: t('howWeDiffer.realAssets.title') || 'Real Assets',
+            description: t('howWeDiffer.realAssets.description') || 'Description for real assets',
         },
         {
-            title: t('howWeDiffer.tokenization.title'),
-            description: t('howWeDiffer.tokenization.description'),
+            title: t('howWeDiffer.tokenization.title') || 'Tokenization',
+            description: t('howWeDiffer.tokenization.description') || 'Description for tokenization',
         },
         {
-            title: t('howWeDiffer.yieldDistribution.title'),
-            description: t('howWeDiffer.yieldDistribution.description'),
+            title: t('howWeDiffer.yieldDistribution.title') || 'Yield Distribution',
+            description: t('howWeDiffer.yieldDistribution.description') || 'Description for yield distribution',
         },
         {
-            title: t('howWeDiffer.scalableSustainability.title'),
-            description: t('howWeDiffer.scalableSustainability.description'),
+            title: t('howWeDiffer.scalableSustainability.title') || 'Scalable Sustainability',
+            description: t('howWeDiffer.scalableSustainability.description') || 'Description for scalable sustainability',
         }
     ];
 
     return (
         <ThreeLayer
-            title={t('howWeDiffer.title')}
+            title={t('howWeDiffer.title') || 'How We Differ'}
             articles={articles}
             icon={<FileText className="text-4xl text-gray-600" />}
         />
