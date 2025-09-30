@@ -96,7 +96,7 @@ export const MainContent: React.FC = () => {
     <section className="relative">
       {/* Gradient section from hero end to Platform Overview title */}
       <div className="bg-gradient-to-b from-[#66CCFF] to-white pt-16 sm:pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 pl-[12px]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pl-[8px]">
           {/* Platform Overview Title */}
             <div className="flex items-center mb-8 sm:mb-12 px-4 sm:px-8 lg:px-24">
               <div className="w-2 h-2 bg-[#3399FF] rounded-full mr-3"></div>
@@ -117,7 +117,7 @@ export const MainContent: React.FC = () => {
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-gray-800">{t('maincontent.stats.nftCount')}</div>
-                  <div className="text-xs text-gray-500">{t('maincontent.stats.nftsMinted')}</div>
+                  <div className="text-xs text-gray-500">{t('landing.platformOverview.nftsMinted')}</div>
                 </div>
               </div>
               <div className="text-gray-600 font-medium">{t('maincontent.stats.totalSupply')}</div>

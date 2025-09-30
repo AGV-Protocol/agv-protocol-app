@@ -14,7 +14,8 @@
     "close": "Isara",
     "confirm": "Kumpirmahin",
     "required": "Kinakailangan",
-    "optional": "Opsyonal"
+    "optional": "Opsyonal",
+    "readMore": "Magbasa pa"
   },
   "nav": {
     "home": "Bahay",
@@ -38,16 +39,18 @@
     "disconnect": "Idiskonekta"
   },
   "hero": {
-    "description": "I-unlock ang mga eksklusibong SeedPass, TreePass, SolarPass, at ComputePass NFT, ang iyong gateway sa mga napapanatiling reward. I-stake kaagad na walang lock-up period at magsimulang makakuha ng mga pang-araw-araw na reward sa BSC, Polygon, at Arbitrum network.",
+    "description": "I-unlock ang malinis na enerhiya at i-compute ang yield sa pamamagitan ng paggawa ng na-verify na kuryente at edge-compute na kapasidad sa investable on-chain asset.",
     "startMinting": "Simulan ang Minting",
     "viewStaking": "Tingnan ang Staking",
     "blockchains": "Mga Blockchain",
     "nftCollections": "Mga Koleksyon ng NFT",
-    "dailyRewards": "Pang-araw-araw na Gantimpala"
+    "dailyRewards": "Pang-araw-araw na Gantimpala",
+    "title1": "Ang Nangungunang RWA",
+    "title2": "Protocol para sa AI Power"
   },
   "whatisagv": {
-    "title": "Ano ang AGV?",
-    "description": "Ang AGV (AgriVolt Protocol) ay isang real-asset-backed Web3 protocol na nagdadala ng mga halamanan, solar farm, at mga desentralisadong node sa blockchain. Ang bawat asset unit ay bumubuo ng real-world yield mula sa mga ani ng prutas hanggang sa solar energy at edge computing."
+    "title": "Ang Ginagawa Namin",
+    "description": "Ang AGV Protocol ay isang dePIN RWA infrastructure protocol na nagpapalit ng mga halamanan, solar farm, at edge-compute clusters sa mga nabe-verify at naka-back up na digital asset. Ang bawat unit ng enerhiya at compute na output ay sinusubaybayan ng mga IoT device, naka-angkla sa chain, at pagkatapos ay na-tokenize lang. Tinitiyak ng mekanismong ito ng Power-to-Mint ang isang 1:1 na link sa pagitan ng pisikal na produktibidad at digital na halaga, na nag-a-unlock ng mga napapanatiling pagbabalik para sa mga on-chain na namumuhunan. Kasalukuyang nagbubunga ang AGV sa mga na-verify na halamanan, solar plants at compute node sa Shaanxi, China—ang pinakamalaking energy at AI infrastructure zone sa mundo"
   },
   "whyagv": {
     "title": "Bakit Isang Blueprint ang AGV para sa Real Yield Infrastructure?",
@@ -55,12 +58,12 @@
   },
   "fixing": {
     "title": "Pag-aayos sa Kung Ano ang Nasira sa Real-World Tokenization",
-    "description1": "Tinutulay ng AGV ang digital at pisikal na mundo sa pamamagitan ng paggawa ng mga halamanan at solar farm sa mga NFT at token. Naka-link ang bawat asset sa mga matalinong kontrata na nag-o-automate ng pagbabahagi ng kita, pagmamay-ari, at pamamahala — paglutas ng mga isyu tulad ng pira-pirasong data, hindi nabe-verify na mga ani, at mga opaque na karapatan sa lupa.",
+    "description1": "Tinutulay ng AGV ang digital at pisikal na mundo sa pamamagitan ng paggawa ng mga halamanan at solar farm sa mga NFT at token. Ang bawat asset ay naka-link sa mga matalinong kontrata na nag-o-automate ng pagbabahagi ng kita, pagmamay-ari, at pamamahala — paglutas ng mga isyu tulad ng pira-pirasong data, hindi nabe-verify na mga ani, at mga opaque na karapatan sa lupa.",
     "description2": "Sa kaibuturan nito, ang AGV ay gumagamit ng isang standardized asset unit: 100 mu ng high-yield apple orchards na ipinares sa 6MW ng solar. Ang modelong ito ay naghahatid ng $180k–$280k taunang kita bawat unit na may 18%–26% IRR, na sinusuportahan ng data ng pagganap na nakabatay sa IoT at mga predictive na modelo.",
     "description3": "Hindi tulad ng mga tradisyonal na agri-project na mahirap kopyahin, ang mga unit ng AGV ay SPV-packaged, DeFi-compatible, at globally modular — nagbibigay-daan sa mabilis na pag-deploy at paulit-ulit na pag-scale sa mga hangganan."
   },
   "exploreagv": {
-    "title": "I-explore ang On-Chain Infrastructure ng AGV",
+    "title": "Galugarin ang On-Chain Infrastructure ng AGV",
     "description": "Halina't bisitahin ang aming real-world na mga site ng proyekto at tingnan kung paano nagsasama-sama ang mga halamanan, solar array, at blockchain. Mula sa mga green zone ng China hanggang sa hinaharap na mga international hub, itinatayo ng AGV ang hinaharap ng land-based na RWA on-chain."
   },
   "blockchain": {
@@ -68,9 +71,9 @@
     "realAssets": "TUNAY NA ASSETS. TUNAY NA KITA.",
     "eachUnit": "Kasama sa bawat unit ng AGV ang:",
     "item1": "100 mu ng mga taniman ng mansanas na may mataas na ani",
-    "item2": "6MW solar array na may grid connection",
-    "item3": "IoT sensor para sa real-time na pagsubaybay",
-    "item4": "Mga matalinong kontrata para sa awtomatikong pagbabahagi ng kita",
+    "item2": "6MW utility-grade solar farm",
+    "item3": "Taunang kita: $180,000 – $280,000",
+    "item4": "Target ng IRR: 18% – 26%",
     "item5": "Transparent na pagmamay-ari at pamamahala",
     "item6": "Tokenization na katugma sa DeFi",
     "assetsDescription": "Ang mga asset ay land-based, yield-producing, at inflation-resistant — hindi synthetic token o speculative DeFi experiments.",
@@ -124,7 +127,7 @@
     "features": {
       "multichain": {
         "title": "Multi-Chain Support",
-        "description": "I-deploy at pamahalaan ang mga NFT sa BSC, Polygon, at Arbitrum network"
+        "description": "I-deploy at pamahalaan ang mga NFT sa buong BSC, Polygon, at Arbitrum network"
       },
       "secure": {
         "title": "Secure Minting",
@@ -139,10 +142,11 @@
       "totalSupply": "Kabuuang Supply",
       "nftsMinted": "NFTs Minted",
       "rewardRate": "Rate ng Gantimpala",
-      "dailyRewards": "Pang-araw-araw na Gantimpala",
+      "dailyRewards": "rGGP/Araw",
       "securityScore": "Marka ng Seguridad",
       "auditRating": "Rating ng Audit",
-      "upto50rggp": "Hanggang 50 rGGP"
+      "upto50rggp": "50.00",
+      "nftCount": "1,234"
     },
     "social": {
       "github": "GitHub",
@@ -171,7 +175,7 @@
     }
   },
   "footer": {
-    "copyright": " AGV Protocol. Lahat ng karapatan ay nakalaan.",
+    "copyright": " Protokol ng AGV. Lahat ng karapatan ay nakalaan.",
     "privacy": "Patakaran sa Privacy",
     "terms": "Mga Tuntunin ng Serbisyo",
     "contact": "Makipag-ugnayan sa Amin",
@@ -195,7 +199,7 @@
     "cookiePolicy": "Patakaran sa Cookie",
     "gdpr": "GDPR",
     "headquarters": "Headquarter sa Asya. Pinapatakbo sa buong mundo. Na-audit ng mga nangungunang kumpanya.",
-    "legalText": "Ang lahat ng real-world na asset ay hawak ng mga awtorisadong Chinese SPV at nakamapa sa pamamagitan ng legal na awtorisasyon sa JLL Asset Ltd. (BVI Company No. 2182436). Ang pagpapalabas at pagpapatakbo ng NFT ay isinasagawa ng iJET Limited (NZBN: 9429049576290). Isinasagawa ang paglipat ng pamamahala sa AGV DAO na nakabase sa BVI."
+    "legalText": "Ang lahat ng real-world na asset ay hawak ng mga awtorisadong Chinese SPV at namamapa sa pamamagitan ng legal na awtorisasyon sa JLL Asset Ltd. (BVI Company No. 2182436). Ang pagpapalabas at pagpapatakbo ng NFT ay isinasagawa ng iJET Limited (NZBN: 9429049576290). Isinasagawa ang paglipat ng pamamahala sa AGV DAO na nakabase sa BVI."
   },
   "staking": {
     "title": "AGV Protocol Staking",
@@ -259,57 +263,57 @@
     "whitelistRequired": "Kinakailangan ang whitelist",
     "rewardsDashboard": {
       "title": "rGGP Rewards Dashboard",
-      "subtitle": "Kumita ng rGGP credits",
-      "available": "rGGP Available",
+      "subtitle": "Makakuha ng rGGP credits",
+      "available": "Available ang rGGP",
       "remaining": "natitira",
-      "collection": "Collection",
+      "collection": "Koleksyon",
       "baseRate": "Base Rate",
       "bonusMultiplier": "Bonus Multiplier",
-      "activeStakes": "Active Stakes",
-      "readyToClaim": "Ready to Claim",
-      "claimAllRewards": "Claim All Rewards",
-      "claiming": "Claiming...",
-      "activeStakesTitle": "Active Stakes",
-      "withdrawnStakesTitle": "Withdrawn Stakes",
-      "noActiveStakes": "Walang active stakes",
-      "noWithdrawnStakes": "Walang withdrawn stakes"
+      "activeStakes": "Mga Aktibong Pusta",
+      "readyToClaim": "Handa nang Mag-claim",
+      "claimAllRewards": "I-claim ang Lahat ng Gantimpala",
+      "claiming": "Inaangkin...",
+      "activeStakesTitle": "Mga Aktibong Pusta",
+      "withdrawnStakesTitle": "Mga Inalis na Pusta",
+      "noActiveStakes": "Walang aktibong stake",
+      "noWithdrawnStakes": "Walang mga withdrawn stakes"
     },
     "legacyRewards": {
-      "title": "Legacy Rewards Preview",
-      "selection": "Selection",
-      "baseDailyPerNft": "Base Daily (per NFT)",
+      "title": "Preview ng Legacy Rewards",
+      "selection": "Pagpili",
+      "baseDailyPerNft": "Base Daily (bawat NFT)",
       "bonusMultiplier": "Bonus Multiplier",
-      "perNftDaily": "Per NFT Daily",
-      "totalDailyAllSelected": "Total Daily (all selected)",
-      "duration": "Duration",
-      "scheduledTotal": "Scheduled Total (selection × days)",
-      "description": "Ito ay legacy rewards estimate batay sa current selection at lock duration."
+      "perNftDaily": "Bawat NFT Daily",
+      "totalDailyAllSelected": "Kabuuang Araw-araw (lahat ng napili)",
+      "duration": "Tagal",
+      "scheduledTotal": "Naka-iskedyul na Kabuuan (pagpili × araw)",
+      "description": "Isa itong legacy na pagtatantya ng mga reward batay sa kasalukuyang pagpili at tagal ng lock."
     },
     "yourStakes": {
-      "title": "Ang inyong mga stakes",
-      "connectWalletToView": "Ikonekta ang wallet para makita ang inyong mga stakes",
-      "loadingStakes": "Loading ang inyong mga stakes...",
-      "noStakesFound": "Walang nahanap na stakes para sa network at collection na ito.",
-      "staked": "Staked",
-      "unlocks": "Unlocks",
-      "unlocked": "Unlocked",
-      "left": "natitira",
-      "accrued": "Accrued",
+      "title": "Iyong mga Pusta",
+      "connectWalletToView": "Ikonekta ang wallet upang tingnan ang iyong mga stake",
+      "loadingStakes": "Nilo-load ang iyong mga stake...",
+      "noStakesFound": "Walang nahanap na stake para sa network at koleksyon na ito.",
+      "staked": "Nakataya",
+      "unlocks": "Nagbubukas",
+      "unlocked": "Na-unlock",
+      "left": "umalis",
+      "accrued": "Naipon",
       "rate": "Rate",
-      "counted": "Counted"
+      "counted": "Binibilang"
     },
     "nftSelection": {
-      "noNftsFound": "Walang nahanap na AGV NFTs",
+      "noNftsFound": "Walang Nahanap na AGV NFT",
       "noNftsDescription": "Wala kayong {collection} NFTs sa inyong nakakonektang wallet sa {network}.",
-      "mintFirstNft": "Mint ang inyong unang NFT",
+      "mintFirstNft": "Mint ang iyong unang NFT",
       "selected": "Napili",
-      "clear": "I-clear",
-      "stake": "Stake",
-      "staking": "Staking…"
+      "clear": "Maaliwalas",
+      "stake": "istaka",
+      "staking": "Staking..."
     },
     "loadingStakedNfts": "Loading ang mga staked NFTs…",
-    "noStakesFoundForNetwork": "Walang nahanap na stakes para sa network at collection na ito.",
-    "durationMustBeAtLeastSevenDays": "Ang tagal ng stake ay dapat na hindi bababa sa 7 araw."
+    "noStakesFoundForNetwork": "Walang nahanap na stake para sa network at koleksyon na ito.",
+    "durationMustBeAtLeastSevenDays": "Ang tagal ng staking ay dapat na hindi bababa sa 7 araw."
   },
   "minting": {
     "title": "AGV Protocol Minting",
@@ -328,7 +332,7 @@
     "nft": {
       "seed": {
         "name": "SeedPass NFT",
-        "description": "Access sa sustainable farming rewards at eksklusibong benepisyo"
+        "description": "Access sa sustainable farming reward at eksklusibong benepisyo"
       },
       "tree": {
         "name": "TreePass NFT",
@@ -336,11 +340,11 @@
       },
       "solar": {
         "name": "SolarPass NFT",
-        "description": "Mga gantimpala sa enerhiya ng solar at access sa berdeng imprastraktura"
+        "description": "Mga gantimpala sa solar energy at access sa berdeng imprastraktura"
       },
       "compute": {
         "name": "ComputePass NFT",
-        "description": "Mga reward sa Edge computing at access sa imprastraktura ng DePIN"
+        "description": "Mga gantimpala sa Edge computing at access sa imprastraktura ng DePIN"
       }
     },
     "referralId": "Referral ID",
@@ -415,7 +419,7 @@
       },
       "stakeEarn": {
         "title": "Stake at Kumita",
-        "description": "Ipusta ang iyong mga NFT para makakuha ng mga pang-araw-araw na reward",
+        "description": "Ipusta ang iyong mga NFT para kumita araw-araw\nmga gantimpala",
         "button": "Simulan ang Staking"
       },
       "learnMore": {
@@ -482,7 +486,7 @@
       "title": "Bakit Isang Blueprint ang AGV para sa Real Yield Infrastructure?",
       "description1": "Ang AGV ay hindi isang one-off na proyekto. Isa itong replicable na protocol na ginagawang digital yield infrastructure ang tunay na lupain.",
       "description2": "Ang bawat unit ng AGV ay inaasahang bubuo ng $180k–$280k sa taunang kita, na may IRR sa pagitan ng 18% at 26%, batay sa aktwal na ani ng orchard at regional solar performance data.",
-      "description3": "Pinagsasama-sama namin ang nangunguna sa mundong agrikultura at solar asset ng China na may modular na SPV tokenization at on-chain data architecture, na ginagawang digitally verifiable, yield-bearing, at DeFi-compatible ang bawat pisikal na unit."
+      "description3": "Pinagsasama namin ang nangunguna sa mundo na agrikultura at solar asset ng China sa modular na SPV tokenization at on-chain na arkitektura ng data, na ginagawang digitally verification, yield-bearing, at DeFi-compatible ang bawat pisikal na unit."
     },
     "blockchainInfrastructure": {
       "title": "Nagbabagong Imprastraktura gamit ang Blockchain",
@@ -584,7 +588,7 @@
       },
       "legal": {
         "headquarters": "Headquarter sa Asya. Pinapatakbo sa buong mundo. Na-audit ng mga nangungunang kumpanya.",
-        "description": "Ang lahat ng real-world na asset ay hawak ng mga awtorisadong Chinese SPV at nakamapa sa pamamagitan ng legal na awtorisasyon sa JLL Asset Ltd. (BVI Company No. 2182436). Ang pagpapalabas at pagpapatakbo ng NFT ay isinasagawa ng iJET Limited (NZBN: 9429049576290). Isinasagawa ang paglipat ng pamamahala sa AGV DAO na nakabase sa BVI."
+        "description": "Ang lahat ng real-world na asset ay hawak ng mga awtorisadong Chinese SPV at namamapa sa pamamagitan ng legal na awtorisasyon sa JLL Asset Ltd. (BVI Company No. 2182436). Ang pagpapalabas at pagpapatakbo ng NFT ay isinasagawa ng iJET Limited (NZBN: 9429049576290). Isinasagawa ang paglipat ng pamamahala sa AGV DAO na nakabase sa BVI."
       },
       "copyright": "© 2025 AgriVolt Protocol. Lahat ng karapatan ay nakalaan"
     },
@@ -616,7 +620,7 @@
         },
         "performanceAnalytics": {
           "title": "Analytics ng Pagganap",
-          "description": "Subaybayan ang performance ng platform, mga oras ng pagtugon, at kalusugan ng system"
+          "description": "Subaybayan ang pagganap ng platform, mga oras ng pagtugon, at kalusugan ng system"
         },
         "kolTracking": {
           "title": "Pagsubaybay sa KOL",
@@ -856,7 +860,7 @@
           "title": "Dokumentasyon",
           "tokenHandbook": "Handbook ng Token",
           "stakingGuide": "Patnubay sa Staking",
-          "securityAudit": "Security Audit"
+          "securityAudit": "Pag-audit ng Seguridad"
         },
         "latestArticles": {
           "title": "Pinakabagong Mga Artikulo",
@@ -878,34 +882,42 @@
         },
         "multiChainStrategy": {
           "title": "Multi-Chain Token Strategy",
-          "description": "I-maximize ang iyong mga reward sa BSC, Arbitrum, at Polygon network"
+          "description": "I-maximize ang iyong mga reward sa buong BSC, Arbitrum, at Polygon network"
         }
       }
     }
   },
   "career": {
     "hero": {
-      "title": "Sumali sa aming koponan",
-      "description": "Maging bahagi ng hinaharap ng real-world asset tokenization. Sumali sa AGV Protocol at tumulong sa pagbuo ng infrastructure na nag-uugnay sa mga tradisyonal na asset sa blockchain technology."
+      "title": "Sumali sa Aming Koponan",
+      "description": "Maging bahagi ng hinaharap ng real-world asset tokenization. Sumali sa AGV Protocol at tumulong sa pagbuo ng imprastraktura na tumutulay sa mga tradisyonal na asset gamit ang teknolohiyang blockchain."
     },
     "values": {
-      "title": "Ang aming mga halaga ng kumpanya",
+      "title": "Mga Halaga ng Aming Kumpanya",
       "subtitle": "Ginagawa namin ang hinaharap ng sustainable blockchain infrastructure. Sumali sa isang koponan na passionate sa paglikha ng tunay na epekto sa pamamagitan ng makabagong teknolohiya.",
       "passion": {
         "title": "Passion para sa inobasyon",
         "description": "Pinapagana kami ng paniniwala na ang blockchain technology ay maaaring malutas ang mga tunay na problema at lumikha ng sustainable na halaga para sa mga komunidad sa buong mundo."
       },
       "collaboration": {
-        "title": "Espiritu ng pakikipagtulungan",
-        "description": "Naniniwala kami sa kapangyarihan ng teamwork at magkakaibang pananaw upang lumikha ng mga solusyon na nakikinabang sa lahat sa aming ecosystem."
+        "title": "Pakikipagtulungan",
+        "description": "Bumubuo kami kasama ng mga kasosyo at komunidad. Ang mga magsasaka, mga operator ng enerhiya, mga tagapagbigay ng node, mga regulator, at mga gumagamit ay nakikipagtulungan sa amin sa pamamagitan ng mga bukas na pamantayan, transparent na data, at patas na mga gantimpala."
       },
       "learning": {
         "title": "Patuloy na pag-aaral",
         "description": "Ang blockchain space ay mabilis na umuunlad, at nakatuon kami sa pagiging nasa harapan sa pamamagitan ng patuloy na pag-aaral at pag-angkop."
+      },
+      "sustainability": {
+        "title": "Sustainability",
+        "description": "Pinangangasiwaan namin ang mga mapagkukunan para sa pangmatagalang panahon. Mula sa mga halamanan hanggang sa solar at mag-compute, inihanay namin ang mga insentibo upang ang on-chain growth ay sumasalamin sa real-world productivity at environmental responsibility."
+      },
+      "innovation": {
+        "title": "Inobasyon",
+        "description": "Isinusulong namin kung ano ang posible—ligtas. Pragmatikong inilalapat namin ang blockchain: Mga ani na na-verify ng IoT, ekonomikong dual-token, at mga sumusunod na istruktura na ginagawang naa-access ang mga tunay na asset nang walang hype."
       }
     },
     "perks": {
-      "title": "Mga benepisyo at perks",
+      "title": "Mga Perks at Benepisyo",
       "subtitle": "Nag-aalok kami ng mga mapagkumpitensyang benepisyo at supportive work environment na tumutulong sa aming mga miyembro ng koponan na umunlad sa personal at propesyonal.",
       "health": {
         "title": "Kalusugan at kagalingan",
@@ -918,45 +930,278 @@
       "impact": {
         "title": "Tunay na epekto",
         "description": "Magtrabaho sa mga proyekto na may tunay na epekto, mula sa sustainable agriculture hanggang sa renewable energy infrastructure."
+      },
+      "remote": {
+        "title": "Malayo-Unang Kapaligiran sa Trabaho",
+        "description": "Flexible, pandaigdigang istraktura ng koponan."
+      },
+      "growth": {
+        "title": "Propesyonal na Paglago",
+        "description": "Nagbibigay-daan para sa mentorship, pagsasanay at pag-aaral."
+      },
+      "mission": {
+        "title": "Paghahanay ng Misyon",
+        "description": "Maging bahagi ng isang proyektong hinimok ng epekto na nagkokonekta sa real-world na imprastraktura sa Web3."
       }
     },
     "roles": {
-      "title": "Mga bukas na posisyon",
+      "title": "Buksan ang Mga Tungkulin",
       "subtitle": "Palagi naming hinahanap ang mga talented na indibidwal na nagbabahagi ng aming pananaw sa pagbuo ng sustainable blockchain infrastructure.",
-      "seeMore": "Tingnan ang mas maraming oportunidad",
-      "noOpenings": "Walang kasalukuyang bukas na posisyon"
+      "seeMore": "Tingnan ang Higit Pa",
+      "noOpenings": "Huwag mag-atubiling sumali sa aming listahan ng talento sa pamamagitan ng form sa ibaba.",
+      "noOpenings1": "Walang opening ngayon."
     }
   },
   "blog": {
     "hero": {
-      "title": "AGV Protocol Blog",
-      "subtitle": "Manatiling updated sa pinakabagong balita, insights, at mga development sa mundo ng real-world asset tokenization at sustainable blockchain infrastructure."
+      "title": "MGA INSIGHT at UPDATE",
+      "subtitle": "Tumuklas ng mga insight sa AI power trend, real-world asset development, tokenomics research, at AGV community milestone. Ang aming blog ay kung saan ang napapanatiling pagbabago sa Web3 ay nakakatugon sa praktikal na kaalaman, na tumutulong sa mga mamumuhunan, tagabuo, at mga kasosyo na manatiling nangunguna sa curve.."
     },
     "tabs": {
       "all": "Lahat",
       "announcements": "Mga anunsyo",
-      "tech": "Teknolohiya",
+      "tech": "Tech",
       "community": "Komunidad"
     },
     "featured": {
-      "title": "Featured na artikulo"
+      "title": "Itinatampok na Artikulo"
     },
     "search": {
-      "title": "Maghanap ng mga artikulo"
+      "title": "Maghanap ng mga Artikulo"
     },
     "searchPlaceholder": "Maghanap ng mga artikulo...",
     "newsletter": {
-      "title": "Manatiling updated",
-      "description": "Makatanggap ng pinakabagong balita at updates nang direkta sa inyong inbox."
+      "title": "Manatiling Update",
+      "description": "Kunin ang pinakabagong mga balita at mga update na inihatid sa iyong inbox.",
+      "emailPlaceholder": "Ilagay ang iyong email",
+      "send": "Ipadala"
     },
     "main": {
-      "title": "Pinakabagong mga artikulo",
-      "articlesFound": "mga artikulo na natagpuan",
+      "title": "Pinakabagong Mga Artikulo",
+      "articlesFound": "nakitang mga artikulo",
       "inCategory": "sa {category}",
       "forQuery": "para sa \"{query}\"",
       "noResultsForQuery": "Walang mga artikulo na natagpuan para sa \"{query}\"",
       "noResultsInCategory": "Walang mga artikulo na natagpuan sa {category}",
-      "viewAllPosts": "Tingnan ang lahat ng mga post"
+      "viewAllPosts": "Tingnan ang Lahat ng Mga Post"
+    },
+    "featuredArticle": {
+      "title": "Ipinapakilala ang AGV Protocol: Pag-unlock sa Kinabukasan ng Mga Real-World na Asset",
+      "description": "2025 na, at mabilis na nagbabago ang financial landscape ng mundo. Bilang resulta, isang tanong ang patuloy na lumalabas..."
+    },
+    "articles": {
+      "sustainableWeb3": {
+        "title": "Ang Kinabukasan ng Sustainable Web3",
+        "description": "Paggalugad kung paano nagagawa ng teknolohiya ng blockchain ang pagpapanatili ng kapaligiran at lumikha ng epekto sa totoong mundo."
+      },
+      "nftStaking": {
+        "title": "NFT Staking Revolution",
+        "description": "Matuto tungkol sa aming mga makabagong mekanismo ng staking na nagbibigay ng reward sa mga user habang sinusuportahan ang mga real-world na asset."
+      },
+      "multiChain": {
+        "title": "Multi-Chain Integration",
+        "description": "Tuklasin kung paano walang putol na gumagana ang AGV Protocol sa maraming blockchain network para sa maximum na accessibility."
+      },
+      "governance": {
+        "title": "Pamamahala ng Komunidad",
+        "description": "Pag-unawa sa papel ng komunidad sa paghubog ng kinabukasan ng desentralisadong pananalapi at pamamahala ng asset."
+      },
+      "tokenization": {
+        "title": "Real-World Asset Tokenization",
+        "description": "Paano namin tinutulungan ang agwat sa pagitan ng tradisyonal na mga asset at teknolohiya ng blockchain para sa napapanatiling paglago."
+      },
+      "security": {
+        "title": "Seguridad at Transparency",
+        "description": "Ang aming pangako sa pagpapanatili ng pinakamataas na pamantayan ng seguridad habang tinitiyak ang kumpletong transparency."
+      },
+      "developer": {
+        "title": "Ecosystem ng Developer",
+        "description": "Pagbuo ng mga tool at imprastraktura upang suportahan ang mga developer sa paglikha ng susunod na henerasyon ng mga Web3 application."
+      },
+      "expansion": {
+        "title": "Pandaigdigang Pagpapalawak",
+        "description": "Ang paglalakbay ng AGV Protocol sa pagiging isang pandaigdigang pinuno sa mga sustainable na solusyon sa blockchain."
+      },
+      "ama": {
+        "title": "Community AMA Session",
+        "description": "Sumali sa aming buwanang Ask Me Anything session kasama ang AGV Protocol team at sagutin ang iyong mga tanong."
+      },
+      "partnership": {
+        "title": "Announcement ng Partnership",
+        "description": "Nasasabik kaming ipahayag ang aming bagong pakikipagsosyo sa mga nangungunang provider ng imprastraktura ng blockchain."
+      },
+      "smartContracts": {
+        "title": "Teknikal na Deep Dive: Mga Matalinong Kontrata",
+        "description": "Isang komprehensibong pagtingin sa aming smart contract architecture at mga hakbang sa seguridad."
+      },
+      "spotlight": {
+        "title": "Spotlight ng Komunidad: Mga Kwento ng Tagumpay",
+        "description": "Pakinggan mula sa aming mga miyembro ng komunidad ang tungkol sa kanilang mga karanasan sa AGV Protocol."
+      }
+    }
+  },
+  "whatWeBuilding": {
+    "assetBackedNFT": {
+      "title": "NFT na Naka-back sa Asset",
+      "description": "Ang SeedPass, TreePass, SolarPass at ComputePass ay kumakatawan sa fractional na pagmamay-ari sa mga halamanan, solar unit at compute capacity. Ang mga may hawak ay nakakakuha ng real-world na ani mula sa kanilang pro-rata na bahagi ng output."
+    },
+    "powerToMint": {
+      "title": "Power-to-Mint",
+      "description": "Ang mga token ay ginawa lamang pagkatapos ng pag-verify ng IoT ng kuryente at pag-compute, na tinitiyak ang tunay na suporta at pagpigil sa inflation."
+    },
+    "dualTokenSystem": {
+      "title": "Dual-Token System",
+      "description": "Ang GVT (Green Value Token) ay nakuha mula sa na-verify na ani; Ang rGGP (Reward Token) ay nagbibigay ng insentibo sa pag-aampon at maaaring i-convert sa GVT. Ang mga airdrop at pamamahagi ay mga reward sa komunidad na nakabatay sa merito, hindi garantisadong pagbabalik."
+    },
+    "daoCompliance": {
+      "title": "DAO at Pagsunod",
+      "description": "Gumagana ang AGV sa pamamagitan ng cross-border na DAO na may multi-sig at score-to-vote na pamamahala."
+    },
+    "title": "Ang Ginagawa Namin"
+  },
+  "howWeDiffer": {
+    "realAssets": {
+      "title": "Mga Tunay na Asset",
+      "description": "Ang pinagbabatayan ng mga halamanan, solar capacity at edge compute cluster ng AGV ay nagbibigay ng nasasalat, nasusukat na ani."
+    },
+    "tokenization": {
+      "title": "Tokenization",
+      "description": "Ang data ng output ay sinusukat ng mga IoT device at nakatuon sa on-chain; saka lang makakapag-print ng mga token (Power‑to‑Mint), na tinitiyak ang isang walang pinagkakatiwalaang 1:1 na relasyon."
+    },
+    "yieldDistribution": {
+      "title": "Pamamahagi ng Yield",
+      "description": "Ang mga mamumuhunan ay tumatanggap ng ani mula sa mga halamanan, solar at compute ayon sa kanilang mga hawak sa NFT. Ang target na pinaghalong IRR ay 18-26%, na higit sa maraming tradisyonal na renewable na pondo."
+    },
+    "scalableSustainability": {
+      "title": "Nasusukat na Sustainability",
+      "description": "Ibinahagi ang mga scale ng mini-grid architecture sa buong Asia/MENA, binabawasan ang grid strain, pagpapababa ng latency para sa mga workload ng AI at pagsusulong ng mga layunin sa pagpapanatili. Ang bawat bagong asset unit ay nagtataas ng parehong yield at valuation."
+    },
+    "title": "Paano Tayo Magkaiba"
+  },
+  "executionProofs": {
+    "solarPlantOnline": {
+      "title": "Solar Plant Online",
+      "description": "Ang unang 6 MWp CdTe PV plant ay na-commissioned at nakakonekta sa lokal na grid."
+    },
+    "ppaInProgress": {
+      "title": "Kasalukuyang PPA",
+      "description": " Ang mga Pangmatagalang Kasunduan sa Pagbili ng Power ay tinatapos sa mga regional grid operator; ang mga draft na kontrata ay nasuri."
+    },
+    "computeNodeRunning": {
+      "title": "Compute Node Running",
+      "description": "Ang paunang 1.5 MW edge compute cluster ay naka-install at aktibong nagpoproseso ng mga pilot workload; Ang IoT telemetry ay nagre-record na on‑chain."
+    },
+    "title": "Mga Katibayan ng Pagpapatupad"
+  },
+  "about": {
+    "hero": {
+      "title": "TUNAY NA ENERHIYA. TUNAY NA YIELD.",
+      "subtitle": "MGA TUNAY NA ASSET — ON-CHAIN."
+    },
+    "mission": {
+      "title": "MISSION",
+      "description": "Ang aming misyon ay gawing puhunan ang kuryente at pagkalkula para sa lahat sa pamamagitan ng paggawa ng na-verify na real-world na output sa mga transparent, on-chain na asset."
+    },
+    "story": {
+      "title": "ANG ATING KWENTO",
+      "description": "Sa panahon na pinapagana ng AI, ang demand sa kuryente at compute ay lumalaki nang husto. Tinutugunan ito ng AGV Protocol sa pamamagitan ng pagpapares ng mga orchard, solar farm, at edge compute mini-grids sa IoT telemetry at on-chain na pag-verify upang lumikha ng mga token na sustainable at yield-backed. Ang aming mga unang asset ay nasa Shaanxi, China, na may mga plano sa pagpapalawak sa buong Asia at higit pa."
+    },
+    "whatWeBuild": {
+      "cleanEnergy": {
+        "title": "Mga Asset ng Malinis na Enerhiya",
+        "description": "6 MWp CdTe PV plant (unang batch) na may inaasahang taunang output na 7.3 GWh. Ang mga karagdagang solar unit ay nasa ilalim ng pag-unlad."
+      },
+      "orchards": {
+        "title": "Mga Produktibong Orchard",
+        "description": "~100 000 kg na mansanas bawat 100 mu bawat taon, isinama sa mga stream ng kita ng NFT at sinusubaybayan sa pamamagitan ng mga sensor ng IoT."
+      },
+      "compute": {
+        "title": "Mga Mini-Grid ng Edge Compute",
+        "description": "Paunang 1.5 MW cluster (~1 PFLOPS) na naghahatid ng ~1.31 GWh/taon ng compute load sa mga AI workload; ang mga karagdagang node ay naka-iskedyul para sa pag-deploy."
+      },
+      "verification": {
+        "title": "IoT Verification at On-Chain Attestation",
+        "description": "Ang bawat watt ng kuryente at cycle ng pag-compute ay na-verify at naka-angkla sa chain bago ang mga token ay ginawa (Power-to-Mint). Tinitiyak nito ang pananagutan at transparency."
+      },
+      "title": "KUNG ANO ANG ATING BINUO"
+    },
+    "howItWorks": {
+      "acquire": {
+        "title": "Kunin at Isama",
+        "description": "Nakukuha o nakipagsosyo ang AGV sa mga halamanan, solar farm at compute cluster, pag-install ng mga IoT sensor at secure na telemetry."
+      },
+      "verify": {
+        "title": "I-verify",
+        "description": "Kinokolekta sa real-time ang data ng output ng enerhiya at compute, na na-validate ng mga auditor at naka-angkla sa chain."
+      },
+      "mint": {
+        "title": "Mint",
+        "description": "Ang mga token ay mined lamang pagkatapos ma-verify ang output. Ang GVT ay nakuha mula sa na-verify na ani; Ang rGGP ay ibinahagi bilang isang insentibo na nakabatay sa merit at maaaring i-convert sa GVT. Eksaktong nakikita ng mga mamumuhunan kung gaano kalaki ang real-world na output sa bawat token."
+      },
+      "title": "PAANO ITO GUMAGANA - POWER-TO-MINT"
+    },
+    "team": {
+      "susan": {
+        "name": "Susan",
+        "role": "Pangkalahatang Direktor"
+      },
+      "tyler": {
+        "name": "Tyler",
+        "role": "Chief Technology Officer (CTO)"
+      },
+      "yasir": {
+        "name": "Yasir",
+        "role": "Tech Lead"
+      },
+      "winnie": {
+        "name": "Winnie",
+        "role": "Capital/DAO Lead"
+      },
+      "yatogami": {
+        "name": "Yatogami",
+        "role": "Nangunguna sa Pagpapaunlad ng Negosyo"
+      },
+      "frank": {
+        "name": "Frank",
+        "role": "Marketing at PR"
+      },
+      "title": "MGA MEMBER NG CORE TEAM"
+    },
+    "cta": {
+      "title": "Samahan kami sa pagbuo ng isang napapanatiling, tokenized na hinaharap.",
+      "button": "Basahin ang Whitepaper"
+    }
+  },
+  "team": {
+    "section": {
+      "title": "KINALAMAN ANG TEAM",
+      "description": "Ang AGV ay pinalakas ng isang pandaigdigang pangkat ng mga tagabuo, inhinyero, at operator na pinamahagi sa buong mundo na may kadalubhasaan sa buong RWA, renewable energy, compute, tokenization at mga DePIN network"
+    },
+    "members": {
+      "susan": {
+        "name": "Susan",
+        "role": "Pangkalahatang Direktor"
+      },
+      "tyler": {
+        "name": "Tyler",
+        "role": "Punong Opisyal ng Teknolohiya"
+      },
+      "yasir": {
+        "name": "Yasir",
+        "role": "Tech Lead"
+      },
+      "winnie": {
+        "name": "Winnie",
+        "role": "Capital/DAO Lead"
+      },
+      "yatogami": {
+        "name": "Yatogami",
+        "role": "Nangunguna sa Pagpapaunlad ng Negosyo"
+      },
+      "frank": {
+        "name": "Frank",
+        "role": "Marketing at PR"
+      }
     }
   }
 }

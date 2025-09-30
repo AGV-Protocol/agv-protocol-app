@@ -14,7 +14,8 @@
     "close": "关闭",
     "confirm": "确认",
     "required": "必需的",
-    "optional": "选修的"
+    "optional": "选修的",
+    "readMore": "阅读更多"
   },
   "nav": {
     "home": "家",
@@ -44,7 +45,9 @@
     "viewStaking": "查看 Staking",
     "blockchains": "区块链",
     "nftCollections": "NFT 收藏品",
-    "dailyRewards": "每日奖励"
+    "dailyRewards": "每日奖励",
+    "title1": "领先的风险加权资产",
+    "title2": "AI Power 协议"
   },
   "whatisagv": {
     "title": "什么是 AGV？",
@@ -143,7 +146,8 @@
       "dailyRewards": "每日奖励",
       "securityScore": "安全评分",
       "auditRating": "审计评级",
-      "upto50rggp": "高达 50 rGGP"
+      "upto50rggp": "高达 50 rGGP",
+      "nftCount": "1,234"
     },
     "social": {
       "github": "GitHub",
@@ -903,6 +907,14 @@
       "learning": {
         "title": "持续学习",
         "description": "区块链领域发展迅速，我们致力于通过持续学习和适应保持领先地位。"
+      },
+      "sustainability": {
+        "title": "可持续性",
+        "description": "我们致力于长期管理资源。从果园到太阳能和计算资源，我们协调激励措施，确保链上增长能够反映现实世界的生产力和环境责任。"
+      },
+      "innovation": {
+        "title": "创新",
+        "description": "我们安全地推进一切可能。我们务实地应用区块链：物联网验证的收益、双代币经济以及合规的结构，让真实资产无需炒作即可触达。"
       }
     },
     "perks": {
@@ -919,13 +931,26 @@
       "impact": {
         "title": "真实影响",
         "description": "从事具有现实世界影响的项目，从可持续农业到可再生能源基础设施。"
+      },
+      "remote": {
+        "title": "远程优先工作环境",
+        "description": "灵活的全球团队结构。"
+      },
+      "growth": {
+        "title": "专业成长",
+        "description": "允许指导、培训和学习。"
+      },
+      "mission": {
+        "title": "任务协调",
+        "description": "成为将现实世界的基础设施与 Web3 连接起来的影响力驱动项目的一部分。"
       }
     },
     "roles": {
       "title": "开放职位",
       "subtitle": "我们一直在寻找与我们构建可持续区块链基础设施愿景一致的优秀人才。",
       "seeMore": "查看更多机会",
-      "noOpenings": "暂无空缺职位"
+      "noOpenings": "暂无空缺职位",
+      "noOpenings1": "目前沒有空缺。"
     }
   },
   "blog": {
@@ -948,7 +973,9 @@
     "searchPlaceholder": "搜索文章...",
     "newsletter": {
       "title": "保持更新",
-      "description": "获取最新新闻和更新，直接发送到您的收件箱。"
+      "description": "获取最新新闻和更新，直接发送到您的收件箱。",
+      "emailPlaceholder": "输入您的电子邮件",
+      "send": "发送"
     },
     "main": {
       "title": "最新文章",
@@ -958,6 +985,60 @@
       "noResultsForQuery": "未找到 \"{query}\" 的文章",
       "noResultsInCategory": "在 {category} 中未找到文章",
       "viewAllPosts": "查看所有文章"
+    },
+    "featuredArticle": {
+      "title": "AGV协议简介：解锁现实世界资产的未来",
+      "description": "2025年，世界金融格局瞬息万变。因此，一个问题不断浮现……"
+    },
+    "articles": {
+      "sustainableWeb3": {
+        "title": "可持续 Web3 的未来",
+        "description": "探索区块链技术如何推动环境可持续发展并对现实世界产生影响。"
+      },
+      "nftStaking": {
+        "title": "NFT 质押革命",
+        "description": "了解我们创新的权益机制，该机制在支持现实世界资产的同时奖励用户。"
+      },
+      "multiChain": {
+        "title": "多链集成",
+        "description": "了解 AGV 协议如何在多个区块链网络之间无缝运行以实现最大程度的可访问性。"
+      },
+      "governance": {
+        "title": "社区治理",
+        "description": "了解社区在塑造去中心化金融和资产管理的未来中的作用。"
+      },
+      "tokenization": {
+        "title": "现实世界资产代币化",
+        "description": "我们如何弥合传统资产与区块链技术之间的差距以实现可持续增长。"
+      },
+      "security": {
+        "title": "安全性和透明度",
+        "description": "我们致力于维持最高的安全标准，同时确保完全透明。"
+      },
+      "developer": {
+        "title": "开发者生态系统",
+        "description": "构建工具和基础设施来支持开发人员创建下一代 Web3 应用程序。"
+      },
+      "expansion": {
+        "title": "全球扩张",
+        "description": "AGV Protocol 成为可持续区块链解决方案全球领导者的历程。"
+      },
+      "ama": {
+        "title": "社区 AMA 会议",
+        "description": "加入我们与 AGV 协议团队每月的“问我任何问题”会议并获得问题的答案。"
+      },
+      "partnership": {
+        "title": "合作公告",
+        "description": "我们很高兴宣布与领先的区块链基础设施提供商建立新的合作伙伴关系。"
+      },
+      "smartContracts": {
+        "title": "技术深度探讨：智能合约",
+        "description": "全面了解我们的智能合约架构和安全措施。"
+      },
+      "spotlight": {
+        "title": "社区焦点：成功案例",
+        "description": "听听我们的社区成员关于他们使用 AGV 协议的经验。"
+      }
     }
   },
   "about": {
@@ -974,17 +1055,154 @@
       "description": "在人工智能时代，电力和计算需求呈指数级增长。AGV协议通过将果园、太阳能农场和边缘计算微电网与物联网遥测和链上验证相结合，创建可持续的收益支持代币来解决这个问题。我们的初始资产位于中国陕西，计划扩展到亚洲及其他地区。"
     },
     "whatWeBuild": {
-      "title": "我们构建什么"
+      "title": "我们构建什么",
+      "cleanEnergy": {
+        "title": "清洁能源资产",
+        "description": "首批6MWp CdTe光伏电站，预计年发电量7.3GWh。其他太阳能装置正在开发中。"
+      },
+      "orchards": {
+        "title": "高产果园",
+        "description": "每 100 亩每年可产出约 100,000 公斤苹果，并融入 NFT 收入流，并通过物联网传感器进行监控。"
+      },
+      "compute": {
+        "title": "边缘计算微网格",
+        "description": "初始 1.5 MW 集群（~1 PFLOPS）为 AI 工作负载提供 ~1.31 GWh/年的计算负载；计划部署更多节点。"
+      },
+      "verification": {
+        "title": "物联网验证和链上证明",
+        "description": "在代币铸造之前，每一瓦的电力和每一轮计算都会经过验证并锚定在链上（Power-to-Mint）。这确保了问责制和透明度。"
+      }
     },
     "howItWorks": {
-      "title": "工作原理 - 电力到铸造"
+      "title": "工作原理 - 电力到铸造",
+      "acquire": {
+        "title": "收购与整合",
+        "description": "AGV 收购或与果园、太阳能发电场和计算集群合作，安装物联网传感器和安全遥测。"
+      },
+      "verify": {
+        "title": "核实",
+        "description": "能源和计算输出数据是实时收集的，由审计员验证并锚定在链上。"
+      },
+      "mint": {
+        "title": "薄荷",
+        "description": "代币仅在产出验证后才会铸造。GVT 由已验证的收益铸造；rGGP 作为基于绩效的激励机制进行分配，并可转换为 GVT。投资者可以准确了解每个代币背后有多少现实世界产出作为支撑。"
+      }
     },
     "team": {
-      "title": "核心团队成员"
+      "title": "核心团队成员",
+      "susan": {
+        "name": "苏珊",
+        "role": "总经理"
+      },
+      "tyler": {
+        "name": "泰勒",
+        "role": "首席技术官（CTO）"
+      },
+      "yasir": {
+        "name": "亚西尔",
+        "role": "技术主管"
+      },
+      "winnie": {
+        "name": "温妮",
+        "role": "资本/DAO 负责人"
+      },
+      "yatogami": {
+        "name": "夜刀神",
+        "role": "业务发展主管"
+      },
+      "frank": {
+        "name": "坦率",
+        "role": "市场营销与公关"
+      }
     },
     "cta": {
       "title": "加入我们，共同构建可持续的代币化未来。",
       "button": "阅读白皮书"
+    }
+  },
+  "whatWeBuilding": {
+    "assetBackedNFT": {
+      "title": "资产支持的 NFT",
+      "description": "SeedPass、TreePass、SolarPass 和 ComputePass 代表着对果园、太阳能发电装置和计算能力的部分所有权。持有者通过按比例分配的产出份额获得实际收益。"
+    },
+    "powerToMint": {
+      "title": "Power-to-Mint",
+      "description": "只有在物联网验证电力和计算之后才会铸造代币，以确保现实世界的支持并防止通货膨胀。"
+    },
+    "dualTokenSystem": {
+      "title": "双代币系统",
+      "description": "GVT（绿色价值代币）由已验证的收益铸造；rGGP（奖励代币）用于激励采用，并可兑换为 GVT。空投和分配是基于绩效的社区奖励，并非保证回报。"
+    },
+    "daoCompliance": {
+      "title": "DAO 与合规性",
+      "description": "AGV 通过具有多重签名和评分投票治理的跨境 DAO 进行运营。"
+    },
+    "title": "我们正在构建什么"
+  },
+  "howWeDiffer": {
+    "realAssets": {
+      "title": "实物资产",
+      "description": "AGV 的底层果园、太阳能容量和边缘计算集群提供了切实可衡量的收益。"
+    },
+    "tokenization": {
+      "title": "标记化",
+      "description": "输出数据由物联网设备测量并在链上提交；只有这样才能铸造代币（Power-to-Mint），确保无需信任的 1：1 关系。"
+    },
+    "yieldDistribution": {
+      "title": "收益分布",
+      "description": "投资者根据其NFT持有量，获得果园、太阳能和计算资源的收益。目标混合内部收益率为18-26%，优于许多传统的可再生能源基金。"
+    },
+    "scalableSustainability": {
+      "title": "可扩展的可持续性",
+      "description": "分布式微电网架构可在整个亚洲/中东和北非地区扩展，从而减轻电网压力，降低人工智能工作负载的延迟，并推进可持续发展目标。每个新的资产单位都会提升收益率和估值。"
+    },
+    "title": "我们的不同之处"
+  },
+  "executionProofs": {
+    "solarPlantOnline": {
+      "title": "太阳能发电厂在线",
+      "description": "第一座 6 MWp CdTe 光伏电站已投入使用并接入当地电网。"
+    },
+    "ppaInProgress": {
+      "title": "电力采购协议正在进行中",
+      "description": "正在与区域电网运营商敲定长期购电协议；合同草案已经过审查。"
+    },
+    "computeNodeRunning": {
+      "title": "计算节点正在运行",
+      "description": "最初的 1.5 MW 边缘计算集群已经安装并正在积极处理试点工作负载；物联网遥测已在链上记录。"
+    },
+    "title": "执行证明"
+  },
+  "team": {
+    "section": {
+      "title": "认识团队",
+      "description": "AGV 由一支遍布全球的团队提供支持，该团队由执行力驱动的建造者、工程师和运营商组成，他们在 RWA、可再生能源、计算、标记化和 DePIN 网络方面拥有专业知识"
+    },
+    "members": {
+      "susan": {
+        "name": "苏珊",
+        "role": "总经理"
+      },
+      "tyler": {
+        "name": "泰勒",
+        "role": "首席技术官"
+      },
+      "yasir": {
+        "name": "亚西尔",
+        "role": "技术主管"
+      },
+      "winnie": {
+        "name": "温妮",
+        "role": "资本/DAO 负责人"
+      },
+      "yatogami": {
+        "name": "夜刀神",
+        "role": "业务发展主管"
+      },
+      "frank": {
+        "name": "坦率",
+        "role": "市场营销与公关"
+      }
     }
   }
 }

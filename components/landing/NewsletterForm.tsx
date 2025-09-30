@@ -20,7 +20,7 @@ export const NewsletterForm: React.FC = () => {
       <div className="flex space-x-2 items-center justify-center">
         <Input
           type="email"
-          placeholder={t('newsletter.emailPlaceholder') || "Enter your email"}
+          placeholder={t('blog.newsletter.emailPlaceholder') || "Enter your email"}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="flex-1 border-gray-300 focus:border-[#223256] focus:ring-[#223256]"
@@ -31,7 +31,7 @@ export const NewsletterForm: React.FC = () => {
           size="sm"
           className="bg-[#223256] text-md hover:border hover:border-[#223256] text-white hover:bg-white hover:text-[#223256] transition-all duration-300 px-4 py-4 rounded-sm font-semibold flex items-center space-x-1"
         >
-{t('newsletter.send') || 'Send'}
+{t('blog.newsletter.send')}
         </Button>
       </div>
     </form>

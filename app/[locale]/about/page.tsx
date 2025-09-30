@@ -82,7 +82,7 @@ export default function AboutPage() {
       description: t('about.team.yatogami.role') || "Business Development Lead"
     },
     {
-      icon: "/icons/teams/marketing.svg",
+      icon: "/icons/teams/marketting.svg",
       title: t('about.team.frank.name') || "Frank",
       description: t('about.team.frank.role') || "Marketing & PR"
     }

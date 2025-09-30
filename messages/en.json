@@ -184,7 +184,7 @@
       "dailyRewards": "rGGP/Day",
       "securityScore": "Security Score",
       "auditRating": "Audit Rating",
-      "upto50rggp": "50.00"
+      "upto50rggp": "Up to 50.00"
     },
     "social": {
       "github": "GitHub",
@@ -427,7 +427,7 @@
     "platformOverview": {
       "title": "PLATFORM OVERVIEW",
       "totalSupply": "Total Supply",
-      "nftsMinted": "NFTs Minted",
+      "nftsMinted": "Total NFTs",
       "rewardRate": "Reward Rate",
       "dailyRewards": "Daily Rewards",
       "auditRating": "Audit Rating",
@@ -1145,6 +1145,44 @@
         "name": "Frank",
         "role": "Marketing & PR"
       }
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "GET IN TOUCH",
+      "subtitle": "WE'RE HERE TO HELP"
+    },
+    "section": {
+      "title": "CONTACT INFORMATION",
+      "description": "Reach out to our specialized teams for the most relevant assistance. Click on any email to copy it to your clipboard."
+    },
+    "general": {
+      "title": "General Contact",
+      "description": "For general inquiries and coordination."
+    },
+    "investor": {
+      "title": "Investor Relations (IR)",
+      "description": "For VC/FO/Institutional communications and data rooms."
+    },
+    "business": {
+      "title": "Business Development / Community",
+      "description": "For KOLs, partners, campaigns (TaskOn/Zealy), and community ops."
+    },
+    "technology": {
+      "title": "Technology",
+      "description": "For product, website, integrations, deployments, and support."
+    },
+    "onchain": {
+      "title": "On-chain / Smart Contracts",
+      "description": "For on-chain matters, audits, verifications, and contracts."
+    },
+    "external": {
+      "title": "External Relations",
+      "description": "For exchanges, market makers, launchpads, and media partners."
+    },
+    "additional": {
+      "title": "Need More Information?",
+      "description": "For general questions or if you're unsure which team to contact, please reach out to our general contact email. We'll make sure your inquiry reaches the right person."
     }
   }
 }

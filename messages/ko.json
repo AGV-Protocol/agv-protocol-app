@@ -14,7 +14,8 @@
     "close": "닫다",
     "confirm": "확인하다",
     "required": "필수의",
-    "optional": "선택 과목"
+    "optional": "선택 과목",
+    "readMore": "더 읽어보세요"
   },
   "nav": {
     "home": "집",
@@ -43,7 +44,9 @@
     "viewStaking": "스테이킹 보기",
     "blockchains": "블록체인",
     "nftCollections": "NFT 컬렉션",
-    "dailyRewards": "일일 보상"
+    "dailyRewards": "일일 보상",
+    "title1": "선도적인 RWA",
+    "title2": "AI 파워를 위한 프로토콜"
   },
   "whatisagv": {
     "title": "AGV란 무엇인가?",
@@ -142,7 +145,8 @@
       "dailyRewards": "일일 보상",
       "securityScore": "보안 점수",
       "auditRating": "감사 등급",
-      "upto50rggp": "최대 50 rGGP"
+      "upto50rggp": "최대 50 rGGP",
+      "nftCount": "1,234"
     },
     "social": {
       "github": "깃허브",
@@ -902,6 +906,14 @@
       "learning": {
         "title": "지속적인 학습",
         "description": "블록체인 분야는 빠르게 발전하고 있으며, 우리는 지속적인 학습과 적응을 통해 최전선에 머물기 위해 노력하고 있습니다."
+      },
+      "sustainability": {
+        "title": "지속 가능성",
+        "description": "우리는 장기적인 자원을 관리합니다. 과수원부터 태양광 및 컴퓨팅에 이르기까지, 온체인 성장이 실제 생산성과 환경적 책임을 반영하도록 인센티브를 조정합니다."
+      },
+      "innovation": {
+        "title": "혁신",
+        "description": "우리는 가능한 것을 안전하게 발전시킵니다. 블록체인을 실용적으로 적용합니다. IoT 검증 수익률, 이중 토큰 경제, 그리고 규제를 준수하는 구조를 통해 과대광고 없이 실물 자산에 접근할 수 있도록 지원합니다."
       }
     },
     "perks": {
@@ -918,13 +930,26 @@
       "impact": {
         "title": "실제 영향",
         "description": "지속 가능한 농업부터 재생 에너지 인프라까지 실제 영향을 미치는 프로젝트에서 일하세요."
+      },
+      "remote": {
+        "title": "원격 우선 근무 환경",
+        "description": "유연하고 글로벌한 팀 구조."
+      },
+      "growth": {
+        "title": "전문적인 성장",
+        "description": "멘토링, 교육, 학습이 가능합니다."
+      },
+      "mission": {
+        "title": "임무 정렬",
+        "description": "실제 인프라를 Web3와 연결하는 영향력 있는 프로젝트에 참여하세요."
       }
     },
     "roles": {
       "title": "채용 공고",
       "subtitle": "우리는 지속 가능한 블록체인 인프라 구축이라는 우리의 비전을 공유하는 재능 있는 개인을 항상 찾고 있습니다.",
       "seeMore": "더 많은 기회 보기",
-      "noOpenings": "현재 채용 공고가 없습니다"
+      "noOpenings": "현재 채용 공고가 없습니다",
+      "noOpenings1": "지금은 채용 공고가 없습니다."
     }
   },
   "blog": {
@@ -947,7 +972,9 @@
     "searchPlaceholder": "기사 검색...",
     "newsletter": {
       "title": "업데이트 유지",
-      "description": "최신 뉴스와 업데이트를 직접 받아보세요."
+      "description": "최신 뉴스와 업데이트를 직접 받아보세요.",
+      "emailPlaceholder": "이메일을 입력하세요",
+      "send": "보내다"
     },
     "main": {
       "title": "최신 기사",
@@ -957,6 +984,224 @@
       "noResultsForQuery": "\"{query}\"에 대한 기사를 찾을 수 없습니다",
       "noResultsInCategory": "{category}에서 기사를 찾을 수 없습니다",
       "viewAllPosts": "모든 게시물 보기"
+    },
+    "featuredArticle": {
+      "title": "AGV 프로토콜 소개: 실제 자산의 미래를 열어드립니다",
+      "description": "지금은 2025년이고, 세계 금융 환경은 빠르게 변화하고 있습니다. 그 결과, 한 가지 질문이 계속해서 떠오르고 있습니다..."
+    },
+    "articles": {
+      "sustainableWeb3": {
+        "title": "지속 가능한 웹3의 미래",
+        "description": "블록체인 기술이 어떻게 환경적 지속 가능성을 촉진하고 실제 세계에 영향을 미칠 수 있는지 알아봅니다."
+      },
+      "nftStaking": {
+        "title": "NFT 스테이킹 혁명",
+        "description": "실제 자산을 지원하면서 사용자에게 보상을 제공하는 혁신적인 스테이킹 메커니즘에 대해 알아보세요."
+      },
+      "multiChain": {
+        "title": "멀티체인 통합",
+        "description": "AGV 프로토콜이 어떻게 여러 블록체인 네트워크에서 원활하게 작동하여 접근성을 극대화하는지 알아보세요."
+      },
+      "governance": {
+        "title": "커뮤니티 거버넌스",
+        "description": "분산형 금융과 자산 관리의 미래를 형성하는 데 있어 커뮤니티의 역할을 이해합니다."
+      },
+      "tokenization": {
+        "title": "실제 자산 토큰화",
+        "description": "지속 가능한 성장을 위해 기존 자산과 블록체인 기술 간의 격차를 해소하는 방법."
+      },
+      "security": {
+        "title": "보안 및 투명성",
+        "description": "우리는 완벽한 투명성을 보장하는 동시에 가장 높은 보안 표준을 유지하기 위해 최선을 다하고 있습니다."
+      },
+      "developer": {
+        "title": "개발자 생태계",
+        "description": "차세대 Web3 애플리케이션을 만드는 데 필요한 개발자를 지원하는 도구와 인프라를 구축합니다."
+      },
+      "expansion": {
+        "title": "글로벌 확장",
+        "description": "AGV 프로토콜이 지속 가능한 블록체인 솔루션 분야에서 글로벌 리더가 되기 위한 여정입니다."
+      },
+      "ama": {
+        "title": "커뮤니티 AMA 세션",
+        "description": "AGV 프로토콜 팀과 함께하는 월간 '무엇이든 물어보세요' 세션에 참여하여 궁금한 점을 해결해 보세요."
+      },
+      "partnership": {
+        "title": "파트너십 발표",
+        "description": "우리는 선도적인 블록체인 인프라 공급업체와의 새로운 파트너십을 발표하게 되어 기쁘게 생각합니다."
+      },
+      "smartContracts": {
+        "title": "기술 심층 분석: 스마트 계약",
+        "description": "스마트 계약 아키텍처와 보안 조치에 대한 포괄적인 살펴보기."
+      },
+      "spotlight": {
+        "title": "커뮤니티 스포트라이트: 성공 사례",
+        "description": "AGV 프로토콜을 사용한 커뮤니티 구성원의 경험을 들어보세요."
+      }
+    }
+  },
+  "whatWeBuilding": {
+    "assetBackedNFT": {
+      "title": "자산 담보 NFT",
+      "description": "SeedPass, TreePass, SolarPass, ComputePass는 과수원, 태양광 발전 설비 및 컴퓨팅 용량에 대한 부분 소유권을 나타냅니다. 보유자는 생산량에 비례하여 실제 수확량을 얻습니다."
+    },
+    "powerToMint": {
+      "title": "파워 투 민트",
+      "description": "토큰은 IoT에서 전기와 컴퓨팅을 검증한 후에만 발행되므로 실제 지원이 보장되고 인플레이션이 방지됩니다."
+    },
+    "dualTokenSystem": {
+      "title": "듀얼 토큰 시스템",
+      "description": "GVT(Green Value Token)는 검증된 수익률로 발행되며, rGGP(Reward Token)는 도입을 장려하고 GVT로 전환될 수 있습니다. 에어드랍과 분배는 성과 기반 커뮤니티 보상이며, 보장된 수익이 아닙니다."
+    },
+    "daoCompliance": {
+      "title": "DAO 및 규정 준수",
+      "description": "AGV는 다중 서명 및 점수-투표 거버넌스를 갖춘 국경 간 DAO를 통해 운영됩니다."
+    },
+    "title": "우리가 무엇을 만들고 있는가"
+  },
+  "howWeDiffer": {
+    "realAssets": {
+      "title": "실물자산",
+      "description": "AGV의 기반 과수원, 태양광 발전 용량 및 엣지 컴퓨팅 클러스터는 구체적이고 측정 가능한 수확량을 제공합니다."
+    },
+    "tokenization": {
+      "title": "토큰화",
+      "description": "출력 데이터는 IoT 장치에서 측정되고 체인에 저장됩니다. 그런 다음에야 토큰을 발행할 수 있으며(Power‑to‑Mint), 신뢰할 수 없는 1:1 관계가 보장됩니다."
+    },
+    "yieldDistribution": {
+      "title": "수확량 분포",
+      "description": "투자자들은 NFT 보유량에 따라 과수원, 태양광, 컴퓨팅 부문에서 수익을 얻습니다. 목표 혼합 IRR은 18~26%로, 많은 기존 재생에너지 펀드보다 높은 수익률을 기록하고 있습니다."
+    },
+    "scalableSustainability": {
+      "title": "확장 가능한 지속 가능성",
+      "description": "아시아/MENA 전역에 걸쳐 확장되는 분산형 미니 그리드 아키텍처는 전력망 부담을 줄이고, AI 워크로드의 지연 시간을 단축하며, 지속가능성 목표를 달성합니다. 새로운 자산 단위가 추가될 때마다 수익률과 가치 평가가 모두 향상됩니다."
+    },
+    "title": "우리가 다른 점"
+  },
+  "executionProofs": {
+    "solarPlantOnline": {
+      "title": "태양광 발전소 온라인",
+      "description": "최초의 6MWp CdTe PV 발전소가 시운전되어 지역 전력망에 연결되었습니다."
+    },
+    "ppaInProgress": {
+      "title": "PPA 진행 중",
+      "description": "지역 전력망 운영자와 장기 전력 구매 계약을 마무리하고 있으며, 계약 초안이 검토되었습니다."
+    },
+    "computeNodeRunning": {
+      "title": "컴퓨트 노드 실행 중",
+      "description": "초기 1.5MW 엣지 컴퓨팅 클러스터가 설치되어 파일럿 워크로드를 활발하게 처리하고 있으며, IoT 원격 측정은 이미 체인상에서 기록되고 있습니다."
+    },
+    "title": "실행 증명"
+  },
+  "about": {
+    "hero": {
+      "title": "진정한 에너지. 진정한 수확.",
+      "subtitle": "실제 자산을 체인상에서."
+    },
+    "mission": {
+      "title": "사명",
+      "description": "우리의 사명은 검증된 실제 산출물을 투명한 온체인 자산으로 전환하여 모든 사람이 전기와 컴퓨팅에 투자할 수 있도록 하는 것입니다."
+    },
+    "story": {
+      "title": "우리의 이야기",
+      "description": "AI 기반 시대에 전기 및 컴퓨팅 수요는 기하급수적으로 증가하고 있습니다. AGV 프로토콜은 과수원, 태양광 발전소, 엣지 컴퓨팅 미니 그리드를 IoT 원격 측정 및 온체인 검증과 결합하여 지속 가능하고 수익률이 보장되는 토큰을 생성함으로써 이러한 문제를 해결합니다. 초기 자산은 중국 산시성에 있으며, 아시아 및 기타 지역으로 확장할 계획입니다."
+    },
+    "whatWeBuild": {
+      "cleanEnergy": {
+        "title": "청정 에너지 자산",
+        "description": "연간 예상 출력 7.3GWh의 6MWp CdTe 태양광 발전소(1차 배치)가 건설 중입니다. 추가 태양광 발전 설비도 개발 중입니다."
+      },
+      "orchards": {
+        "title": "생산적인 과수원",
+        "description": "1년에 100무당 약 10만kg의 사과를 NFT 수익 흐름에 통합하고 IoT 센서를 통해 모니터링합니다."
+      },
+      "compute": {
+        "title": "엣지 컴퓨팅 미니 그리드",
+        "description": "초기 1.5MW 클러스터(~1 PFLOPS)는 AI 워크로드에 연간 약 1.31GWh의 컴퓨팅 부하를 제공합니다. 추가 노드는 배포될 예정입니다."
+      },
+      "verification": {
+        "title": "IoT 검증 및 온체인 증명",
+        "description": "토큰 발행 전에 모든 전력량과 컴퓨팅 사이클이 검증되고 온체인에 고정됩니다(Power-to-Mint). 이를 통해 책임성과 투명성이 보장됩니다."
+      },
+      "title": "우리가 만드는 것"
+    },
+    "howItWorks": {
+      "acquire": {
+        "title": "획득 및 통합",
+        "description": "AGV는 과수원, 태양광 농장, 컴퓨팅 클러스터를 인수하거나 협력하여 IoT 센서와 보안 원격 측정을 설치합니다."
+      },
+      "verify": {
+        "title": "확인하다",
+        "description": "에너지 및 컴퓨팅 출력 데이터는 실시간으로 수집되어 감사자에 의해 검증되고 체인에 고정됩니다."
+      },
+      "mint": {
+        "title": "박하",
+        "description": "토큰은 산출량이 검증된 후에만 발행됩니다. GVT는 검증된 수익률로 발행되며, rGGP는 성과 기반 인센티브로 분배되며 GVT로 전환될 수 있습니다. 투자자는 각 토큰의 실제 산출량이 얼마인지 정확히 확인할 수 있습니다."
+      },
+      "title": "작동 원리 - POWER-TO-MINT"
+    },
+    "team": {
+      "susan": {
+        "name": "수잔",
+        "role": "총책임자"
+      },
+      "tyler": {
+        "name": "타일러",
+        "role": "최고기술책임자(CTO)"
+      },
+      "yasir": {
+        "name": "야시르",
+        "role": "기술 책임자"
+      },
+      "winnie": {
+        "name": "위니",
+        "role": "캐피털/DAO 리드"
+      },
+      "yatogami": {
+        "name": "야토가미",
+        "role": "사업 개발 책임자"
+      },
+      "frank": {
+        "name": "솔직한",
+        "role": "마케팅 및 홍보"
+      },
+      "title": "핵심 팀원"
+    },
+    "cta": {
+      "title": "지속 가능하고 토큰화된 미래를 건설하는 데 동참하세요.",
+      "button": "백서 읽기"
+    }
+  },
+  "team": {
+    "section": {
+      "title": "팀을 만나보세요",
+      "description": "AGV는 RWA, 재생 에너지, 컴퓨팅, 토큰화 및 DePIN 네트워크 전반에 걸쳐 전문 지식을 갖춘 실행 중심의 빌더, 엔지니어 및 운영자로 구성된 전 세계 분산 팀에 의해 구동됩니다."
+    },
+    "members": {
+      "susan": {
+        "name": "수잔",
+        "role": "총책임자"
+      },
+      "tyler": {
+        "name": "타일러",
+        "role": "최고기술책임자(CTO)"
+      },
+      "yasir": {
+        "name": "야시르",
+        "role": "기술 책임자"
+      },
+      "winnie": {
+        "name": "위니",
+        "role": "캐피털/DAO 리드"
+      },
+      "yatogami": {
+        "name": "야토가미",
+        "role": "사업 개발 책임자"
+      },
+      "frank": {
+        "name": "솔직한",
+        "role": "마케팅 및 홍보"
+      }
     }
   }
 }
