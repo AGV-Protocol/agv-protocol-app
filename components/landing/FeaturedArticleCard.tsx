@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/hooks/useTranslations";
 import Image from "next/image";
 
 interface FeaturedArticleCardProps {
@@ -16,6 +17,7 @@ export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({
   description, 
   onReadMore 
 }) => {
+  const { t } = useTranslations();
   return (
     <div className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-6 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
       {/* Article Image */}
@@ -41,7 +43,7 @@ export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({
           onClick={onReadMore}
           className="bg-white border border-[#223256] text-[#223256] hover:bg-[#223256] hover:text-white transition-all duration-300 px-6 sm:px-8 py-2 sm:py-3 rounded-md font-semibold flex items-center space-x-2 text-xs sm:text-sm"
         >
-          <span>Read More</span>
+          <span>{t('common.readMore') || 'Read More'}</span>
           <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
         </Button>
       </div>

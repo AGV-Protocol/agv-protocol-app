@@ -20,82 +20,82 @@ export default function BlogPage() {
   // Sample data for featured article
   const featuredArticle = {
     image: "/blog/featured-article.png",
-    title: "Introducing AGV Protocol: Unlocking the Future of Real-World Assets",
-    description: "It's 2025, and the world's financial landscape is changing rapidly. As a result, one question keeps coming up...",
+    title: t('blog.featuredArticle.title') || "Introducing AGV Protocol: Unlocking the Future of Real-World Assets",
+    description: t('blog.featuredArticle.description') || "It's 2025, and the world's financial landscape is changing rapidly. As a result, one question keeps coming up...",
   };
 
   // Sample data for main articles with categories
   const allArticles = [
     {
       image: "/blog/article.png",
-      title: "The Future of Sustainable Web3",
-      description: "Exploring how blockchain technology can drive environmental sustainability and create real-world impact.",
+      title: t('blog.articles.sustainableWeb3.title') || "The Future of Sustainable Web3",
+      description: t('blog.articles.sustainableWeb3.description') || "Exploring how blockchain technology can drive environmental sustainability and create real-world impact.",
       category: "TECH"
     },
     {
       image: "/blog/article.png",
-      title: "NFT Staking Revolution",
-      description: "Learn about our innovative staking mechanisms that reward users while supporting real-world assets.",
+      title: t('blog.articles.nftStaking.title') || "NFT Staking Revolution",
+      description: t('blog.articles.nftStaking.description') || "Learn about our innovative staking mechanisms that reward users while supporting real-world assets.",
       category: "TECH"
     },
     {
       image: "/blog/article.png",
-      title: "Multi-Chain Integration",
-      description: "Discover how AGV Protocol seamlessly operates across multiple blockchain networks for maximum accessibility.",
+      title: t('blog.articles.multiChain.title') || "Multi-Chain Integration",
+      description: t('blog.articles.multiChain.description') || "Discover how AGV Protocol seamlessly operates across multiple blockchain networks for maximum accessibility.",
       category: "TECH"
     },
     {
       image: "/blog/article.png",
-      title: "Community Governance",
-      description: "Understanding the role of community in shaping the future of decentralized finance and asset management.",
+      title: t('blog.articles.governance.title') || "Community Governance",
+      description: t('blog.articles.governance.description') || "Understanding the role of community in shaping the future of decentralized finance and asset management.",
       category: "COMMUNITY"
     },
     {
       image: "/blog/article.png",
-      title: "Real-World Asset Tokenization",
-      description: "How we're bridging the gap between traditional assets and blockchain technology for sustainable growth.",
+      title: t('blog.articles.tokenization.title') || "Real-World Asset Tokenization",
+      description: t('blog.articles.tokenization.description') || "How we're bridging the gap between traditional assets and blockchain technology for sustainable growth.",
       category: "TECH"
     },
     {
       image: "/blog/article.png",
-      title: "Security & Transparency",
-      description: "Our commitment to maintaining the highest security standards while ensuring complete transparency.",
+      title: t('blog.articles.security.title') || "Security & Transparency",
+      description: t('blog.articles.security.description') || "Our commitment to maintaining the highest security standards while ensuring complete transparency.",
       category: "ANNOUNCEMENTS"
     },
     {
       image: "/blog/article.png",
-      title: "Developer Ecosystem",
-      description: "Building tools and infrastructure to support developers in creating the next generation of Web3 applications.",
+      title: t('blog.articles.developer.title') || "Developer Ecosystem",
+      description: t('blog.articles.developer.description') || "Building tools and infrastructure to support developers in creating the next generation of Web3 applications.",
       category: "TECH"
     },
     {
       image: "/blog/article.png",
-      title: "Global Expansion",
-      description: "AGV Protocol's journey to becoming a global leader in sustainable blockchain solutions.",
+      title: t('blog.articles.expansion.title') || "Global Expansion",
+      description: t('blog.articles.expansion.description') || "AGV Protocol's journey to becoming a global leader in sustainable blockchain solutions.",
       category: "ANNOUNCEMENTS"
     },
     {
       image: "/blog/article.png",
-      title: "Community AMA Session",
-      description: "Join our monthly Ask Me Anything session with the AGV Protocol team and get your questions answered.",
+      title: t('blog.articles.ama.title') || "Community AMA Session",
+      description: t('blog.articles.ama.description') || "Join our monthly Ask Me Anything session with the AGV Protocol team and get your questions answered.",
       category: "COMMUNITY"
     },
     {
       image: "/blog/article.png",
-      title: "Partnership Announcement",
-      description: "We're excited to announce our new partnership with leading blockchain infrastructure providers.",
+      title: t('blog.articles.partnership.title') || "Partnership Announcement",
+      description: t('blog.articles.partnership.description') || "We're excited to announce our new partnership with leading blockchain infrastructure providers.",
       category: "ANNOUNCEMENTS"
     },
     {
       image: "/blog/article.png",
-      title: "Technical Deep Dive: Smart Contracts",
-      description: "A comprehensive look at our smart contract architecture and security measures.",
+      title: t('blog.articles.smartContracts.title') || "Technical Deep Dive: Smart Contracts",
+      description: t('blog.articles.smartContracts.description') || "A comprehensive look at our smart contract architecture and security measures.",
       category: "TECH"
     },
     {
       image: "/blog/article.png",
-      title: "Community Spotlight: Success Stories",
-      description: "Hear from our community members about their experiences with AGV Protocol.",
+      title: t('blog.articles.spotlight.title') || "Community Spotlight: Success Stories",
+      description: t('blog.articles.spotlight.description') || "Hear from our community members about their experiences with AGV Protocol.",
       category: "COMMUNITY"
     }
   ];

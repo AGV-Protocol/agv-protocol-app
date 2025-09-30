@@ -14,7 +14,8 @@
     "close": "Close",
     "confirm": "Confirm",
     "required": "Required",
-    "optional": "Optional"
+    "optional": "Optional",
+    "readMore": "Read more"
   },
   "nav": {
     "home": "Home",
@@ -967,7 +968,9 @@
     "searchPlaceholder": "Search articles...",
     "newsletter": {
       "title": "Stay Updated",
-      "description": "Get the latest news and updates delivered to your inbox."
+      "description": "Get the latest news and updates delivered to your inbox.",
+      "emailPlaceholder": "Enter your email",
+      "send": "Send"
     },
     "main": {
       "title": "Latest Articles",
@@ -977,6 +980,171 @@
       "noResultsForQuery": "No articles found for \"{query}\"",
       "noResultsInCategory": "No articles found in {category}",
       "viewAllPosts": "View All Posts"
+    },
+    "featuredArticle": {
+      "title": "Introducing AGV Protocol: Unlocking the Future of Real-World Assets",
+      "description": "It's 2025, and the world's financial landscape is changing rapidly. As a result, one question keeps coming up..."
+    },
+    "articles": {
+      "sustainableWeb3": {
+        "title": "The Future of Sustainable Web3",
+        "description": "Exploring how blockchain technology can drive environmental sustainability and create real-world impact."
+      },
+      "nftStaking": {
+        "title": "NFT Staking Revolution",
+        "description": "Learn about our innovative staking mechanisms that reward users while supporting real-world assets."
+      },
+      "multiChain": {
+        "title": "Multi-Chain Integration",
+        "description": "Discover how AGV Protocol seamlessly operates across multiple blockchain networks for maximum accessibility."
+      },
+      "governance": {
+        "title": "Community Governance",
+        "description": "Understanding the role of community in shaping the future of decentralized finance and asset management."
+      },
+      "tokenization": {
+        "title": "Real-World Asset Tokenization",
+        "description": "How we're bridging the gap between traditional assets and blockchain technology for sustainable growth."
+      },
+      "security": {
+        "title": "Security & Transparency",
+        "description": "Our commitment to maintaining the highest security standards while ensuring complete transparency."
+      },
+      "developer": {
+        "title": "Developer Ecosystem",
+        "description": "Building tools and infrastructure to support developers in creating the next generation of Web3 applications."
+      },
+      "expansion": {
+        "title": "Global Expansion",
+        "description": "AGV Protocol's journey to becoming a global leader in sustainable blockchain solutions."
+      },
+      "ama": {
+        "title": "Community AMA Session",
+        "description": "Join our monthly Ask Me Anything session with the AGV Protocol team and get your questions answered."
+      },
+      "partnership": {
+        "title": "Partnership Announcement",
+        "description": "We're excited to announce our new partnership with leading blockchain infrastructure providers."
+      },
+      "smartContracts": {
+        "title": "Technical Deep Dive: Smart Contracts",
+        "description": "A comprehensive look at our smart contract architecture and security measures."
+      },
+      "spotlight": {
+        "title": "Community Spotlight: Success Stories",
+        "description": "Hear from our community members about their experiences with AGV Protocol."
+      }
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "REAL ENERGY. REAL YIELD.",
+      "subtitle": "REAL ASSETS — ON-CHAIN."
+    },
+    "mission": {
+      "title": "MISSION",
+      "description": "Our mission is to make electricity and compute investable for everyone by turning verified real-world output into transparent, on-chain assets."
+    },
+    "story": {
+      "title": "OUR STORY",
+      "description": "In an AI-powered era, electricity and compute demand is growing exponentially. AGV Protocol addresses this by pairing orchards, solar farms, and edge compute mini-grids with IoT telemetry and on-chain verification to create sustainable, yield-backed tokens. Our initial assets are in Shaanxi, China, with expansion plans across Asia and beyond."
+    },
+    "whatWeBuild": {
+      "title": "WHAT WE BUILD",
+      "cleanEnergy": {
+        "title": "Clean Energy Assets",
+        "description": "6 MWp CdTe PV plant (first batch) with projected annual output of 7.3 GWh. Additional solar units are under development."
+      },
+      "orchards": {
+        "title": "Productive Orchards",
+        "description": "~100 000 kg apples per 100 mu per year, integrated into NFT revenue streams and monitored via IoT sensors."
+      },
+      "compute": {
+        "title": "Edge Compute Mini-Grids",
+        "description": "Initial 1.5 MW cluster (~1 PFLOPS) delivering ~1.31 GWh/year of compute load to AI workloads; additional nodes are scheduled for deployment."
+      },
+      "verification": {
+        "title": "IoT Verification & On-Chain Attestation",
+        "description": "Every watt of electricity and cycle of compute is verified and anchored on-chain before tokens are minted (Power-to-Mint). This ensures accountability and transparency."
+      }
+    },
+    "howItWorks": {
+      "title": "HOW IT WORKS - POWER-TO-MINT",
+      "acquire": {
+        "title": "Acquire & Integrate",
+        "description": "AGV acquires or partners with orchards, solar farms and compute clusters, installing IoT sensors and secure telemetry."
+      },
+      "verify": {
+        "title": "Verify",
+        "description": "Energy and compute output data is collected in real-time, validated by auditors and anchored on-chain."
+      },
+      "mint": {
+        "title": "Mint",
+        "description": "Tokens are minted only after output is verified. GVT is minted from verified yield; rGGP is distributed as a merit-based incentive and can be converted to GVT. Investors see exactly how much real-world output backs each token."
+      }
+    },
+    "team": {
+      "title": "CORE TEAM MEMBERS",
+      "susan": {
+        "name": "Susan",
+        "role": "General Director"
+      },
+      "tyler": {
+        "name": "Tyler",
+        "role": "Chief Technology Officer (CTO)"
+      },
+      "yasir": {
+        "name": "Yasir",
+        "role": "Tech Lead"
+      },
+      "winnie": {
+        "name": "Winnie",
+        "role": "Capital/DAO Lead"
+      },
+      "yatogami": {
+        "name": "Yatogami",
+        "role": "Business Development Lead"
+      },
+      "frank": {
+        "name": "Frank",
+        "role": "Marketing & PR"
+      }
+    },
+    "cta": {
+      "title": "Join us in building a sustainable, tokenized future.",
+      "button": "Read Whitepaper"
+    }
+  },
+  "team": {
+    "section": {
+      "title": "MEET THE TEAM",
+      "description": "AGV is powered by a globally distributed team of execution-driven builders, engineers and operators with expertise across RWA, renewable energy, compute, tokenization and DePIN networks"
+    },
+    "members": {
+      "susan": {
+        "name": "Susan",
+        "role": "General Director"
+      },
+      "tyler": {
+        "name": "Tyler",
+        "role": "Chief Technology Officer"
+      },
+      "yasir": {
+        "name": "Yasir",
+        "role": "Tech Lead"
+      },
+      "winnie": {
+        "name": "Winnie",
+        "role": "Capital/DAO Lead"
+      },
+      "yatogami": {
+        "name": "Yatogami",
+        "role": "Business Development Lead"
+      },
+      "frank": {
+        "name": "Frank",
+        "role": "Marketing & PR"
+      }
     }
   }
 }
