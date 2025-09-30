@@ -20,84 +20,27 @@ export default function BlogPage() {
   // Sample data for featured article
   const featuredArticle = {
     image: "/blog/featured-article.png",
-    title: t('blog.featuredArticle.title') || "Introducing AGV Protocol: Unlocking the Future of Real-World Assets",
-    description: t('blog.featuredArticle.description') || "It's 2025, and the world's financial landscape is changing rapidly. As a result, one question keeps coming up...",
+    title: t('blog.articles.introducingAGVProtocol.title'),
+    description: t('blog.articles.introducingAGVProtocol.description'),
+    url: "https://medium.com/@agvprotocol/introducing-agv-protocol-unlocking-the-future-of-real-world-assets-c0715b23ff63"
   };
 
   // Sample data for main articles with categories
   const allArticles = [
     {
       image: "/blog/article.png",
-      title: t('blog.articles.sustainableWeb3.title') || "The Future of Sustainable Web3",
-      description: t('blog.articles.sustainableWeb3.description') || "Exploring how blockchain technology can drive environmental sustainability and create real-world impact.",
-      category: "TECH"
+      title: t('blog.articles.introducingAGVProtocol.title'),
+      description: t('blog.articles.introducingAGVProtocol.description'),
+      category: "COMMUNITY",
+      url: "https://medium.com/@agvprotocol/introducing-agv-protocol-unlocking-the-future-of-real-world-assets-c0715b23ff63"
     },
     {
       image: "/blog/article.png",
-      title: t('blog.articles.nftStaking.title') || "NFT Staking Revolution",
-      description: t('blog.articles.nftStaking.description') || "Learn about our innovative staking mechanisms that reward users while supporting real-world assets.",
-      category: "TECH"
+      title: t('blog.articles.rGGPExplained.title'),
+      description: t('blog.articles.rGGPExplained.description'),
+      category: "COMMUNITY",
+      url: "https://medium.com/@agvprotocol/rggp-explained-how-agv-protocol-turns-real-world-yields-into-rewards-dacb0a7c31e9"
     },
-    {
-      image: "/blog/article.png",
-      title: t('blog.articles.multiChain.title') || "Multi-Chain Integration",
-      description: t('blog.articles.multiChain.description') || "Discover how AGV Protocol seamlessly operates across multiple blockchain networks for maximum accessibility.",
-      category: "TECH"
-    },
-    {
-      image: "/blog/article.png",
-      title: t('blog.articles.governance.title') || "Community Governance",
-      description: t('blog.articles.governance.description') || "Understanding the role of community in shaping the future of decentralized finance and asset management.",
-      category: "COMMUNITY"
-    },
-    {
-      image: "/blog/article.png",
-      title: t('blog.articles.tokenization.title') || "Real-World Asset Tokenization",
-      description: t('blog.articles.tokenization.description') || "How we're bridging the gap between traditional assets and blockchain technology for sustainable growth.",
-      category: "TECH"
-    },
-    {
-      image: "/blog/article.png",
-      title: t('blog.articles.security.title') || "Security & Transparency",
-      description: t('blog.articles.security.description') || "Our commitment to maintaining the highest security standards while ensuring complete transparency.",
-      category: "ANNOUNCEMENTS"
-    },
-    {
-      image: "/blog/article.png",
-      title: t('blog.articles.developer.title') || "Developer Ecosystem",
-      description: t('blog.articles.developer.description') || "Building tools and infrastructure to support developers in creating the next generation of Web3 applications.",
-      category: "TECH"
-    },
-    {
-      image: "/blog/article.png",
-      title: t('blog.articles.expansion.title') || "Global Expansion",
-      description: t('blog.articles.expansion.description') || "AGV Protocol's journey to becoming a global leader in sustainable blockchain solutions.",
-      category: "ANNOUNCEMENTS"
-    },
-    {
-      image: "/blog/article.png",
-      title: t('blog.articles.ama.title') || "Community AMA Session",
-      description: t('blog.articles.ama.description') || "Join our monthly Ask Me Anything session with the AGV Protocol team and get your questions answered.",
-      category: "COMMUNITY"
-    },
-    {
-      image: "/blog/article.png",
-      title: t('blog.articles.partnership.title') || "Partnership Announcement",
-      description: t('blog.articles.partnership.description') || "We're excited to announce our new partnership with leading blockchain infrastructure providers.",
-      category: "ANNOUNCEMENTS"
-    },
-    {
-      image: "/blog/article.png",
-      title: t('blog.articles.smartContracts.title') || "Technical Deep Dive: Smart Contracts",
-      description: t('blog.articles.smartContracts.description') || "A comprehensive look at our smart contract architecture and security measures.",
-      category: "TECH"
-    },
-    {
-      image: "/blog/article.png",
-      title: t('blog.articles.spotlight.title') || "Community Spotlight: Success Stories",
-      description: t('blog.articles.spotlight.description') || "Hear from our community members about their experiences with AGV Protocol.",
-      category: "COMMUNITY"
-    }
   ];
 
   // Filter articles based on active tab and search query
@@ -109,23 +52,13 @@ export default function BlogPage() {
     return matchesTab && matchesSearch;
   });
 
-  // Check if featured article should be shown based on current filters
-  const shouldShowFeaturedArticle = () => {
-    if (searchQuery !== "" && 
-        !featuredArticle.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !featuredArticle.description.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false;
-    }
-    return true;
-  };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
 
-  const handleReadMore = (title: string) => {
-    // In a real application, this would navigate to the full article
-    console.log(`Read more about ${title}`);
+  const handleReadMore = (url: string) => {
+    window.open(url, "_blank");    
   };
 
   return (
@@ -172,7 +105,7 @@ export default function BlogPage() {
                 image={featuredArticle.image}
                 title={featuredArticle.title}
                 description={featuredArticle.description}
-                onReadMore={() => handleReadMore(featuredArticle.title)}
+                onReadMore={() => handleReadMore(featuredArticle.url)}
               />
             </div>
           </div>
@@ -229,7 +162,7 @@ export default function BlogPage() {
                     image={article.image}
                     title={article.title}
                     description={article.description}
-                    onReadMore={() => handleReadMore(article.title)}
+                    onReadMore={() => handleReadMore(article.url)}
                   />
                 ))}
               </div>

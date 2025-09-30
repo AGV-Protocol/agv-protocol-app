@@ -199,15 +199,15 @@
     "articles": {
       "introducing": {
         "title": "Introducing AGV Protocol",
-        "description": "Learn how to mint your first NFT and start earning rewards"
+        "description": "Unlocking the Future of Real-World Assets"
       },
       "multichain": {
-        "title": "Understanding Multi-Chain Staking",
-        "description": "A comprehensive guide to staking across different networks"
+        "title": "rGGP Explained",
+        "description": "How AGV Protocol Turns Real-World Yields into Rewards"
       },
       "security": {
-        "title": "Security Best Practices",
-        "description": "How to keep your NFTs and rewards safe"
+        "title": "rGGP Explained",
+        "description": "How AGV Protocol Turns Real-World Yields into Rewards"
       },
       "readMore": "Read More"
     }
@@ -986,13 +986,13 @@
       "description": "It's 2025, and the world's financial landscape is changing rapidly. As a result, one question keeps coming up..."
     },
     "articles": {
-      "sustainableWeb3": {
-        "title": "The Future of Sustainable Web3",
-        "description": "Exploring how blockchain technology can drive environmental sustainability and create real-world impact."
+      "introducingAGVProtocol": {
+        "title": "Introducing AGV Protocol:",
+        "description": "Unlocking the Future of Real-World Assets"
       },
-      "nftStaking": {
-        "title": "NFT Staking Revolution",
-        "description": "Learn about our innovative staking mechanisms that reward users while supporting real-world assets."
+      "rGGPExplained": {
+        "title": "rGGP Explained",
+        "description": "How AGV Protocol Turns Real-World Yields into Rewards"
       },
       "multiChain": {
         "title": "Multi-Chain Integration",

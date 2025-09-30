@@ -84,12 +84,6 @@ export const MainContent: React.FC = () => {
        description: t('maincontent.articles.multichain.description'),
        url: "https://medium.com/@agvprotocol/rggp-explained-how-agv-protocol-turns-real-world-yields-into-rewards-dacb0a7c31e9",
        date: "2025-09-15"
-    },
-    {
-      title: t('maincontent.articles.security.title'),
-      description: t('maincontent.articles.security.description'),
-      url: "#",
-      date: "2024-01-05"
     }
   ];
   return (
