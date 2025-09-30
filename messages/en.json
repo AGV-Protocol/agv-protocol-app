@@ -912,47 +912,45 @@
     },
     "values": {
       "title": "Our Company Values",
-      "subtitle": "We're building the future of sustainable blockchain infrastructure. Join a team that's passionate about creating real-world impact through innovative technology.",
-      "passion": {
-        "title": "Passion for Innovation",
-        "description": "We're driven by the belief that blockchain technology can solve real-world problems and create sustainable value for communities worldwide."
+      "sustainability": {
+        "title": "Sustainability",
+        "description": "We steward resources for the long term. From orchards to solar and compute, we align incentives so on-chain growth reflects real-world productivity and environmental responsibility."
       },
       "collaboration": {
-        "title": "Collaborative Spirit",
-        "description": "We believe in the power of teamwork and diverse perspectives to create solutions that benefit everyone in our ecosystem."
+        "title": "Collaboration",
+        "description": "We build with partners and communities. Farmers, energy operators, node providers, regulators, and users work with us through open standards, transparent data, and fair rewards."
       },
-      "learning": {
-        "title": "Continuous Learning",
-        "description": "The blockchain space evolves rapidly, and we're committed to staying at the forefront through continuous learning and adaptation."
+      "innovation": {
+        "title": "Innovation",
+        "description": "We advance what's possible—safely. We apply blockchain pragmatically: IoT-verified yields, dual-token economics, and compliant structures that make real assets accessible without hype."
       }
     },
     "perks": {
       "title": "Perks & Benefits",
-      "subtitle": "We offer competitive benefits and a supportive work environment that helps our team members thrive both personally and professionally.",
-      "health": {
-        "title": "Health & Wellness",
-        "description": "Comprehensive health insurance, mental health support, and wellness programs to keep our team healthy and happy."
+      "remote": {
+        "title": "Remote-First Work Environment",
+        "description": "Flexible, global team structure."
       },
-      "flexible": {
-        "title": "Flexible Work",
-        "description": "Remote-first culture with flexible hours and the freedom to work from anywhere in the world."
+      "growth": {
+        "title": "Professional Growth",
+        "description": "Allows for mentorship, training and learning."
       },
-      "impact": {
-        "title": "Real Impact",
-        "description": "Work on projects that have real-world impact, from sustainable agriculture to renewable energy infrastructure."
+      "mission": {
+        "title": "Mission Alignment",
+        "description": "Be part of an impact-driven project connecting real-world infrastructure with Web3."
       }
     },
     "roles": {
       "title": "Open Roles",
-      "subtitle": "We're always looking for talented individuals who share our vision of building sustainable blockchain infrastructure.",
-      "seeMore": "See More Opportunities",
-      "noOpenings": "No current openings"
+      "noOpenings1": "No openings right now.",
+      "noOpenings": "Feel free to join our talent list via the form below.",
+      "seeMore": "See More"
     }
   },
   "blog": {
     "hero": {
-      "title": "AGV Protocol Blog",
-      "subtitle": "Stay updated with the latest news, insights, and developments in the world of real-world asset tokenization and sustainable blockchain infrastructure."
+      "title": "INSIGHTS & UPDATES",
+      "subtitle": "Discover insights into AI power trends, real-world asset developments, tokenomics research, and AGV community milestones. Our blog is where sustainable Web3 innovation meets practical knowledge, helping investors, builders, and partners stay ahead of the curve.."
     },
     "tabs": {
       "all": "All",

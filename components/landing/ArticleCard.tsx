@@ -17,7 +17,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   onReadMore 
 }) => {
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
       {/* Article Image */}
       <div className="mb-4">
         <Image
@@ -25,12 +25,12 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           alt={title}
           width={300}
           height={200}
-          className="w-full h-48 object-cover rounded-lg"
+          className="w-full h-36 rounded-t-lg"
         />
       </div>
       
       {/* Content */}
-      <div className="space-y-3">
+      <div className="space-y-3 p-6">
         <h3 className="text-lg font-bold text-[#223256]">{title}</h3>
         <p className="text-sm text-[#223256] leading-relaxed">{description}</p>
         
@@ -39,7 +39,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           variant="ghost"
           size="sm"
           onClick={onReadMore}
-          className="p-0 h-auto text-[#223256] hover:text-[#223256]/80 font-medium flex items-center space-x-1 transition-colors duration-300"
+          className="bg-white border border-[#223256] text-[#223256] hover:bg-[#223256] hover:text-white transition-all duration-300 px-8 py-3 rounded-md font-semibold flex items-center space-x-2"
         >
           <span>Read more</span>
           <ArrowRight className="w-4 h-4" />
