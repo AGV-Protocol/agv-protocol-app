@@ -12,26 +12,46 @@ const inter = Inter({
   variable: "--font-inter",
   display: "swap",
 });
-
 export const metadata: Metadata = {
-  title: "AGV Protocol - NFT Minting Platform",
-  description: "Mint AGV NFTs across multiple blockchain networks with USDT",
-  keywords: ["NFT", "AGV", "blockchain", "minting", "crypto"],
-  authors: [{ name: "AGV Protocol" }],
+  title: "AGV Protocol - Unlocking Real-World Assets On-Chain",
+  description:
+    "AGV Protocol bridges real-world assets with blockchain through tokenization, asset-mapped NFTs, and a dual-token system. Mint SeedPass, TreePass, SolarPass, and ComputePass NFTs backed by real orchards, solar, and compute units.",
+  keywords: [
+    "AGV Protocol",
+    "real-world assets",
+    "RWA",
+    "blockchain",
+    "NFT minting",
+    "DeFi",
+    "tokenization",
+    "crypto yield",
+    "GVT",
+    "rGGP",
+    "SeedPass",
+    "TreePass",
+    "SolarPass",
+    "ComputePass"
+  ],
+  authors: [{ name: "AGV Protocol Official" }],
   creator: "AGV Protocol",
   publisher: "AGV Protocol",
   formatDetection: { email: false, address: false, telephone: false },
   metadataBase: new URL("https://agv-protocol.com"),
   openGraph: {
-    title: "AGV Protocol - NFT Minting Platform",
-    description: "Mint AGV NFTs across multiple blockchain networks with USDT",
+    title: "AGV Protocol - Unlocking Real-World Assets On-Chain",
+    description:
+      "Explore AGV Protocol: bridging DeFi and TradFi through tokenized real-world assets. Mint asset-backed NFTs like SeedPass, TreePass, SolarPass, and ComputePass today.",
     type: "website",
     locale: "en_US",
+    url: "https://agv-protocol.com",
+    siteName: "AGV Protocol",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AGV Protocol - NFT Minting Platform",
-    description: "Mint AGV NFTs across multiple blockchain networks with USDT",
+    title: "AGV Protocol - Unlocking Real-World Assets On-Chain",
+    description:
+      "AGV Protocol makes real-world assets accessible via blockchain. Mint NFTs backed by orchards, solar power, and compute clusters. Join the future of inclusive finance.",
+    creator: "@AGVProtocol",
   },
   robots: {
     index: true,
@@ -45,6 +65,7 @@ export const metadata: Metadata = {
     },
   },
 };
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
