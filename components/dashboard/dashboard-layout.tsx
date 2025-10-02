@@ -25,7 +25,8 @@ import {
   Activity,
   LogOut,
   Menu,
-  X
+  X,
+  FileText
 } from "lucide-react"
 
 interface DashboardLayoutProps {
@@ -54,6 +55,11 @@ const navigation = [
     title: "Analytics",
     href: "/dashboard/analytics",
     icon: BarChart3,
+  },
+  {
+    title: "Blog Management",
+    href: "/dashboard/blog",
+    icon: FileText,
   },
   // {
   //   title: "Activity",

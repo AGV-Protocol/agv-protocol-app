@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
 import { ArticleCard } from "@/components/landing/ArticleCard";
@@ -9,56 +9,55 @@ import { NewsletterForm } from "@/components/landing/NewsletterForm";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "@/hooks/useTranslations";
+import { getBlogPosts, BlogPost } from "@/lib/blog";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function BlogPage() {
   const { t } = useTranslations();
+  const params = useParams();
+  const locale = params?.locale as string;
   const [activeTab, setActiveTab] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const tabs = ["ALL", "ANNOUNCEMENTS", "TECH", "COMMUNITY"];
 
-  // Sample data for featured article
-  const featuredArticle = {
-    image: "/blog/featured-article.png",
-    title: t('blog.articles.introducingAGVProtocol.title'),
-    description: t('blog.articles.introducingAGVProtocol.description'),
-    url: "https://medium.com/@agvprotocol/introducing-agv-protocol-unlocking-the-future-of-real-world-assets-c0715b23ff63"
+  useEffect(() => {
+    fetchBlogPosts();
+  }, [activeTab, searchQuery]);
+
+  const fetchBlogPosts = async () => {
+    try {
+      setLoading(true);
+      const filters = {
+        category: activeTab !== "ALL" ? activeTab : undefined,
+        search: searchQuery || undefined,
+        published: true
+      };
+      const posts = await getBlogPosts(filters);
+      setBlogPosts(posts);
+    } catch (error) {
+      console.error("Error fetching blog posts:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Sample data for main articles with categories
-  const allArticles = [
-    {
-      image: "/blog/article.png",
-      title: t('blog.articles.introducingAGVProtocol.title'),
-      description: t('blog.articles.introducingAGVProtocol.description'),
-      category: "COMMUNITY",
-      url: "https://medium.com/@agvprotocol/introducing-agv-protocol-unlocking-the-future-of-real-world-assets-c0715b23ff63"
-    },
-    {
-      image: "/blog/article.png",
-      title: t('blog.articles.rGGPExplained.title'),
-      description: t('blog.articles.rGGPExplained.description'),
-      category: "COMMUNITY",
-      url: "https://medium.com/@agvprotocol/rggp-explained-how-agv-protocol-turns-real-world-yields-into-rewards-dacb0a7c31e9"
-    },
-  ];
-
-  // Filter articles based on active tab and search query
-  const filteredArticles = allArticles.filter(article => {
-    const matchesTab = activeTab === "ALL" || article.category === activeTab;
-    const matchesSearch = searchQuery === "" || 
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTab && matchesSearch;
-  });
-
+  // Get featured article (first featured post or first post)
+  const featuredArticle = blogPosts.find(post => post.featured) || blogPosts[0];
+  
+  // Get other articles (exclude featured)
+  const otherArticles = blogPosts.filter(post => post.id !== featuredArticle?.id);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
 
-  const handleReadMore = (url: string) => {
-    window.open(url, "_blank");    
+  const handleReadMore = (slug: string) => {
+    // Navigate to blog detail page instead of external link
+    window.location.href = `/${locale}/blog/${slug}`;
   };
 
   return (
@@ -99,15 +98,17 @@ export default function BlogPage() {
           </div>
 
           <div>
-            {/* Featured Article Card - Only show if it matches current filters */}
-            <div className="order-1 lg:order-1">
-              <FeaturedArticleCard
-                image={featuredArticle.image}
-                title={featuredArticle.title}
-                description={featuredArticle.description}
-                onReadMore={() => handleReadMore(featuredArticle.url)}
-              />
-            </div>
+            {/* Featured Article Card - Only show if there's a featured article */}
+            {featuredArticle && (
+              <div className="order-1 lg:order-1">
+                <FeaturedArticleCard
+                  image={featuredArticle.featuredImage || "/blog/featured-article.png"}
+                  title={featuredArticle.title}
+                  description={featuredArticle.excerpt}
+                  onReadMore={() => handleReadMore(featuredArticle.slug)}
+                />
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -145,7 +146,7 @@ export default function BlogPage() {
           <div className="text-left mb-8 sm:mb-12">
             {(activeTab !== "ALL" || searchQuery) && (
               <p className="text-[#223256] text-xs sm:text-sm">
-                {filteredArticles.length} {t('blog.main.articlesFound', { count: filteredArticles.length })}
+                {otherArticles.length} {t('blog.main.articlesFound', { count: otherArticles.length })}
                 {activeTab !== "ALL" && ` ${t('blog.main.inCategory', { category: t(`blog.tabs.${activeTab.toLowerCase()}`) })}`}
                 {searchQuery && ` ${t('blog.main.forQuery', { query: searchQuery })}`}
               </p>
@@ -154,22 +155,26 @@ export default function BlogPage() {
 
           {/* Articles Container */}
           <div className="rounded-2xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
-            {filteredArticles.length > 0 ? (
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4FACFE]"></div>
+              </div>
+            ) : otherArticles.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {filteredArticles.map((article, index) => (
+                {otherArticles.map((article, index) => (
                   <ArticleCard
-                    key={index}
-                    image={article.image}
+                    key={article.id || index}
+                    image={article.featuredImage || "/blog/article.png"}
                     title={article.title}
-                    description={article.description}
-                    onReadMore={() => handleReadMore(article.url)}
+                    description={article.excerpt}
+                    onReadMore={() => handleReadMore(article.slug)}
                   />
                 ))}
               </div>
             ) : (
               <div className="text-center py-8 sm:py-12">
                 <p className="text-[#223256] text-lg sm:text-xl font-medium">
-                  {searchQuery ? t('blog.main.noResultsForQuery', { query: searchQuery }) : t('blog.main.noResultsInCategory', { category: t(`blog.tabs.${activeTab.toLowerCase()}`) })}
+                  {searchQuery ? t('blog.main.noResultsForQuery', { query: searchQuery }) : t('blog.main.noResultsInCategory', { category: t(`blog.tabs.${activeTab.toLowerCase()}`) || activeTab })}
                 </p>
               </div>
             )}
