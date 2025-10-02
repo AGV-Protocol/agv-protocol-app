@@ -30,42 +30,42 @@ export default function AdminPage() {
       description: "Track user engagement, growth metrics, and platform adoption",
       icon: <Users className="h-8 w-8" />,
       color: "bg-blue-500",
-      href: "/dashboard"
+      href: "/admin"
     },
     {
       title: "Performance Analytics",
       description: "Monitor platform performance, response times, and system health",
       icon: <BarChart3 className="h-8 w-8" />,
       color: "bg-green-500",
-      href: "/dashboard/analytics"
+      href: "/admin/analytics"
     },
     {
       title: "KOL Tracking",
       description: "Monitor Key Opinion Leader performance and referral metrics",
       icon: <UserCheck className="h-8 w-8" />,
       color: "bg-purple-500",
-      href: "/dashboard/kols"
+      href: "/admin/kols"
     },
     {
       title: "Activity Monitoring",
       description: "Real-time tracking of user activities and system events",
       icon: <Activity className="h-8 w-8" />,
       color: "bg-yellow-500",
-      href: "/dashboard/activity"
+      href: "/admin/activity"
     },
     {
       title: "Performance Metrics",
       description: "Track minting, staking, and token performance across all chains",
       icon: <TrendingUp className="h-8 w-8" />,
       color: "bg-cyan-500",
-      href: "/dashboard/performance"
+      href: "/admin/performance"
     },
     {
       title: "System Monitoring",
       description: "Monitor system configuration and operational parameters",
       icon: <Settings className="h-8 w-8" />,
       color: "bg-orange-500",
-      href: "/dashboard/settings"
+      href: "/admin/settings"
     }
   ];
 
@@ -192,7 +192,7 @@ export default function AdminPage() {
             Quick Access
           </h3>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Link href="/dashboard">
+            <Link href="/admin">
               <div className="bg-white border border-gray-200 rounded-2xl p-6 group hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="p-2 rounded-lg bg-blue-100">
@@ -204,7 +204,7 @@ export default function AdminPage() {
               </div>
             </Link>
 
-            <Link href="/dashboard/users">
+            <Link href="/admin/users">
               <div className="bg-white border border-gray-200 rounded-2xl p-6 group hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="p-2 rounded-lg bg-green-100">
@@ -216,7 +216,7 @@ export default function AdminPage() {
               </div>
             </Link>
 
-            <Link href="/dashboard/analytics">
+            <Link href="/admin/analytics">
               <div className="bg-white border border-gray-200 rounded-2xl p-6 group hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="p-2 rounded-lg bg-purple-100">
@@ -228,7 +228,7 @@ export default function AdminPage() {
               </div>
             </Link>
 
-            <Link href="/dashboard/settings">
+            <Link href="/admin/settings">
               <div className="bg-white border border-gray-200 rounded-2xl p-6 group hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="p-2 rounded-lg bg-orange-100">

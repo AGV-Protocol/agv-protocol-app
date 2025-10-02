@@ -28,10 +28,13 @@ import {
   ExternalLink, 
   Copy,
   Search,
-  Filter
+  Filter,
+  Activity
 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "@/hooks/useTranslations"
+import { createLocalizedHref } from "@/lib/locale-utils"
 
 interface KOL {
   kolId: string
@@ -43,7 +46,7 @@ interface KOL {
   tree?: number
   solar?: number
   compute?: number
-  updatedAt?: any
+  updatedAt?: string | number
 }
 
 interface KOLManagementProps {
@@ -63,6 +66,7 @@ export function KOLManagement({
   canDeleteKOL,
   className 
 }: KOLManagementProps) {
+  const { locale } = useTranslations()
   const [searchTerm, setSearchTerm] = useState("")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
@@ -99,7 +103,7 @@ export function KOLManagement({
         setIsCreateDialogOpen(false)
         toast.success("KOL created successfully")
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to create KOL")
     } finally {
       setIsCreating(false)
@@ -109,7 +113,8 @@ export function KOLManagement({
   const copyReferralLink = (kolId: string) => {
     // Extract the 6-digit number from KOL ID (e.g., "AGV-KOL461337" -> "461337")
     const digits = kolId.match(/\d{6}/)?.[0] || ""
-    const link = `${window.location.origin}/mint/${digits}`
+    const localizedMintPath = createLocalizedHref(`/mint/${digits}`, locale)
+    const link = `${window.location.origin}${localizedMintPath}`
     navigator.clipboard.writeText(link)
     toast.success("Referral link copied")
   }
@@ -118,14 +123,22 @@ export function KOLManagement({
     <div className={cn("space-y-6", className)}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        {canCreateKOL && (
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Create KOL
-              </Button>
-            </DialogTrigger>
+        <div className="flex items-center space-x-2">
+          <Button 
+            variant="outline" 
+            onClick={() => window.open(createLocalizedHref('/admin/kols/activities', locale), '_blank')}
+          >
+            <Activity className="h-4 w-4 mr-2" />
+            View Activities
+          </Button>
+          {canCreateKOL && (
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create KOL
+                </Button>
+              </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Create New KOL</DialogTitle>
@@ -191,6 +204,7 @@ export function KOLManagement({
           </Dialog>
         )}
       </div>
+      </div>
 
       {/* Search and Filters */}
       <Card>
@@ -244,7 +258,9 @@ export function KOLManagement({
                 {filteredKols.map((kol) => {
                   // Extract the 6-digit number from KOL ID for the referral link
                   const digits = kol.kolId.match(/\d{6}/)?.[0] || ""
-                  const referralLink = `${window.location.origin}/mint/${digits}`
+                  const localizedMintPath = createLocalizedHref(`/mint/${digits}`, locale)
+                  const referralLink = `${window.location.origin}${localizedMintPath}`
+                  const localizedKolPath = createLocalizedHref(`/kol/${kol.kolId}`, locale)
                   
                   return (
                     <TableRow key={kol.kolId}>
@@ -285,7 +301,7 @@ export function KOLManagement({
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <Button variant="ghost" size="sm" asChild>
-                            <a href={`/kol/${kol.kolId}`} target="_blank" rel="noopener noreferrer">
+                            <a href={localizedKolPath} target="_blank" rel="noopener noreferrer">
                               <ExternalLink className="h-3 w-3" />
                             </a>
                           </Button>

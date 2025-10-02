@@ -162,7 +162,7 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
     try {
       setSendingLink(true);
       const actionCodeSettings = {
-        url: `${window.location.origin}/dashboard`,
+        url: `${window.location.origin}/admin`,
         handleCodeInApp: true,
       };
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
