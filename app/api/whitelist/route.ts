@@ -4,13 +4,18 @@ import { adminDb } from '@/lib/firebase-admin';
 export async function GET(request: NextRequest) {
   try {
     const snapshot = await adminDb.collection('whitelisted_wallets').get();
-    const wallets = snapshot.docs.map(doc => ({
-      id: doc.id,
-      address: doc.data().address,
-      addedAt: doc.data().addedAt,
-      addedBy: doc.data().addedBy,
-      status: doc.data().status || 'active'
-    }));
+    const wallets = snapshot.docs.map(doc => {
+      const data = doc.data();
+      console.log(data);
+      return {
+        id: doc.id,
+        address: doc.data().walletAddress,
+        addedAt: doc.data().addedAt,
+        addedBy: doc.data().addedBy,
+        status: doc.data().status || 'active',
+      }
+    }
+     );
     
     return NextResponse.json({ wallets });
   } catch (error) {

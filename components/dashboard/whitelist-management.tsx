@@ -148,12 +148,6 @@ export function WhitelistManagement({
     <div className={cn("space-y-6", className)}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Whitelisted Wallets</h2>
-          <p className="text-muted-foreground">
-            Manage wallets that have access to mint NFTs
-          </p>
-        </div>
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
@@ -269,8 +263,6 @@ export function WhitelistManagement({
                 <TableRow>
                   <TableHead>Address</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Added By</TableHead>
-                  <TableHead>Added At</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -298,13 +290,6 @@ export function WhitelistManagement({
                           {wallet.status}
                         </Badge>
                       </div>
-                    </TableCell>
-                    <TableCell>{wallet.addedBy}</TableCell>
-                    <TableCell>
-                      {wallet.addedAt?.toDate ? 
-                        wallet.addedAt.toDate().toLocaleDateString() : 
-                        new Date(wallet.addedAt).toLocaleDateString()
-                      }
                     </TableCell>
                     <TableCell className="text-right">
                       <Button

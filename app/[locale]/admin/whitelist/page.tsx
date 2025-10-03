@@ -82,7 +82,7 @@ export default function WhitelistPage() {
       }
       
       const data = await response.json();
-      
+      console.log({data})
       const walletsData = data.wallets.map((wallet: {
         id: string;
         address: string;
@@ -96,6 +96,7 @@ export default function WhitelistPage() {
         addedBy: wallet.addedBy || 'unknown',
         status: wallet.status || 'active'
       })) as WhitelistedWallet[];
+      console.log({walletsData})
       setWallets(walletsData);
     } catch (error) {
       console.error("Error fetching wallets:", error);

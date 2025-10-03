@@ -398,6 +398,7 @@
     "mint": "Mint",
     "minting": "Minting...",
     "mintNfts": "Mint NFTs",
+    "loading": "Loading minting interface...",
     "referralLinkCopied": "Referral link copied",
     "whitelistRequired": "Whitelist required",
     "price": "Price",
