@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import { isAddress, getAddress, keccak256, AbiCoder } from "ethers";
+import { adminDb } from "@/lib/firebase-admin";
 
 /**
  * CONFIG
@@ -102,6 +103,22 @@ Expected: ${MERKLE_ROOT_EXPECTED}
   return cache;
 }
 
+// Check if wallet is whitelisted in Firebase
+async function isWalletWhitelisted(address: string): Promise<boolean> {
+  try {
+    const snapshot = await adminDb.collection('whitelisted_wallets')
+      .where('address', '==', address.toLowerCase())
+      .where('status', '==', 'active')
+      .limit(1)
+      .get();
+    
+    return !snapshot.empty;
+  } catch (error) {
+    console.error('Error checking whitelist:', error);
+    return false;
+  }
+}
+
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const addrParam = (url.searchParams.get("address") || "").trim();
@@ -116,28 +133,58 @@ export async function GET(req: NextRequest) {
   const checksum = getAddress(addrParam); // canonical checksum for display
 
   try {
-    const { root, proofsLc } = await loadProofs();
-    const proof = proofsLc[addressLc] || [];
-
-    if (!proof.length) {
+    // First check if wallet is whitelisted in Firebase
+    const isWhitelisted = await isWalletWhitelisted(addressLc);
+    
+    if (!isWhitelisted) {
       return NextResponse.json(
-        { whitelisted: false, root, proof: [] },
+        { whitelisted: false, message: "Wallet not whitelisted" },
         { status: 404 }
       );
     }
 
-    // Optional: include the leaf so clients can precheck on the front end
-    const abiCoder = new AbiCoder();
-    const leaf = keccak256(abiCoder.encode(["address"], [addressLc]));
+    // If whitelisted, try to get merkle proof from file
+    try {
+      const { root, proofsLc } = await loadProofs();
+      const proof = proofsLc[addressLc] || [];
 
-    return NextResponse.json({
-      whitelisted: true,
-      address: checksum,
-      root,
-      leaf,
-      proof,
-    });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || "Server error" }, { status: 500 });
+      if (!proof.length) {
+        // Wallet is whitelisted but no merkle proof available
+        return NextResponse.json({
+          whitelisted: true,
+          address: checksum,
+          root: null,
+          leaf: null,
+          proof: [],
+          message: "Wallet is whitelisted but no merkle proof available"
+        });
+      }
+
+      // Optional: include the leaf so clients can precheck on the front end
+      const abiCoder = new AbiCoder();
+      const leaf = keccak256(abiCoder.encode(["address"], [addressLc]));
+
+      return NextResponse.json({
+        whitelisted: true,
+        address: checksum,
+        root,
+        leaf,
+        proof,
+      });
+    } catch (proofError) {
+      // If merkle proof fails but wallet is whitelisted, return whitelisted status
+      console.warn('Merkle proof failed but wallet is whitelisted:', proofError);
+      return NextResponse.json({
+        whitelisted: true,
+        address: checksum,
+        root: null,
+        leaf: null,
+        proof: [],
+        message: "Wallet is whitelisted but merkle proof unavailable"
+      });
+    }
+  } catch (e: unknown) {
+    const errorMessage = e instanceof Error ? e.message : "Server error";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

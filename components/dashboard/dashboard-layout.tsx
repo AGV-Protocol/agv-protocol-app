@@ -22,7 +22,8 @@ import {
   Shield,
   LogOut,
   Menu,
-  X
+  X,
+  Wallet
 } from "lucide-react"
 import { useTranslations } from "@/hooks/useTranslations"
 import { createLocalizedHref, isActiveNavItem } from "@/lib/locale-utils"
@@ -48,6 +49,11 @@ const navigation = [
     title: "KOL Management",
     href: "/admin/kols",
     icon: Users,
+  },
+  {
+    title: "Wallet Whitelist",
+    href: "/admin/whitelist",
+    icon: Wallet,
   },
   {
     title: "Analytics",
