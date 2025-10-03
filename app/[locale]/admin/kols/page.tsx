@@ -45,24 +45,19 @@ export default function KOLsPage() {
   // Fetch server-verified role
   useEffect(() => {
     (async () => {
-      console.log("from kols pageeeeeeeeeeeeee1");
       if (!auth.currentUser) {
-        console.log("from kols pageeeeeeeeeeeeee2");
         setWho({ authed: false, email: null, isAdmin: false, isSuperAdmin: false });
         return;
       }
       try {
         const idToken = await auth.currentUser.getIdToken(true);
-        console.log({idToken}, "from kols pageeeeeeeeeeeeee5");
         const res = await fetch("/api/admin/whoami", {
           headers: { Authorization: `Bearer ${idToken}` },
           cache: "no-store",
         });
         const data = await res.json().catch(() => null);
-        console.log({data}, "from kols pageeeeeeeeeeeeee3");
         if (data) setWho(data);
-      } catch(e) {
-        console.log({e}, "from kols pageeeeeeeeeeeeee4");
+      } catch {
         setWho((s) => ({ ...s, isAdmin: false, isSuperAdmin: false }));
       }
     })();
