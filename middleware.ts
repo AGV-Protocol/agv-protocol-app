@@ -3,7 +3,7 @@ import { locales, defaultLocale } from './i18n';
 
 export const config = {
   matcher: [
-    '/((?!api|admin|coming-soon|_next/static|_next/image|favicon.ico|.*\\..*).*)',
+    '/((?!api|coming-soon|_next/static|_next/image|favicon.ico|.*\\..*).*)',
     '/'
   ]
 };
@@ -11,8 +11,8 @@ export const config = {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip API routes, admin routes, and static files
-  if (pathname.startsWith('/api') || pathname.startsWith('/admin') || pathname.startsWith('/coming-soon')) {
+  // Skip API routes and static files
+  if (pathname.startsWith('/api') || pathname.startsWith('/coming-soon')) {
     return NextResponse.next();
   }
 

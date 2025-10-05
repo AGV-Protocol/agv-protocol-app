@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { doc, getDoc } from "firebase/firestore";
 import {
   onAuthStateChanged,
   signOut,
@@ -13,7 +12,7 @@ import {
   GoogleAuthProvider,
   type User as FirebaseUser,
 } from "firebase/auth";
-import { db, auth } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,24 +24,12 @@ import {
 } from "lucide-react";
 
 // Types
-type UnlockMode = "team" | "kol";
-type UiRole = "Admin" | "BD" | "Tech" | "Finance" | "Security" | "Other";
-
 type WhoAmI = {
   authed: boolean;
   email: string | null;
   isAdmin: boolean;
   isSuperAdmin: boolean;
 };
-
-const uiSelectRoles: UiRole[] = ["Admin", "BD", "Tech", "Finance", "Security", "Other"];
-
-const uiToClaimRole = (ui: UiRole) =>
-  ui === "Admin" ? "admin" :
-  ui === "BD" ? "bd" :
-  ui === "Tech" ? "tech" :
-  ui === "Finance" ? "finance" :
-  ui === "Security" ? "security" : null;
 
 interface DashboardAccessWrapperProps {
   children: React.ReactNode;
@@ -67,12 +54,8 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
   const [sendingLink, setSendingLink] = useState(false);
   const [linkSentTo, setLinkSentTo] = useState<string | null>(null);
 
-  // Gate state
-  const [unlockMode, setUnlockMode] = useState<UnlockMode>("team");
-  const [uiRole, setUiRole] = useState<UiRole>("Tech");
-  const [code, setCode] = useState("");
+  // Access state
   const [accessGranted, setAccessGranted] = useState(false);
-  const [checking, setChecking] = useState(false);
 
   useEffect(() => setIsClient(true), []);
 
@@ -103,9 +86,10 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
             // Clean up the URL
             window.history.replaceState({}, document.title, window.location.pathname);
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error('Email link sign-in error:', error);
-          toast.error('Email link sign-in failed', { description: error.message });
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          toast.error('Email link sign-in failed', { description: errorMessage });
         }
       }
     };
@@ -138,7 +122,13 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
           cache: "no-store",
         });
         const data = await res.json().catch(() => null);
-        if (data) setWho(data);
+        if (data) {
+          setWho(data);
+          // If user is authorized admin, grant access
+          if (data.isAdmin && data.isSuperAdmin) {
+            setAccessGranted(true);
+          }
+        }
       } catch {
         setWho((s) => ({ ...s, isAdmin: false, isSuperAdmin: false }));
       }
@@ -151,8 +141,9 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
       console.log("lggggggggggggggggin in")
       await signInWithPopup(auth, new GoogleAuthProvider());
       toast.success("Signed in with Google");
-    } catch (e: any) {
-      toast.error("Google sign-in failed", { description: e.message });
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+      toast.error("Google sign-in failed", { description: errorMessage });
     }
   };
 
@@ -169,8 +160,9 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
       window.localStorage.setItem("agv_email_for_signin", email);
       setLinkSentTo(email);
       toast.success("Magic link sent", { description: `Check ${email}` });
-    } catch (e: any) {
-      toast.error("Failed to send magic link", { description: e?.message });
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+      toast.error("Failed to send magic link", { description: errorMessage });
     } finally {
       setSendingLink(false);
     }
@@ -182,43 +174,6 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
     router.push('/');
   };
 
-  const verifyAccess = async () => {
-    if (!code.trim()) return toast.error("Code required");
-    try {
-      setChecking(true);
-      if (!auth.currentUser) return toast.error("Sign-in required");
-
-      const ref = doc(db, "allows", code.trim());
-      const snap = await getDoc(ref);
-      if (!snap.exists()) {
-        setAccessGranted(false);
-        return toast.error("Invalid code");
-      }
-
-      const data = snap.data() || {};
-      const roleField = data.role ? String(data.role) : "";
-      const rolesField = Array.isArray(data.roles) ? data.roles.map(String) : [];
-      const claimLower = (uiToClaimRole(uiRole) ?? "").toLowerCase();
-
-      const ok = 
-        roleField === "*" ||
-        roleField === uiRole ||
-        roleField === claimLower ||
-        rolesField.some((r: string) => r === uiRole || r === claimLower);
-
-      if (!ok) {
-        setAccessGranted(false);
-        return toast.error("Code not authorized");
-      }
-
-      setAccessGranted(true);
-      toast.success("Access granted");
-    } catch (e: any) {
-      toast.error("Check failed", { description: e.message });
-    } finally {
-      setChecking(false);
-    }
-  };
 
   // Loading state
   if (authLoading || !isClient) {
@@ -291,71 +246,31 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
     );
   }
 
-  // Access gate
+  // Access gate - show unauthorized message if user is authenticated but not authorized
   if (!accessGranted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle>Access Required</CardTitle>
+            <CardTitle>Access Denied</CardTitle>
             <CardDescription>
-              Enter your access code to continue
+              {who.authed 
+                ? "Your email is not authorized to access the admin dashboard"
+                : "Authentication required to access admin dashboard"
+              }
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Access Type</label>
-              <div className="flex space-x-2">
-                <Button
-                  variant={unlockMode === "team" ? "default" : "outline"}
-                  onClick={() => setUnlockMode("team")}
-                  className="flex-1"
-                >
-                  Team ID
-                </Button>
-                <Button
-                  variant={unlockMode === "kol" ? "default" : "outline"}
-                  onClick={() => setUnlockMode("kol")}
-                  className="flex-1"
-                >
-                  KOL
-                </Button>
+            {who.authed && (
+              <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+                <p className="text-sm text-yellow-800">
+                  Signed in as: <strong>{who.email}</strong>
+                </p>
+                <p className="text-sm text-yellow-700 mt-1">
+                  Contact an administrator to request access.
+                </p>
               </div>
-            </div>
-
-            {unlockMode === "team" && (
-              <>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Select Role</label>
-                  <select
-                    value={uiRole}
-                    onChange={(e) => setUiRole(e.target.value as UiRole)}
-                    className="w-full px-3 py-2 border border-input rounded-md"
-                  >
-                    {uiSelectRoles.map((r) => (
-                      <option key={r} value={r}>{r}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Enter Team ID</label>
-                  <input
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    placeholder="e.g. Team-Id"
-                    className="w-full px-3 py-2 border border-input rounded-md"
-                  />
-                </div>
-              </>
             )}
-
-            <Button 
-              onClick={verifyAccess} 
-              disabled={checking}
-              className="w-full"
-            >
-              {checking ? "Checking..." : "Unlock Dashboard"}
-            </Button>
 
             <Button 
               onClick={doSignOut} 
