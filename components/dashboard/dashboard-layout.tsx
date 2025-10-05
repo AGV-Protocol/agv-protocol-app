@@ -56,6 +56,11 @@ const navigation = [
     icon: Wallet,
   },
   {
+    title: "Whitelist Applications",
+    href: "/admin/whitelist-applications",
+    icon: Shield,
+  },
+  {
     title: "Analytics",
     href: "/admin/analytics",
     icon: BarChart3,

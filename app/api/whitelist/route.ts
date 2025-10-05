@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     // Add wallet to whitelist
     const docRef = await adminDb.collection('whitelisted_wallets').add({
-      address: address.toLowerCase(),
+      walletAddress: address.toLowerCase(),
       addedAt: new Date(),
       addedBy: addedBy || 'admin',
       status: 'active'
