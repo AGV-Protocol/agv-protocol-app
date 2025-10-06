@@ -83,7 +83,7 @@ export function AppNav({ user, onSignOut, className }: AppNavProps) {
         <div className="hidden md:flex items-center space-x-1">
           {navigation.map((item) => {
             const isActive = pathname === item.href || 
-              (item.href.includes('dashboard') && pathname.startsWith('/dashboard'))
+              (item.href.includes('admin') && pathname.startsWith('/admin'))
             
             return (
               <Button
@@ -139,13 +139,13 @@ export function AppNav({ user, onSignOut, className }: AppNavProps) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <FastLink href="/dashboard" className="flex items-center">
+                  <FastLink href="/admin" className="flex items-center">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </FastLink>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <FastLink href="/dashboard?tab=settings" className="flex items-center">
+                  <FastLink href="/admin?tab=settings" className="flex items-center">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </FastLink>
@@ -189,7 +189,7 @@ export function AppNav({ user, onSignOut, className }: AppNavProps) {
             <div className="space-y-2">
               {navigation.map((item) => {
                 const isActive = pathname === item.href || 
-                  (item.href.includes('dashboard') && pathname.startsWith('/dashboard'))
+                  (item.href.includes('dashboard') && pathname.startsWith('/admin'))
                 
                 return (
                   <Button

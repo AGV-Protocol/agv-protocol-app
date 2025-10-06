@@ -1,10 +1,22 @@
 import { NextRequest } from "next/server";
-import { adminAuth } from "@/lib/firebaseAdmin";
+import { adminAuth, adminDb } from "@/lib/firebaseAdmin";
 
 export function isAdminClaim(decoded: any) {
   const roles: string[] = Array.isArray(decoded?.roles) ? decoded.roles : [];
   const role: string | undefined = decoded?.role;
   return decoded?.admin === true || role === "admin" || roles.includes("admin");
+}
+
+export async function isAuthorizedAdminEmail(email?: string | null): Promise<boolean> {
+  if (!email) return false;
+  
+  try {
+    const doc = await adminDb.collection('authorized_admin_emails').doc(email.toLowerCase()).get();
+    return doc.exists && doc.data()?.authorized === true;
+  } catch (error) {
+    console.error('Error checking authorized admin email:', error);
+    return false;
+  }
 }
 
 export function isSuperAdminEmail(email?: string | null) {
@@ -23,7 +35,14 @@ export async function requireAdmin(req: NextRequest) {
 
   try {
     const decoded = await adminAuth.verifyIdToken(m[1], true);
-    return isAdminClaim(decoded) ? decoded : null;
+    
+    // Check if user has admin claims AND is in the authorized emails list
+    if (isAdminClaim(decoded)) {
+      const isAuthorized = await isAuthorizedAdminEmail(decoded.email);
+      return isAuthorized ? decoded : null;
+    }
+    
+    return null;
   } catch {
     return null;
   }
