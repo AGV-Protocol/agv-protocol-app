@@ -53,21 +53,21 @@ export function PositionCard({ position, index }: PositionCardProps) {
   const daysStaked = Math.floor((Date.now() - position.start_ts * 1000) / (1000 * 60 * 60 * 24));
 
   return (
-    <Card className={`w-full ${bgClass} border-0`}>
+    <Card className="w-full bg-white/5 backdrop-blur-xl border-white/10">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg bg-white dark:bg-gray-800 ${colorClass}`}>
+            <div className={`p-2 rounded-lg bg-white/10 ${colorClass}`}>
               <Icon className="h-5 w-5" />
             </div>
             <div>
-              <div className="font-semibold">{position.type} NFT</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="font-semibold text-white">{position.type} NFT</div>
+              <div className="text-sm text-white/70">
                 Position #{index + 1}
               </div>
             </div>
           </div>
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" className="text-xs bg-white/10 border-white/20 text-white">
             {nftMultiplier}x Multiplier
           </Badge>
         </CardTitle>
@@ -77,18 +77,18 @@ export function PositionCard({ position, index }: PositionCardProps) {
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+            <div className="text-2xl font-bold text-green-400">
               {formatNumber(accrued, 4)}
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400">
+            <div className="text-xs text-white/70">
               rGGP Accrued
             </div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            <div className="text-2xl font-bold text-blue-400">
               {formatNumber(dailyYieldForNft, 4)}
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400">
+            <div className="text-xs text-white/70">
               Daily Yield
             </div>
           </div>
@@ -97,18 +97,18 @@ export function PositionCard({ position, index }: PositionCardProps) {
         {/* Staking Info */}
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-gray-600 dark:text-gray-400">Staked Since:</span>
-            <span className="font-medium">
+            <span className="text-white/70">Staked Since:</span>
+            <span className="font-medium text-white">
               {startDate.toLocaleDateString()}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600 dark:text-gray-400">Days Staked:</span>
-            <span className="font-medium">{daysStaked} days</span>
+            <span className="text-white/70">Days Staked:</span>
+            <span className="font-medium text-white">{daysStaked} days</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600 dark:text-gray-400">Lock Tier:</span>
-            <Badge variant="outline" className="text-xs">
+            <span className="text-white/70">Lock Tier:</span>
+            <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white">
               {position.lock_tier || tier}
             </Badge>
           </div>
@@ -118,7 +118,7 @@ export function PositionCard({ position, index }: PositionCardProps) {
         <Button 
           variant="outline" 
           size="sm" 
-          className="w-full"
+          className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20"
           disabled
         >
           Claim Rewards (Coming Soon)
@@ -159,20 +159,20 @@ export function PositionsList() {
 
   if (positions.length === 0) {
     return (
-      <Card className="w-full">
+      <Card className="w-full bg-white/5 backdrop-blur-xl border-white/10">
         <CardContent className="text-center py-12">
           <div className="space-y-4">
             <div className="flex justify-center">
-              <div className="p-4 rounded-full bg-green-100 dark:bg-green-900/20">
-                <Sprout className="h-12 w-12 text-green-600 dark:text-green-400" />
+              <div className="p-4 rounded-full bg-green-500/20">
+                <Sprout className="h-12 w-12 text-green-400" />
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2">No NFTs Staked</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <h3 className="text-lg font-semibold mb-2 text-white">No NFTs Staked</h3>
+              <p className="text-white/70 mb-4">
                 Start earning rGGP rewards by staking your NFTs
               </p>
-              <Button>
+              <Button className="bg-white/10 border-white/20 text-white hover:bg-white/20">
                 Mint & Stake NFTs
               </Button>
             </div>
@@ -184,7 +184,7 @@ export function PositionsList() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Your Staked Positions</h3>
+      <h3 className="text-lg font-semibold text-white">Your Staked Positions</h3>
       {positions.map((position, index) => (
         <PositionCard key={index} position={position} index={index} />
       ))}

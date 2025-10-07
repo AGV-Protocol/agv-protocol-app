@@ -25,18 +25,18 @@ export function LiveCounter() {
 
   if (isLoading) {
     return (
-      <Card className="w-full">
+      <Card className="w-full bg-white/5 backdrop-blur-xl border-white/10">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-white">
+            <TrendingUp className="h-5 w-5 text-blue-400" />
             Live rGGP Counter
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse">
-            <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+            <div className="h-16 bg-white/10 rounded mb-4"></div>
+            <div className="h-4 bg-white/10 rounded w-1/2 mb-2"></div>
+            <div className="h-4 bg-white/10 rounded w-1/3"></div>
           </div>
         </CardContent>
       </Card>
@@ -44,10 +44,10 @@ export function LiveCounter() {
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-white/5 backdrop-blur-xl border-white/10">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
+        <CardTitle className="flex items-center gap-2 text-white">
+          <TrendingUp className="h-5 w-5 text-blue-400" />
           Live rGGP Counter
         </CardTitle>
       </CardHeader>
@@ -55,43 +55,43 @@ export function LiveCounter() {
         {/* Main Counter */}
         <div className="text-center">
           <div 
-            className="text-4xl sm:text-5xl font-bold text-green-600 dark:text-green-400 mb-2"
+            className="text-4xl sm:text-5xl font-bold text-green-400 mb-2"
             aria-live="polite"
             aria-label={`Current rGGP balance: ${formatNumber(liveValue, 4)}`}
           >
             {formatNumber(liveValue, 4)}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="text-sm text-white/70">
             rGGP Accrued
           </div>
         </div>
 
         {/* APR Display */}
         <div className="flex items-center justify-center gap-2">
-          <Badge variant="outline" className="text-lg px-4 py-2">
+          <Badge variant="outline" className="text-lg px-4 py-2 border-white/20 text-white bg-white/10">
             {apr}% APR
           </Badge>
-          <span className="text-sm text-gray-600 dark:text-gray-400">
+          <span className="text-sm text-white/70">
             {tier === 'flex' ? 'Flexible' : `${tier} Lock`}
           </span>
         </div>
 
         {/* Daily Yield Info */}
-        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4">
+        <div className="bg-white/5 rounded-lg p-4 border border-white/10">
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <div className="text-2xl font-semibold text-blue-600 dark:text-blue-400">
+              <div className="text-2xl font-semibold text-blue-400">
                 {formatNumber(dailyYieldTotal, 2)}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
+              <div className="text-xs text-white/70">
                 Daily Yield
               </div>
             </div>
             <div>
-              <div className="text-2xl font-semibold text-purple-600 dark:text-purple-400">
+              <div className="text-2xl font-semibold text-purple-400">
                 {formatNumber(perSecondRate * 86400, 2)}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
+              <div className="text-xs text-white/70">
                 Per Second
               </div>
             </div>
@@ -101,11 +101,11 @@ export function LiveCounter() {
         {/* Lock Tier CTA */}
         {tier === 'flex' && (
           <div className="text-center">
-            <Button className="w-full" size="lg">
+            <Button className="w-full" size="lg" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
               <Lock className="h-4 w-4 mr-2" />
               Lock Tier for Higher APR
             </Button>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+            <p className="text-xs text-white/60 mt-2">
               Lock your NFTs to earn up to 490% APR
             </p>
           </div>

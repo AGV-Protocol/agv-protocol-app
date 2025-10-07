@@ -13,17 +13,17 @@ export function AprBars() {
   
   if (isLoading || !tierData) {
     return (
-      <Card className="w-full">
+      <Card className="w-full bg-white/5 backdrop-blur-xl border-white/10">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-white">
+            <TrendingUp className="h-5 w-5 text-blue-400" />
             APR Breakdown
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div key={i} className="h-8 bg-white/10 rounded"></div>
             ))}
           </div>
         </CardContent>
@@ -64,10 +64,10 @@ export function AprBars() {
   ];
 
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-white/5 backdrop-blur-xl border-white/10">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
+        <CardTitle className="flex items-center gap-2 text-white">
+          <TrendingUp className="h-5 w-5 text-blue-400" />
           APR Breakdown
         </CardTitle>
       </CardHeader>
@@ -79,20 +79,20 @@ export function AprBars() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <bar.icon className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-                      <span className="text-sm font-medium">{bar.label}</span>
+                      <bar.icon className="h-4 w-4 text-white/70" />
+                      <span className="text-sm font-medium text-white">{bar.label}</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm font-semibold">
+                      <div className="text-sm font-semibold text-white">
                         {formatNumber(bar.value, 1)}%
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-white/60">
                         {formatNumber(bar.percentage, 1)}% of total
                       </div>
                     </div>
                   </div>
                   
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                  <div className="w-full bg-white/10 rounded-full h-3">
                     <div
                       className={`h-3 rounded-full transition-all duration-500 ${bar.color}`}
                       style={{ width: `${bar.percentage}%` }}
@@ -107,10 +107,10 @@ export function AprBars() {
           </TooltipProvider>
         ))}
         
-        <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="pt-4 border-t border-white/10">
           <div className="flex items-center justify-between">
-            <span className="text-lg font-semibold">Total APR</span>
-            <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+            <span className="text-lg font-semibold text-white">Total APR</span>
+            <span className="text-2xl font-bold text-green-400">
               {formatNumber(apr, 1)}%
             </span>
           </div>
