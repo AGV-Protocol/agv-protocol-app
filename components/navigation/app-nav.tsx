@@ -23,7 +23,8 @@ import {
   X,
   Settings,
   Home,
-  Sparkles
+  Sparkles,
+  Vault
 } from "lucide-react"
 import Image from "next/image"
 
@@ -35,6 +36,11 @@ interface NavItem {
 }
 
 const navigation: NavItem[] = [
+  {
+    title: "Vault",
+    href: "/vault",
+    icon: Vault
+  }
   // {
   //   title: "Home",
   //   href: "/",
