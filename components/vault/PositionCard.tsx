@@ -6,7 +6,7 @@ import { dailyYield, calculateAccrued } from '@/lib/vault/math';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Sprout, TreePine, Sun, Cpu } from 'lucide-react';
+import { Sprout, TreePine, Sun, Cpu, Unlock } from 'lucide-react';
 
 interface PositionCardProps {
   lockedNft: LockedNFT;
@@ -34,7 +34,7 @@ const nftBgColors = {
 };
 
 export function PositionCard({ lockedNft, index }: PositionCardProps) {
-  const { tier, tiers, xp } = useVaultStore();
+  const { tier, tiers, xp, unlockNft } = useVaultStore();
   
   if (!tiers || !xp) return null;
 
@@ -111,15 +111,30 @@ export function PositionCard({ lockedNft, index }: PositionCardProps) {
           </div>
         </div>
 
-        {/* Action Button */}
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20"
-          disabled
-        >
-          Claim Rewards (Coming Soon)
-        </Button>
+        {/* Action Buttons */}
+        <div className="space-y-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20"
+            disabled
+          >
+            Claim Rewards (Coming Soon)
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
+            onClick={() => {
+              if (confirm(`Are you sure you want to unlock this NFT? This will stop earning rewards.`)) {
+                unlockNft(lockedNft.tokenAddress, lockedNft.tokenIdStr);
+              }
+            }}
+          >
+            <Unlock className="h-4 w-4 mr-2" />
+            Unlock NFT
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

@@ -18,6 +18,14 @@ import {
   perSecondRate 
 } from './math';
 
+export interface WalletNFT {
+  tokenAddress: string;
+  tokenIdStr: string;
+  contractType: string;
+  name: string | null;
+  imageUrl: string | null;
+}
+
 export interface LockedNFT {
   tokenAddress: string;
   tokenIdStr: string;
@@ -56,6 +64,9 @@ export interface VaultState {
   setTier: (tier: LockTier) => void;
   setChainKey: (chainKey: "56" | "42161" | "137") => void;
   setLockedNfts: (nfts: LockedNFT[]) => void;
+  unlockNft: (tokenAddress: string, tokenIdStr: string) => void;
+  unlockAllNfts: () => void;
+  validateLockedNfts: (walletNfts: WalletNFT[]) => void;
   hydrateFromApis: (wallet: string) => Promise<void>;
   refreshData: () => Promise<void>;
   clearError: () => void;
@@ -102,6 +113,35 @@ export const useVaultStore = create<VaultState>()(
         set({ lockedNfts });
         // Recalculate yields when locked NFTs change
         get().recalculateYields();
+      },
+
+      unlockNft: (tokenAddress, tokenIdStr) => {
+        const { lockedNfts } = get();
+        const updatedNfts = lockedNfts.filter(
+          nft => !(nft.tokenAddress === tokenAddress && nft.tokenIdStr === tokenIdStr)
+        );
+        set({ lockedNfts: updatedNfts });
+        get().recalculateYields();
+      },
+
+      unlockAllNfts: () => {
+        set({ lockedNfts: [] });
+        get().recalculateYields();
+      },
+
+      validateLockedNfts: (walletNfts) => {
+        const { lockedNfts } = get();
+        const validNfts = lockedNfts.filter(lockedNft => 
+          walletNfts.some(walletNft => 
+            walletNft.tokenAddress.toLowerCase() === lockedNft.tokenAddress.toLowerCase() &&
+            walletNft.tokenIdStr === lockedNft.tokenIdStr
+          )
+        );
+        
+        if (validNfts.length !== lockedNfts.length) {
+          set({ lockedNfts: validNfts });
+          get().recalculateYields();
+        }
       },
 
       hydrateFromApis: async (wallet) => {

@@ -9,6 +9,7 @@ import { PositionsList } from '@/components/vault/PositionCard';
 import { XpPanel } from '@/components/vault/XpPanel';
 import { Leaderboard } from '@/components/vault/Leaderboard';
 import { NftSelector } from '@/components/vault/NftSelector';
+import { VaultWarning } from '@/components/vault/VaultWarning';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, AlertTriangle, Wallet } from 'lucide-react';
@@ -78,6 +79,9 @@ export default function VaultPage() {
         <div className="mb-8">
           <VaultHeader />
         </div>
+
+        {/* Vault Warning */}
+        <VaultWarning />
 
         {/* Main Content Grid */}
         {wallet ? (

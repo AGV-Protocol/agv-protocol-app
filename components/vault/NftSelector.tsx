@@ -8,15 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Image, Loader2, AlertTriangle, ExternalLink } from 'lucide-react';
 import { NFT_CONTRACTS } from '@/lib/contracts';
-import { useVaultStore } from '@/lib/vault/store';
-
-interface WalletNFT {
-  tokenAddress: string;
-  tokenIdStr: string;
-  contractType: string;
-  name: string | null;
-  imageUrl: string | null;
-}
+import { useVaultStore, WalletNFT } from '@/lib/vault/store';
 
 interface NftSelectorProps {
   onNftsSelected: (selectedNfts: WalletNFT[]) => void;
@@ -30,7 +22,7 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
   
   const account = useActiveAccount();
   const chain = useActiveWalletChain();
-  const { chainKey } = useVaultStore();
+  const { chainKey, validateLockedNfts } = useVaultStore();
 
   // Get NFT contract addresses for selected chain
   const getNftContracts = () => {
@@ -47,7 +39,7 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
 
   const fetchWalletNfts = async () => {
     if (!account?.address) return;
-    
+    account.address = "0xa8c7a749A0ceC555f82401FA2Af7c63DD90e6496"
     setIsLoading(true);
     setError(null);
     
@@ -90,6 +82,9 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
       }
       
       setNfts(allNfts);
+      
+      // Validate locked NFTs are still in wallet
+      validateLockedNfts(allNfts);
     } catch (err) {
       setError('Failed to fetch wallet NFTs');
       console.error('Error fetching wallet NFTs:', err);

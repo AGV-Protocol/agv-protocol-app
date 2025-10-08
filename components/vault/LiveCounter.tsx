@@ -6,7 +6,7 @@ import { formatNumber, formatLargeNumber } from '@/lib/vault/math';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Lock } from 'lucide-react';
+import { TrendingUp, Lock, Unlock } from 'lucide-react';
 
 export function LiveCounter() {
   const { 
@@ -16,7 +16,8 @@ export function LiveCounter() {
     perSecondRate, 
     dailyYieldTotal,
     isLoading,
-    lockedNfts
+    lockedNfts,
+    unlockAllNfts
   } = useVaultStore();
 
   // Show 0 rewards if no NFTs are locked
@@ -113,6 +114,28 @@ export function LiveCounter() {
             </Button>
             <p className="text-xs text-white/60 mt-2">
               Lock your NFTs to earn up to 490% APR
+            </p>
+          </div>
+        )}
+
+        {/* Unlock All Button */}
+        {lockedNfts.length > 0 && (
+          <div className="text-center">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
+              onClick={() => {
+                if (confirm(`Are you sure you want to unlock all ${lockedNfts.length} NFTs? This will stop all rewards.`)) {
+                  unlockAllNfts();
+                }
+              }}
+            >
+              <Unlock className="h-4 w-4 mr-2" />
+              Unlock All NFTs
+            </Button>
+            <p className="text-xs text-red-400/60 mt-2">
+              This will stop all vault rewards
             </p>
           </div>
         )}
