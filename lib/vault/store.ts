@@ -59,6 +59,9 @@ export interface VaultState {
   isLoading: boolean;
   error?: string;
   
+  // Validation state
+  lastValidationTime: number;
+  
   // Actions
   setWallet: (wallet: `0x${string}`) => void;
   setTier: (tier: LockTier) => void;
@@ -67,6 +70,7 @@ export interface VaultState {
   unlockNft: (tokenAddress: string, tokenIdStr: string) => void;
   unlockAllNfts: () => void;
   validateLockedNfts: (walletNfts: WalletNFT[]) => void;
+  performPeriodicValidation: () => Promise<void>;
   hydrateFromApis: (wallet: string) => Promise<void>;
   refreshData: () => Promise<void>;
   clearError: () => void;
@@ -89,6 +93,7 @@ export const useVaultStore = create<VaultState>()(
       perSecondRate: 0,
       isLoading: false,
       error: undefined,
+      lastValidationTime: 0,
 
       // Actions
       setWallet: (wallet) => {
@@ -141,6 +146,58 @@ export const useVaultStore = create<VaultState>()(
         if (validNfts.length !== lockedNfts.length) {
           set({ lockedNfts: validNfts });
           get().recalculateYields();
+        }
+      },
+
+      performPeriodicValidation: async () => {
+        const { wallet, chainKey, lockedNfts, lastValidationTime } = get();
+        
+        // Only validate if we have locked NFTs and wallet
+        if (!wallet || lockedNfts.length === 0) return;
+        
+        // Check if 30 minutes have passed since last validation
+        const now = Date.now();
+        const thirtyMinutes = 30 * 60 * 1000; // 30 minutes in milliseconds
+        
+        if (now - lastValidationTime < thirtyMinutes) {
+          return; // Not time yet
+        }
+        
+        try {
+          // Fetch current wallet NFTs
+          const response = await fetch(`/api/wallet-nfts?address=${wallet}&chain=${chainKey}`);
+          if (!response.ok) {
+            console.warn('Failed to fetch wallet NFTs for validation');
+            return;
+          }
+          
+          const data = await response.json();
+          const walletNfts = data.items || [];
+          
+          // Validate locked NFTs
+          const validNfts = lockedNfts.filter(lockedNft => 
+            walletNfts.some(walletNft => 
+              walletNft.tokenAddress.toLowerCase() === lockedNft.tokenAddress.toLowerCase() &&
+              walletNft.tokenIdStr === lockedNft.tokenIdStr
+            )
+          );
+          
+          // Update if any NFTs were removed
+          if (validNfts.length !== lockedNfts.length) {
+            const removedCount = lockedNfts.length - validNfts.length;
+            console.log(`Periodic validation: ${removedCount} NFT(s) no longer in wallet, removing from vault`);
+            
+            set({ 
+              lockedNfts: validNfts,
+              lastValidationTime: now 
+            });
+            get().recalculateYields();
+          } else {
+            // Update validation time even if no changes
+            set({ lastValidationTime: now });
+          }
+        } catch (error) {
+          console.error('Error during periodic validation:', error);
         }
       },
 

@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useVaultStore } from '@/lib/vault/store';
+import { usePeriodicValidation } from '@/lib/vault/usePeriodicValidation';
 import { VaultHeader } from '@/components/vault/VaultHeader';
 import { LiveCounter } from '@/components/vault/LiveCounter';
 import { AprBars } from '@/components/vault/AprBars';
@@ -25,6 +26,9 @@ export default function VaultPage() {
     lockedNfts,
     setLockedNfts
   } = useVaultStore();
+
+  // Start periodic validation of locked NFTs
+  usePeriodicValidation();
 
   // Auto-refresh data every 5 minutes
   useEffect(() => {
