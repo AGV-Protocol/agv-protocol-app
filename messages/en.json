@@ -353,6 +353,104 @@
     "noStakesFoundForNetwork": "No stakes found for this network and collection.",
     "durationMustBeAtLeastSevenDays": "Staking duration must be at least 7 days."
   },
+  "vault": {
+    "title": "rGGP Vault",
+    "subtitle": "Earn rewards by locking your NFTs and completing community tasks",
+    "connectWallet": {
+      "title": "Connect Your Wallet",
+      "description": "Connect your wallet to view your rGGP vault, staked NFTs, and earning potential.",
+      "features": {
+        "title": "Once connected, you'll be able to:",
+        "liveEarnings": "View your live rGGP earnings",
+        "stakedPositions": "See your staked NFT positions",
+        "trackXp": "Track your XP and rewards",
+        "leaderboard": "Compare your performance on the leaderboard"
+      }
+    },
+    "header": {
+      "wallet": "Wallet:",
+      "network": "Network:",
+      "lockTier": "Lock Tier:"
+    },
+    "liveCounter": {
+      "title": "Live rGGP Counter",
+      "accrued": "Accrued",
+      "dailyYield": "Daily Yield",
+      "perSecond": "Per Second",
+      "lockTierCta": "Lock Tier for Higher APR",
+      "lockTierDescription": "Lock your NFTs to earn up to 490% APR",
+      "unlockAll": "Unlock All NFTs",
+      "unlockAllDescription": "This will stop all vault rewards"
+    },
+    "aprBars": {
+      "title": "APR Breakdown",
+      "real": "Real",
+      "boost": "Boost",
+      "social": "Social",
+      "total": "Total APR"
+    },
+    "positions": {
+      "title": "Your Locked NFTs",
+      "noNfts": "No NFTs Staked",
+      "noNftsDescription": "Select NFTs from your wallet to start earning vault rewards",
+      "claimRewards": "Claim Rewards (Coming Soon)",
+      "unlockNft": "Unlock NFT",
+      "multiplier": "Multiplier",
+      "daysStaked": "Days Staked:",
+      "lockTier": "Lock Tier:"
+    },
+    "xpPanel": {
+      "title": "XP & Social Rewards",
+      "currentXp": "Current XP",
+      "lastUpdate": "Last Update",
+      "earnMore": "Earn More XP",
+      "zealy": "Complete Tasks on Zealy",
+      "taskon": "Join Community on TaskOn",
+      "noXpData": "No XP Data",
+      "noXpDescription": "Complete community tasks to earn XP and boost your rewards"
+    },
+    "leaderboard": {
+      "title": "Top 100 Leaderboard",
+      "rank": "Rank",
+      "wallet": "Wallet",
+      "rggp": "rGGP",
+      "xp": "XP",
+      "loading": "Loading leaderboard...",
+      "noData": "No leaderboard data available"
+    },
+    "nftSelector": {
+      "title": "Select NFTs to Lock",
+      "selected": "selected",
+      "connectWallet": "Connect Your Wallet",
+      "connectDescription": "Connect your wallet to view and select NFTs for locking",
+      "loading": "Loading Your NFTs",
+      "error": "Error Loading NFTs",
+      "tryAgain": "Try Again",
+      "noNfts": "No NFTs Found",
+      "noNftsDescription": "You don't have any AGV NFTs in your wallet. Mint your first NFT to start earning vault rewards!",
+      "goToMint": "Go to Mint Page",
+      "lockNfts": "Lock NFTs (Coming Soon)",
+      "selectedForLocking": "selected for locking"
+    },
+    "warning": {
+      "title": "NFTs locked in vault",
+      "important": "Important:",
+      "description": "Warning: NFT is locked in vault. Do not transfer it, or rewards will stop. Use \"Unlock\" to safely remove it first.",
+      "lastValidation": "Last validation:",
+      "validateNow": "Validate Now"
+    },
+    "footer": {
+      "dataUpdates": "Data updates every 60 seconds. XP updates within 1 hour of task completion."
+    },
+    "refresh": {
+      "refreshing": "Refreshing...",
+      "refreshData": "Refresh Data"
+    },
+    "unlock": {
+      "confirmSingle": "Are you sure you want to unlock this NFT? This will stop earning rewards.",
+      "confirmAll": "Are you sure you want to unlock all {count} NFTs? This will stop all rewards."
+    }
+  },
   "minting": {
     "title": "AGV Protocol Minting",
     "description": "Mint exclusive AGV Protocol NFTs across multiple blockchain networks.",

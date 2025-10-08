@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useVaultStore } from '@/lib/vault/store';
 import { usePeriodicValidation } from '@/lib/vault/usePeriodicValidation';
+import { useTranslations } from '@/hooks/useTranslations';
 import { VaultHeader } from '@/components/vault/VaultHeader';
 import { LiveCounter } from '@/components/vault/LiveCounter';
 import { AprBars } from '@/components/vault/AprBars';
@@ -16,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { RefreshCw, AlertTriangle, Wallet } from 'lucide-react';
 
 export default function VaultPage() {
+  const { t } = useTranslations();
   const { 
     wallet, 
     isLoading, 
@@ -54,10 +56,10 @@ export default function VaultPage() {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">
-            rGGP Vault
+            {t('vault.title')}
           </h1>
           <p className="text-lg text-white/80">
-            Earn rewards by locking your NFTs and completing community tasks
+            {t('vault.subtitle')}
           </p>
         </div>
 
@@ -73,7 +75,7 @@ export default function VaultPage() {
                 onClick={clearError}
                 className="ml-4 text-red-300 hover:text-red-200 hover:bg-red-500/20"
               >
-                Dismiss
+                {t('common.close')}
               </Button>
             </AlertDescription>
           </Alert>
@@ -150,21 +152,21 @@ export default function VaultPage() {
                   <Wallet className="h-12 w-12 text-blue-400" />
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-2">
-                  Connect Your Wallet
+                  {t('vault.connectWallet.title')}
                 </h2>
                 <p className="text-white/80 mb-6">
-                  Connect your wallet to view your rGGP vault, staked NFTs, and earning potential.
+                  {t('vault.connectWallet.description')}
                 </p>
               </div>
               
               <div className="space-y-4">
                 <div className="text-sm text-white/70">
-                  <p>Once connected, you'll be able to:</p>
+                  <p>{t('vault.connectWallet.features.title')}</p>
                   <ul className="mt-2 space-y-1 text-left">
-                    <li>• View your live rGGP earnings</li>
-                    <li>• See your staked NFT positions</li>
-                    <li>• Track your XP and rewards</li>
-                    <li>• Compare your performance on the leaderboard</li>
+                    <li>• {t('vault.connectWallet.features.liveEarnings')}</li>
+                    <li>• {t('vault.connectWallet.features.stakedPositions')}</li>
+                    <li>• {t('vault.connectWallet.features.trackXp')}</li>
+                    <li>• {t('vault.connectWallet.features.leaderboard')}</li>
                   </ul>
                 </div>
               </div>
@@ -184,12 +186,12 @@ export default function VaultPage() {
               {isLoading ? (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  Refreshing...
+                  {t('vault.refresh.refreshing')}
                 </>
               ) : (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh Data
+                  {t('vault.refresh.refreshData')}
                 </>
               )}
             </Button>
@@ -199,7 +201,7 @@ export default function VaultPage() {
         {/* Footer Info */}
         <div className="mt-12 text-center text-sm text-white/60">
           <p className="mt-2">
-            Data updates every 60 seconds. XP updates within 1 hour of task completion.
+            {t('vault.footer.dataUpdates')}
           </p>
         </div>
       </div>

@@ -306,7 +306,6 @@ export default function StakingPage() {
 
       // Mark withdrawn via API (no client Firestore writes)
       toast.loading(t('staking.updatingRecords'));
-      console.log("Withdrawing............")
       await postJSON<{ ok: boolean }>(
         "/api/stakes/withdraw",
         {

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Trophy, Medal, Award, RefreshCw } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
 
 const rankIcons = {
   1: Trophy,
@@ -20,6 +21,7 @@ const rankColors = {
 };
 
 export function Leaderboard() {
+  const { t } = useTranslations();
   const { leaderboard, isLoading, refreshData } = useVaultStore();
 
   if (isLoading) {
@@ -28,7 +30,7 @@ export function Leaderboard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
             <Trophy className="h-5 w-5 text-yellow-400" />
-            Top 100 Leaderboard
+            {t('vault.leaderboard.title')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -54,7 +56,7 @@ export function Leaderboard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
             <Trophy className="h-5 w-5 text-yellow-400" />
-            Top 100 Leaderboard
+            {t('vault.leaderboard.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center py-8">
@@ -65,9 +67,9 @@ export function Leaderboard() {
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2 text-white">Leaderboard Loading</h3>
+              <h3 className="text-lg font-semibold mb-2 text-white">{t('vault.leaderboard.loading')}</h3>
               <p className="text-white/70 mb-4">
-                The leaderboard is being updated
+                {t('vault.leaderboard.noData')}
               </p>
               <Button onClick={refreshData} variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
                 <RefreshCw className="h-4 w-4 mr-2" />
@@ -89,7 +91,7 @@ export function Leaderboard() {
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-yellow-400" />
-            <span className="text-white">Top 100 Leaderboard</span>
+            <span className="text-white">{t('vault.leaderboard.title')}</span>
           </div>
           <div className="flex items-center gap-2">
             <Button

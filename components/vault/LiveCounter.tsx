@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Lock, Unlock } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
 
 export function LiveCounter() {
+  const { t } = useTranslations();
   const { 
     tier, 
     tiers, 
@@ -55,7 +57,7 @@ export function LiveCounter() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-white">
           <TrendingUp className="h-5 w-5 text-blue-400" />
-          Live rGGP Counter
+          {t('vault.liveCounter.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -69,7 +71,7 @@ export function LiveCounter() {
             {formatNumber(liveValue, 4)}
           </div>
           <div className="text-sm text-white/70">
-            rGGP Accrued
+            {t('vault.liveCounter.accrued')}
           </div>
         </div>
 
@@ -91,7 +93,7 @@ export function LiveCounter() {
                 {formatNumber(effectiveDailyYieldTotal, 2)}
               </div>
               <div className="text-xs text-white/70">
-                Daily Yield
+                {t('vault.liveCounter.dailyYield')}
               </div>
             </div>
             <div>
@@ -99,7 +101,7 @@ export function LiveCounter() {
                 {formatNumber(effectivePerSecondRate * 86400, 2)}
               </div>
               <div className="text-xs text-white/70">
-                Per Second
+                {t('vault.liveCounter.perSecond')}
               </div>
             </div>
           </div>
@@ -110,10 +112,10 @@ export function LiveCounter() {
           <div className="text-center">
             <Button className="w-full" size="lg" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
               <Lock className="h-4 w-4 mr-2" />
-              Lock Tier for Higher APR
+              {t('vault.liveCounter.lockTierCta')}
             </Button>
             <p className="text-xs text-white/60 mt-2">
-              Lock your NFTs to earn up to 490% APR
+              {t('vault.liveCounter.lockTierDescription')}
             </p>
           </div>
         )}
@@ -126,16 +128,16 @@ export function LiveCounter() {
               size="sm" 
               className="w-full bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
               onClick={() => {
-                if (confirm(`Are you sure you want to unlock all ${lockedNfts.length} NFTs? This will stop all rewards.`)) {
+                if (confirm(t('vault.unlock.confirmAll', { count: lockedNfts.length }))) {
                   unlockAllNfts();
                 }
               }}
             >
               <Unlock className="h-4 w-4 mr-2" />
-              Unlock All NFTs
+              {t('vault.liveCounter.unlockAll')}
             </Button>
             <p className="text-xs text-red-400/60 mt-2">
-              This will stop all vault rewards
+              {t('vault.liveCounter.unlockAllDescription')}
             </p>
           </div>
         )}

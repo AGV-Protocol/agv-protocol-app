@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, RefreshCw, AlertTriangle, Target } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
 
 export function XpPanel() {
+  const { t } = useTranslations();
   const { xp, isLoading, refreshData } = useVaultStore();
 
   if (isLoading) {
@@ -16,7 +18,7 @@ export function XpPanel() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-white">
           <div className="h-5 w-5 bg-white/20 rounded animate-pulse"></div>
-          XP Status
+          {t('vault.xpPanel.title')}
         </CardTitle>
       </CardHeader>
         <CardContent>
@@ -36,7 +38,7 @@ export function XpPanel() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
             <div className="h-5 w-5 bg-white/20 rounded"></div>
-            XP Status
+            {t('vault.xpPanel.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center py-8">
@@ -47,9 +49,9 @@ export function XpPanel() {
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2 text-white">No XP Data</h3>
+              <h3 className="text-lg font-semibold mb-2 text-white">{t('vault.xpPanel.noXpData')}</h3>
               <p className="text-white/70 mb-4">
-                Start earning XP by completing tasks on Zealy and TaskOn
+                {t('vault.xpPanel.noXpDescription')}
               </p>
               <div className="flex gap-2 justify-center">
                 <Button variant="outline" size="sm" asChild className="bg-white/10 border-white/20 text-white hover:bg-white/20">
@@ -81,7 +83,7 @@ export function XpPanel() {
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="h-5 w-5 bg-gradient-to-r from-purple-500 to-pink-500 rounded"></div>
-            <span className="text-white">XP Status</span>
+            <span className="text-white">{t('vault.xpPanel.title')}</span>
           </div>
           <Button
             variant="ghost"
@@ -101,7 +103,7 @@ export function XpPanel() {
             {formatLargeNumber(xp.xp)}
           </div>
           <div className="text-sm text-white/70">
-            Total XP Points
+            {t('vault.xpPanel.currentXp')}
           </div>
         </div>
 
@@ -125,7 +127,7 @@ export function XpPanel() {
         {/* Last Updated */}
         {lastUpdated && (
           <div className="text-center text-sm text-white/60">
-            Last updated: {lastUpdated.toLocaleString()}
+            {t('vault.xpPanel.lastUpdate')}: {lastUpdated.toLocaleString()}
           </div>
         )}
 
@@ -146,13 +148,13 @@ export function XpPanel() {
           <Button variant="outline" size="sm" className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20" asChild>
             <a href="https://zealy.io" target="_blank" rel="noopener noreferrer">
               <ExternalLink className="h-4 w-4 mr-2" />
-              Earn on Zealy
+              {t('vault.xpPanel.zealy')}
             </a>
           </Button>
           <Button variant="outline" size="sm" className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20" asChild>
             <a href="https://taskon.xyz" target="_blank" rel="noopener noreferrer">
               <ExternalLink className="h-4 w-4 mr-2" />
-              Earn on TaskOn
+              {t('vault.xpPanel.taskon')}
             </a>
           </Button>
         </div>

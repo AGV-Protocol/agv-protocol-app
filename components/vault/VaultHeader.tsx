@@ -8,6 +8,7 @@ import { Wallet, CheckCircle } from 'lucide-react';
 import { useActiveAccount, ConnectButton, useActiveWalletChain, useSwitchActiveWalletChain } from 'thirdweb/react';
 import { thirdwebClient } from '@/components/wallet/wallet-connect';
 import { bsc, polygon, arbitrum } from 'thirdweb/chains';
+import { useTranslations } from '@/hooks/useTranslations';
 
 type ChainKey = "56" | "42161" | "137";
 
@@ -21,6 +22,7 @@ const CHAIN_CONFIG: Record<
 };
 
 export function VaultHeader() {
+  const { t } = useTranslations();
   const { wallet, tier, setTier, setWallet, chainKey, setChainKey } = useVaultStore();
   const account = useActiveAccount();
   const activeChain = useActiveWalletChain();
@@ -56,47 +58,47 @@ export function VaultHeader() {
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <div className="flex items-center gap-2">
-          <Wallet className="h-5 w-5 text-blue-400" />
-          <span className="text-sm font-medium text-white/80">
-            Wallet:
-          </span>
-          <ConnectButton client={thirdwebClient} />
-        </div>
+            <div className="flex items-center gap-2">
+              <Wallet className="h-5 w-5 text-blue-400" />
+              <span className="text-sm font-medium text-white/80">
+                {t('vault.header.wallet')}
+              </span>
+              <ConnectButton client={thirdwebClient} />
+            </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-white/80">
-            Network:
-          </span>
-          <Select value={chainKey} onValueChange={handleChainChange}>
-            <SelectTrigger className="w-32 bg-white/10 border-white/20 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-white/20">
-              <SelectItem value="56" className="text-white hover:bg-white/10">BSC</SelectItem>
-              <SelectItem value="137" className="text-white hover:bg-white/10">Polygon</SelectItem>
-              <SelectItem value="42161" className="text-white hover:bg-white/10">Arbitrum</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-white/80">
+                {t('vault.header.network')}
+              </span>
+              <Select value={chainKey} onValueChange={handleChainChange}>
+                <SelectTrigger className="w-32 bg-white/10 border-white/20 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 border-white/20">
+                  <SelectItem value="56" className="text-white hover:bg-white/10">BSC</SelectItem>
+                  <SelectItem value="137" className="text-white hover:bg-white/10">Polygon</SelectItem>
+                  <SelectItem value="42161" className="text-white hover:bg-white/10">Arbitrum</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-white/80">
-            Lock Tier:
-          </span>
-          <Select value={tier} onValueChange={handleTierChange}>
-            <SelectTrigger className="w-32 bg-white/10 border-white/20 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-white/20">
-              <SelectItem value="flex" className="text-white hover:bg-white/10">Flex</SelectItem>
-              <SelectItem value="1m" className="text-white hover:bg-white/10">1 Month</SelectItem>
-              <SelectItem value="3m" className="text-white hover:bg-white/10">3 Months</SelectItem>
-              <SelectItem value="6m" className="text-white hover:bg-white/10">6 Months</SelectItem>
-              <SelectItem value="12m" className="text-white hover:bg-white/10">12 Months</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-white/80">
+                {t('vault.header.lockTier')}
+              </span>
+              <Select value={tier} onValueChange={handleTierChange}>
+                <SelectTrigger className="w-32 bg-white/10 border-white/20 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 border-white/20">
+                  <SelectItem value="flex" className="text-white hover:bg-white/10">Flex</SelectItem>
+                  <SelectItem value="1m" className="text-white hover:bg-white/10">1 Month</SelectItem>
+                  <SelectItem value="3m" className="text-white hover:bg-white/10">3 Months</SelectItem>
+                  <SelectItem value="6m" className="text-white hover:bg-white/10">6 Months</SelectItem>
+                  <SelectItem value="12m" className="text-white hover:bg-white/10">12 Months</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
       </div>
     </div>
   );

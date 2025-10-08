@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sprout, TreePine, Sun, Cpu, Unlock } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface PositionCardProps {
   lockedNft: LockedNFT;
@@ -34,6 +35,7 @@ const nftBgColors = {
 };
 
 export function PositionCard({ lockedNft, index }: PositionCardProps) {
+  const { t } = useTranslations();
   const { tier, tiers, xp, unlockNft } = useVaultStore();
   
   if (!tiers || !xp) return null;
@@ -65,7 +67,7 @@ export function PositionCard({ lockedNft, index }: PositionCardProps) {
             </div>
           </div>
           <Badge variant="secondary" className="text-xs bg-white/10 border-white/20 text-white">
-            {nftMultiplier}x Multiplier
+            {nftMultiplier}x {t('vault.positions.multiplier')}
           </Badge>
         </CardTitle>
       </CardHeader>
@@ -86,7 +88,7 @@ export function PositionCard({ lockedNft, index }: PositionCardProps) {
               {formatNumber(dailyYieldForNft, 4)}
             </div>
             <div className="text-xs text-white/70">
-              Daily Yield
+              {t('vault.liveCounter.dailyYield')}
             </div>
           </div>
         </div>
@@ -100,11 +102,11 @@ export function PositionCard({ lockedNft, index }: PositionCardProps) {
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-white/70">Days Staked:</span>
+            <span className="text-white/70">{t('vault.positions.daysStaked')}</span>
             <span className="font-medium text-white">{daysStaked} days</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-white/70">Lock Tier:</span>
+            <span className="text-white/70">{t('vault.positions.lockTier')}</span>
             <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white">
               {lockedNft.lockTier}
             </Badge>
@@ -119,20 +121,20 @@ export function PositionCard({ lockedNft, index }: PositionCardProps) {
             className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20"
             disabled
           >
-            Claim Rewards (Coming Soon)
+            {t('vault.positions.claimRewards')}
           </Button>
           <Button 
             variant="outline" 
             size="sm" 
             className="w-full bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
             onClick={() => {
-              if (confirm(`Are you sure you want to unlock this NFT? This will stop earning rewards.`)) {
+              if (confirm(t('vault.unlock.confirmSingle'))) {
                 unlockNft(lockedNft.tokenAddress, lockedNft.tokenIdStr);
               }
             }}
           >
             <Unlock className="h-4 w-4 mr-2" />
-            Unlock NFT
+            {t('vault.positions.unlockNft')}
           </Button>
         </div>
       </CardContent>
@@ -141,6 +143,7 @@ export function PositionCard({ lockedNft, index }: PositionCardProps) {
 }
 
 export function PositionsList() {
+  const { t } = useTranslations();
   const { lockedNfts, isLoading } = useVaultStore();
 
   if (isLoading) {
@@ -180,9 +183,9 @@ export function PositionsList() {
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2 text-white">No NFTs Staked</h3>
+              <h3 className="text-lg font-semibold mb-2 text-white">{t('vault.positions.noNfts')}</h3>
               <p className="text-white/70 mb-4">
-                Start earning rGGP rewards by staking your NFTs
+                {t('vault.positions.noNftsDescription')}
               </p>
               <Button className="bg-white/10 border-white/20 text-white hover:bg-white/20">
                 Mint & Stake NFTs
@@ -196,7 +199,7 @@ export function PositionsList() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-white">Your Locked NFTs</h3>
+      <h3 className="text-lg font-semibold text-white">{t('vault.positions.title')}</h3>
       {lockedNfts.map((lockedNft, index) => (
         <PositionCard key={`${lockedNft.tokenAddress}-${lockedNft.tokenIdStr}`} lockedNft={lockedNft} index={index} />
       ))}

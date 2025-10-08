@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Image, Loader2, AlertTriangle, ExternalLink } from 'lucide-react';
 import { NFT_CONTRACTS } from '@/lib/contracts';
 import { useVaultStore, WalletNFT } from '@/lib/vault/store';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface NftSelectorProps {
   onNftsSelected: (selectedNfts: WalletNFT[]) => void;
@@ -16,6 +17,7 @@ interface NftSelectorProps {
 }
 
 export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) {
+  const { t } = useTranslations();
   const [nfts, setNfts] = useState<WalletNFT[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -135,9 +137,9 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2 text-white">Connect Your Wallet</h3>
+              <h3 className="text-lg font-semibold mb-2 text-white">{t('vault.nftSelector.connectWallet')}</h3>
               <p className="text-white/70">
-                Connect your wallet to view and select NFTs for locking
+                {t('vault.nftSelector.connectDescription')}
               </p>
             </div>
           </div>
@@ -152,7 +154,7 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
             <Loader2 className="h-5 w-5 animate-spin text-blue-400" />
-            Loading Your NFTs
+            {t('vault.nftSelector.loading')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -177,14 +179,14 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2 text-white">Error Loading NFTs</h3>
+              <h3 className="text-lg font-semibold mb-2 text-white">{t('vault.nftSelector.error')}</h3>
               <p className="text-white/70 mb-4">{error}</p>
               <Button 
                 onClick={fetchWalletNfts}
                 variant="outline"
                 className="bg-white/10 border-white/20 text-white hover:bg-white/20"
               >
-                Try Again
+                {t('vault.nftSelector.tryAgain')}
               </Button>
             </div>
           </div>
@@ -204,9 +206,9 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2 text-white">No NFTs Found</h3>
+              <h3 className="text-lg font-semibold mb-2 text-white">{t('vault.nftSelector.noNfts')}</h3>
               <p className="text-white/70 mb-4">
-                You don't have any AGV NFTs in your wallet. Mint your first NFT to start earning vault rewards!
+                {t('vault.nftSelector.noNftsDescription')}
               </p>
               <Button 
                 asChild
@@ -214,7 +216,7 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
               >
                 <a href="/mint" target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4 mr-2" />
-                  Go to Mint Page
+                  {t('vault.nftSelector.goToMint')}
                 </a>
               </Button>
             </div>
@@ -230,10 +232,10 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Image className="h-5 w-5 text-blue-400" />
-            <span className="text-white">Select NFTs to Lock</span>
+            <span className="text-white">{t('vault.nftSelector.title')}</span>
           </div>
           <Badge variant="outline" className="bg-white/10 border-white/20 text-white">
-            {selectedNfts.length} selected
+            {selectedNfts.length} {t('vault.nftSelector.selected')}
           </Badge>
         </CardTitle>
       </CardHeader>
@@ -280,14 +282,14 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
           <div className="mt-6 pt-4 border-t border-white/10">
             <div className="flex items-center justify-between">
               <span className="text-sm text-white/70">
-                {selectedNfts.length} NFT{selectedNfts.length !== 1 ? 's' : ''} selected for locking
+                {selectedNfts.length} NFT{selectedNfts.length !== 1 ? 's' : ''} {t('vault.nftSelector.selectedForLocking')}
               </span>
               <Button 
                 variant="outline"
                 className="bg-white/10 border-white/20 text-white hover:bg-white/20"
                 disabled
               >
-                Lock NFTs (Coming Soon)
+                {t('vault.nftSelector.lockNfts')}
               </Button>
             </div>
           </div>

@@ -5,8 +5,10 @@ import { formatNumber } from '@/lib/vault/math';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { TrendingUp, Zap, Users } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
 
 export function AprBars() {
+  const { t } = useTranslations();
   const { tier, tiers, isLoading } = useVaultStore();
   
   const tierData = tiers?.tiers[tier];
@@ -38,7 +40,7 @@ export function AprBars() {
 
   const bars = [
     {
-      label: 'Real Yield',
+      label: t('vault.aprBars.real'),
       value: realApr,
       percentage: split.real * 100,
       color: 'bg-green-500',
@@ -46,7 +48,7 @@ export function AprBars() {
       description: 'Base rewards from staking'
     },
     {
-      label: 'Boost Multiplier',
+      label: t('vault.aprBars.boost'),
       value: boostApr,
       percentage: split.boost * 100,
       color: 'bg-blue-500',
@@ -54,7 +56,7 @@ export function AprBars() {
       description: 'Multiplier rewards from NFT tier'
     },
     {
-      label: 'Social Rewards',
+      label: t('vault.aprBars.social'),
       value: socialApr,
       percentage: split.social * 100,
       color: 'bg-purple-500',
@@ -68,7 +70,7 @@ export function AprBars() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-white">
           <TrendingUp className="h-5 w-5 text-blue-400" />
-          APR Breakdown
+          {t('vault.aprBars.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -109,7 +111,7 @@ export function AprBars() {
         
         <div className="pt-4 border-t border-white/10">
           <div className="flex items-center justify-between">
-            <span className="text-lg font-semibold text-white">Total APR</span>
+            <span className="text-lg font-semibold text-white">{t('vault.aprBars.total')}</span>
             <span className="text-2xl font-bold text-green-400">
               {formatNumber(apr, 1)}%
             </span>
