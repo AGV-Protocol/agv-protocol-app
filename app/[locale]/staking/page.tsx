@@ -664,7 +664,7 @@ function DurationPanel({
           <p className="text-white/70 text-xs">
             {t('staking.yourNftsWillBeLocked')} {" "}
             <span className="font-semibold text-purple-300">
-              {stakingDuration} {stakingDuration > 1 ? t('staking.daysPlural') : t('staking.days')}
+              {stakingDuration} {stakingDuration > 1 ? t('staking.days') : t('staking.day')}
             </span>
             . {t('staking.youCannotWithdraw')}
           </p>

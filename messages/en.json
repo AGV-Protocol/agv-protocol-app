@@ -448,7 +448,42 @@
     },
     "unlock": {
       "confirmSingle": "Are you sure you want to unlock this NFT? This will stop earning rewards.",
-      "confirmAll": "Are you sure you want to unlock all {count} NFTs? This will stop all rewards."
+      "confirmAll": "Are you sure you want to unlock all {count} NFTs? This will stop all rewards.",
+      "lockedUntil": "Locked until",
+      "cannotUnlockYet": "Cannot unlock yet",
+      "timeRemaining": "Time remaining"
+    },
+    "tierSelection": {
+      "title": "Select Lock Tier First",
+      "description": "Choose your lock tier before selecting NFTs to lock",
+      "selectTier": "Select a lock tier to continue",
+      "tierBenefits": {
+        "flex": {
+          "title": "Flexible Lock",
+          "description": "No lock period, unlock anytime",
+          "apr": "Base APR"
+        },
+        "1m": {
+          "title": "1 Month Lock",
+          "description": "Lock for 30 days, higher rewards",
+          "apr": "Enhanced APR"
+        },
+        "3m": {
+          "title": "3 Month Lock",
+          "description": "Lock for 90 days, maximum rewards",
+          "apr": "Maximum APR"
+        },
+        "6m": {
+          "title": "6 Month Lock",
+          "description": "Lock for 180 days, premium rewards",
+          "apr": "Premium APR"
+        },
+        "12m": {
+          "title": "12 Month Lock",
+          "description": "Lock for 365 days, ultimate rewards",
+          "apr": "Ultimate APR"
+        }
+      }
     }
   },
   "minting": {
@@ -1092,6 +1127,10 @@
       "rGGPExplained": {
         "title": "rGGP Explained",
         "description": "How AGV Protocol Turns Real-World Yields into Rewards"
+      },
+      "turningEveryUser": {
+        "title": "AGV Protocol",
+        "description": "Turning Every User into an AI Power Producer"
       },
       "multiChain": {
         "title": "Multi-Chain Integration",

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Lock, Unlock } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
+import { getUnlockTimestamp } from '@/lib/vault/useCountdown';
 
 export function LiveCounter() {
   const { t } = useTranslations();
@@ -123,19 +124,34 @@ export function LiveCounter() {
         {/* Unlock All Button */}
         {lockedNfts.length > 0 && (
           <div className="text-center">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="w-full bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
-              onClick={() => {
-                if (confirm(t('vault.unlock.confirmAll', { count: lockedNfts.length }))) {
-                  unlockAllNfts();
-                }
-              }}
-            >
-              <Unlock className="h-4 w-4 mr-2" />
-              {t('vault.liveCounter.unlockAll')}
-            </Button>
+            {(() => {
+              // Check if any NFTs can be unlocked
+              const canUnlockAny = lockedNfts.some(nft => {
+                const unlockTimestamp = getUnlockTimestamp(nft.lockTimestamp, nft.lockTier);
+                return nft.lockTier === 'flex' || Date.now() / 1000 >= unlockTimestamp;
+              });
+              
+              return (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className={`w-full ${
+                    canUnlockAny 
+                      ? 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20' 
+                      : 'bg-gray-500/10 border-gray-500/20 text-gray-400 cursor-not-allowed'
+                  }`}
+                  disabled={!canUnlockAny}
+                  onClick={() => {
+                    if (canUnlockAny && confirm(t('vault.unlock.confirmAll', { count: lockedNfts.length }))) {
+                      unlockAllNfts();
+                    }
+                  }}
+                >
+                  <Unlock className="h-4 w-4 mr-2" />
+                  {canUnlockAny ? t('vault.liveCounter.unlockAll') : t('vault.unlock.cannotUnlockYet')}
+                </Button>
+              );
+            })()}
             <p className="text-xs text-red-400/60 mt-2">
               {t('vault.liveCounter.unlockAllDescription')}
             </p>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useVaultStore } from '@/lib/vault/store';
 import { usePeriodicValidation } from '@/lib/vault/usePeriodicValidation';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -12,6 +12,7 @@ import { XpPanel } from '@/components/vault/XpPanel';
 import { Leaderboard } from '@/components/vault/Leaderboard';
 import { NftSelector } from '@/components/vault/NftSelector';
 import { VaultWarning } from '@/components/vault/VaultWarning';
+import { TierSelector } from '@/components/vault/TierSelector';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, AlertTriangle, Wallet } from 'lucide-react';
@@ -26,8 +27,11 @@ export default function VaultPage() {
     refreshData, 
     hydrateFromApis,
     lockedNfts,
-    setLockedNfts
+    setLockedNfts,
+    tier
   } = useVaultStore();
+  
+  const [showTierSelector, setShowTierSelector] = useState(true);
 
   // Start periodic validation of locked NFTs
   usePeriodicValidation();
@@ -49,6 +53,18 @@ export default function VaultPage() {
       hydrateFromApis(wallet);
     }
   }, [wallet, hydrateFromApis]);
+
+  // Handle tier selection
+  const handleTierSelected = () => {
+    setShowTierSelector(false);
+  };
+
+  // Reset tier selector when no NFTs are locked
+  useEffect(() => {
+    if (lockedNfts.length === 0) {
+      setShowTierSelector(true);
+    }
+  }, [lockedNfts.length]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
@@ -114,6 +130,23 @@ export default function VaultPage() {
                 <Leaderboard />
               </div>
             </div>
+          ) : showTierSelector ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column - Tier Selection */}
+              <div className="lg:col-span-2 space-y-8">
+                {/* Tier Selector */}
+                <TierSelector onTierSelected={handleTierSelected} />
+              </div>
+
+              {/* Right Column - Sidebar */}
+              <div className="space-y-8">
+                {/* XP Panel */}
+                <XpPanel />
+                
+                {/* Leaderboard */}
+                <Leaderboard />
+              </div>
+            </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Left Column - NFT Selection */}
@@ -125,7 +158,7 @@ export default function VaultPage() {
                     const lockedNfts = selectedNfts.map(nft => ({
                       ...nft,
                       nftType: (nft as any).nftType || 'unknown',
-                      lockTier: 'flex' as const,
+                      lockTier: tier,
                       lockTimestamp: Math.floor(Date.now() / 1000)
                     }));
                     setLockedNfts(lockedNfts);

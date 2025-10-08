@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sprout, TreePine, Sun, Cpu, Unlock } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
+import { CountdownTimer, UnlockTimestamp } from './CountdownTimer';
+import { getUnlockTimestamp } from '@/lib/vault/useCountdown';
 
 interface PositionCardProps {
   lockedNft: LockedNFT;
@@ -50,6 +52,10 @@ export function PositionCard({ lockedNft, index }: PositionCardProps) {
 
   const startDate = new Date(lockedNft.lockTimestamp * 1000);
   const daysStaked = Math.floor((Date.now() - lockedNft.lockTimestamp * 1000) / (1000 * 60 * 60 * 24));
+  
+  // Check if NFT can be unlocked
+  const unlockTimestamp = getUnlockTimestamp(lockedNft.lockTimestamp, lockedNft.lockTier);
+  const canUnlock = lockedNft.lockTier === 'flex' || Date.now() / 1000 >= unlockTimestamp;
 
   return (
     <Card className="w-full bg-white/5 backdrop-blur-xl border-white/10">
@@ -111,6 +117,20 @@ export function PositionCard({ lockedNft, index }: PositionCardProps) {
               {lockedNft.lockTier}
             </Badge>
           </div>
+          
+          {/* Countdown Timer */}
+          <div className="flex justify-center">
+            <CountdownTimer 
+              lockTimestamp={lockedNft.lockTimestamp} 
+              tier={lockedNft.lockTier}
+            />
+          </div>
+          
+          {/* Unlock Timestamp */}
+          <UnlockTimestamp 
+            lockTimestamp={lockedNft.lockTimestamp} 
+            tier={lockedNft.lockTier}
+          />
         </div>
 
         {/* Action Buttons */}
@@ -126,15 +146,20 @@ export function PositionCard({ lockedNft, index }: PositionCardProps) {
           <Button 
             variant="outline" 
             size="sm" 
-            className="w-full bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
+            className={`w-full ${
+              canUnlock 
+                ? 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20' 
+                : 'bg-gray-500/10 border-gray-500/20 text-gray-400 cursor-not-allowed'
+            }`}
+            disabled={!canUnlock}
             onClick={() => {
-              if (confirm(t('vault.unlock.confirmSingle'))) {
+              if (canUnlock && confirm(t('vault.unlock.confirmSingle'))) {
                 unlockNft(lockedNft.tokenAddress, lockedNft.tokenIdStr);
               }
             }}
           >
             <Unlock className="h-4 w-4 mr-2" />
-            {t('vault.positions.unlockNft')}
+            {canUnlock ? t('vault.positions.unlockNft') : t('vault.unlock.cannotUnlockYet')}
           </Button>
         </div>
       </CardContent>

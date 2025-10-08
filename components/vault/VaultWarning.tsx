@@ -19,7 +19,7 @@ export function VaultWarning() {
         <div className="flex items-center gap-2">
           <Lock className="h-4 w-4" />
           <span className="font-medium">
-            {lockedNfts.length} NFT{lockedNfts.length !== 1 ? 's' : ''} {t('vault.warning.title')}
+            {lockedNfts.length} NFT{lockedNfts.length !== 1 ? 's' : ''}
           </span>
         </div>
         <p className="text-sm text-yellow-300/80 mt-1">
