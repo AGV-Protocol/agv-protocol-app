@@ -39,7 +39,6 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
 
   const fetchWalletNfts = async () => {
     if (!account?.address) return;
-    account.address = "0xa8c7a749A0ceC555f82401FA2Af7c63DD90e6496"
     setIsLoading(true);
     setError(null);
     
