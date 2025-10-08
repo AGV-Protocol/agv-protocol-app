@@ -15,10 +15,16 @@ export function LiveCounter() {
     rggpAccrued, 
     perSecondRate, 
     dailyYieldTotal,
-    isLoading 
+    isLoading,
+    lockedNfts
   } = useVaultStore();
 
-  const liveValue = useLiveCounter(rggpAccrued, perSecondRate);
+  // Show 0 rewards if no NFTs are locked
+  const effectiveRggpAccrued = lockedNfts.length > 0 ? rggpAccrued : 0;
+  const effectivePerSecondRate = lockedNfts.length > 0 ? perSecondRate : 0;
+  const effectiveDailyYieldTotal = lockedNfts.length > 0 ? dailyYieldTotal : 0;
+  
+  const liveValue = useLiveCounter(effectiveRggpAccrued, effectivePerSecondRate);
   
   const tierData = tiers?.tiers[tier];
   const apr = tierData?.apr || 0;
@@ -81,7 +87,7 @@ export function LiveCounter() {
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
               <div className="text-2xl font-semibold text-blue-400">
-                {formatNumber(dailyYieldTotal, 2)}
+                {formatNumber(effectiveDailyYieldTotal, 2)}
               </div>
               <div className="text-xs text-white/70">
                 Daily Yield
@@ -89,7 +95,7 @@ export function LiveCounter() {
             </div>
             <div>
               <div className="text-2xl font-semibold text-purple-400">
-                {formatNumber(perSecondRate * 86400, 2)}
+                {formatNumber(effectivePerSecondRate * 86400, 2)}
               </div>
               <div className="text-xs text-white/70">
                 Per Second

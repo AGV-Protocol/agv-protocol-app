@@ -1,32 +1,30 @@
 'use client';
 
-import { useVaultStore } from '@/lib/vault/store';
+import { useVaultStore, LockedNFT } from '@/lib/vault/store';
 import { formatNumber, formatWalletAddress } from '@/lib/vault/math';
 import { dailyYield, calculateAccrued } from '@/lib/vault/math';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Sprout, TreePine, Sun } from 'lucide-react';
+import { Sprout, TreePine, Sun, Cpu } from 'lucide-react';
 
 interface PositionCardProps {
-  position: {
-    type: 'Seed' | 'Tree' | 'Solar';
-    start_ts: number;
-    lock_tier?: string;
-  };
+  lockedNft: LockedNFT;
   index: number;
 }
 
 const nftIcons = {
-  Seed: Sprout,
-  Tree: TreePine,
-  Solar: Sun
+  seed: Sprout,
+  tree: TreePine,
+  solar: Sun,
+  compute: Cpu
 };
 
 const nftColors = {
-  Seed: 'text-green-600 dark:text-green-400',
-  Tree: 'text-blue-600 dark:text-blue-400',
-  Solar: 'text-yellow-600 dark:text-yellow-400'
+  seed: 'text-green-400',
+  tree: 'text-amber-400',
+  solar: 'text-yellow-400',
+  compute: 'text-blue-400'
 };
 
 const nftBgColors = {
@@ -35,22 +33,21 @@ const nftBgColors = {
   Solar: 'bg-yellow-50 dark:bg-yellow-950/20'
 };
 
-export function PositionCard({ position, index }: PositionCardProps) {
+export function PositionCard({ lockedNft, index }: PositionCardProps) {
   const { tier, tiers, xp } = useVaultStore();
   
   if (!tiers || !xp) return null;
 
   const tierData = tiers.tiers[tier];
-  const nftMultiplier = tiers.nftMultipliers[position.type];
+  const nftMultiplier = tiers.nftMultipliers[lockedNft.nftType as keyof typeof tiers.nftMultipliers] || 1;
   const dailyYieldForNft = dailyYield(tierData.apr, nftMultiplier, xp.xp);
-  const accrued = calculateAccrued(position.start_ts, dailyYieldForNft);
+  const accrued = calculateAccrued(lockedNft.lockTimestamp, dailyYieldForNft);
   
-  const Icon = nftIcons[position.type];
-  const colorClass = nftColors[position.type];
-  const bgClass = nftBgColors[position.type];
+  const Icon = nftIcons[lockedNft.nftType as keyof typeof nftIcons] || Sprout;
+  const colorClass = nftColors[lockedNft.nftType as keyof typeof nftColors] || 'text-gray-400';
 
-  const startDate = new Date(position.start_ts * 1000);
-  const daysStaked = Math.floor((Date.now() - position.start_ts * 1000) / (1000 * 60 * 60 * 24));
+  const startDate = new Date(lockedNft.lockTimestamp * 1000);
+  const daysStaked = Math.floor((Date.now() - lockedNft.lockTimestamp * 1000) / (1000 * 60 * 60 * 24));
 
   return (
     <Card className="w-full bg-white/5 backdrop-blur-xl border-white/10">
@@ -61,9 +58,9 @@ export function PositionCard({ position, index }: PositionCardProps) {
               <Icon className="h-5 w-5" />
             </div>
             <div>
-              <div className="font-semibold text-white">{position.type} NFT</div>
+              <div className="font-semibold text-white">{lockedNft.name || `${lockedNft.nftType.toUpperCase()} NFT`}</div>
               <div className="text-sm text-white/70">
-                Position #{index + 1}
+                Token ID: {lockedNft.tokenIdStr}
               </div>
             </div>
           </div>
@@ -109,7 +106,7 @@ export function PositionCard({ position, index }: PositionCardProps) {
           <div className="flex justify-between">
             <span className="text-white/70">Lock Tier:</span>
             <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white">
-              {position.lock_tier || tier}
+              {lockedNft.lockTier}
             </Badge>
           </div>
         </div>
@@ -129,26 +126,26 @@ export function PositionCard({ position, index }: PositionCardProps) {
 }
 
 export function PositionsList() {
-  const { positions, isLoading } = useVaultStore();
+  const { lockedNfts, isLoading } = useVaultStore();
 
   if (isLoading) {
     return (
       <div className="space-y-4">
         {[1, 2].map((i) => (
-          <Card key={i} className="w-full">
+          <Card key={i} className="w-full bg-white/5 backdrop-blur-xl border-white/10">
             <CardHeader>
               <div className="animate-pulse">
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                <div className="h-6 bg-white/20 rounded w-1/3 mb-2"></div>
+                <div className="h-4 bg-white/20 rounded w-1/2"></div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="animate-pulse space-y-3">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-12 bg-white/20 rounded"></div>
+                  <div className="h-12 bg-white/20 rounded"></div>
                 </div>
-                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                <div className="h-8 bg-white/20 rounded"></div>
               </div>
             </CardContent>
           </Card>
@@ -157,7 +154,7 @@ export function PositionsList() {
     );
   }
 
-  if (positions.length === 0) {
+  if (lockedNfts.length === 0) {
     return (
       <Card className="w-full bg-white/5 backdrop-blur-xl border-white/10">
         <CardContent className="text-center py-12">
@@ -184,9 +181,9 @@ export function PositionsList() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-white">Your Staked Positions</h3>
-      {positions.map((position, index) => (
-        <PositionCard key={index} position={position} index={index} />
+      <h3 className="text-lg font-semibold text-white">Your Locked NFTs</h3>
+      {lockedNfts.map((lockedNft, index) => (
+        <PositionCard key={`${lockedNft.tokenAddress}-${lockedNft.tokenIdStr}`} lockedNft={lockedNft} index={index} />
       ))}
     </div>
   );

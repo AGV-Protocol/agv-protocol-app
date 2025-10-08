@@ -8,6 +8,7 @@ import { AprBars } from '@/components/vault/AprBars';
 import { PositionsList } from '@/components/vault/PositionCard';
 import { XpPanel } from '@/components/vault/XpPanel';
 import { Leaderboard } from '@/components/vault/Leaderboard';
+import { NftSelector } from '@/components/vault/NftSelector';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, AlertTriangle, Wallet } from 'lucide-react';
@@ -18,8 +19,10 @@ export default function VaultPage() {
     isLoading, 
     error, 
     clearError, 
-    refreshData,
-    hydrateFromApis 
+    refreshData, 
+    hydrateFromApis,
+    lockedNfts,
+    setLockedNfts
   } = useVaultStore();
 
   // Auto-refresh data every 5 minutes
@@ -49,7 +52,7 @@ export default function VaultPage() {
             rGGP Vault
           </h1>
           <p className="text-lg text-white/80">
-            Earn rewards by staking your NFTs and completing community tasks
+            Earn rewards by locking your NFTs and completing community tasks
           </p>
         </div>
 
@@ -78,28 +81,59 @@ export default function VaultPage() {
 
         {/* Main Content Grid */}
         {wallet ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Main Stats */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Live Counter */}
-              <LiveCounter />
-              
-              {/* APR Bars */}
-              <AprBars />
-              
-              {/* Positions */}
-              <PositionsList />
-            </div>
+          lockedNfts.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column - Main Stats */}
+              <div className="lg:col-span-2 space-y-8">
+                {/* Live Counter */}
+                <LiveCounter />
+                
+                {/* APR Bars */}
+                <AprBars />
+                
+                {/* Positions */}
+                <PositionsList />
+              </div>
 
-            {/* Right Column - Sidebar */}
-            <div className="space-y-8">
-              {/* XP Panel */}
-              <XpPanel />
-              
-              {/* Leaderboard */}
-              <Leaderboard />
+              {/* Right Column - Sidebar */}
+              <div className="space-y-8">
+                {/* XP Panel */}
+                <XpPanel />
+                
+                {/* Leaderboard */}
+                <Leaderboard />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column - NFT Selection */}
+              <div className="lg:col-span-2 space-y-8">
+                {/* NFT Selector */}
+                <NftSelector 
+                  onNftsSelected={(selectedNfts) => {
+                    // Convert selected NFTs to locked NFTs format
+                    const lockedNfts = selectedNfts.map(nft => ({
+                      ...nft,
+                      nftType: (nft as any).nftType || 'unknown',
+                      lockTier: 'flex' as const,
+                      lockTimestamp: Math.floor(Date.now() / 1000)
+                    }));
+                    setLockedNfts(lockedNfts);
+                  }}
+                  selectedNfts={lockedNfts}
+                />
+              </div>
+
+              {/* Right Column - Sidebar */}
+              <div className="space-y-8">
+                {/* XP Panel */}
+                <XpPanel />
+                
+                {/* Leaderboard */}
+                <Leaderboard />
+              </div>
+            </div>
+          )
         ) : (
           <div className="text-center py-16">
             <div className="max-w-md mx-auto">

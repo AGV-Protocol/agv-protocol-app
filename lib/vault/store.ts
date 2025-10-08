@@ -18,16 +18,29 @@ import {
   perSecondRate 
 } from './math';
 
+export interface LockedNFT {
+  tokenAddress: string;
+  tokenIdStr: string;
+  contractType: string;
+  name: string | null;
+  imageUrl: string | null;
+  nftType: string;
+  lockTier: LockTier;
+  lockTimestamp: number;
+}
+
 export interface VaultState {
   // Wallet and tier selection
   wallet?: `0x${string}`;
   tier: LockTier;
+  chainKey: "56" | "42161" | "137";
   
   // Data
   xp?: XpData;
   tiers?: TiersData;
   positions: Array<{ type: NftType; start_ts: number; lock_tier?: string }>;
   leaderboard?: LeaderboardData;
+  lockedNfts: LockedNFT[];
   
   // Computed values
   rggpAccrued: number;
@@ -41,6 +54,8 @@ export interface VaultState {
   // Actions
   setWallet: (wallet: `0x${string}`) => void;
   setTier: (tier: LockTier) => void;
+  setChainKey: (chainKey: "56" | "42161" | "137") => void;
+  setLockedNfts: (nfts: LockedNFT[]) => void;
   hydrateFromApis: (wallet: string) => Promise<void>;
   refreshData: () => Promise<void>;
   clearError: () => void;
@@ -52,10 +67,12 @@ export const useVaultStore = create<VaultState>()(
       // Initial state
       wallet: undefined,
       tier: 'flex',
+      chainKey: '56',
       xp: undefined,
       tiers: undefined,
       positions: [],
       leaderboard: undefined,
+      lockedNfts: [],
       rggpAccrued: 0,
       dailyYieldTotal: 0,
       perSecondRate: 0,
@@ -74,6 +91,16 @@ export const useVaultStore = create<VaultState>()(
       setTier: (tier) => {
         set({ tier });
         // Recalculate yields when tier changes
+        get().recalculateYields();
+      },
+
+      setChainKey: (chainKey) => {
+        set({ chainKey });
+      },
+
+      setLockedNfts: (lockedNfts) => {
+        set({ lockedNfts });
+        // Recalculate yields when locked NFTs change
         get().recalculateYields();
       },
 
@@ -114,7 +141,7 @@ export const useVaultStore = create<VaultState>()(
 
       // Helper method to recalculate yields
       recalculateYields: () => {
-        const { tier, xp, tiers, positions } = get();
+        const { tier, xp, tiers, lockedNfts } = get();
         
         if (!tiers || !xp) return;
 
@@ -124,8 +151,8 @@ export const useVaultStore = create<VaultState>()(
         let totalDailyYield = 0;
         let totalAccrued = 0;
         
-        positions.forEach(position => {
-          const nftMult = nftMultipliers[position.type];
+        lockedNfts.forEach(lockedNft => {
+          const nftMult = nftMultipliers[lockedNft.nftType as keyof typeof nftMultipliers] || 1;
           const dailyYieldForNft = dailyYield(
             tierData.apr,
             nftMult,
@@ -136,7 +163,7 @@ export const useVaultStore = create<VaultState>()(
           
           // Calculate accrued rewards
           const accrued = calculateAccrued(
-            position.start_ts,
+            lockedNft.lockTimestamp,
             dailyYieldForNft
           );
           totalAccrued += accrued;
