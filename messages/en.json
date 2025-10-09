@@ -435,7 +435,7 @@
     "warning": {
       "title": "NFTs locked in vault",
       "important": "Important:",
-      "description": "Warning: NFT is locked in vault. Do not transfer it, or rewards will stop. Use \"Unlock\" to safely remove it first.",
+      "description": "NFT is locked in vault. Do not transfer it, or rewards will stop. Use \"Unlock\" to safely remove it first.",
       "lastValidation": "Last validation:",
       "validateNow": "Validate Now"
     },

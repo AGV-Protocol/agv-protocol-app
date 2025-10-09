@@ -16,6 +16,7 @@ import { TierSelector } from '@/components/vault/TierSelector';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, AlertTriangle, Wallet } from 'lucide-react';
+import { Footer } from "@/components/layout/footer";
 
 export default function VaultPage() {
   const { t } = useTranslations();
@@ -25,14 +26,10 @@ export default function VaultPage() {
     error, 
     clearError, 
     refreshData, 
-    hydrateFromApis,
+    connectWallet,
     lockedNfts,
     setLockedNfts,
-    chainKey,
-    loadFromFirestore,
-    tier,
-    xp,
-    tiers
+    tier
   } = useVaultStore();
   
   const [showTierSelector, setShowTierSelector] = useState(true);
@@ -51,19 +48,12 @@ export default function VaultPage() {
     return () => clearInterval(interval);
   }, [wallet, refreshData]);
 
-  // Auto-hydrate when wallet is available
+  // Load data when wallet connects
   useEffect(() => {
     if (wallet) {
-      hydrateFromApis(wallet);
+      connectWallet(wallet);
     }
-  }, [wallet, hydrateFromApis]);
-
-  // Load vault data from Firestore after API data is loaded
-  useEffect(() => {
-    if (wallet && chainKey && xp && tiers) {
-      loadFromFirestore(wallet, chainKey);
-    }
-  }, [wallet, chainKey, xp, tiers, loadFromFirestore]);
+  }, [wallet, connectWallet]);
 
   // Handle tier selection
   const handleTierSelected = () => {
@@ -249,6 +239,10 @@ export default function VaultPage() {
           </p>
         </div>
       </div>
+      <Footer
+        backgroundClass="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900"
+        textColorClass="text-white"
+      />
     </div>
   );
 }

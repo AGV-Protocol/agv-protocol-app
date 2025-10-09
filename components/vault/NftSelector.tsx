@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useActiveAccount, useActiveWalletChain } from 'thirdweb/react';
+import { useActiveAccount } from 'thirdweb/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,7 +23,6 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
   const [error, setError] = useState<string | null>(null);
   
   const account = useActiveAccount();
-  const chain = useActiveWalletChain();
   const { chainKey, validateLockedNfts } = useVaultStore();
 
   // Get NFT contract addresses for selected chain
@@ -40,6 +39,7 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
   };
 
   const fetchWalletNfts = async () => {
+    
     if (!account?.address) return;
     setIsLoading(true);
     setError(null);

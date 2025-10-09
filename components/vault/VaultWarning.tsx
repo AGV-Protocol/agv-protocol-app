@@ -14,7 +14,6 @@ export function VaultWarning() {
 
   return (
     <Alert className="mb-6 border-yellow-500/20 bg-yellow-500/10 backdrop-blur-xl">
-      <AlertTriangle className="h-4 w-4 text-yellow-400" />
       <AlertDescription className="text-yellow-300">
         <div className="flex items-center gap-2">
           <Lock className="h-4 w-4" />

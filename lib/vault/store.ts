@@ -79,6 +79,7 @@ export interface VaultState {
   saveToFirestore: () => Promise<void>;
   recalculateYields: () => void;
   setLeaderboard: (leaderboard: LeaderboardData) => void;
+  connectWallet: (wallet: string) => Promise<void>;
 }
 
 export const useVaultStore = create<VaultState>()(
@@ -103,9 +104,9 @@ export const useVaultStore = create<VaultState>()(
       // Actions
       setWallet: (wallet) => {
         set({ wallet });
-        // Auto-hydrate data when wallet is set
-        if (wallet) {
-          get().hydrateFromApis(wallet);
+        // Clear locked NFTs when wallet disconnects
+        if (!wallet) {
+          set({ lockedNfts: [], rggpAccrued: 0, dailyYieldTotal: 0, perSecondRate: 0 });
         }
       },
 
@@ -319,6 +320,21 @@ export const useVaultStore = create<VaultState>()(
 
       setLeaderboard: (leaderboard) => {
         set({ leaderboard });
+      },
+
+      connectWallet: async (wallet: `0x${string}`) => {
+        set({ wallet });
+        
+        try {
+          // First load API data
+          await get().hydrateFromApis(wallet);
+          
+          // Then load Firestore data
+          const { chainKey } = get();
+          await get().loadFromFirestore(wallet, chainKey);
+        } catch (error) {
+          console.error('Failed to connect wallet:', error);
+        }
       }
     }),
     {
