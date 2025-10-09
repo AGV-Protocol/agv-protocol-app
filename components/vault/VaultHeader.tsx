@@ -35,7 +35,6 @@ export function VaultHeader() {
   // Update vault store when wallet connects/disconnects
   useEffect(() => {
     if (account?.address) {
-      account.address = "0xa8c7a749A0ceC555f82401FA2Af7c63DD90e6496"
       connectWallet(account.address as `0x${string}`);
     } else {
       // Clear wallet state when disconnected
