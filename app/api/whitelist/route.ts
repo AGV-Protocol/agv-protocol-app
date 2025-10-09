@@ -5,8 +5,6 @@ export async function GET(request: NextRequest) {
   try {
     const snapshot = await adminDb.collection('whitelisted_wallets').get();
     const wallets = snapshot.docs.map(doc => {
-      const data = doc.data();
-      console.log(data);
       return {
         id: doc.id,
         address: doc.data().walletAddress,

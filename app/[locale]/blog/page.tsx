@@ -41,6 +41,13 @@ export default function BlogPage() {
       category: "COMMUNITY",
       url: "https://medium.com/@agvprotocol/rggp-explained-how-agv-protocol-turns-real-world-yields-into-rewards-dacb0a7c31e9"
     },
+    {
+      image: "/blog/turningEveryUser.png",
+      title: t('blog.articles.turningEveryUser.title'),
+      description: t('blog.articles.turningEveryUser.description'),
+      category: "COMMUNITY",
+      url: "https://medium.com/@agvprotocol/agv-protocol-turning-every-user-into-an-ai-power-producer-2fa49a5d871b"
+    },
   ];
 
   // Filter articles based on active tab and search query
