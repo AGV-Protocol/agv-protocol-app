@@ -254,16 +254,16 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
               <div className="flex items-start gap-3">
                 <Checkbox
                   checked={isNftSelected(nft)}
-                  onChange={(checked) => handleNftToggle(nft, checked)}
+                  onCheckedChange={(checked) => handleNftToggle(nft, !!checked)}
                   className="mt-1"
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
                     <Badge 
                       variant="outline" 
-                      className={`text-xs ${getNftTypeColor((nft as any).nftType)}`}
+                      className={`text-xs ${getNftTypeColor((nft as WalletNFT & { nftType?: string }).nftType || 'unknown')}`}
                     >
-                      {(nft as any).nftType?.toUpperCase() || 'NFT'}
+                      {(nft as WalletNFT & { nftType?: string }).nftType?.toUpperCase() || 'NFT'}
                     </Badge>
                   </div>
                   <div className="text-sm font-medium text-white truncate">
@@ -287,7 +287,11 @@ export function NftSelector({ onNftsSelected, selectedNfts }: NftSelectorProps) 
               <Button 
                 variant="outline"
                 className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                disabled
+                onClick={() => {
+                  if (selectedNfts.length > 0) {
+                    onNftsSelected(selectedNfts);
+                  }
+                }}
               >
                 {t('vault.nftSelector.lockNfts')}
               </Button>

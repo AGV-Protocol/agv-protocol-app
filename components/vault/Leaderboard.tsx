@@ -1,11 +1,12 @@
 'use client';
 
 import { useVaultStore } from '@/lib/vault/store';
+import { useRealtimeLeaderboard } from '@/lib/vault/useRealtimeLeaderboard';
 import { formatNumber, formatLargeNumber, formatWalletAddress } from '@/lib/vault/math';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trophy, Medal, Award, RefreshCw } from 'lucide-react';
+import { Trophy, Medal, Award, RefreshCw, Wifi, WifiOff } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 
 const rankIcons = {
@@ -22,7 +23,8 @@ const rankColors = {
 
 export function Leaderboard() {
   const { t } = useTranslations();
-  const { leaderboard, isLoading, refreshData } = useVaultStore();
+  const { isLoading } = useVaultStore();
+  const { leaderboard, isUpdating, refreshNow, lastUpdate } = useRealtimeLeaderboard();
 
   if (isLoading) {
     return (
@@ -71,7 +73,7 @@ export function Leaderboard() {
               <p className="text-white/70 mb-4">
                 {t('vault.leaderboard.noData')}
               </p>
-              <Button onClick={refreshData} variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+              <Button onClick={refreshNow} variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
               </Button>
@@ -83,7 +85,7 @@ export function Leaderboard() {
   }
 
   const topRows = leaderboard.rows.slice(0, 100);
-  const lastUpdated = new Date(leaderboard.asOf * 1000);
+  const lastUpdated = lastUpdate > 0 ? new Date(lastUpdate) : new Date(leaderboard.asOf * 1000);
 
   return (
     <Card className="w-full bg-white/5 backdrop-blur-xl border-white/10">
@@ -97,14 +99,22 @@ export function Leaderboard() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={refreshData}
-              className="h-8 w-8 p-0 text-white hover:bg-white/10"
+              onClick={refreshNow}
+              disabled={isUpdating}
+              className="h-8 w-8 p-0 text-white hover:bg-white/10 disabled:opacity-50"
             >
-              <RefreshCw className="h-4 w-4" />
+              <RefreshCw className={`h-4 w-4 ${isUpdating ? 'animate-spin' : ''}`} />
             </Button>
-            <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white">
-              Updated {lastUpdated.toLocaleTimeString()}
-            </Badge>
+            <div className="flex items-center gap-1">
+              {isUpdating ? (
+                <Wifi className="h-3 w-3 text-blue-400 animate-pulse" />
+              ) : (
+                <Wifi className="h-3 w-3 text-green-400" />
+              )}
+              <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white">
+                {isUpdating ? 'Updating...' : `Updated ${lastUpdated.toLocaleTimeString()}`}
+              </Badge>
+            </div>
           </div>
         </CardTitle>
       </CardHeader>
@@ -118,11 +128,11 @@ export function Leaderboard() {
             return (
               <div
                 key={row.wallet}
-                className={`flex items-center justify-between p-3 rounded-lg transition-colors border ${
+                className={`flex items-center justify-between p-3 rounded-lg transition-all duration-300 border ${
                   row.rank <= 3 
                     ? 'bg-gradient-to-r from-yellow-500/10 to-amber-500/10 border-yellow-500/20' 
                     : 'bg-white/5 border-white/10 hover:bg-white/10'
-                }`}
+                } ${isUpdating ? 'animate-pulse' : ''}`}
               >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-8 h-8">
@@ -154,13 +164,30 @@ export function Leaderboard() {
           })}
         </div>
         
-        {topRows.length === 100 && (
-          <div className="text-center mt-4 pt-4 border-t border-white/10">
-            <p className="text-sm text-white/60">
+        <div className="text-center mt-4 pt-4 border-t border-white/10">
+          <div className="flex items-center justify-center gap-2">
+            {isUpdating ? (
+              <>
+                <Wifi className="h-3 w-3 text-blue-400 animate-pulse" />
+                <p className="text-sm text-blue-400">
+                  Updating leaderboard...
+                </p>
+              </>
+            ) : (
+              <>
+                <Wifi className="h-3 w-3 text-green-400" />
+                <p className="text-sm text-white/60">
+                  Real-time updates active
+                </p>
+              </>
+            )}
+          </div>
+          {topRows.length === 100 && (
+            <p className="text-xs text-white/50 mt-1">
               Showing top 100 of all participants
             </p>
-          </div>
-        )}
+          )}
+        </div>
       </CardContent>
     </Card>
   );

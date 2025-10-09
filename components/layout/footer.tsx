@@ -38,7 +38,6 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
   const footerLinks = {
     product: [
       { name: t('footer.nftMinting'), href: createLocalizedHref("/mint", locale) },
-      { name: t('nav.dashboard'), href: createLocalizedHref("/admin", locale) },
       { name: t('footer.kolProgram'), href: createLocalizedHref("/coming-soon", locale) },
       { name: t('dashboard.analytics'), href: createLocalizedHref("/coming-soon", locale) },
     ],

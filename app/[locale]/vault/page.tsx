@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useVaultStore } from '@/lib/vault/store';
+import { useVaultStore, WalletNFT } from '@/lib/vault/store';
 import { usePeriodicValidation } from '@/lib/vault/usePeriodicValidation';
 import { useTranslations } from '@/hooks/useTranslations';
 import { VaultHeader } from '@/components/vault/VaultHeader';
@@ -28,7 +28,11 @@ export default function VaultPage() {
     hydrateFromApis,
     lockedNfts,
     setLockedNfts,
-    tier
+    chainKey,
+    loadFromFirestore,
+    tier,
+    xp,
+    tiers
   } = useVaultStore();
   
   const [showTierSelector, setShowTierSelector] = useState(true);
@@ -53,6 +57,13 @@ export default function VaultPage() {
       hydrateFromApis(wallet);
     }
   }, [wallet, hydrateFromApis]);
+
+  // Load vault data from Firestore after API data is loaded
+  useEffect(() => {
+    if (wallet && chainKey && xp && tiers) {
+      loadFromFirestore(wallet, chainKey);
+    }
+  }, [wallet, chainKey, xp, tiers, loadFromFirestore]);
 
   // Handle tier selection
   const handleTierSelected = () => {
@@ -157,7 +168,7 @@ export default function VaultPage() {
                     // Convert selected NFTs to locked NFTs format
                     const lockedNfts = selectedNfts.map(nft => ({
                       ...nft,
-                      nftType: (nft as any).nftType || 'unknown',
+                      nftType: (nft as WalletNFT & { nftType?: string }).nftType || 'unknown',
                       lockTier: tier,
                       lockTimestamp: Math.floor(Date.now() / 1000)
                     }));
