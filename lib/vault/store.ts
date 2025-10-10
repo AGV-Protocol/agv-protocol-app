@@ -17,6 +17,7 @@ import {
   clampDaily, 
   perSecondRate 
 } from './math';
+import { saveVaultData, loadVaultData, loadAllVaultData } from './firestore';
 
 export interface WalletNFT {
   tokenAddress: string;
@@ -74,6 +75,11 @@ export interface VaultState {
   hydrateFromApis: (wallet: string) => Promise<void>;
   refreshData: () => Promise<void>;
   clearError: () => void;
+  loadFromFirestore: (wallet: string, chainKey: string) => Promise<void>;
+  saveToFirestore: () => Promise<void>;
+  recalculateYields: () => void;
+  setLeaderboard: (leaderboard: LeaderboardData) => void;
+  connectWallet: (wallet: string) => Promise<void>;
 }
 
 export const useVaultStore = create<VaultState>()(
@@ -98,9 +104,9 @@ export const useVaultStore = create<VaultState>()(
       // Actions
       setWallet: (wallet) => {
         set({ wallet });
-        // Auto-hydrate data when wallet is set
-        if (wallet) {
-          get().hydrateFromApis(wallet);
+        // Clear locked NFTs when wallet disconnects
+        if (!wallet) {
+          set({ lockedNfts: [], rggpAccrued: 0, dailyYieldTotal: 0, perSecondRate: 0 });
         }
       },
 
@@ -118,6 +124,8 @@ export const useVaultStore = create<VaultState>()(
         set({ lockedNfts });
         // Recalculate yields when locked NFTs change
         get().recalculateYields();
+        // Save to Firestore
+        get().saveToFirestore();
       },
 
       unlockNft: (tokenAddress, tokenIdStr) => {
@@ -127,11 +135,13 @@ export const useVaultStore = create<VaultState>()(
         );
         set({ lockedNfts: updatedNfts });
         get().recalculateYields();
+        get().saveToFirestore();
       },
 
       unlockAllNfts: () => {
         set({ lockedNfts: [] });
         get().recalculateYields();
+        get().saveToFirestore();
       },
 
       validateLockedNfts: (walletNfts) => {
@@ -146,6 +156,7 @@ export const useVaultStore = create<VaultState>()(
         if (validNfts.length !== lockedNfts.length) {
           set({ lockedNfts: validNfts });
           get().recalculateYields();
+          get().saveToFirestore();
         }
       },
 
@@ -176,7 +187,7 @@ export const useVaultStore = create<VaultState>()(
           
           // Validate locked NFTs
           const validNfts = lockedNfts.filter(lockedNft => 
-            walletNfts.some(walletNft => 
+            walletNfts.some((walletNft: WalletNFT) => 
               walletNft.tokenAddress.toLowerCase() === lockedNft.tokenAddress.toLowerCase() &&
               walletNft.tokenIdStr === lockedNft.tokenIdStr
             )
@@ -192,9 +203,11 @@ export const useVaultStore = create<VaultState>()(
               lastValidationTime: now 
             });
             get().recalculateYields();
+            get().saveToFirestore();
           } else {
             // Update validation time even if no changes
             set({ lastValidationTime: now });
+            get().saveToFirestore();
           }
         } catch (error) {
           console.error('Error during periodic validation:', error);
@@ -275,6 +288,53 @@ export const useVaultStore = create<VaultState>()(
           perSecondRate: perSecond,
           rggpAccrued: totalAccrued
         });
+      },
+
+      // Firestore persistence methods
+      loadFromFirestore: async (wallet: string, chainKey: string) => {
+        try {
+          const data = await loadVaultData(wallet, chainKey);
+          if (data) {
+            set({
+              lockedNfts: data.lockedNfts,
+              lastValidationTime: data.lastValidationTime
+            });
+            // Recalculate yields after loading
+            get().recalculateYields();
+          }
+        } catch (error) {
+          console.error('Failed to load vault data from Firestore:', error);
+        }
+      },
+
+      saveToFirestore: async () => {
+        const { wallet, chainKey, lockedNfts, lastValidationTime } = get();
+        if (wallet && chainKey) {
+          try {
+            await saveVaultData(wallet, chainKey, lockedNfts, lastValidationTime);
+          } catch (error) {
+            console.error('Failed to save vault data to Firestore:', error);
+          }
+        }
+      },
+
+      setLeaderboard: (leaderboard) => {
+        set({ leaderboard });
+      },
+
+      connectWallet: async (wallet: `0x${string}`) => {
+        set({ wallet });
+        
+        try {
+          // First load API data
+          await get().hydrateFromApis(wallet);
+          
+          // Then load Firestore data
+          const { chainKey } = get();
+          await get().loadFromFirestore(wallet, chainKey);
+        } catch (error) {
+          console.error('Failed to connect wallet:', error);
+        }
       }
     }),
     {

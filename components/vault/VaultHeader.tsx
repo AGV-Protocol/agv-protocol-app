@@ -10,6 +10,7 @@ import { bsc, polygon, arbitrum } from 'thirdweb/chains';
 import { useTranslations } from '@/hooks/useTranslations';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useParams } from 'next/navigation';
+import type { Locale } from '@/i18n';
 
 type ChainKey = "56" | "42161" | "137";
 
@@ -24,21 +25,23 @@ const CHAIN_CONFIG: Record<
 
 export function VaultHeader() {
   const { t } = useTranslations();
-  const { wallet, setWallet, chainKey, setChainKey } = useVaultStore();
+  const { wallet, connectWallet, chainKey, setChainKey } = useVaultStore();
   const account = useActiveAccount();
   const activeChain = useActiveWalletChain();
   const switchChain = useSwitchActiveWalletChain();
   const params = useParams();
-  const currentLocale = params.locale as string;
+  const currentLocale = params.locale as Locale;
 
   // Update vault store when wallet connects/disconnects
   useEffect(() => {
     if (account?.address) {
-      setWallet(account.address as `0x${string}`);
+      connectWallet(account.address as `0x${string}`);
     } else {
-      setWallet(undefined);
+      // Clear wallet state when disconnected
+      const { setWallet } = useVaultStore.getState();
+      setWallet(undefined as any);
     }
-  }, [account?.address, setWallet]);
+  }, [account?.address, connectWallet]);
 
   const handleChainChange = async (newChainKey: ChainKey) => {
     setChainKey(newChainKey);

@@ -144,14 +144,14 @@ export function XpPanel() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20" asChild>
+        <div className="flex gap-2 flex-col">
+          <Button variant="outline" size="sm" className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 p-1" asChild>
             <a href="https://zealy.io" target="_blank" rel="noopener noreferrer">
               <ExternalLink className="h-4 w-4 mr-2" />
               {t('vault.xpPanel.zealy')}
             </a>
           </Button>
-          <Button variant="outline" size="sm" className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20" asChild>
+          <Button variant="outline" size="sm" className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 p-1" asChild>
             <a href="https://taskon.xyz" target="_blank" rel="noopener noreferrer">
               <ExternalLink className="h-4 w-4 mr-2" />
               {t('vault.xpPanel.taskon')}

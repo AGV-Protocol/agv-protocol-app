@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useVaultStore } from '@/lib/vault/store';
+import { useVaultStore, WalletNFT } from '@/lib/vault/store';
 import { usePeriodicValidation } from '@/lib/vault/usePeriodicValidation';
 import { useTranslations } from '@/hooks/useTranslations';
 import { VaultHeader } from '@/components/vault/VaultHeader';
@@ -16,6 +16,7 @@ import { TierSelector } from '@/components/vault/TierSelector';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, AlertTriangle, Wallet } from 'lucide-react';
+import { Footer } from "@/components/layout/footer";
 
 export default function VaultPage() {
   const { t } = useTranslations();
@@ -25,7 +26,7 @@ export default function VaultPage() {
     error, 
     clearError, 
     refreshData, 
-    hydrateFromApis,
+    connectWallet,
     lockedNfts,
     setLockedNfts,
     tier
@@ -47,12 +48,12 @@ export default function VaultPage() {
     return () => clearInterval(interval);
   }, [wallet, refreshData]);
 
-  // Auto-hydrate when wallet is available
+  // Load data when wallet connects
   useEffect(() => {
     if (wallet) {
-      hydrateFromApis(wallet);
+      connectWallet(wallet);
     }
-  }, [wallet, hydrateFromApis]);
+  }, [wallet, connectWallet]);
 
   // Handle tier selection
   const handleTierSelected = () => {
@@ -157,7 +158,7 @@ export default function VaultPage() {
                     // Convert selected NFTs to locked NFTs format
                     const lockedNfts = selectedNfts.map(nft => ({
                       ...nft,
-                      nftType: (nft as any).nftType || 'unknown',
+                      nftType: (nft as WalletNFT & { nftType?: string }).nftType || 'unknown',
                       lockTier: tier,
                       lockTimestamp: Math.floor(Date.now() / 1000)
                     }));
@@ -238,6 +239,10 @@ export default function VaultPage() {
           </p>
         </div>
       </div>
+      <Footer
+        backgroundClass="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900"
+        textColorClass="text-white"
+      />
     </div>
   );
 }
