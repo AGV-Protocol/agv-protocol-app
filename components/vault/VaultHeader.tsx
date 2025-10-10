@@ -32,7 +32,7 @@ export function VaultHeader() {
   const params = useParams();
   const currentLocale = params.locale as Locale;
 
-  // Update vault store when wallet connects/disconnects
+  // Update vault store when wallet connects/disconnect
   useEffect(() => {
     if (account?.address) {
       connectWallet(account.address as `0x${string}`);
