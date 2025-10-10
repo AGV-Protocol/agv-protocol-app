@@ -364,7 +364,8 @@
     "whitelistRequired": "ホワイトリストが必要です",
     "price": "価格",
     "supply": "供給",
-    "remaining": "残り"
+    "remaining": "残り",
+    "loading": "鋳造インターフェースを読み込んでいます..."
   },
   "dashboard": {
     "title": "ダッシュボード",
@@ -1037,6 +1038,10 @@
       "spotlight": {
         "title": "コミュニティスポットライト：成功事例",
         "description": "AGV プロトコルに関するコミュニティ メンバーの体験談をお聞きください。"
+      },
+      "turningEveryUser": {
+        "title": "AGVプロトコル",
+        "description": "すべてのユーザーをAIパワープロデューサーに変える"
       }
     }
   },
@@ -1241,5 +1246,154 @@
       "title": "さらに詳しい情報が必要ですか?",
       "description": "一般的なご質問や、どのチームにお問い合わせすればよいか分からない場合は、お問い合わせ専用メールアドレスまでご連絡ください。お問い合わせが適切な担当者に届くよう努めさせていただきます。"
     }
+  },
+  "vault": {
+    "connectWallet": {
+      "features": {
+        "title": "接続すると、次のことが可能になります。",
+        "liveEarnings": "ライブrGGP収益を表示する",
+        "stakedPositions": "ステークしたNFTのポジションを確認する",
+        "trackXp": "XPと報酬を追跡する",
+        "leaderboard": "リーダーボードであなたのパフォーマンスを比較しましょう"
+      },
+      "title": "ウォレットを接続する",
+      "description": "ウォレットを接続して、rGGP ボールト、ステークされた NFT、収益の可能性を確認します。"
+    },
+    "header": {
+      "wallet": "財布：",
+      "network": "ネットワーク：",
+      "lockTier": "ロック層:"
+    },
+    "liveCounter": {
+      "title": "ライブrGGPカウンター",
+      "accrued": "発生",
+      "dailyYield": "1日あたりの収益",
+      "perSecond": "毎秒",
+      "lockTierCta": "より高いAPRのためのロックティア",
+      "lockTierDescription": "NFTをロックして最大490%の年利を獲得しましょう",
+      "unlockAll": "すべてのNFTのロックを解除",
+      "unlockAllDescription": "これにより、すべての金庫の報酬が停止されます"
+    },
+    "aprBars": {
+      "title": "APRの内訳",
+      "real": "本物",
+      "boost": "ブースト",
+      "social": "社交",
+      "total": "合計APR"
+    },
+    "positions": {
+      "title": "ロックされたNFT",
+      "noNfts": "NFTはステークされていない",
+      "noNftsDescription": "ウォレットからNFTを選択して、Vault報酬を獲得しましょう",
+      "claimRewards": "報酬を受け取る（近日公開）",
+      "unlockNft": "NFTのロックを解除",
+      "multiplier": "乗数",
+      "daysStaked": "賭け日数:",
+      "lockTier": "ロック層:"
+    },
+    "xpPanel": {
+      "title": "XPとソーシャル報酬",
+      "currentXp": "現在のXP",
+      "lastUpdate": "最終更新日",
+      "earnMore": "XPをもっと獲得",
+      "zealy": "Zealyでタスクを完了する",
+      "taskon": "TaskOnのコミュニティに参加する",
+      "noXpData": "XPデータなし",
+      "noXpDescription": "コミュニティタスクを完了して XP を獲得し、報酬を増やしましょう",
+      "xpBoostActive": "XPブーストアクティブ",
+      "xpBoostDescription": "XPは毎日のrGGP収量を増加させます",
+      "updatePending": "更新保留中",
+      "upToDate": "最新の"
+    },
+    "leaderboard": {
+      "title": "トップ100リーダーボード",
+      "rank": "ランク",
+      "wallet": "財布",
+      "rggp": "rGGP",
+      "xp": "XP",
+      "loading": "リーダーボードを読み込んでいます...",
+      "noData": "リーダーボードデータは利用できません",
+      "updated": "更新",
+      "realTimeActive": "リアルタイム更新が有効",
+      "showingTop100": "全参加者の上位100人を表示"
+    },
+    "nftSelector": {
+      "title": "ロックするNFTを選択",
+      "selected": "選択された",
+      "connectWallet": "ウォレットを接続する",
+      "connectDescription": "ウォレットに接続してNFTを表示し、ロックするNFTを選択します",
+      "loading": "NFTの読み込み",
+      "error": "NFTの読み込みエラー",
+      "tryAgain": "もう一度やり直してください",
+      "noNfts": "NFTが見つかりません",
+      "noNftsDescription": "ウォレットにAGV NFTがありません。最初のNFTをミントして、Vault報酬を獲得しましょう！",
+      "goToMint": "ミントページへ",
+      "lockNfts": "NFT をロックする（近日公開）",
+      "selectedForLocking": "ロック対象として選択"
+    },
+    "warning": {
+      "title": "金庫にロックされたNFT",
+      "important": "重要：",
+      "description": "NFTはVaultにロックされています。譲渡しないでください。譲渡すると報酬が停止されます。「ロック解除」を使用して、まず安全にNFTを削除してください。",
+      "lastValidation": "最終検証:",
+      "validateNow": "今すぐ検証"
+    },
+    "footer": {
+      "dataUpdates": "データは 60 秒ごとに更新されます。XP はタスク完了後 1 時間以内に更新されます。"
+    },
+    "refresh": {
+      "refreshing": "爽やか…",
+      "refreshData": "データの更新",
+      "refresh": "リフレッシュ",
+      "updating": "更新中...",
+      "updatingLeaderboard": "リーダーボードを更新しています..."
+    },
+    "unlock": {
+      "confirmSingle": "このNFTのロックを解除してもよろしいですか？これにより報酬の獲得が停止されます。",
+      "confirmAll": "{count} 個の NFT をすべてアンロックしてもよろしいですか？これにより、すべての報酬が停止されます。",
+      "lockedUntil": "ロックされるまで",
+      "cannotUnlockYet": "まだロック解除できません",
+      "timeRemaining": "残り時間"
+    },
+    "tierSelection": {
+      "tierBenefits": {
+        "flex": {
+          "title": "フレキシブルロック",
+          "description": "ロック期間なし、いつでもロック解除可能",
+          "apr": "基本APR",
+          "duration": "ロックなし"
+        },
+        "1m": {
+          "title": "1ヶ月ロック",
+          "description": "30日間ロックすると報酬がアップ",
+          "apr": "強化されたAPR",
+          "duration": "30日間"
+        },
+        "3m": {
+          "title": "3ヶ月ロック",
+          "description": "90日間ロック、最大報酬",
+          "apr": "最大APR",
+          "duration": "90日間"
+        },
+        "6m": {
+          "title": "6ヶ月ロック",
+          "description": "180日間ロック、プレミアム特典",
+          "apr": "プレミアムAPR",
+          "duration": "180日間"
+        },
+        "12m": {
+          "title": "12ヶ月ロック",
+          "description": "365日間ロックして究極の報酬を獲得",
+          "apr": "最終APR",
+          "duration": "365日"
+        }
+      },
+      "title": "最初にロック層を選択",
+      "description": "ロックするNFTを選択する前に、ロックレベルを選択してください",
+      "selectTier": "続行するにはロック層を選択してください",
+      "tierDescription": "ロック期間が長いほど、APR報酬は高くなります。NFTがロックされるとティアを変更できなくなるため、慎重に選択してください。"
+    },
+    "title": "rGGP ボールト",
+    "subtitle": "NFTをロックし、コミュニティタスクを完了することで報酬を獲得できます"
   }
 }

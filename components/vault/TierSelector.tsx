@@ -3,16 +3,15 @@
 import { useVaultStore } from '@/lib/vault/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Lock, Clock, TrendingUp } from 'lucide-react';
 import { useTranslations } from '@/hooks/useTranslations';
 
 const TIER_OPTIONS = [
-  { value: 'flex', label: 'Flex', duration: 'No lock', color: 'bg-green-500/20 text-green-400 border-green-500/20' },
-  { value: '1m', label: '1 Month', duration: '30 days', color: 'bg-blue-500/20 text-blue-400 border-blue-500/20' },
-  { value: '3m', label: '3 Months', duration: '90 days', color: 'bg-purple-500/20 text-purple-400 border-purple-500/20' },
-  { value: '6m', label: '6 Months', duration: '180 days', color: 'bg-orange-500/20 text-orange-400 border-orange-500/20' },
-  { value: '12m', label: '12 Months', duration: '365 days', color: 'bg-red-500/20 text-red-400 border-red-500/20' }
+  { value: 'flex', color: 'bg-green-500/20 text-green-400 border-green-500/20' },
+  { value: '1m', color: 'bg-blue-500/20 text-blue-400 border-blue-500/20' },
+  { value: '3m', color: 'bg-purple-500/20 text-purple-400 border-purple-500/20' },
+  { value: '6m', color: 'bg-orange-500/20 text-orange-400 border-orange-500/20' },
+  { value: '12m', color: 'bg-red-500/20 text-red-400 border-red-500/20' }
 ];
 
 interface TierSelectorProps {
@@ -58,12 +57,12 @@ export function TierSelector({ onTierSelected }: TierSelectorProps) {
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-white">{option.label}</h3>
+                  <h3 className="font-semibold text-white">{t(`vault.tierSelection.tierBenefits.${option.value}.title`)}</h3>
                   <Badge 
                     variant="outline" 
                     className={`text-xs ${option.color}`}
                   >
-                    {option.duration}
+                    {t(`vault.tierSelection.tierBenefits.${option.value}.duration`)}
                   </Badge>
                 </div>
                 
@@ -96,7 +95,7 @@ export function TierSelector({ onTierSelected }: TierSelectorProps) {
             </span>
           </div>
           <p className="text-xs text-white/70">
-            Higher lock periods provide better APR rewards. Choose carefully as you cannot change the tier once NFTs are locked.
+            {t('vault.tierSelection.tierDescription')}
           </p>
         </div>
       </CardContent>

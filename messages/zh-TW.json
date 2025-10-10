@@ -364,7 +364,8 @@
     "whitelistRequired": "需要白名單",
     "price": "價格",
     "supply": "供應",
-    "remaining": "其餘的"
+    "remaining": "其餘的",
+    "loading": "正在加載鑄造介面..."
   },
   "dashboard": {
     "title": "儀表板",
@@ -1045,6 +1046,10 @@
       "rGGPExplained": {
         "title": "rGGP 解釋",
         "description": "AGV 協議如何將現實世界的收益轉化為回報"
+      },
+      "turningEveryUser": {
+        "title": "AGV協議",
+        "description": "讓每個用戶都成為AI發電者"
       }
     }
   },
@@ -1249,5 +1254,154 @@
       "title": "需要更多資訊嗎？",
       "description": "如果您有一般性問題，或不確定該聯絡哪個團隊，請聯絡我們的常規聯絡信箱。我們會確保您的諮詢聯繫到合適的人員。"
     }
+  },
+  "vault": {
+    "connectWallet": {
+      "features": {
+        "title": "連接後，您將能夠：",
+        "liveEarnings": "查看您的即時 rGGP 收入",
+        "stakedPositions": "查看您的質押 NFT 部位",
+        "trackXp": "追蹤您的 XP 和獎勵",
+        "leaderboard": "在排行榜上比較你的表現"
+      },
+      "title": "連接你的錢包",
+      "description": "連接您的錢包以查看您的 rGGP 保險庫、質押的 NFT 和盈利潛力。"
+    },
+    "header": {
+      "wallet": "錢包：",
+      "network": "網路：",
+      "lockTier": "鎖定層級："
+    },
+    "liveCounter": {
+      "title": "活體rGGP計數器",
+      "accrued": "應計",
+      "dailyYield": "每日收益",
+      "perSecond": "每秒",
+      "lockTierCta": "鎖定層級以獲得更高的年利率",
+      "lockTierDescription": "鎖定您的 NFT 即可賺取高達 490% 的年利率",
+      "unlockAll": "解鎖所有 NFT",
+      "unlockAllDescription": "這將停止所有保險庫獎勵"
+    },
+    "aprBars": {
+      "title": "年利率明細",
+      "real": "真實的",
+      "boost": "促進",
+      "social": "社會的",
+      "total": "總年利率"
+    },
+    "positions": {
+      "title": "您鎖定的 NFT",
+      "noNfts": "未質押 NFT",
+      "noNftsDescription": "從您的錢包中選擇 NFT 開始賺取保險庫獎勵",
+      "claimRewards": "領取獎勵（即將推出）",
+      "unlockNft": "解鎖 NFT",
+      "multiplier": "乘數",
+      "daysStaked": "質押天數：",
+      "lockTier": "鎖定層級："
+    },
+    "xpPanel": {
+      "title": "XP 和社交獎勵",
+      "currentXp": "目前 XP",
+      "lastUpdate": "最後更新",
+      "earnMore": "獲得更多經驗值",
+      "zealy": "完成 Zealy 上的任務",
+      "taskon": "加入 TaskOn 社區",
+      "noXpData": "沒有 XP 數據",
+      "noXpDescription": "完成社群任務來獲得 XP 並提升你的獎勵",
+      "xpBoostActive": "XP 提升激活",
+      "xpBoostDescription": "您的 XP 可增加您每日的 rGGP 產量",
+      "updatePending": "更新待定",
+      "upToDate": "最新"
+    },
+    "leaderboard": {
+      "title": "前 100 名排行榜",
+      "rank": "秩",
+      "wallet": "錢包",
+      "rggp": "重組GGP",
+      "xp": "經驗值",
+      "loading": "正在加載排行榜...",
+      "noData": "沒有可用的排行榜數據",
+      "updated": "已更新",
+      "realTimeActive": "即時更新活躍",
+      "showingTop100": "顯示所有參與者的前 100 名"
+    },
+    "nftSelector": {
+      "title": "選擇要鎖定的 NFT",
+      "selected": "已選擇",
+      "connectWallet": "連接你的錢包",
+      "connectDescription": "連接您的錢包以查看並選擇要鎖定的 NFT",
+      "loading": "加載你的 NFT",
+      "error": "載入 NFT 時出錯",
+      "tryAgain": "再試一次",
+      "noNfts": "未找到 NFT",
+      "noNftsDescription": "您的錢包中沒有任何 AGV NFT。鑄造您的第一個 NFT，開始賺取金庫獎勵！",
+      "goToMint": "前往 Mint 頁面",
+      "lockNfts": "鎖定 NFT（即將推出）",
+      "selectedForLocking": "已選擇鎖定"
+    },
+    "warning": {
+      "title": "NFT 被鎖在保險庫中",
+      "important": "重要的：",
+      "description": "NFT 已鎖定在保管庫中。請勿轉移，否則獎勵將停止。請先使用「解鎖」功能將其安全移除。",
+      "lastValidation": "最後驗證：",
+      "validateNow": "立即驗證"
+    },
+    "footer": {
+      "dataUpdates": "數據每 60 秒更新一次。 XP 在任務完成後 1 小時內更新。"
+    },
+    "refresh": {
+      "refreshing": "令人耳目一新…",
+      "refreshData": "重新整理數據",
+      "refresh": "重新整理",
+      "updating": "正在更新...",
+      "updatingLeaderboard": "正在更新排行榜..."
+    },
+    "unlock": {
+      "confirmSingle": "您確定要解鎖此 NFT 嗎？解鎖後您將無法獲得獎勵。",
+      "confirmAll": "您確定要解鎖全部 {count} 個 NFT 嗎？這將停止所有獎勵。",
+      "lockedUntil": "鎖定至",
+      "cannotUnlockYet": "尚無法解鎖",
+      "timeRemaining": "剩餘時間"
+    },
+    "tierSelection": {
+      "tierBenefits": {
+        "flex": {
+          "title": "靈活鎖",
+          "description": "無鎖定期，隨時解鎖",
+          "apr": "基本年利率",
+          "duration": "無鎖"
+        },
+        "1m": {
+          "title": "1個月鎖定",
+          "description": "鎖定30天，更高獎勵",
+          "apr": "增強型年利率",
+          "duration": "30天"
+        },
+        "3m": {
+          "title": "3個月鎖定",
+          "description": "鎖定90天，最高獎勵",
+          "apr": "最高年利率",
+          "duration": "90天"
+        },
+        "6m": {
+          "title": "6個月鎖定",
+          "description": "鎖定180天，尊享獎勵",
+          "apr": "保費年利率",
+          "duration": "180天"
+        },
+        "12m": {
+          "title": "12個月鎖定",
+          "description": "鎖定365天，終極獎勵",
+          "apr": "最終年利率",
+          "duration": "365天"
+        }
+      },
+      "title": "首先選擇鎖定層級",
+      "description": "在選擇要鎖定的 NFT 之前，請選擇您的鎖定等級",
+      "selectTier": "選擇鎖定等級以繼續",
+      "tierDescription": "鎖定期越長，年利率獎勵越高。請謹慎選擇，因為一旦 NFT 鎖定，您將無法更改等級。"
+    },
+    "title": "rGGP庫",
+    "subtitle": "透過鎖定 NFT 並完成社群任務來獲得獎勵"
   }
 }

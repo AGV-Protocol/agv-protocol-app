@@ -75,7 +75,7 @@ export function Leaderboard() {
               </p>
               <Button onClick={refreshNow} variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
+                {t('vault.refresh.refresh')}
               </Button>
             </div>
           </div>
@@ -112,7 +112,7 @@ export function Leaderboard() {
                 <Wifi className="h-3 w-3 text-green-400" />
               )}
               <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white">
-                {isUpdating ? 'Updating...' : `Updated ${lastUpdated.toLocaleTimeString()}`}
+                {isUpdating ? t('vault.refresh.updating') : `${t('vault.leaderboard.updated')} ${lastUpdated.toLocaleTimeString()}`}
               </Badge>
             </div>
           </div>
@@ -170,21 +170,21 @@ export function Leaderboard() {
               <>
                 <Wifi className="h-3 w-3 text-blue-400 animate-pulse" />
                 <p className="text-sm text-blue-400">
-                  Updating leaderboard...
+                  {t('vault.refresh.updatingLeaderboard')}
                 </p>
               </>
             ) : (
               <>
                 <Wifi className="h-3 w-3 text-green-400" />
                 <p className="text-sm text-white/60">
-                  Real-time updates active
+                  {t('vault.leaderboard.realTimeActive')}
                 </p>
               </>
             )}
           </div>
           {topRows.length === 100 && (
             <p className="text-xs text-white/50 mt-1">
-              Showing top 100 of all participants
+              {t('vault.leaderboard.showingTop100')}
             </p>
           )}
         </div>

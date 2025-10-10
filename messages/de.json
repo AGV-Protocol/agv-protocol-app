@@ -64,7 +64,7 @@
   },
   "exploreagv": {
     "title": "Entdecken Sie die On-Chain-Infrastruktur von AGV",
-    "description": "Besuchen Sie unsere realen Projektstandorte und sehen Sie, wie Obstgärten, Solaranlagen und Blockchain zusammenkommen. Von Chinas grünen Zonen bis hin zu zukünftigen internationalen Knotenpunkten – AGV baut die Zukunft der landgestützten RWA-On-Chain."
+    "description": "Besuchen Sie unsere realen Projektstandorte und erleben Sie, wie Obstgärten, Solaranlagen und Blockchain zusammenkommen. Von Chinas grünen Zonen bis hin zu zukünftigen internationalen Knotenpunkten – AGV gestaltet die Zukunft der landgestützten RWA-On-Chain."
   },
   "blockchain": {
     "title": "Revolutionierung der Infrastruktur mit Blockchain",
@@ -112,7 +112,7 @@
     "quote1": "Durch die Tokenisierung realer Vermögenswerte könnte bis 2030 ein Markt im Wert von 10 Billionen US-Dollar erschlossen werden.",
     "source1": "Boston Consulting Group",
     "quote2": "ESG und energiebezogene Infrastruktur werden die institutionellen Kapitalströme im nächsten Jahrzehnt dominieren.",
-    "source2": "BlackRock-Ausblick 2024",
+    "source2": "BlackRock 2024 Ausblick",
     "quote3": "Dezentrale grüne Energie ist die Grundlage für langfristige wirtschaftliche Widerstandsfähigkeit.",
     "source3": "Weltbank",
     "title2": "Die Zukunft wird von Land, Sonne und Code angetrieben",
@@ -198,7 +198,7 @@
     "legal": "Rechtliches",
     "cookiePolicy": "Cookie-Richtlinie",
     "gdpr": "DSGVO",
-    "headquarters": "Hauptsitz in Asien. Weltweit tätig. Geprüft von Top-Unternehmen.",
+    "headquarters": "Hauptsitz in Asien. Weltweit tätig. Von Top-Unternehmen geprüft.",
     "legalText": "Alle realen Vermögenswerte werden von autorisierten chinesischen SPVs gehalten und per rechtlicher Autorisierung auf JLL Asset Ltd. (BVI-Firmennummer 2182436) abgebildet. Die Ausgabe und der Betrieb von NFTs werden von iJET Limited (NZBN: 9429049576290) durchgeführt. Der Governance-Übergang zur BVI-basierten AGV DAO ist im Gange."
   },
   "staking": {
@@ -215,15 +215,15 @@
     "availableRewards": "Verfügbare Prämien",
     "overview": "Staking-Übersicht",
     "stakedNFTs": "Gestakete NFTs",
-    "currentlyStaked": "Currently staked",
-    "rggpReadyToClaim": "rGGP ready to claim",
+    "currentlyStaked": "Derzeit abgesteckt",
+    "rggpReadyToClaim": "rGGP bereit zur Inanspruchnahme",
     "dailyRewards": "Tägliche Belohnungen",
-    "perNFTStaked": "Per NFT staked",
+    "perNFTStaked": "Pro eingesetztem NFT",
     "selectNetwork": "Netzwerk auswählen",
     "selectNFTCollection": "NFT-Sammlung auswählen",
     "selectNftCollection": "NFT-Sammlung auswählen",
     "selectStakingDuration": "Wählen Sie die Staking-Dauer",
-    "quickSelect": "Quick Select",
+    "quickSelect": "Schnellauswahl",
     "day": "Tag",
     "days": "Tage",
     "durationDays": "Dauer (Tage)",
@@ -364,7 +364,8 @@
     "whitelistRequired": "Whitelist erforderlich",
     "price": "Preis",
     "supply": "Liefern",
-    "remaining": "Übrig"
+    "remaining": "Übrig",
+    "loading": "Minting-Schnittstelle wird geladen …"
   },
   "dashboard": {
     "title": "Armaturenbrett",
@@ -955,7 +956,7 @@
   "blog": {
     "hero": {
       "title": "EINBLICKE & UPDATES",
-      "subtitle": "Entdecken Sie Einblicke in KI-Trends, reale Asset-Entwicklungen, Tokenomics-Forschung und Meilensteine der AGV-Community. In unserem Blog treffen nachhaltige Web3-Innovationen auf praktisches Wissen und helfen Investoren, Entwicklern und Partnern, immer einen Schritt voraus zu sein."
+      "subtitle": "Entdecken Sie Einblicke in KI-Leistungstrends, reale Asset-Entwicklungen, Tokenomics-Forschung und Meilensteine der AGV-Community. In unserem Blog treffen nachhaltige Web3-Innovationen auf praktisches Wissen und helfen Investoren, Entwicklern und Partnern, immer einen Schritt voraus zu sein."
     },
     "tabs": {
       "all": "Alle",
@@ -1037,6 +1038,10 @@
       "spotlight": {
         "title": "Community Spotlight: Erfolgsgeschichten",
         "description": "Hören Sie von den Erfahrungen unserer Community-Mitglieder mit dem AGV-Protokoll."
+      },
+      "turningEveryUser": {
+        "title": "AGV-Protokoll",
+        "description": "Jeder Benutzer wird zum KI-Stromerzeuger"
       }
     }
   },
@@ -1074,7 +1079,7 @@
     },
     "scalableSustainability": {
       "title": "Skalierbare Nachhaltigkeit",
-      "description": "Die verteilte Mini-Grid-Architektur lässt sich in Asien/MENA skalieren, reduziert die Netzbelastung, verkürzt die Latenz für KI-Workloads und fördert Nachhaltigkeitsziele. Jede neue Anlageeinheit steigert sowohl Ertrag als auch Bewertung."
+      "description": "Die verteilte Mini-Grid-Architektur lässt sich in Asien/MENA skalieren, reduziert die Netzbelastung, verringert die Latenz für KI-Workloads und fördert Nachhaltigkeitsziele. Jede neue Anlageeinheit steigert sowohl Ertrag als auch Bewertung."
     },
     "title": "Was uns unterscheidet"
   },
@@ -1241,5 +1246,154 @@
       "title": "Benötigen Sie weitere Informationen?",
       "description": "Bei allgemeinen Fragen oder wenn Sie sich nicht sicher sind, welches Team Sie kontaktieren sollen, wenden Sie sich bitte an unsere allgemeine Kontakt-E-Mail. Wir stellen sicher, dass Ihre Anfrage die richtige Person erreicht."
     }
+  },
+  "vault": {
+    "connectWallet": {
+      "features": {
+        "title": "Sobald die Verbindung hergestellt ist, können Sie:",
+        "liveEarnings": "Sehen Sie sich Ihre Live-rGGP-Einnahmen an",
+        "stakedPositions": "Sehen Sie sich Ihre eingesetzten NFT-Positionen an",
+        "trackXp": "Verfolgen Sie Ihre XP und Belohnungen",
+        "leaderboard": "Vergleichen Sie Ihre Leistung auf der Bestenliste"
+      },
+      "title": "Verbinden Sie Ihr Wallet",
+      "description": "Verbinden Sie Ihr Wallet, um Ihren rGGP-Tresor, eingesetzte NFTs und Ihr Verdienstpotenzial anzuzeigen."
+    },
+    "header": {
+      "wallet": "Geldbörse:",
+      "network": "Netzwerk:",
+      "lockTier": "Sperrstufe:"
+    },
+    "liveCounter": {
+      "title": "Live-rGGP-Zähler",
+      "accrued": "Aufgelaufen",
+      "dailyYield": "Täglicher Ertrag",
+      "perSecond": "Pro Sekunde",
+      "lockTierCta": "Sperrstufe für höheren effektiven Jahreszins",
+      "lockTierDescription": "Sperren Sie Ihre NFTs, um bis zu 490 % effektiven Jahreszins zu verdienen",
+      "unlockAll": "Alle NFTs freischalten",
+      "unlockAllDescription": "Dadurch werden alle Tresorbelohnungen gestoppt"
+    },
+    "aprBars": {
+      "title": "APR-Aufschlüsselung",
+      "real": "Real",
+      "boost": "Schub",
+      "social": "Sozial",
+      "total": "Gesamter effektiver Jahreszins"
+    },
+    "positions": {
+      "title": "Ihre gesperrten NFTs",
+      "noNfts": "Keine NFTs eingesetzt",
+      "noNftsDescription": "Wählen Sie NFTs aus Ihrem Wallet aus, um Tresorprämien zu verdienen",
+      "claimRewards": "Belohnungen einfordern (in Kürze verfügbar)",
+      "unlockNft": "NFT freischalten",
+      "multiplier": "Multiplikator",
+      "daysStaked": "Abgesteckte Tage:",
+      "lockTier": "Sperrstufe:"
+    },
+    "xpPanel": {
+      "title": "XP & Soziale Belohnungen",
+      "currentXp": "Aktuelle XP",
+      "lastUpdate": "Letztes Update",
+      "earnMore": "Verdienen Sie mehr XP",
+      "zealy": "Erledige Aufgaben auf Zealy",
+      "taskon": "Treten Sie der TaskOn-Community bei",
+      "noXpData": "Keine XP-Daten",
+      "noXpDescription": "Erledigen Sie Community-Aufgaben, um XP zu verdienen und Ihre Belohnungen zu steigern",
+      "xpBoostActive": "XP-Boost aktiv",
+      "xpBoostDescription": "Ihre XP erhöhen Ihren täglichen rGGP-Ertrag",
+      "updatePending": "Aktualisierung ausstehend",
+      "upToDate": "Aktuell"
+    },
+    "leaderboard": {
+      "title": "Top 100 Bestenliste",
+      "rank": "Rang",
+      "wallet": "Geldbörse",
+      "rggp": "rGGP",
+      "xp": "EP",
+      "loading": "Bestenliste wird geladen …",
+      "noData": "Keine Leaderboard-Daten verfügbar",
+      "updated": "Aktualisiert",
+      "realTimeActive": "Echtzeit-Updates aktiv",
+      "showingTop100": "Anzeige der Top 100 aller Teilnehmer"
+    },
+    "nftSelector": {
+      "title": "Wählen Sie NFTs zum Sperren aus",
+      "selected": "ausgewählt",
+      "connectWallet": "Verbinden Sie Ihr Wallet",
+      "connectDescription": "Verbinden Sie Ihr Wallet, um NFTs zum Sperren anzuzeigen und auszuwählen",
+      "loading": "Laden Ihrer NFTs",
+      "error": "Fehler beim Laden von NFTs",
+      "tryAgain": "Versuchen Sie es erneut",
+      "noNfts": "Keine NFTs gefunden",
+      "noNftsDescription": "Sie haben keine AGV-NFTs in Ihrer Brieftasche. Prägen Sie Ihr erstes NFT, um Tresor-Belohnungen zu verdienen!",
+      "goToMint": "Zur Mint-Seite",
+      "lockNfts": "NFTs sperren (in Kürze verfügbar)",
+      "selectedForLocking": "zum Sperren ausgewählt"
+    },
+    "warning": {
+      "title": "Im Tresor gesperrte NFTs",
+      "important": "Wichtig:",
+      "description": "NFT ist im Tresor gesperrt. Übertragen Sie es nicht, sonst werden keine Belohnungen mehr vergeben. Verwenden Sie „Entsperren“, um es zuerst sicher zu entfernen.",
+      "lastValidation": "Letzte Validierung:",
+      "validateNow": "Jetzt validieren"
+    },
+    "footer": {
+      "dataUpdates": "Die Daten werden alle 60 Sekunden aktualisiert. XP wird innerhalb einer Stunde nach Abschluss der Aufgabe aktualisiert."
+    },
+    "refresh": {
+      "refreshing": "Erfrischend...",
+      "refreshData": "Daten aktualisieren",
+      "refresh": "Aktualisieren",
+      "updating": "Aktualisierung...",
+      "updatingLeaderboard": "Bestenliste wird aktualisiert …"
+    },
+    "unlock": {
+      "confirmSingle": "Möchten Sie dieses NFT wirklich freischalten? Dadurch werden keine Belohnungen mehr vergeben.",
+      "confirmAll": "Möchten Sie wirklich alle {count} NFTs freischalten? Dadurch werden alle Belohnungen gestoppt.",
+      "lockedUntil": "Gesperrt bis",
+      "cannotUnlockYet": "Kann noch nicht entsperrt werden",
+      "timeRemaining": "Verbleibende Zeit"
+    },
+    "tierSelection": {
+      "tierBenefits": {
+        "flex": {
+          "title": "Flexibles Schloss",
+          "description": "Keine Sperrfrist, jederzeit entsperrbar",
+          "apr": "Basis-APR",
+          "duration": "Kein Schloss"
+        },
+        "1m": {
+          "title": "1 Monat Sperre",
+          "description": "30 Tage sperren, höhere Belohnungen",
+          "apr": "Verbesserter effektiver Jahreszins",
+          "duration": "30 Tage"
+        },
+        "3m": {
+          "title": "3-Monats-Sperre",
+          "description": "90 Tage gesperrt, maximale Belohnungen",
+          "apr": "Maximaler effektiver Jahreszins",
+          "duration": "90 Tage"
+        },
+        "6m": {
+          "title": "6-Monats-Sperre",
+          "description": "180 Tage gesperrt, Premium-Prämien",
+          "apr": "Prämie effektiver Jahreszins",
+          "duration": "180 Tage"
+        },
+        "12m": {
+          "title": "12 Monate Sperre",
+          "description": "365 Tage lang sperren, ultimative Belohnungen",
+          "apr": "Ultimativer effektiver Jahreszins",
+          "duration": "365 Tage"
+        }
+      },
+      "title": "Wählen Sie zuerst die Sperrebene aus",
+      "description": "Wählen Sie Ihre Sperrstufe, bevor Sie die zu sperrenden NFTs auswählen",
+      "selectTier": "Wählen Sie eine Sperrstufe aus, um fortzufahren",
+      "tierDescription": "Längere Sperrfristen bieten bessere APR-Belohnungen. Wählen Sie sorgfältig, da Sie die Stufe nicht mehr ändern können, sobald NFTs gesperrt sind."
+    },
+    "title": "rGGP-Tresor",
+    "subtitle": "Verdienen Sie Belohnungen, indem Sie Ihre NFTs sperren und Community-Aufgaben erledigen"
   }
 }
