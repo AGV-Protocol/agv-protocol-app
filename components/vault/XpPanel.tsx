@@ -116,10 +116,10 @@ export function XpPanel() {
             {isStale ? (
               <>
                 <AlertTriangle className="h-3 w-3 mr-1" />
-                Update Pending
+                {t('vault.xpPanel.updatePending')}
               </>
             ) : (
-              "Up to Date"
+              t('vault.xpPanel.upToDate')
             )}
           </Badge>
         </div>
@@ -135,10 +135,10 @@ export function XpPanel() {
         <div className="bg-purple-500/10 rounded-lg p-4 border border-purple-500/20">
           <div className="text-center">
             <div className="text-lg font-semibold text-purple-400 mb-1">
-              XP Boost Active
+              {t('vault.xpPanel.xpBoostActive')}
             </div>
             <div className="text-sm text-white/70">
-              Your XP increases your daily rGGP yield
+              {t('vault.xpPanel.xpBoostDescription')}
             </div>
           </div>
         </div>
