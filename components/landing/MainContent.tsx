@@ -84,7 +84,13 @@ export const MainContent: React.FC = () => {
        description: t('maincontent.articles.multichain.description'),
        url: "https://medium.com/@agvprotocol/rggp-explained-how-agv-protocol-turns-real-world-yields-into-rewards-dacb0a7c31e9",
        date: "2025-09-15"
-    }
+    },
+    {
+      title: t('blog.articles.turningEveryUser.title'),
+      description: t('blog.articles.turningEveryUser.description'),
+      url: "https://medium.com/@agvprotocol/agv-protocol-turning-every-user-into-an-ai-power-producer-2fa49a5d871b",
+      date: "2025-09-16"
+    },
   ];
   return (
     <section className="relative">

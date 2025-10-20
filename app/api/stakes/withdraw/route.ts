@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       const snap = await walletCol
         .where("chainId", "==", chainId)
         .where("nftType", "==", nftType)
-        .where("status", "==", "active")
+        .where("status", "==", "completed")
         .where("tokenId", "in", chunk)
         .get();
 

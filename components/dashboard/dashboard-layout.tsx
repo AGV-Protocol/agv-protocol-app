@@ -4,7 +4,7 @@ import * as React from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { Sidebar, SidebarContent, SidebarHeader, SidebarNav, SidebarNavItem } from "@/components/layout/sidebar"
+// import { Sidebar, SidebarContent, SidebarHeader, SidebarNav, SidebarNavItem } from "@/components/layout/sidebar"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { 
@@ -19,15 +19,14 @@ import {
   LayoutDashboard, 
   Users, 
   BarChart3, 
-  Settings, 
   Shield,
-  TrendingUp,
-  Activity,
   LogOut,
   Menu,
   X,
-  FileText
+  Wallet
 } from "lucide-react"
+import { useTranslations } from "@/hooks/useTranslations"
+import { createLocalizedHref, isActiveNavItem } from "@/lib/locale-utils"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -43,17 +42,27 @@ interface DashboardLayoutProps {
 const navigation = [
   {
     title: "Overview",
-    href: "/dashboard",
+    href: "/admin",
     icon: LayoutDashboard,
   },
   {
     title: "KOL Management",
-    href: "/dashboard/kols",
+    href: "/admin/kols",
     icon: Users,
   },
   {
+    title: "Wallet Whitelist",
+    href: "/admin/whitelist",
+    icon: Wallet,
+  },
+  {
+    title: "Whitelist Applications",
+    href: "/admin/whitelist-applications",
+    icon: Shield,
+  },
+  {
     title: "Analytics",
-    href: "/dashboard/analytics",
+    href: "/admin/analytics",
     icon: BarChart3,
   },
   {
@@ -63,12 +72,12 @@ const navigation = [
   },
   // {
   //   title: "Activity",
-  //   href: "/dashboard/activity",
+  //   href: "/admin/activity",
   //   icon: Activity,
   // },
   // {
   //   title: "Settings",
-  //   href: "/dashboard/settings",
+  //   href: "/admin/settings",
   //   icon: Settings,
   // },
 ]
@@ -80,14 +89,12 @@ export function DashboardLayout({
   className 
 }: DashboardLayoutProps) {
   const pathname = usePathname()
+  const { locale } = useTranslations()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
   
-  // Determine active navigation item
+  // Determine active navigation item using locale-aware logic
   const getActiveItem = (href: string) => {
-    if (href === "/dashboard") {
-      return pathname === "/dashboard"
-    }
-    return pathname === href
+    return isActiveNavItem(pathname, href)
   }
 
   // Close mobile menu when route changes
@@ -129,10 +136,11 @@ export function DashboardLayout({
         <nav className="flex-1 p-4 space-y-2">
           {navigation.map((item) => {
             const isActive = getActiveItem(item.href)
+            const localizedHref = createLocalizedHref(item.href, locale)
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={localizedHref}
                 className={cn(
                   "flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                   "hover:bg-primary/10 hover:text-primary",
@@ -172,10 +180,11 @@ export function DashboardLayout({
           <nav className="flex-1 p-4 space-y-2">
             {navigation.map((item) => {
               const isActive = getActiveItem(item.href)
+              const localizedHref = createLocalizedHref(item.href, locale)
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={localizedHref}
                   className={cn(
                     "flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                     "hover:bg-primary/10 hover:text-primary",

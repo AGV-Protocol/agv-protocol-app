@@ -31,7 +31,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <html lang={locale} suppressHydrationWarning className={inter.variable}>
       <head>
         {/* Optional prefetches */}
-        <link rel="prefetch" href={`/${locale}/dashboard`} />
+        <link rel="prefetch" href={`/${locale}/admin`} />
         <link rel="prefetch" href={`/${locale}/kol`} />
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />

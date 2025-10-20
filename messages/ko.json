@@ -364,7 +364,8 @@
     "whitelistRequired": "허용 목록이 필요합니다",
     "price": "가격",
     "supply": "공급",
-    "remaining": "남은"
+    "remaining": "남은",
+    "loading": "채굴 인터페이스를 로딩 중입니다..."
   },
   "dashboard": {
     "title": "계기반",
@@ -1045,6 +1046,10 @@
       "rGGPExplained": {
         "title": "rGGP 설명",
         "description": "AGV 프로토콜이 실제 수확량을 보상으로 전환하는 방법"
+      },
+      "turningEveryUser": {
+        "title": "AGV 프로토콜",
+        "description": "모든 사용자를 AI 파워 생산자로 전환"
       }
     }
   },
@@ -1249,5 +1254,154 @@
       "title": "더 많은 정보가 필요하신가요?",
       "description": "일반적인 문의 사항이 있거나 어떤 팀에 연락해야 할지 확실하지 않은 경우, 일반 연락처 이메일로 문의해 주세요. 문의하신 내용이 담당자에게 전달되도록 최선을 다하겠습니다."
     }
+  },
+  "vault": {
+    "connectWallet": {
+      "features": {
+        "title": "연결되면 다음을 수행할 수 있습니다.",
+        "liveEarnings": "실시간 rGGP 수입을 확인하세요",
+        "stakedPositions": "지분이 있는 NFT 포지션을 확인하세요",
+        "trackXp": "XP와 보상을 추적하세요",
+        "leaderboard": "리더보드에서 성과를 비교하세요"
+      },
+      "title": "지갑 연결",
+      "description": "지갑을 연결하여 rGGP 볼트, 스테이킹된 NFT, 수익 가능성을 확인하세요."
+    },
+    "header": {
+      "wallet": "지갑:",
+      "network": "회로망:",
+      "lockTier": "잠금 계층:"
+    },
+    "liveCounter": {
+      "title": "라이브 rGGP 카운터",
+      "accrued": "누적된",
+      "dailyYield": "일일 수확량",
+      "perSecond": "초당",
+      "lockTierCta": "더 높은 APR을 위한 잠금 계층",
+      "lockTierDescription": "NFT를 잠그면 최대 490%의 연이율을 얻을 수 있습니다.",
+      "unlockAll": "모든 NFT 잠금 해제",
+      "unlockAllDescription": "이렇게 하면 모든 금고 보상이 중지됩니다."
+    },
+    "aprBars": {
+      "title": "APR 분석",
+      "real": "진짜",
+      "boost": "후원",
+      "social": "사회의",
+      "total": "총 APR"
+    },
+    "positions": {
+      "title": "잠긴 NFT",
+      "noNfts": "NFT 스테이킹 없음",
+      "noNftsDescription": "지갑에서 NFT를 선택하여 볼트 보상을 받으세요.",
+      "claimRewards": "보상 청구(곧 제공)",
+      "unlockNft": "NFT 잠금 해제",
+      "multiplier": "승수",
+      "daysStaked": "베팅 일수:",
+      "lockTier": "잠금 계층:"
+    },
+    "xpPanel": {
+      "title": "XP 및 소셜 리워드",
+      "currentXp": "현재 XP",
+      "lastUpdate": "마지막 업데이트",
+      "earnMore": "더 많은 XP를 획득하세요",
+      "zealy": "Zealy에서 작업 완료",
+      "taskon": "TaskOn 커뮤니티에 가입하세요",
+      "noXpData": "XP 데이터 없음",
+      "noXpDescription": "커뮤니티 작업을 완료하여 XP를 획득하고 보상을 높이세요.",
+      "xpBoostActive": "XP 부스트 활성화",
+      "xpBoostDescription": "귀하의 XP는 귀하의 일일 rGGP 수확량을 증가시킵니다.",
+      "updatePending": "업데이트 보류 중",
+      "upToDate": "최신 정보"
+    },
+    "leaderboard": {
+      "title": "상위 100개 리더보드",
+      "rank": "계급",
+      "wallet": "지갑",
+      "rggp": "rGGP",
+      "xp": "경험치",
+      "loading": "리더보드를 로딩 중입니다...",
+      "noData": "리더보드 데이터가 없습니다.",
+      "updated": "업데이트됨",
+      "realTimeActive": "실시간 업데이트 활성화",
+      "showingTop100": "모든 참가자 중 상위 100명을 표시합니다."
+    },
+    "nftSelector": {
+      "title": "잠글 NFT 선택",
+      "selected": "선택된",
+      "connectWallet": "지갑 연결",
+      "connectDescription": "지갑을 연결하여 잠금을 위한 NFT를 보고 선택하세요",
+      "loading": "NFT 로딩",
+      "error": "NFT 로딩 중 오류 발생",
+      "tryAgain": "다시 시도하세요",
+      "noNfts": "NFT를 찾을 수 없습니다",
+      "noNftsDescription": "지갑에 AGV NFT가 없습니다. 첫 번째 NFT를 생성하고 금고 보상을 받으세요!",
+      "goToMint": "민트 페이지로 이동",
+      "lockNfts": "NFT 잠금 (곧 출시)",
+      "selectedForLocking": "잠금을 위해 선택됨"
+    },
+    "warning": {
+      "title": "금고에 잠긴 NFT",
+      "important": "중요한:",
+      "description": "NFT는 금고에 보관되어 있습니다. 전송하지 마세요. 전송 시 보상 지급이 중단됩니다. 먼저 \"잠금 해제\"를 사용하여 안전하게 제거하세요.",
+      "lastValidation": "마지막 검증:",
+      "validateNow": "지금 검증하세요"
+    },
+    "footer": {
+      "dataUpdates": "데이터는 60초마다 업데이트됩니다. XP는 작업 완료 후 1시간 이내에 업데이트됩니다."
+    },
+    "refresh": {
+      "refreshing": "상쾌한...",
+      "refreshData": "데이터 새로 고침",
+      "refresh": "새로 고치다",
+      "updating": "업데이트 중...",
+      "updatingLeaderboard": "리더보드를 업데이트 중입니다..."
+    },
+    "unlock": {
+      "confirmSingle": "이 NFT를 잠금 해제하시겠습니까? 잠금 해제하면 보상 획득이 중단됩니다.",
+      "confirmAll": "{count}개의 NFT를 모두 잠금 해제하시겠습니까? 잠금 해제 시 모든 보상이 중단됩니다.",
+      "lockedUntil": "잠김까지",
+      "cannotUnlockYet": "아직 잠금 해제할 수 없습니다",
+      "timeRemaining": "남은 시간"
+    },
+    "tierSelection": {
+      "tierBenefits": {
+        "flex": {
+          "title": "유연한 잠금 장치",
+          "description": "잠금 기간 없음, 언제든지 잠금 해제 가능",
+          "apr": "기본 APR",
+          "duration": "잠금장치 없음"
+        },
+        "1m": {
+          "title": "1개월 잠금",
+          "description": "30일 잠금, 더 높은 보상",
+          "apr": "향상된 APR",
+          "duration": "30일"
+        },
+        "3m": {
+          "title": "3개월 잠금",
+          "description": "90일 잠금, 최대 보상",
+          "apr": "최대 연이율",
+          "duration": "90일"
+        },
+        "6m": {
+          "title": "6개월 잠금",
+          "description": "180일 잠금, 프리미엄 리워드",
+          "apr": "프리미엄 APR",
+          "duration": "180일"
+        },
+        "12m": {
+          "title": "12개월 잠금",
+          "description": "365일 잠금, 최고의 보상",
+          "apr": "궁극의 연이율",
+          "duration": "365일"
+        }
+      },
+      "title": "잠금 계층을 먼저 선택하세요",
+      "description": "NFT를 잠그기 전에 잠금 계층을 선택하세요",
+      "selectTier": "계속하려면 잠금 계층을 선택하세요",
+      "tierDescription": "잠금 기간이 길수록 더 높은 연이율(APR) 보상을 받을 수 있습니다. NFT가 잠금되면 등급을 변경할 수 없으므로 신중하게 선택하세요."
+    },
+    "title": "rGGP 보관소",
+    "subtitle": "NFT를 잠그고 커뮤니티 작업을 완료하여 보상을 받으세요."
   }
 }

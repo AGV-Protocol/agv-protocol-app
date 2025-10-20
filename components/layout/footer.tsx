@@ -22,7 +22,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { useTranslations } from "@/hooks/useTranslations";
+import { useTranslations } from "@/hooks/useTranslations"
+import { createLocalizedHref } from "@/lib/locale-utils";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface FooterProps {
@@ -36,28 +37,27 @@ export function Footer({ backgroundClass = "bg-background", textColorClass = "te
 
   const footerLinks = {
     product: [
-      { name: t('footer.nftMinting'), href: "/mint" },
-      { name: t('nav.dashboard'), href: "/dashboard" },
-      { name: t('footer.kolProgram'), href: "/coming-soon" },
-      { name: t('dashboard.analytics'), href: "/coming-soon" },
+      { name: t('footer.nftMinting'), href: createLocalizedHref("/mint", locale) },
+      { name: t('footer.kolProgram'), href: createLocalizedHref("/coming-soon", locale) },
+      { name: t('dashboard.analytics'), href: createLocalizedHref("/coming-soon", locale) },
     ],
     company: [
-      { name: t('footer.aboutUs'), href: "/coming-soon" },
-      { name: t('footer.careers'), href: "/coming-soon" },
-      { name: t('landing.footer.navigation.company.press'), href: "/coming-soon" },
-      { name: t('footer.blogs'), href: "/coming-soon" },
+      { name: t('footer.aboutUs'), href: createLocalizedHref("/coming-soon", locale) },
+      { name: t('footer.careers'), href: createLocalizedHref("/coming-soon", locale) },
+      { name: t('landing.footer.navigation.company.press'), href: createLocalizedHref("/coming-soon", locale) },
+      { name: t('footer.blogs'), href: createLocalizedHref("/coming-soon", locale) },
     ],
     support: [
-      { name: t('footer.helpCenter'), href: "/coming-soon" },
-      { name: t('footer.documentation'), href: "/coming-soon" },
-      { name: t('landing.footer.navigation.support.apiReference'), href: "/coming-soon" },
-      { name: t('footer.contactSupport'), href: "/coming-soon" },
+      { name: t('footer.helpCenter'), href: createLocalizedHref("/coming-soon", locale) },
+      { name: t('footer.documentation'), href: createLocalizedHref("/coming-soon", locale) },
+      { name: t('landing.footer.navigation.support.apiReference'), href: createLocalizedHref("/coming-soon", locale) },
+      { name: t('footer.contactSupport'), href: createLocalizedHref("/coming-soon", locale) },
     ],
     legal: [
-      { name: t('footer.privacy'), href: "/coming-soon" },
-      { name: t('footer.terms'), href: "/coming-soon" },
-      { name: t('footer.cookiePolicy'), href: "/coming-soon" },
-      { name: t('footer.gdpr'), href: "/coming-soon" },
+      { name: t('footer.privacy'), href: createLocalizedHref("/coming-soon", locale) },
+      { name: t('footer.terms'), href: createLocalizedHref("/coming-soon", locale) },
+      { name: t('footer.cookiePolicy'), href: createLocalizedHref("/coming-soon", locale) },
+      { name: t('footer.gdpr'), href: createLocalizedHref("/coming-soon", locale) },
     ],
   };
 

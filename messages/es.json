@@ -364,7 +364,8 @@
     "whitelistRequired": "Se requiere lista blanca",
     "price": "Precio",
     "supply": "Suministrar",
-    "remaining": "Restante"
+    "remaining": "Restante",
+    "loading": "Cargando interfaz de acuñación..."
   },
   "dashboard": {
     "title": "Panel",
@@ -1037,6 +1038,10 @@
       "spotlight": {
         "title": "Destacado de la comunidad: Historias de éxito",
         "description": "Escuche a los miembros de nuestra comunidad sobre sus experiencias con el Protocolo AGV."
+      },
+      "turningEveryUser": {
+        "title": "Protocolo AGV",
+        "description": "Convertir a cada usuario en un productor de potencia de IA"
       }
     }
   },
@@ -1241,5 +1246,154 @@
       "title": "¿Necesita más información?",
       "description": "Si tiene preguntas generales o no sabe con qué equipo contactar, utilice nuestro correo electrónico de contacto general. Nos aseguraremos de que su consulta llegue a la persona adecuada."
     }
+  },
+  "vault": {
+    "connectWallet": {
+      "features": {
+        "title": "Una vez conectado, podrás:",
+        "liveEarnings": "Vea sus ganancias de rGGP en vivo",
+        "stakedPositions": "Vea sus posiciones NFT apostadas",
+        "trackXp": "Realiza un seguimiento de tu XP y recompensas",
+        "leaderboard": "Compara tu desempeño en la tabla de clasificación"
+      },
+      "title": "Conecta tu billetera",
+      "description": "Conecte su billetera para ver su bóveda rGGP, NFT en stake y potencial de ganancias."
+    },
+    "header": {
+      "wallet": "Billetera:",
+      "network": "Red:",
+      "lockTier": "Nivel de bloqueo:"
+    },
+    "liveCounter": {
+      "title": "Contador rGGP en vivo",
+      "accrued": "Acumulado",
+      "dailyYield": "Rendimiento diario",
+      "perSecond": "Por segundo",
+      "lockTierCta": "Bloquee el nivel para obtener una TAE más alta",
+      "lockTierDescription": "Bloquea tus NFT para ganar hasta un 490% TAE",
+      "unlockAll": "Desbloquea todos los NFT",
+      "unlockAllDescription": "Esto detendrá todas las recompensas de la bóveda."
+    },
+    "aprBars": {
+      "title": "Desglose de la TAE",
+      "real": "Real",
+      "boost": "Aumentar",
+      "social": "Social",
+      "total": "Tasa de porcentaje anual total"
+    },
+    "positions": {
+      "title": "Tus NFT bloqueados",
+      "noNfts": "No hay NFT en staking",
+      "noNftsDescription": "Selecciona NFT de tu billetera para comenzar a ganar recompensas de bóveda",
+      "claimRewards": "Reclama recompensas (próximamente)",
+      "unlockNft": "Desbloquear NFT",
+      "multiplier": "Multiplicador",
+      "daysStaked": "Días apostados:",
+      "lockTier": "Nivel de bloqueo:"
+    },
+    "xpPanel": {
+      "title": "XP y recompensas sociales",
+      "currentXp": "XP actual",
+      "lastUpdate": "Última actualización",
+      "earnMore": "Gana más XP",
+      "zealy": "Completar tareas en Zealy",
+      "taskon": "Únase a la comunidad en TaskOn",
+      "noXpData": "Sin datos de XP",
+      "noXpDescription": "Completa tareas de la comunidad para ganar XP y aumentar tus recompensas.",
+      "xpBoostActive": "XP Boost Activo",
+      "xpBoostDescription": "Tu XP aumenta tu rendimiento diario de rGGP",
+      "updatePending": "Actualización pendiente",
+      "upToDate": "A hoy"
+    },
+    "leaderboard": {
+      "title": "Clasificación de los 100 mejores",
+      "rank": "Rango",
+      "wallet": "Billetera",
+      "rggp": "rGGP",
+      "xp": "XP",
+      "loading": "Cargando tabla de clasificación...",
+      "noData": "No hay datos de clasificación disponibles",
+      "updated": "Actualizado",
+      "realTimeActive": "Actualizaciones en tiempo real activas",
+      "showingTop100": "Mostrando los 100 mejores de todos los participantes"
+    },
+    "nftSelector": {
+      "title": "Seleccione NFT para bloquear",
+      "selected": "seleccionado",
+      "connectWallet": "Conecta tu billetera",
+      "connectDescription": "Conecte su billetera para ver y seleccionar NFT para bloquear",
+      "loading": "Cargando sus NFT",
+      "error": "Error al cargar NFT",
+      "tryAgain": "Intentar otra vez",
+      "noNfts": "No se encontraron NFT",
+      "noNftsDescription": "No tienes ningún NFT de AGV en tu billetera. ¡Crea tu primer NFT para empezar a ganar recompensas en la bóveda!",
+      "goToMint": "Ir a la página de Mint",
+      "lockNfts": "Bloquear NFT (próximamente)",
+      "selectedForLocking": "seleccionado para bloquear"
+    },
+    "warning": {
+      "title": "NFT encerrados en una bóveda",
+      "important": "Importante:",
+      "description": "El NFT está guardado en la bóveda. No lo transfieras o las recompensas se detendrán. Usa \"Desbloquear\" para eliminarlo de forma segura primero.",
+      "lastValidation": "Última validación:",
+      "validateNow": "Validar ahora"
+    },
+    "footer": {
+      "dataUpdates": "Los datos se actualizan cada 60 segundos. XP se actualiza dentro de 1 hora después de completar la tarea."
+    },
+    "refresh": {
+      "refreshing": "Refrescante...",
+      "refreshData": "Actualizar datos",
+      "refresh": "Refrescar",
+      "updating": "Actualizando...",
+      "updatingLeaderboard": "Actualizando la tabla de clasificación..."
+    },
+    "unlock": {
+      "confirmSingle": "¿Seguro que quieres desbloquear este NFT? Esto dejará de generar recompensas.",
+      "confirmAll": "¿Seguro que quieres desbloquear {count} NFT? Esto detendrá todas las recompensas.",
+      "lockedUntil": "Bloqueado hasta",
+      "cannotUnlockYet": "No se puede desbloquear todavía",
+      "timeRemaining": "Tiempo restante"
+    },
+    "tierSelection": {
+      "tierBenefits": {
+        "flex": {
+          "title": "Bloqueo flexible",
+          "description": "Sin período de bloqueo, desbloquea en cualquier momento",
+          "apr": "Tasa de porcentaje anual base",
+          "duration": "Sin cerradura"
+        },
+        "1m": {
+          "title": "Bloqueo de 1 mes",
+          "description": "Bloqueo por 30 días, mayores recompensas",
+          "apr": "Tasa de porcentaje anual (APR) mejorada",
+          "duration": "30 días"
+        },
+        "3m": {
+          "title": "Bloqueo de 3 meses",
+          "description": "Bloqueo por 90 días, máximas recompensas",
+          "apr": "Tasa de porcentaje anual máxima",
+          "duration": "90 días"
+        },
+        "6m": {
+          "title": "Bloqueo de 6 meses",
+          "description": "Bloqueo por 180 días, recompensas premium",
+          "apr": "Tasa de porcentaje anual (APR) premium",
+          "duration": "180 días"
+        },
+        "12m": {
+          "title": "Bloqueo de 12 meses",
+          "description": "Bloqueo por 365 días, recompensas máximas",
+          "apr": "Tasa de porcentaje anual máxima",
+          "duration": "365 días"
+        }
+      },
+      "title": "Seleccione Bloquear nivel primero",
+      "description": "Elija su nivel de bloqueo antes de seleccionar los NFT que desea bloquear",
+      "selectTier": "Seleccione un nivel de bloqueo para continuar",
+      "tierDescription": "Los períodos de bloqueo más largos ofrecen mejores recompensas TAE. Elija con cuidado, ya que no podrá cambiar de nivel una vez que los NFT estén bloqueados."
+    },
+    "title": "Bóveda rGGP",
+    "subtitle": "Gana recompensas bloqueando tus NFT y completando tareas de la comunidad"
   }
 }
