@@ -1,3 +1,5 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { createTranslator } from '../lib/translator';
@@ -51,7 +53,7 @@ async function translateMissingKeys() {
       const translator = createTranslator();
       
       // Add delay before starting translation to avoid rate limits
-      console.log(`⏳ Starting translation for ${locale} (${missingKeys.length} keys)...`);
+      console.log(`? Starting translation for ${locale} (${missingKeys.length} keys)...`);
       await delay(1000); // 1 second delay
       
       // Translate missing keys
@@ -66,12 +68,12 @@ async function translateMissingKeys() {
             });
             
             setNestedValue(targetMessages, keyPath, Object.values(translated)[0]);
-            console.log(`✅ Translated: ${keyPath}`);
+            console.log(`? Translated: ${keyPath}`);
             
             // Add small delay between translations to avoid rate limits
             await delay(500); // 0.5 second delay between translations
           } catch (error) {
-            console.error(`❌ Failed to translate ${keyPath}:`, error);
+            console.error(`? Failed to translate ${keyPath}:`, error);
             // Keep the original value if translation fails
           }
         }
