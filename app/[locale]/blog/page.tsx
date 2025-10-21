@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
 import { ArticleCard } from "@/components/landing/ArticleCard";
@@ -10,12 +10,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "@/hooks/useTranslations";
 import { getBlogPosts, BlogPost } from "@/lib/blog";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 export default function BlogPage() {
   const { t } = useTranslations();
   const params = useParams();
+  const router = useRouter();
   const locale = params?.locale as string;
   const [activeTab, setActiveTab] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,11 +24,7 @@ export default function BlogPage() {
 
   const tabs = ["ALL", "ANNOUNCEMENTS", "TECH", "COMMUNITY"];
 
-  useEffect(() => {
-    fetchBlogPosts();
-  }, [activeTab, searchQuery]);
-
-  const fetchBlogPosts = async () => {
+  const fetchBlogPosts = useCallback(async () => {
     try {
       setLoading(true);
       const filters = {
@@ -43,7 +39,11 @@ export default function BlogPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab, searchQuery]);
+
+  useEffect(() => {
+    fetchBlogPosts();
+  }, [fetchBlogPosts]);
 
   // Get featured article (first featured post or first post)
   const featuredArticle = blogPosts.find(post => post.featured) || blogPosts[0];
@@ -56,8 +56,8 @@ export default function BlogPage() {
   };
 
   const handleReadMore = (slug: string) => {
-    // Navigate to blog detail page instead of external link
-    window.location.href = `/${locale}/blog/${slug}`;
+    // Navigate to blog detail page using Next.js router
+    router.push(`/${locale}/blog/${slug}`);
   };
 
   return (
@@ -143,15 +143,15 @@ export default function BlogPage() {
       {/* Main Articles Section */}
       <section className="py-12 sm:py-16 lg:py-20 bg-transparent relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left mb-8 sm:mb-12">
-            {(activeTab !== "ALL" || searchQuery) && (
-              <p className="text-[#223256] text-xs sm:text-sm">
-                {otherArticles.length} {t('blog.main.articlesFound', { count: otherArticles.length })}
-                {activeTab !== "ALL" && ` ${t('blog.main.inCategory', { category: t(`blog.tabs.${activeTab.toLowerCase()}`) })}`}
-                {searchQuery && ` ${t('blog.main.forQuery', { query: searchQuery })}`}
-              </p>
-            )}
-          </div>
+            <div className="text-left mb-8 sm:mb-12">
+              {(activeTab !== "ALL" || searchQuery) && (
+                <p className="text-[#223256] text-xs sm:text-sm">
+                  {otherArticles.length} {t('blog.main.articlesFound')}
+                  {activeTab !== "ALL" && ` ${t('blog.main.inCategory').replace('{category}', t(`blog.tabs.${activeTab.toLowerCase()}`))}`}
+                  {searchQuery && ` ${t('blog.main.forQuery').replace('{query}', searchQuery)}`}
+                </p>
+              )}
+            </div>
 
           {/* Articles Container */}
           <div className="rounded-2xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
@@ -174,7 +174,7 @@ export default function BlogPage() {
             ) : (
               <div className="text-center py-8 sm:py-12">
                 <p className="text-[#223256] text-lg sm:text-xl font-medium">
-                  {searchQuery ? t('blog.main.noResultsForQuery', { query: searchQuery }) : t('blog.main.noResultsInCategory', { category: t(`blog.tabs.${activeTab.toLowerCase()}`) || activeTab })}
+                  {searchQuery ? t('blog.main.noResultsForQuery').replace('{query}', searchQuery) : t('blog.main.noResultsInCategory').replace('{category}', t(`blog.tabs.${activeTab.toLowerCase()}`) || activeTab)}
                 </p>
               </div>
             )}

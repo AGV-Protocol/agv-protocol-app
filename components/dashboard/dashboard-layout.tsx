@@ -23,7 +23,8 @@ import {
   LogOut,
   Menu,
   X,
-  Wallet
+  Wallet,
+  FileText
 } from "lucide-react"
 import { useTranslations } from "@/hooks/useTranslations"
 import { createLocalizedHref, isActiveNavItem } from "@/lib/locale-utils"

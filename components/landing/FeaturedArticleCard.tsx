@@ -18,12 +18,33 @@ export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({
   onReadMore 
 }) => {
   const { t } = useTranslations();
+  
+  // Validate image URL
+  const isValidImageUrl = (url: string): boolean => {
+    if (!url || !url.trim()) return false;
+    try {
+      const trimmedUrl = url.trim();
+      const urlObj = new URL(trimmedUrl);
+      const validProtocols = ['http:', 'https:'];
+      const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+      
+      if (!validProtocols.includes(urlObj.protocol)) return false;
+      
+      const pathname = urlObj.pathname.toLowerCase();
+      return validExtensions.some(ext => pathname.endsWith(ext));
+    } catch {
+      return false;
+    }
+  };
+
+  const imageSrc = isValidImageUrl(image) ? image.trim() : "/blog/featured-article.png";
+  
   return (
     <div className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-6 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
       {/* Article Image */}
       <div className="flex-1 w-full lg:w-auto">
         <Image
-          src={image}
+          src={imageSrc}
           alt={title}
           width={400}
           height={250}

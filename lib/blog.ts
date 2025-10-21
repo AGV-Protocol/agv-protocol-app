@@ -42,17 +42,16 @@ export interface BlogFilters {
 // Get all blog posts
 export const getBlogPosts = async (filters?: BlogFilters): Promise<BlogPost[]> => {
   try {
-    let q = query(collection(db, 'blogs'), orderBy('createdAt', 'desc'));
+    // Start with basic query - get all documents first
+    let q = query(collection(db, 'blogs'));
     
-    if (filters?.category && filters.category !== 'ALL') {
-      q = query(q, where('category', '==', filters.category));
-    }
-    
+    // Only add where clauses if we have specific filters
+    // Avoid composite index issues by using simpler queries
     if (filters?.published !== undefined) {
       q = query(q, where('published', '==', filters.published));
-    }
-    
-    if (filters?.featured !== undefined) {
+    } else if (filters?.category && filters.category !== 'ALL') {
+      q = query(q, where('category', '==', filters.category));
+    } else if (filters?.featured !== undefined) {
       q = query(q, where('featured', '==', filters.featured));
     }
 
@@ -62,7 +61,16 @@ export const getBlogPosts = async (filters?: BlogFilters): Promise<BlogPost[]> =
       ...doc.data()
     })) as BlogPost[];
 
-    // Apply search filter on client side for better performance
+    // Apply additional filters on client side to avoid composite index issues
+    if (filters?.category && filters.category !== 'ALL' && filters.published !== undefined) {
+      posts = posts.filter(post => post.category === filters.category);
+    }
+    
+    if (filters?.featured !== undefined && filters.published !== undefined) {
+      posts = posts.filter(post => post.featured === filters.featured);
+    }
+
+    // Apply search filter on client side
     if (filters?.search) {
       const searchTerm = filters.search.toLowerCase();
       posts = posts.filter(post => 
@@ -72,6 +80,13 @@ export const getBlogPosts = async (filters?: BlogFilters): Promise<BlogPost[]> =
         post.tags.some(tag => tag.toLowerCase().includes(searchTerm))
       );
     }
+
+    // Sort by createdAt on client side to avoid composite index
+    posts.sort((a, b) => {
+      const aTime = a.createdAt?.toDate?.() || new Date(a.createdAt);
+      const bTime = b.createdAt?.toDate?.() || new Date(b.createdAt);
+      return bTime.getTime() - aTime.getTime();
+    });
 
     return posts;
   } catch (error) {

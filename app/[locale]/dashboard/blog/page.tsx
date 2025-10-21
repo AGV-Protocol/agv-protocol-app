@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { auth } from "@/lib/firebase";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { getBlogPosts, deleteBlogPost, BlogPost } from "@/lib/blog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   Plus, 
@@ -22,56 +22,49 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "@/hooks/useTranslations";
 import { useParams } from "next/navigation";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { toast } from 'sonner';
 
-type WhoAmI = {
-  authed: boolean;
-  email: string | null;
-  isAdmin: boolean;
-  isSuperAdmin: boolean;
-};
 
 export default function DashboardBlogPage() {
   const { t } = useTranslations();
   const params = useParams();
   const locale = params?.locale as string;
-  const [who, setWho] = useState<WhoAmI>({
-    authed: false,
-    email: null,
-    isAdmin: false,
-    isSuperAdmin: false,
-  });
+  
+  // Validation function for image URLs
+  const isValidImageUrl = (url: string): boolean => {
+    if (!url || !url.trim()) return false;
+    try {
+      const urlObj = new URL(url.trim());
+      const validProtocols = ['http:', 'https:'];
+      const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+      
+      if (!validProtocols.includes(urlObj.protocol)) return false;
+      
+      const pathname = urlObj.pathname.toLowerCase();
+      return validExtensions.some(ext => pathname.endsWith(ext));
+    } catch {
+      return false;
+    }
+  };
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    postId: string | null;
+    postTitle: string;
+  }>({
+    isOpen: false,
+    postId: null,
+    postTitle: ''
+  });
+  const [deleting, setDeleting] = useState(false);
 
-  // Fetch server-verified role
-  useEffect(() => {
-    (async () => {
-      if (!auth.currentUser) {
-        setWho({ authed: false, email: null, isAdmin: false, isSuperAdmin: false });
-        return;
-      }
-      try {
-        const idToken = await auth.currentUser.getIdToken(true);
-        const res = await fetch("/api/admin/whoami", {
-          headers: { Authorization: `Bearer ${idToken}` },
-          cache: "no-store",
-        });
-        const data = await res.json().catch(() => null);
-        if (data) setWho(data);
-      } catch {
-        setWho((s) => ({ ...s, isAdmin: false, isSuperAdmin: false }));
-      }
-    })();
-  }, []);
 
-  useEffect(() => {
-    fetchBlogPosts();
-  }, [categoryFilter, statusFilter]);
-
-  const fetchBlogPosts = async () => {
+  const fetchBlogPosts = useCallback(async () => {
     try {
       setLoading(true);
       const filters = {
@@ -85,19 +78,43 @@ export default function DashboardBlogPage() {
     } finally {
       setLoading(false);
     }
+  }, [categoryFilter, statusFilter]);
+
+  useEffect(() => {
+    fetchBlogPosts();
+  }, [fetchBlogPosts]);
+
+  const handleDeleteClick = (id: string, title: string) => {
+    setDeleteModal({
+      isOpen: true,
+      postId: id,
+      postTitle: title
+    });
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm(t('admin.blog.confirmDelete'))) {
-      try {
-        const success = await deleteBlogPost(id);
-        if (success) {
-          setBlogPosts(blogPosts.filter(post => post.id !== id));
-        }
-      } catch (error) {
-        console.error("Error deleting blog post:", error);
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.postId) return;
+    
+    setDeleting(true);
+    try {
+      const success = await deleteBlogPost(deleteModal.postId);
+      if (success) {
+        setBlogPosts(blogPosts.filter(post => post.id !== deleteModal.postId));
+        toast.success('Blog post deleted successfully!');
+        setDeleteModal({ isOpen: false, postId: null, postTitle: '' });
+      } else {
+        toast.error('Failed to delete blog post');
       }
+    } catch (error) {
+      console.error("Error deleting blog post:", error);
+      toast.error('Error deleting blog post');
+    } finally {
+      setDeleting(false);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModal({ isOpen: false, postId: null, postTitle: '' });
   };
 
   const filteredPosts = blogPosts.filter(post => {
@@ -107,9 +124,14 @@ export default function DashboardBlogPage() {
     return matchesSearch;
   });
 
-  const formatDate = (timestamp: any) => {
+  const formatDate = (timestamp: unknown) => {
     if (!timestamp) return '';
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    let date: Date;
+    if (typeof timestamp === 'object' && timestamp !== null && 'toDate' in timestamp) {
+      date = (timestamp as { toDate: () => Date }).toDate();
+    } else {
+      date = new Date(timestamp as string | number | Date);
+    }
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -140,12 +162,6 @@ export default function DashboardBlogPage() {
             </p>
           </div>
           <div className="flex items-center space-x-2">
-            <Link href={`/${locale}/dashboard/blog/create-medium`}>
-              <Button className="bg-green-600 hover:bg-green-700 text-white flex items-center space-x-2">
-                <Plus className="w-4 h-4" />
-                <span>Write Story</span>
-              </Button>
-            </Link>
             <Link href={`/${locale}/dashboard/blog/create`}>
               <Button variant="outline" className="flex items-center space-x-2">
                 <Plus className="w-4 h-4" />
@@ -215,14 +231,18 @@ export default function DashboardBlogPage() {
                 <CardContent className="p-6">
                   <div className="flex flex-col lg:flex-row gap-6">
                     {/* Featured Image */}
-                    {post.featuredImage && (
+                    {post.featuredImage && post.featuredImage.trim() && isValidImageUrl(post.featuredImage) && (
                       <div className="lg:w-48 flex-shrink-0">
                         <Image
-                          src={post.featuredImage}
+                          src={post.featuredImage.trim()}
                           alt={post.title}
                           width={200}
                           height={120}
                           className="w-full h-32 object-cover rounded-lg"
+                          onError={(e) => {
+                            console.error('Error loading featured image:', post.featuredImage);
+                            e.currentTarget.style.display = 'none';
+                          }}
                         />
                       </div>
                     )}
@@ -280,25 +300,21 @@ export default function DashboardBlogPage() {
                               </Button>
                             </Link>
                           )}
-                          <Link href={`/${locale}/dashboard/blog/edit-medium/${post.id}`}>
-                            <Button variant="ghost" size="sm" className="text-green-600 hover:text-green-700" title="Edit Story (Medium-style)">
-                              <FileText className="w-4 h-4" />
-                            </Button>
-                          </Link>
+                          
                           <Link href={`/${locale}/dashboard/blog/edit/${post.id}`}>
                             <Button variant="ghost" size="sm" className="text-[#223256] hover:text-[#4FACFE]" title="Edit (Classic)">
                               <Edit className="w-4 h-4" />
                             </Button>
                           </Link>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(post.id!)}
-                            className="text-red-500 hover:text-red-700"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleDeleteClick(post.id!, post.title)}
+                                    className="text-red-500 hover:text-red-700"
+                                    title="Delete"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
                         </div>
                       </div>
                     </div>
@@ -325,6 +341,17 @@ export default function DashboardBlogPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={deleteModal.isOpen}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Blog Post"
+          description="Are you sure you want to delete this blog post? This action cannot be undone."
+          itemName={deleteModal.postTitle}
+          loading={deleting}
+        />
       </div>
     </DashboardLayout>
   );

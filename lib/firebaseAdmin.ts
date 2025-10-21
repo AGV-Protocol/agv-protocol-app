@@ -2,6 +2,7 @@
 import { getApps, initializeApp, cert, App } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
+import { getStorage } from "firebase-admin/storage";
 
 function must(name: string, v?: string | null) {
   if (!v) throw new Error(`Missing server env: ${name}`);
@@ -21,6 +22,7 @@ if (!getApps().length) {
       clientEmail: must("FIREBASE_CLIENT_EMAIL", process.env.FIREBASE_CLIENT_EMAIL),
       privateKey: normalizePrivateKey(must("FIREBASE_PRIVATE_KEY", process.env.FIREBASE_PRIVATE_KEY)),
     }),
+    storageBucket: `${process.env.FIREBASE_PROJECT_ID}.appspot.com`,
     // databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com` // optional
   });
 } else {
@@ -29,3 +31,4 @@ if (!getApps().length) {
 
 export const adminDb = getFirestore(app);
 export const adminAuth = getAuth(app);
+export const adminStorage = getStorage(app);

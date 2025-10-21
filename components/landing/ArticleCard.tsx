@@ -18,12 +18,33 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   onReadMore 
 }) => {
   const { t } = useTranslations();
+  
+  // Validate image URL
+  const isValidImageUrl = (url: string): boolean => {
+    if (!url || !url.trim()) return false;
+    try {
+      const trimmedUrl = url.trim();
+      const urlObj = new URL(trimmedUrl);
+      const validProtocols = ['http:', 'https:'];
+      const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+      
+      if (!validProtocols.includes(urlObj.protocol)) return false;
+      
+      const pathname = urlObj.pathname.toLowerCase();
+      return validExtensions.some(ext => pathname.endsWith(ext));
+    } catch {
+      return false;
+    }
+  };
+
+  const imageSrc = isValidImageUrl(image) ? image.trim() : "/blog/article.png";
+  
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300 h-full flex flex-col">
       {/* Article Image */}
       <div className="mb-3 sm:mb-4">
         <Image
-          src={image}
+          src={imageSrc}
           alt={title}
           width={300}
           height={200}
