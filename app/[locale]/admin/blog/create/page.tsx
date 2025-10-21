@@ -46,14 +46,14 @@ export default function CreateBlogPage() {
         published: true
       };
 
-              const postId = await createBlogPost(blogPostData);
+      const postId = await createBlogPost(blogPostData);
 
-              if (postId) {
-                toast.success('Blog post created successfully!');
-                router.push(`/${locale}/dashboard/blog`);
-              } else {
-                toast.error(t('admin.blog.createError'));
-              }
+      if (postId) {
+        toast.success('Blog post created successfully!');
+        router.push(`/${locale}/admin/blog`);
+      } else {
+        toast.error(t('admin.blog.createError'));
+      }
     } catch (error) {
       console.error('Error creating blog post:', error);
       toast.error(t('admin.blog.createError'));
@@ -78,7 +78,7 @@ export default function CreateBlogPage() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center space-x-4">
-          <Link href={`/${locale}/dashboard/blog`}>
+          <Link href={`/${locale}/admin/blog`}>
             <Button variant="ghost" className="flex items-center space-x-2">
               <ArrowLeft className="w-4 h-4" />
               <span>{t('admin.blog.backToBlog')}</span>

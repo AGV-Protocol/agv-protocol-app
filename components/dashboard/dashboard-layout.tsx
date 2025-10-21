@@ -68,7 +68,7 @@ const navigation = [
   },
   {
     title: "Blog Management",
-    href: "/dashboard/blog",
+    href: "/admin/blog",
     icon: FileText,
   },
   // {

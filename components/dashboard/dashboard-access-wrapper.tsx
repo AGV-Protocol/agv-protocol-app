@@ -125,7 +125,7 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
         if (data) {
           setWho(data);
           // If user is authorized admin, grant access
-          if (data.isAdmin && data.isSuperAdmin) {
+          if (data.isAdmin || data.isSuperAdmin) {
             setAccessGranted(true);
           }
         }
