@@ -10,8 +10,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MediumEditor } from './medium-editor';
 import { 
-  Eye, 
-  EyeOff, 
   Send,
   Tag,
   User,

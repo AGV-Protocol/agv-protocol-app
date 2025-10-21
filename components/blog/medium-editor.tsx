@@ -178,7 +178,7 @@ export function MediumEditor({ content, onChange, placeholder = "Start writing..
       
       const idToken = await user.getIdToken();
       
-      const response = await fetch('/api/admin/upload-image', {
+      const response = await fetch('/api/admin/upload-featured-image', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${idToken}`,
