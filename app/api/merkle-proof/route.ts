@@ -3,6 +3,8 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+import { readFileSync, writeFileSync, existsSync } from 'fs';
+
 import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
@@ -107,12 +109,17 @@ Expected: ${MERKLE_ROOT_EXPECTED}
 async function isWalletWhitelisted(address: string): Promise<boolean> {
   try {
     const snapshot = await adminDb.collection('whitelisted_wallets')
-      .where('address', '==', address.toLowerCase())
       .where('status', '==', 'active')
-      .limit(1)
       .get();
-    
-    return !snapshot.empty;
+
+    const lowerAddr = address.toLowerCase();
+
+    const wallets = snapshot.docs.filter(doc => {
+      const data = doc.data();
+      return data.address?.toLowerCase() === lowerAddr ||
+        data.walletAddress?.toLowerCase() === lowerAddr;
+    });
+    return wallets.length > 0;
   } catch (error) {
     console.error('Error checking whitelist:', error);
     return false;
