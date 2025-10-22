@@ -221,6 +221,7 @@ const StakingModal = ({
   onGoToStaking,
   mintedNfts,
 }: StakingModalProps) => {
+  const { t } = useTranslations();
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'unset';
