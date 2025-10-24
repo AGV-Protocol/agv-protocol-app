@@ -23,7 +23,8 @@ import {
   LogOut,
   Menu,
   X,
-  Wallet
+  Wallet,
+  FileText
 } from "lucide-react"
 import { useTranslations } from "@/hooks/useTranslations"
 import { createLocalizedHref, isActiveNavItem } from "@/lib/locale-utils"
@@ -64,6 +65,11 @@ const navigation = [
     title: "Analytics",
     href: "/admin/analytics",
     icon: BarChart3,
+  },
+  {
+    title: "Blog Management",
+    href: "/admin/blog",
+    icon: FileText,
   },
   // {
   //   title: "Activity",

@@ -407,7 +407,11 @@
       "zealy": "Complete Tasks on Zealy",
       "taskon": "Join Community on TaskOn",
       "noXpData": "No XP Data",
-      "noXpDescription": "Complete community tasks to earn XP and boost your rewards"
+      "noXpDescription": "Complete community tasks to earn XP and boost your rewards",
+      "xpBoostActive": "XP Boost Active",
+      "xpBoostDescription": "Your XP increases your daily rGGP yield",
+      "updatePending": "Update Pending",
+      "upToDate": "Up to Date"
     },
     "leaderboard": {
       "title": "Top 100 Leaderboard",
@@ -416,7 +420,10 @@
       "rggp": "rGGP",
       "xp": "XP",
       "loading": "Loading leaderboard...",
-      "noData": "No leaderboard data available"
+      "noData": "No leaderboard data available",
+      "updated": "Updated",
+      "realTimeActive": "Real-time updates active",
+      "showingTop100": "Showing top 100 of all participants"
     },
     "nftSelector": {
       "title": "Select NFTs to Lock",
@@ -444,7 +451,10 @@
     },
     "refresh": {
       "refreshing": "Refreshing...",
-      "refreshData": "Refresh Data"
+      "refreshData": "Refresh Data",
+      "refresh": "Refresh",
+      "updating": "Updating...",
+      "updatingLeaderboard": "Updating leaderboard..."
     },
     "unlock": {
       "confirmSingle": "Are you sure you want to unlock this NFT? This will stop earning rewards.",
@@ -457,31 +467,37 @@
       "title": "Select Lock Tier First",
       "description": "Choose your lock tier before selecting NFTs to lock",
       "selectTier": "Select a lock tier to continue",
+      "tierDescription": "Higher lock periods provide better APR rewards. Choose carefully as you cannot change the tier once NFTs are locked.",
       "tierBenefits": {
         "flex": {
           "title": "Flexible Lock",
           "description": "No lock period, unlock anytime",
-          "apr": "Base APR"
+          "apr": "Base APR",
+          "duration": "No lock"
         },
         "1m": {
           "title": "1 Month Lock",
           "description": "Lock for 30 days, higher rewards",
-          "apr": "Enhanced APR"
+          "apr": "Enhanced APR",
+          "duration": "30 days"
         },
         "3m": {
           "title": "3 Month Lock",
           "description": "Lock for 90 days, maximum rewards",
-          "apr": "Maximum APR"
+          "apr": "Maximum APR",
+          "duration": "90 days"
         },
         "6m": {
           "title": "6 Month Lock",
           "description": "Lock for 180 days, premium rewards",
-          "apr": "Premium APR"
+          "apr": "Premium APR",
+          "duration": "180 days"
         },
         "12m": {
           "title": "12 Month Lock",
           "description": "Lock for 365 days, ultimate rewards",
-          "apr": "Ultimate APR"
+          "apr": "Ultimate APR",
+          "duration": "365 days"
         }
       }
     }
@@ -1083,6 +1099,17 @@
     }
   },
   "blog": {
+    "detail": {
+      "loading": "Loading blog post...",
+      "notFound": "Blog post not found",
+      "backToBlog": "Back to Blog",
+      "featured": "Featured",
+      "views": "views",
+      "tags": "Tags",
+      "enjoyedArticle": "Enjoyed this article?",
+      "newsletterDescription": "Stay updated with our latest posts and news",
+      "readMoreArticles": "Read More Articles"
+    },
     "hero": {
       "title": "INSIGHTS & UPDATES",
       "subtitle": "Discover insights into AI power trends, real-world asset developments, tokenomics research, and AGV community milestones. Our blog is where sustainable Web3 innovation meets practical knowledge, helping investors, builders, and partners stay ahead of the curve.."
@@ -1321,6 +1348,91 @@
     "additional": {
       "title": "Need More Information?",
       "description": "For general questions or if you're unsure which team to contact, please reach out to our general contact email. We'll make sure your inquiry reaches the right person."
+    }
+  },
+  "admin": {
+    "blog": {
+      "title": "Blog Management",
+      "subtitle": "Manage your blog posts and content",
+      "createNew": "Create New Post",
+      "backToBlog": "Back to Blog",
+      "createTitle": "Create New Blog Post",
+      "createSubtitle": "Write and publish a new blog post",
+      "editTitle": "Edit Blog Post",
+      "editSubtitle": "Update your blog post content",
+      "searchPlaceholder": "Search posts...",
+      "allCategories": "All Categories",
+      "allStatus": "All Status",
+      "published": "Published",
+      "draft": "Draft",
+      "featured": "Featured",
+      "views": "views",
+      "tags": "tags",
+      "noPosts": "No blog posts found",
+      "noPostsDescription": "Create your first blog post to get started",
+      "createFirst": "Create First Post",
+      "confirmDelete": "Are you sure you want to delete this blog post?",
+      "medium": {
+        "writeStory": "Write Story",
+        "editStory": "Edit Story",
+        "titlePlaceholder": "Title your story...",
+        "excerptPlaceholder": "What's this story about?",
+        "contentPlaceholder": "Tell your story...",
+        "preview": "Preview",
+        "hidePreview": "Hide Preview",
+        "settings": "Settings",
+        "saveDraft": "Save Draft",
+        "publishStory": "Publish Story",
+        "storySettings": "Story Settings",
+        "configureDetails": "Configure your story details",
+        "featuredImage": "Featured Image",
+        "imagePlaceholder": "Image URL",
+        "category": "Category",
+        "tags": "Tags",
+        "addTag": "Add",
+        "author": "Author",
+        "authorName": "Author name",
+        "authorEmail": "Author Email",
+        "authorEmailPlaceholder": "author@example.com",
+        "featuredStory": "Featured Story",
+        "previewTitle": "Preview",
+        "previewDescription": "How your story will appear",
+        "publishingTitle": "Publishing",
+        "status": "Status",
+        "visibility": "Visibility",
+        "public": "Public",
+        "yes": "Yes",
+        "dropImages": "Drop images here to upload"
+      },
+      "createError": "Failed to create blog post",
+      "updateError": "Failed to update blog post",
+      "saving": "Saving...",
+      "save": "Save Post",
+      "updating": "Updating...",
+      "update": "Update Post",
+      "showPreview": "Show Preview",
+      "hidePreview": "Hide Preview",
+      "preview": "Preview",
+      "form": {
+        "title": "Title",
+        "titlePlaceholder": "Enter blog post title",
+        "excerpt": "Excerpt",
+        "excerptPlaceholder": "Brief description of the post",
+        "content": "Content",
+        "contentPlaceholder": "Write your blog post content here...",
+        "contentHelp": "You can use HTML tags for formatting",
+        "featuredImage": "Featured Image URL",
+        "imagePlaceholder": "https://example.com/image.jpg",
+        "category": "Category",
+        "tags": "Tags",
+        "tagsPlaceholder": "tag1, tag2, tag3",
+        "author": "Author Name",
+        "authorPlaceholder": "Author name",
+        "authorEmail": "Author Email",
+        "emailPlaceholder": "author@example.com",
+        "publish": "Publish immediately",
+        "featured": "Mark as featured"
+      }
     }
   }
 }

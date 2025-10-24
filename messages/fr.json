@@ -364,7 +364,8 @@
     "whitelistRequired": "Liste blanche requise",
     "price": "Prix",
     "supply": "Fournir",
-    "remaining": "Restant"
+    "remaining": "Restant",
+    "loading": "Chargement de l'interface de frappe..."
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -1045,6 +1046,10 @@
       "rGGPExplained": {
         "title": "rGGP expliqué",
         "description": "Comment le protocole AGV transforme les rendements réels en récompenses"
+      },
+      "turningEveryUser": {
+        "title": "Protocole AGV",
+        "description": "Transformer chaque utilisateur en producteur de puissance d'IA"
       }
     }
   },
@@ -1249,5 +1254,154 @@
       "title": "Besoin de plus d'informations?",
       "description": "Pour toute question d'ordre général ou si vous ne savez pas quelle équipe contacter, veuillez utiliser notre adresse e-mail générale. Nous veillerons à ce que votre demande parvienne à la bonne personne."
     }
+  },
+  "vault": {
+    "connectWallet": {
+      "features": {
+        "title": "Une fois connecté, vous pourrez :",
+        "liveEarnings": "Consultez vos gains rGGP en direct",
+        "stakedPositions": "Consultez vos positions NFT jalonnées",
+        "trackXp": "Suivez votre XP et vos récompenses",
+        "leaderboard": "Comparez vos performances dans le classement"
+      },
+      "title": "Connectez votre portefeuille",
+      "description": "Connectez votre portefeuille pour afficher votre coffre-fort rGGP, vos NFT jalonnés et votre potentiel de gain."
+    },
+    "header": {
+      "wallet": "Portefeuille:",
+      "network": "Réseau:",
+      "lockTier": "Niveau de verrouillage :"
+    },
+    "liveCounter": {
+      "title": "Compteur rGGP en direct",
+      "accrued": "Accumulé",
+      "dailyYield": "Rendement journalier",
+      "perSecond": "Par seconde",
+      "lockTierCta": "Verrouiller le niveau pour un TAEG plus élevé",
+      "lockTierDescription": "Verrouillez vos NFT pour gagner jusqu'à 490 % de TAEG",
+      "unlockAll": "Débloquez tous les NFT",
+      "unlockAllDescription": "Cela arrêtera toutes les récompenses du coffre-fort"
+    },
+    "aprBars": {
+      "title": "Répartition du TAEG",
+      "real": "Réel",
+      "boost": "Booster",
+      "social": "Sociale",
+      "total": "TAEG total"
+    },
+    "positions": {
+      "title": "Vos NFT verrouillés",
+      "noNfts": "Aucun NFT mis en jeu",
+      "noNftsDescription": "Sélectionnez des NFT dans votre portefeuille pour commencer à gagner des récompenses de coffre-fort",
+      "claimRewards": "Réclamez vos récompenses (à venir)",
+      "unlockNft": "Débloquer le NFT",
+      "multiplier": "Multiplicateur",
+      "daysStaked": "Jours misés :",
+      "lockTier": "Niveau de verrouillage :"
+    },
+    "xpPanel": {
+      "title": "XP et récompenses sociales",
+      "currentXp": "XP actuel",
+      "lastUpdate": "Dernière mise à jour",
+      "earnMore": "Gagnez plus d'XP",
+      "zealy": "Accomplir des tâches sur Zealy",
+      "taskon": "Rejoignez la communauté sur TaskOn",
+      "noXpData": "Aucune donnée XP",
+      "noXpDescription": "Accomplissez des tâches communautaires pour gagner de l'XP et augmenter vos récompenses",
+      "xpBoostActive": "XP Boost actif",
+      "xpBoostDescription": "Votre XP augmente votre rendement quotidien en rGGP",
+      "updatePending": "Mise à jour en attente",
+      "upToDate": "À jour"
+    },
+    "leaderboard": {
+      "title": "Classement des 100 meilleurs",
+      "rank": "Rang",
+      "wallet": "Portefeuille",
+      "rggp": "rGGP",
+      "xp": "XP",
+      "loading": "Chargement du classement...",
+      "noData": "Aucune donnée de classement disponible",
+      "updated": "Mis à jour",
+      "realTimeActive": "Mises à jour en temps réel actives",
+      "showingTop100": "Affichage des 100 meilleurs de tous les participants"
+    },
+    "nftSelector": {
+      "title": "Sélectionnez les NFT à verrouiller",
+      "selected": "choisi",
+      "connectWallet": "Connectez votre portefeuille",
+      "connectDescription": "Connectez votre portefeuille pour afficher et sélectionner les NFT à verrouiller",
+      "loading": "Chargement de vos NFT",
+      "error": "Erreur lors du chargement des NFT",
+      "tryAgain": "Essayer à nouveau",
+      "noNfts": "Aucun NFT trouvé",
+      "noNftsDescription": "Vous n'avez aucun NFT AGV dans votre portefeuille. Créez votre premier NFT pour commencer à gagner des récompenses !",
+      "goToMint": "Accéder à la page Mint",
+      "lockNfts": "Verrouiller les NFT (à venir)",
+      "selectedForLocking": "sélectionné pour le verrouillage"
+    },
+    "warning": {
+      "title": "Les NFT enfermés dans un coffre-fort",
+      "important": "Important:",
+      "description": "Le NFT est verrouillé dans le coffre. Ne le transférez pas, sinon les récompenses cesseront. Utilisez « Déverrouiller » pour le retirer en toute sécurité.",
+      "lastValidation": "Dernière validation :",
+      "validateNow": "Valider maintenant"
+    },
+    "footer": {
+      "dataUpdates": "Les données sont mises à jour toutes les 60 secondes. XP est mis à jour dans l'heure suivant la fin de la tâche."
+    },
+    "refresh": {
+      "refreshing": "Rafraîchissant...",
+      "refreshData": "Actualiser les données",
+      "refresh": "Rafraîchir",
+      "updating": "Mise à jour...",
+      "updatingLeaderboard": "Mise à jour du classement..."
+    },
+    "unlock": {
+      "confirmSingle": "Voulez-vous vraiment débloquer ce NFT ? Vous ne gagnerez plus de récompenses.",
+      "confirmAll": "Voulez-vous vraiment débloquer tous les {count} NFT ? Cela annulera toutes les récompenses.",
+      "lockedUntil": "Verrouillé jusqu'à",
+      "cannotUnlockYet": "Impossible de déverrouiller encore",
+      "timeRemaining": "Temps restant"
+    },
+    "tierSelection": {
+      "tierBenefits": {
+        "flex": {
+          "title": "Serrure flexible",
+          "description": "Aucune période de verrouillage, déverrouillage à tout moment",
+          "apr": "TAEG de base",
+          "duration": "Pas de serrure"
+        },
+        "1m": {
+          "title": "1 mois de verrouillage",
+          "description": "Verrouillage pendant 30 jours, récompenses plus élevées",
+          "apr": "TAEG amélioré",
+          "duration": "30 jours"
+        },
+        "3m": {
+          "title": "Verrouillage de 3 mois",
+          "description": "Verrouillage pendant 90 jours, récompenses maximales",
+          "apr": "TAEG maximal",
+          "duration": "90 jours"
+        },
+        "6m": {
+          "title": "Verrouillage de 6 mois",
+          "description": "Verrouillage pendant 180 jours, récompenses premium",
+          "apr": "TAEG premium",
+          "duration": "180 jours"
+        },
+        "12m": {
+          "title": "Verrouillage de 12 mois",
+          "description": "Verrouillez pendant 365 jours, récompenses ultimes",
+          "apr": "TAEG ultime",
+          "duration": "365 jours"
+        }
+      },
+      "title": "Sélectionnez d'abord le niveau de verrouillage",
+      "description": "Choisissez votre niveau de verrouillage avant de sélectionner les NFT à verrouiller",
+      "selectTier": "Sélectionnez un niveau de verrouillage pour continuer",
+      "tierDescription": "Des périodes de blocage plus longues offrent de meilleurs TAEG. Choisissez avec soin, car vous ne pourrez pas changer de niveau une fois les NFT bloqués."
+    },
+    "title": "Coffre-fort rGGP",
+    "subtitle": "Gagnez des récompenses en verrouillant vos NFT et en accomplissant des tâches communautaires"
   }
 }

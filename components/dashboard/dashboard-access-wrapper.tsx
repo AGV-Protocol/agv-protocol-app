@@ -125,7 +125,7 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
         if (data) {
           setWho(data);
           // If user is authorized admin, grant access
-          if (data.isAdmin && data.isSuperAdmin) {
+          if (data.isAdmin || data.isSuperAdmin) {
             setAccessGranted(true);
           }
         }
@@ -138,7 +138,6 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
   // Auth actions
   const signInGoogle = async () => {
     try {
-      console.log("lggggggggggggggggin in")
       await signInWithPopup(auth, new GoogleAuthProvider());
       toast.success("Signed in with Google");
     } catch (e: unknown) {
