@@ -844,6 +844,7 @@ export default function ModernMintingInterface() {
     const currentGas = parseFloat(nativeData?.displayValue ?? "0");
     const minRequired = GAS_THRESHOLDS[selectedChain];
     const symbol = CHAINS[selectedChain].symbol;
+    console.log({currentGas, minRequired, symbol});
     return { currentGas, minRequired, isInsufficient: currentGas < minRequired, symbol };
   }, [nativeData?.displayValue, selectedChain, CHAINS]);
 
