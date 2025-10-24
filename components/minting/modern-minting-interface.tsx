@@ -85,6 +85,7 @@ const SpendingCapModal = ({
   tokenSymbol,
   networkFee,
 }: SpendingCapModalProps) => {
+  const { t } = useTranslations();
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'unset';
@@ -284,7 +285,7 @@ const StakingModal = ({
             </h4>
             {mintedNfts.map((nft, index) => (
               <div key={index} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                <span style={{ color: "#d1d5db", fontSize: "0.875rem" }}>{NFT_INFO[nft.type].name}</span>
+                <span style={{ color: "#d1d5db", fontSize: "0.875rem" }}>{globalNFT_INFO?.[nft.type]?.name || nft.type}</span>
                 <span style={{ color: "#fff", fontSize: "0.875rem", fontWeight: "semibold" }}>×{nft.quantity}</span>
               </div>
             ))}
@@ -348,6 +349,7 @@ const TransactionProgressModal = ({
   stage,
   onVerifyWallet,
 }: TransactionProgressModalProps) => {
+  const { t } = useTranslations();
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [showTimeoutOption, setShowTimeoutOption] = useState(false);
 
@@ -557,6 +559,9 @@ const createNftInfo = (t: (key: string) => string) => ({
   compute: { name: t('minting.nft.compute.name'), description: t('minting.nft.compute.description'), color: "bg-purple-500" },
 });
 
+// Global NFT_INFO for use in components
+let globalNFT_INFO: ReturnType<typeof createNftInfo> | null = null;
+
 /** Correct USDT decimals per chain (fallback) */
 const USDT_DECIMALS_FALLBACK: Record<ChainId, number> = {
   "56": 18,
@@ -574,6 +579,9 @@ export default function ModernMintingInterface() {
   
   // Create NFT info with translations
   const NFT_INFO = createNftInfo(t);
+  
+  // Set global NFT_INFO for use in other components
+  globalNFT_INFO = NFT_INFO;
   
   const account = useActiveAccount();
   const activeChain = useActiveWalletChain();          // current wallet network
@@ -1047,8 +1055,14 @@ export default function ModernMintingInterface() {
           kolId: fullKolId || null
         }));
       setMintResults(results); setShowSuccess(true);
-      await recordSuccessfulMintStrict(db, fullKolId, { address: account?.address!, nftType: currentSelectedType, quantity: currentQuantity, chainId: selectedChain as any, txHash: receipt?.transactionHash || txHash, timestamp: new Date(), mintType: "public" });
-      toast.success("Mint recorded successfully");
+      
+      // Record mint - only if there's a KOL ID, otherwise skip recording
+      if (fullKolId && fullKolId.trim()) {
+        await recordSuccessfulMintStrict(db, fullKolId, { address: account?.address!, nftType: currentSelectedType, quantity: currentQuantity, chainId: selectedChain as any, txHash: receipt?.transactionHash || txHash, timestamp: new Date(), mintType: "public" });
+        toast.success("Mint recorded successfully");
+      } else {
+        console.log("No KOL ID provided, skipping mint recording");
+      }
     } catch (error) {
       console.error("Error recording mint:", error);
       toast.error("NFT minted successfully");
