@@ -24,7 +24,9 @@ import {
   Menu,
   X,
   Wallet,
-  FileText
+  FileText,
+  ShoppingCart,
+  ChevronRight
 } from "lucide-react"
 import { useTranslations } from "@/hooks/useTranslations"
 import { createLocalizedHref, isActiveNavItem } from "@/lib/locale-utils"
@@ -71,16 +73,18 @@ const navigation = [
     href: "/admin/blog",
     icon: FileText,
   },
-  // {
-  //   title: "Activity",
-  //   href: "/admin/activity",
-  //   icon: Activity,
-  // },
-  // {
-  //   title: "Settings",
-  //   href: "/admin/settings",
-  //   icon: Settings,
-  // },
+  {
+    title: "Buypage Management",
+    href: "/admin/buypage",
+    icon: ShoppingCart,
+    children: [
+      { title: "Overview", href: "/admin/buypage" },
+      { title: "Purchases", href: "/admin/buypage/purchases" },
+      { title: "Users", href: "/admin/buypage/users" },
+      { title: "Rewards", href: "/admin/buypage/rewards" },
+      { title: "Purchase Events", href: "/admin/buypage/purchase-events" },
+    ],
+  },
 ]
 
 export function DashboardLayout({ 
@@ -92,11 +96,40 @@ export function DashboardLayout({
   const pathname = usePathname()
   const { locale } = useTranslations()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
+  const [expandedItems, setExpandedItems] = React.useState<Set<string>>(new Set())
   
   // Determine active navigation item using locale-aware logic
   const getActiveItem = (href: string) => {
     return isActiveNavItem(pathname, href)
   }
+
+  // Check if any child is active
+  const hasActiveChild = (item: typeof navigation[0]) => {
+    if (!item.children) return false
+    return item.children.some(child => isActiveNavItem(pathname, child.href))
+  }
+
+  // Toggle expanded state
+  const toggleExpanded = (href: string) => {
+    setExpandedItems(prev => {
+      const next = new Set(prev)
+      if (next.has(href)) {
+        next.delete(href)
+      } else {
+        next.add(href)
+      }
+      return next
+    })
+  }
+
+  // Auto-expand items with active children
+  React.useEffect(() => {
+    navigation.forEach(item => {
+      if (item.children && hasActiveChild(item)) {
+        setExpandedItems(prev => new Set(prev).add(item.href))
+      }
+    })
+  }, [pathname])
 
   // Close mobile menu when route changes
   React.useEffect(() => {
@@ -134,33 +167,79 @@ export function DashboardLayout({
         </div>
         
         {/* Mobile Sidebar Navigation */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {navigation.map((item) => {
-            const isActive = getActiveItem(item.href)
+            const isActive = getActiveItem(item.href) || hasActiveChild(item)
             const localizedHref = createLocalizedHref(item.href, locale)
+            const isExpanded = expandedItems.has(item.href)
+            const hasChildren = item.children && item.children.length > 0
+            
             return (
-              <Link
-                key={item.href}
-                href={localizedHref}
-                className={cn(
-                  "flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                  "hover:bg-primary/10 hover:text-primary",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                  {
-                    "bg-primary text-primary-foreground shadow-sm": isActive,
-                    "text-muted-foreground": !isActive,
-                  }
+              <div key={item.href} className="space-y-1">
+                <div className="flex items-center">
+                  <Link
+                    href={localizedHref}
+                    className={cn(
+                      "flex-1 flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                      "hover:bg-primary/10 hover:text-primary",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                      {
+                        "bg-primary text-primary-foreground shadow-sm": isActive && !hasChildren,
+                        "text-muted-foreground": !isActive,
+                      }
+                    )}
+                  >
+                    <item.icon className={cn(
+                      "h-4 w-4",
+                      {
+                        "text-primary-foreground": isActive,
+                        "text-muted-foreground": !isActive,
+                      }
+                    )} />
+                    <span>{item.title}</span>
+                  </Link>
+                  {hasChildren && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        toggleExpanded(item.href)
+                      }}
+                    >
+                      <ChevronRight className={cn(
+                        "h-4 w-4 transition-transform",
+                        isExpanded && "rotate-90"
+                      )} />
+                    </Button>
+                  )}
+                </div>
+                {hasChildren && isExpanded && (
+                  <div className="ml-4 space-y-1 border-l border-border pl-2">
+                    {item.children!.map((child) => {
+                      const childIsActive = isActiveNavItem(pathname, child.href)
+                      const childLocalizedHref = createLocalizedHref(child.href, locale)
+                      return (
+                        <Link
+                          key={child.href}
+                          href={childLocalizedHref}
+                          className={cn(
+                            "flex items-center space-x-2 rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200",
+                            "hover:bg-primary/10 hover:text-primary",
+                            {
+                              "bg-primary/20 text-primary": childIsActive,
+                              "text-muted-foreground": !childIsActive,
+                            }
+                          )}
+                        >
+                          <span>{child.title}</span>
+                        </Link>
+                      )
+                    })}
+                  </div>
                 )}
-              >
-                <item.icon className={cn(
-                  "h-4 w-4",
-                  {
-                    "text-primary-foreground": isActive,
-                    "text-muted-foreground": !isActive,
-                  }
-                )} />
-                <span>{item.title}</span>
-              </Link>
+              </div>
             )
           })}
         </nav>
@@ -178,33 +257,79 @@ export function DashboardLayout({
           </div>
           
           {/* Sidebar Navigation */}
-          <nav className="flex-1 p-4 space-y-2">
+          <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
             {navigation.map((item) => {
-              const isActive = getActiveItem(item.href)
+              const isActive = getActiveItem(item.href) || hasActiveChild(item)
               const localizedHref = createLocalizedHref(item.href, locale)
+              const isExpanded = expandedItems.has(item.href)
+              const hasChildren = item.children && item.children.length > 0
+              
               return (
-                <Link
-                  key={item.href}
-                  href={localizedHref}
-                  className={cn(
-                    "flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                    "hover:bg-primary/10 hover:text-primary",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                    {
-                      "bg-primary text-primary-foreground shadow-sm": isActive,
-                      "text-muted-foreground": !isActive,
-                    }
+                <div key={item.href} className="space-y-1">
+                  <div className="flex items-center">
+                    <Link
+                      href={localizedHref}
+                      className={cn(
+                        "flex-1 flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                        "hover:bg-primary/10 hover:text-primary",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                        {
+                          "bg-primary text-primary-foreground shadow-sm": isActive && !hasChildren,
+                          "text-muted-foreground": !isActive,
+                        }
+                      )}
+                    >
+                      <item.icon className={cn(
+                        "h-4 w-4",
+                        {
+                          "text-primary-foreground": isActive,
+                          "text-muted-foreground": !isActive,
+                        }
+                      )} />
+                      <span>{item.title}</span>
+                    </Link>
+                    {hasChildren && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          toggleExpanded(item.href)
+                        }}
+                      >
+                        <ChevronRight className={cn(
+                          "h-4 w-4 transition-transform",
+                          isExpanded && "rotate-90"
+                        )} />
+                      </Button>
+                    )}
+                  </div>
+                  {hasChildren && isExpanded && (
+                    <div className="ml-4 space-y-1 border-l border-border pl-2">
+                      {item.children!.map((child) => {
+                        const childIsActive = isActiveNavItem(pathname, child.href)
+                        const childLocalizedHref = createLocalizedHref(child.href, locale)
+                        return (
+                          <Link
+                            key={child.href}
+                            href={childLocalizedHref}
+                            className={cn(
+                              "flex items-center space-x-2 rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200",
+                              "hover:bg-primary/10 hover:text-primary",
+                              {
+                                "bg-primary/20 text-primary": childIsActive,
+                                "text-muted-foreground": !childIsActive,
+                              }
+                            )}
+                          >
+                            <span>{child.title}</span>
+                          </Link>
+                        )
+                      })}
+                    </div>
                   )}
-                >
-                  <item.icon className={cn(
-                    "h-4 w-4",
-                    {
-                      "text-primary-foreground": isActive,
-                      "text-muted-foreground": !isActive,
-                    }
-                  )} />
-                  <span>{item.title}</span>
-                </Link>
+                </div>
               )
             })}
           </nav>
