@@ -260,6 +260,7 @@ export default function AboutPage() {
             <Button
               size="lg"
               className="bg-[#4FACFE] hover:bg-[#223256]/90 text-white px-8 py-4 rounded-lg font-semibold text-lg flex items-center space-x-2 mx-auto transition-all duration-300"
+              onClick={() => window.open('https://drive.google.com/file/d/1C6Awj0-rDYUE3xzbEW_umCRWod-HUhwB/view', '_blank')}
             >
               <span>{t('about.cta.button') || 'Read Whitepaper'}</span>
               <ArrowRight className="w-5 h-5" />
