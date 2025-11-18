@@ -56,6 +56,7 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
 
   // Access state
   const [accessGranted, setAccessGranted] = useState(false);
+  const [authCheckComplete, setAuthCheckComplete] = useState(false);
 
   useEffect(() => setIsClient(true), []);
 
@@ -111,8 +112,10 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
   // Fetch server-verified role
   useEffect(() => {
     (async () => {
+      setAuthCheckComplete(false);
       if (!auth.currentUser) {
         setWho({ authed: false, email: null, isAdmin: false, isSuperAdmin: false });
+        setAuthCheckComplete(true);
         return;
       }
       try {
@@ -131,6 +134,8 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
         }
       } catch {
         setWho((s) => ({ ...s, isAdmin: false, isSuperAdmin: false }));
+      } finally {
+        setAuthCheckComplete(true);
       }
     })();
   }, [user?.uid]);
@@ -175,7 +180,7 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
 
 
   // Loading state
-  if (authLoading || !isClient) {
+  if (authLoading || !isClient || (user && !authCheckComplete)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size="lg" text="Loading dashboard..." />
@@ -246,7 +251,8 @@ export function DashboardAccessWrapper({ children }: DashboardAccessWrapperProps
   }
 
   // Access gate - show unauthorized message if user is authenticated but not authorized
-  if (!accessGranted) {
+  // Only show this after auth check is complete
+  if (authCheckComplete && !accessGranted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <Card className="w-full max-w-md">

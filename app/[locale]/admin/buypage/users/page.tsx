@@ -12,13 +12,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Copy, Search, X } from "lucide-react";
 
-type WhoAmI = {
-  authed: boolean;
-  email: string | null;
-  isAdmin: boolean;
-  isSuperAdmin: boolean;
-};
-
 interface User {
   id: string;
   address: string;
@@ -36,41 +29,14 @@ interface User {
 export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<User[]>([]);
-  const [who, setWho] = useState<WhoAmI>({
-    authed: false,
-    email: null,
-    isAdmin: false,
-    isSuperAdmin: false,
-  });
 
   // Filters
   const [addressFilter, setAddressFilter] = useState("");
   const [isActivatedFilter, setIsActivatedFilter] = useState<string>("");
 
-  // Fetch server-verified admin role
-  useEffect(() => {
-    (async () => {
-      if (!auth.currentUser) {
-        setWho({ authed: false, email: null, isAdmin: false, isSuperAdmin: false });
-        return;
-      }
-      try {
-        const idToken = await auth.currentUser.getIdToken(true);
-        const res = await fetch("/api/admin/whoami", {
-          headers: { Authorization: `Bearer ${idToken}` },
-          cache: "no-store",
-        });
-        const result = await res.json().catch(() => null);
-        if (result) setWho(result);
-      } catch {
-        setWho((s) => ({ ...s, isAdmin: false, isSuperAdmin: false }));
-      }
-    })();
-  }, []);
-
   // Fetch users
   const fetchUsers = async () => {
-    if (!auth.currentUser || !who.isAdmin) return;
+    if (!auth.currentUser) return;
 
     try {
       setLoading(true);
@@ -104,10 +70,8 @@ export default function UsersPage() {
   };
 
   useEffect(() => {
-    if (who.isAdmin) {
-      fetchUsers();
-    }
-  }, [who.isAdmin]);
+    fetchUsers();
+  }, []);
 
   const doSignOut = async () => {
     await auth.signOut();
@@ -136,25 +100,6 @@ export default function UsersPage() {
     setAddressFilter("");
     setIsActivatedFilter("");
   };
-
-  if (!who.isAdmin) {
-    return (
-      <DashboardLayout
-        user={{
-          email: auth.currentUser?.email,
-          name: auth.currentUser?.displayName,
-          avatar: auth.currentUser?.photoURL,
-        }}
-        onSignOut={doSignOut}
-      >
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <p className="text-muted-foreground">Unauthorized. Admin access required.</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
 
   return (
     <DashboardLayout
