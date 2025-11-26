@@ -79,6 +79,7 @@ const navigation = [
     icon: ShoppingCart,
     children: [
       { title: "Overview", href: "/admin/buypage" },
+      { title: "Activity Funnel", href: "/admin/buypage/funnel" },
       { title: "Purchases", href: "/admin/buypage/purchases" },
       { title: "Users", href: "/admin/buypage/users" },
       { title: "Rewards", href: "/admin/buypage/rewards" },
