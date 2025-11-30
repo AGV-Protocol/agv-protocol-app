@@ -85,6 +85,7 @@ const navigation = [
       { title: "Rewards", href: "/admin/buypage/rewards" },
       { title: "Purchase Events", href: "/admin/buypage/purchase-events" },
       { title: "Campaign Submissions", href: "/admin/buypage/campaign" },
+      { title: "Migration Tickets", href: "/admin/buypage/tickets" },
     ],
   },
 ]
