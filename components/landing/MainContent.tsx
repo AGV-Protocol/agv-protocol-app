@@ -218,7 +218,7 @@ export const MainContent: React.FC = () => {
                   <h4 className="text-lg font-semibold text-gray-800">{t('landing.getStarted.learnMore.title')}</h4>
                 </div>
                 <p className="text-gray-600 text-sm mb-4">{t('landing.getStarted.learnMore.description')}</p>
-                <Link href="/token">
+                <Link href="https://presale.agvprotocol.org/">
                   <Button className="w-full border border-[#223256] hover:bg-[#223256] hover:text-white text-[#223256] px-8 py-3 text-sm bg-white rounded-md">
                     {t('landing.getStarted.learnMore.button')}
                     <ArrowRight className="ml-2 h-4 w-4" />
