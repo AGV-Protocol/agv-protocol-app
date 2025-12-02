@@ -119,6 +119,18 @@ export function WalletProvider({ children }: WalletProviderProps) {
         const chainId = await window.ethereum.request({ method: "eth_chainId" });
         setChainId(chainId);
         
+        // Track wallet connection (non-blocking)
+        try {
+          await fetch('/api/wallet/connection', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ walletAddress: accounts[0] }),
+          });
+        } catch (error) {
+          console.error('Error tracking wallet connection:', error);
+          // Don't show error to user, connection still succeeded
+        }
+        
         toast.success("Wallet connected successfully", {
           description: `Connected to ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`
         });

@@ -54,6 +54,11 @@ const navigation = [
     icon: Users,
   },
   {
+    title: "Wallet Management",
+    href: "/admin/wallets",
+    icon: Wallet,
+  },
+  {
     title: "Wallet Whitelist",
     href: "/admin/whitelist",
     icon: Wallet,

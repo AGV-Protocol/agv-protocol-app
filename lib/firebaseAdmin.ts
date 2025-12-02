@@ -1,4 +1,20 @@
 // lib/firebaseAdmin.ts
+// Load environment variables first (for scripts that run outside Next.js)
+if (typeof require !== 'undefined') {
+  try {
+    const { config } = require('dotenv');
+    const path = require('path');
+    // Try loading .env from project root
+    const envPath = path.resolve(process.cwd(), '.env');
+    config({ path: envPath });
+    // Also try .env.local
+    const envLocalPath = path.resolve(process.cwd(), '.env.local');
+    config({ path: envLocalPath, override: false });
+  } catch (e) {
+    // dotenv might not be available in all environments, that's okay
+  }
+}
+
 import { getApps, initializeApp, cert, App } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";

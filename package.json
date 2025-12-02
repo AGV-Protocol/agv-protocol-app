@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "translate": "tsx scripts/translate-missing.ts"
+    "translate": "tsx scripts/translate-missing.ts",
+    "migrate-wallets": "tsx scripts/migrate-wallets-to-firebase.ts"
   },
   "dependencies": {
     "@formatjs/intl-localematcher": "^0.6.1",
