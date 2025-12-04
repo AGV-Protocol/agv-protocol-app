@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase-admin';
-import { requireAdmin } from '../../../_auth';
+import { requireAdmin } from '@/lib/auth';
 import { Timestamp } from 'firebase-admin/firestore';
 
 /**
