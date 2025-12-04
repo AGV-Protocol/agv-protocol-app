@@ -1,5 +1,6 @@
 import { adminDb } from './firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
+import { EarlyCircleWallet } from './early-circle-utils';
 
 export interface WalletMetadata {
   total_tx: number;
@@ -39,6 +40,7 @@ export interface WalletDocument {
     discordUsername: string | null;
     tasksCompleted: boolean;
   };
+  earlyCircle?: EarlyCircleWallet;
   createdAt: Date | Timestamp;
   updatedAt: Date | Timestamp;
   lastSyncedAt: Date | Timestamp;
@@ -131,6 +133,15 @@ export async function ensureWalletExists(
       discordUserId: null,
       discordUsername: null,
       tasksCompleted: false,
+    },
+    earlyCircle: {
+      isEarlyCircle: false,
+      addedAt: null,
+      addedBy: null,
+      isSuspicious: false,
+      suspiciousReason: null,
+      flaggedAt: null,
+      flaggedBy: null,
     },
     createdAt: now,
     updatedAt: now,
@@ -485,5 +496,8 @@ export async function fullSyncWallet(address: string): Promise<WalletDocument> {
   await categorizeWallet(normalizedAddress, wallet);
   return wallet;
 }
+
+
+
 
 
