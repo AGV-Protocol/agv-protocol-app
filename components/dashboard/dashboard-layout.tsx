@@ -106,6 +106,18 @@ const navigation = [
       { title: "Whitelist Management", href: "/admin/early-circle/whitelist" },
     ],
   },
+  {
+    title: "Agent Management",
+    href: "/admin/agents",
+    icon: UserCheck,
+    children: [
+      { title: "Overview", href: "/admin/agents" },
+      { title: "Allocations", href: "/admin/agents/allocations" },
+      { title: "Sales Targets", href: "/admin/agents/sales-targets" },
+      { title: "Lockups", href: "/admin/agents/lockups" },
+      { title: "Settlements", href: "/admin/agents/settlements" },
+    ],
+  },
 ]
 
 export function DashboardLayout({ 
