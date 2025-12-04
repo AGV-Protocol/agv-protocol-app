@@ -26,7 +26,10 @@ import {
   Wallet,
   FileText,
   ShoppingCart,
-  ChevronRight
+  ChevronRight,
+  Target,
+  List,
+  UserCheck
 } from "lucide-react"
 import { useTranslations } from "@/hooks/useTranslations"
 import { createLocalizedHref, isActiveNavItem } from "@/lib/locale-utils"
@@ -91,6 +94,16 @@ const navigation = [
       { title: "Purchase Events", href: "/admin/buypage/purchase-events" },
       { title: "Campaign Submissions", href: "/admin/buypage/campaign" },
       { title: "Migration Tickets", href: "/admin/buypage/tickets" },
+    ],
+  },
+  {
+    title: "Early Circle",
+    href: "/admin/early-circle",
+    icon: Target,
+    children: [
+      { title: "Overview", href: "/admin/early-circle" },
+      { title: "Cohort View", href: "/admin/early-circle/cohort" },
+      { title: "Whitelist Management", href: "/admin/early-circle/whitelist" },
     ],
   },
 ]
