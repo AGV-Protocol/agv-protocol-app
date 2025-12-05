@@ -45,12 +45,18 @@ export async function GET(req: NextRequest) {
       adminDb.collection("wallet_connections").get(),
     ]);
 
-    // Process analytics events (page visits)
+    // Process analytics events (page visits, drop-offs, errors)
     const analyticsEvents = analyticsEventsSnapshot.docs.map(doc => {
       const data = doc.data();
       return {
         eventType: data.eventType,
         timestamp: data.timestamp || (data.createdAt?.toDate?.()?.toISOString() || ''),
+        country: data.country || null,
+        region: data.region || null,
+        deviceType: data.deviceType || null,
+        hourOfDay: data.hourOfDay !== undefined ? data.hourOfDay : null,
+        timeOfDay: data.timeOfDay || null,
+        metadata: data.metadata || {},
       };
     });
 
@@ -87,6 +93,11 @@ export async function GET(req: NextRequest) {
       const data = doc.data();
       return {
         timestamp: data.timestamp || (data.createdAt?.toDate?.()?.toISOString() || ''),
+        country: data.country || null,
+        region: data.region || null,
+        deviceType: data.deviceType || null,
+        hourOfDay: data.hourOfDay !== undefined ? data.hourOfDay : null,
+        timeOfDay: data.timeOfDay || null,
       };
     });
 
@@ -137,6 +148,107 @@ export async function GET(req: NextRequest) {
     const stakesSuccessTotal = stakingEvents.length;
     const stakesSuccessToday = stakingEvents.filter(s => s.timestamp >= todayStartISO).length;
 
+    // Process claim events (success and failures)
+    const claimSuccessEvents = analyticsEvents.filter(e => e.eventType === 'claim_success');
+    const claimFailedEvents = analyticsEvents.filter(e => e.eventType === 'claim_failed');
+    
+    // Drop-off events
+    const claimDropoffs = analyticsEvents.filter(e => e.eventType === 'claim_dropoff');
+    const buyDropoffs = analyticsEvents.filter(e => e.eventType === 'buy_dropoff');
+    const stakingDropoffs = analyticsEvents.filter(e => e.eventType === 'staking_dropoff');
+
+    // Aggregate by country
+    const countryStats = new Map<string, { pageVisits: number; walletConnections: number; claimsSuccess: number; claimsFailed: number }>();
+    analyticsEvents.forEach(e => {
+      if (e.country) {
+        const stats = countryStats.get(e.country) || { pageVisits: 0, walletConnections: 0, claimsSuccess: 0, claimsFailed: 0 };
+        if (e.eventType === 'claim_page_visit' || e.eventType === 'buy_page_visit' || e.eventType === 'staking_page_visit') {
+          stats.pageVisits++;
+        }
+        if (e.eventType === 'claim_success') stats.claimsSuccess++;
+        if (e.eventType === 'claim_failed') stats.claimsFailed++;
+        countryStats.set(e.country, stats);
+      }
+    });
+    walletConnections.forEach(w => {
+      if (w.country) {
+        const stats = countryStats.get(w.country) || { pageVisits: 0, walletConnections: 0, claimsSuccess: 0, claimsFailed: 0 };
+        stats.walletConnections++;
+        countryStats.set(w.country, stats);
+      }
+    });
+
+    // Aggregate by device type
+    const deviceStats = new Map<string, { pageVisits: number; walletConnections: number; claimsSuccess: number; claimsFailed: number }>();
+    analyticsEvents.forEach(e => {
+      if (e.deviceType) {
+        const stats = deviceStats.get(e.deviceType) || { pageVisits: 0, walletConnections: 0, claimsSuccess: 0, claimsFailed: 0 };
+        if (e.eventType === 'claim_page_visit' || e.eventType === 'buy_page_visit' || e.eventType === 'staking_page_visit') {
+          stats.pageVisits++;
+        }
+        if (e.eventType === 'claim_success') stats.claimsSuccess++;
+        if (e.eventType === 'claim_failed') stats.claimsFailed++;
+        deviceStats.set(e.deviceType, stats);
+      }
+    });
+    walletConnections.forEach(w => {
+      if (w.deviceType) {
+        const stats = deviceStats.get(w.deviceType) || { pageVisits: 0, walletConnections: 0, claimsSuccess: 0, claimsFailed: 0 };
+        stats.walletConnections++;
+        deviceStats.set(w.deviceType, stats);
+      }
+    });
+
+    // Aggregate by time of day (hour)
+    const hourStats = new Map<number, { pageVisits: number; walletConnections: number; claimsSuccess: number; claimsFailed: number }>();
+    analyticsEvents.forEach(e => {
+      if (e.hourOfDay !== null) {
+        const stats = hourStats.get(e.hourOfDay) || { pageVisits: 0, walletConnections: 0, claimsSuccess: 0, claimsFailed: 0 };
+        if (e.eventType === 'claim_page_visit' || e.eventType === 'buy_page_visit' || e.eventType === 'staking_page_visit') {
+          stats.pageVisits++;
+        }
+        if (e.eventType === 'claim_success') stats.claimsSuccess++;
+        if (e.eventType === 'claim_failed') stats.claimsFailed++;
+        hourStats.set(e.hourOfDay, stats);
+      }
+    });
+    walletConnections.forEach(w => {
+      if (w.hourOfDay !== null) {
+        const stats = hourStats.get(w.hourOfDay) || { pageVisits: 0, walletConnections: 0, claimsSuccess: 0, claimsFailed: 0 };
+        stats.walletConnections++;
+        hourStats.set(w.hourOfDay, stats);
+      }
+    });
+
+    // Aggregate error codes
+    const errorCodeStats = new Map<string, number>();
+    claimFailedEvents.forEach(e => {
+      const errorCode = e.metadata?.errorCode || 'UNKNOWN';
+      errorCodeStats.set(errorCode, (errorCodeStats.get(errorCode) || 0) + 1);
+    });
+
+    // Calculate drop-off rates
+    const claimDropoffRate = claimPageVisitsTotal > 0 
+      ? (claimDropoffs.length / claimPageVisitsTotal) * 100 
+      : 0;
+    const buyDropoffRate = buyPageVisitsTotal > 0 
+      ? (buyDropoffs.length / buyPageVisitsTotal) * 100 
+      : 0;
+    const stakingDropoffRate = stakingPageVisitsTotal > 0 
+      ? (stakingDropoffs.length / stakingPageVisitsTotal) * 100 
+      : 0;
+
+    // Calculate conversion rates
+    const claimConversionRate = claimPageVisitsTotal > 0 
+      ? (claimsSuccessTotal / claimPageVisitsTotal) * 100 
+      : 0;
+    const walletConnectionRate = claimPageVisitsTotal > 0 
+      ? (walletsConnectedTotal / claimPageVisitsTotal) * 100 
+      : 0;
+    const activationRate = walletsConnectedTotal > 0 
+      ? (walletsActivatedTotal / walletsConnectedTotal) * 100 
+      : 0;
+
     return NextResponse.json({
       success: true,
       data: {
@@ -146,10 +258,18 @@ export async function GET(req: NextRequest) {
           walletsConnected: { today: walletsConnectedToday, total: walletsConnectedTotal },
           walletsActivated: { today: walletsActivatedToday, total: walletsActivatedTotal },
           claimsSuccess: { today: claimsSuccessToday, total: claimsSuccessTotal },
+          claimsFailed: { today: claimFailedEvents.filter(e => e.timestamp >= todayStartISO).length, total: claimFailedEvents.length },
+          dropoffs: { today: claimDropoffs.filter(e => e.timestamp >= todayStartISO).length, total: claimDropoffs.length },
+          dropoffRate: claimDropoffRate,
+          conversionRate: claimConversionRate,
+          walletConnectionRate: walletConnectionRate,
+          activationRate: activationRate,
         },
         buyFunnel: {
           buyPageVisits: { today: buyPageVisitsToday, total: buyPageVisitsTotal },
           purchasesSuccess: { today: purchasesSuccessToday, total: purchasesSuccessTotal },
+          dropoffs: { today: buyDropoffs.filter(e => e.timestamp >= todayStartISO).length, total: buyDropoffs.length },
+          dropoffRate: buyDropoffRate,
         },
         referrals: {
           referralPurchases: { today: referralPurchasesToday, total: referralPurchasesTotal },
@@ -157,7 +277,14 @@ export async function GET(req: NextRequest) {
         stakingFunnel: {
           stakingPageVisits: { today: stakingPageVisitsToday, total: stakingPageVisitsTotal },
           stakesSuccess: { today: stakesSuccessToday, total: stakesSuccessTotal },
+          dropoffs: { today: stakingDropoffs.filter(e => e.timestamp >= todayStartISO).length, total: stakingDropoffs.length },
+          dropoffRate: stakingDropoffRate,
         },
+        // New metrics
+        byCountry: Object.fromEntries(countryStats),
+        byDevice: Object.fromEntries(deviceStats),
+        byHour: Object.fromEntries(hourStats),
+        errorCodes: Object.fromEntries(errorCodeStats),
       },
     });
   } catch (error: any) {

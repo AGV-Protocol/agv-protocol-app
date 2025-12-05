@@ -14,7 +14,12 @@ import {
   ShoppingCart,
   Link2,
   Coins,
-  Eye
+  Eye,
+  XCircle,
+  Globe,
+  Monitor,
+  Clock,
+  AlertTriangle
 } from "lucide-react";
 
 interface FunnelMetric {
@@ -29,10 +34,18 @@ interface FunnelData {
     walletsConnected: FunnelMetric;
     walletsActivated: FunnelMetric;
     claimsSuccess: FunnelMetric;
+    claimsFailed?: FunnelMetric;
+    dropoffs?: FunnelMetric;
+    dropoffRate?: number;
+    conversionRate?: number;
+    walletConnectionRate?: number;
+    activationRate?: number;
   };
   buyFunnel: {
     buyPageVisits: FunnelMetric;
     purchasesSuccess: FunnelMetric;
+    dropoffs?: FunnelMetric;
+    dropoffRate?: number;
   };
   referrals: {
     referralPurchases: FunnelMetric;
@@ -40,7 +53,13 @@ interface FunnelData {
   stakingFunnel: {
     stakingPageVisits: FunnelMetric;
     stakesSuccess: FunnelMetric;
+    dropoffs?: FunnelMetric;
+    dropoffRate?: number;
   };
+  byCountry?: Record<string, { pageVisits: number; walletConnections: number; claimsSuccess: number; claimsFailed: number }>;
+  byDevice?: Record<string, { pageVisits: number; walletConnections: number; claimsSuccess: number; claimsFailed: number }>;
+  byHour?: Record<number, { pageVisits: number; walletConnections: number; claimsSuccess: number; claimsFailed: number }>;
+  errorCodes?: Record<string, number>;
 }
 
 function MetricRow({ 
@@ -161,8 +180,9 @@ export default function FunnelPage() {
             <LoadingSpinner />
           </div>
         ) : data ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Claim Funnel */}
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Claim Funnel */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -195,6 +215,48 @@ export default function FunnelPage() {
                   today={data.claimFunnel.claimsSuccess.today}
                   total={data.claimFunnel.claimsSuccess.total}
                 />
+                {data.claimFunnel.claimsFailed && (
+                  <MetricRow
+                    label="Claims Failed"
+                    icon={XCircle}
+                    today={data.claimFunnel.claimsFailed.today}
+                    total={data.claimFunnel.claimsFailed.total}
+                  />
+                )}
+                {data.claimFunnel.dropoffs && (
+                  <MetricRow
+                    label="Drop-offs"
+                    icon={AlertTriangle}
+                    today={data.claimFunnel.dropoffs.today}
+                    total={data.claimFunnel.dropoffs.total}
+                  />
+                )}
+                {data.claimFunnel.conversionRate !== undefined && (
+                  <div className="pt-2 border-t border-border">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Conversion Rate</span>
+                      <span className="text-sm font-semibold">{data.claimFunnel.conversionRate.toFixed(2)}%</span>
+                    </div>
+                    {data.claimFunnel.walletConnectionRate !== undefined && (
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-sm text-muted-foreground">Wallet Connection Rate</span>
+                        <span className="text-sm font-semibold">{data.claimFunnel.walletConnectionRate.toFixed(2)}%</span>
+                      </div>
+                    )}
+                    {data.claimFunnel.activationRate !== undefined && (
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-sm text-muted-foreground">Activation Rate</span>
+                        <span className="text-sm font-semibold">{data.claimFunnel.activationRate.toFixed(2)}%</span>
+                      </div>
+                    )}
+                    {data.claimFunnel.dropoffRate !== undefined && (
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-sm text-muted-foreground">Drop-off Rate</span>
+                        <span className="text-sm font-semibold text-red-500">{data.claimFunnel.dropoffRate.toFixed(2)}%</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -219,6 +281,22 @@ export default function FunnelPage() {
                   today={data.buyFunnel.purchasesSuccess.today}
                   total={data.buyFunnel.purchasesSuccess.total}
                 />
+                {data.buyFunnel.dropoffs && (
+                  <MetricRow
+                    label="Drop-offs"
+                    icon={AlertTriangle}
+                    today={data.buyFunnel.dropoffs.today}
+                    total={data.buyFunnel.dropoffs.total}
+                  />
+                )}
+                {data.buyFunnel.dropoffRate !== undefined && (
+                  <div className="pt-2 border-t border-border">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Drop-off Rate</span>
+                      <span className="text-sm font-semibold text-red-500">{data.buyFunnel.dropoffRate.toFixed(2)}%</span>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -261,9 +339,146 @@ export default function FunnelPage() {
                   today={data.stakingFunnel.stakesSuccess.today}
                   total={data.stakingFunnel.stakesSuccess.total}
                 />
+                {data.stakingFunnel.dropoffs && (
+                  <MetricRow
+                    label="Drop-offs"
+                    icon={AlertTriangle}
+                    today={data.stakingFunnel.dropoffs.today}
+                    total={data.stakingFunnel.dropoffs.total}
+                  />
+                )}
+                {data.stakingFunnel.dropoffRate !== undefined && (
+                  <div className="pt-2 border-t border-border">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Drop-off Rate</span>
+                      <span className="text-sm font-semibold text-red-500">{data.stakingFunnel.dropoffRate.toFixed(2)}%</span>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
-          </div>
+            </div>
+
+            {/* Additional Analytics Sections */}
+            {(data.byCountry || data.byDevice || data.byHour || data.errorCodes) && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              {/* Country Breakdown */}
+              {data.byCountry && Object.keys(data.byCountry).length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Globe className="h-5 w-5 text-blue-500" />
+                      By Country
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {Object.entries(data.byCountry)
+                        .sort((a, b) => (b[1].pageVisits + b[1].walletConnections) - (a[1].pageVisits + a[1].walletConnections))
+                        .slice(0, 10)
+                        .map(([country, stats]) => (
+                          <div key={country} className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
+                            <div>
+                              <p className="font-medium">{country}</p>
+                              <p className="text-xs text-muted-foreground">
+                                Visits: {stats.pageVisits} • Connections: {stats.walletConnections} • Claims: {stats.claimsSuccess}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Device Breakdown */}
+              {data.byDevice && Object.keys(data.byDevice).length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Monitor className="h-5 w-5 text-purple-500" />
+                      By Device Type
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {Object.entries(data.byDevice)
+                        .sort((a, b) => (b[1].pageVisits + b[1].walletConnections) - (a[1].pageVisits + a[1].walletConnections))
+                        .map(([device, stats]) => (
+                          <div key={device} className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
+                            <div>
+                              <p className="font-medium capitalize">{device}</p>
+                              <p className="text-xs text-muted-foreground">
+                                Visits: {stats.pageVisits} • Connections: {stats.walletConnections} • Claims: {stats.claimsSuccess}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Time of Day Distribution */}
+              {data.byHour && Object.keys(data.byHour).length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Clock className="h-5 w-5 text-amber-500" />
+                      By Hour (UTC)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {Array.from({ length: 24 }, (_, i) => i)
+                        .filter(hour => data.byHour![hour])
+                        .map(hour => {
+                          const stats = data.byHour![hour];
+                          return (
+                            <div key={hour} className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
+                              <div>
+                                <p className="font-medium">{hour}:00 UTC</p>
+                                <p className="text-xs text-muted-foreground">
+                                  Visits: {stats.pageVisits} • Connections: {stats.walletConnections} • Claims: {stats.claimsSuccess}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Error Codes */}
+              {data.errorCodes && Object.keys(data.errorCodes).length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5 text-red-500" />
+                      Error Codes
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {Object.entries(data.errorCodes)
+                        .sort((a, b) => b[1] - a[1])
+                        .map(([errorCode, count]) => (
+                          <div key={errorCode} className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
+                            <div>
+                              <p className="font-medium">{errorCode}</p>
+                              <p className="text-xs text-muted-foreground">{count} occurrence{count !== 1 ? 's' : ''}</p>
+                            </div>
+                            <span className="text-sm font-semibold text-red-500">{count}</span>
+                          </div>
+                        ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+            )}
+          </>
         ) : (
           <div className="flex items-center justify-center h-64">
             <p className="text-muted-foreground">No data available</p>
