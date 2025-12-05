@@ -24,7 +24,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Copy, ExternalLink, Search, X, UserCheck, UserCog } from "lucide-react";
+import { Copy, ExternalLink, Search, X, UserCheck, UserCog, Pencil } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 interface AgentAllocation {
   id: string;
@@ -54,6 +63,16 @@ export default function AllocationsPage() {
   const [filteredAllocations, setFilteredAllocations] = useState<AllocationWithKol[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [levelFilter, setLevelFilter] = useState<string>("all");
+  const [editingAllocation, setEditingAllocation] = useState<AllocationWithKol | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    wallet: "",
+    preGVTAllocated: "",
+    sGVTAllocated: "",
+    agentLevel: "1" as "1" | "2",
+    masterWallet: "",
+  });
 
   const fetchAllocations = async () => {
     if (!auth.currentUser) return;
@@ -129,6 +148,97 @@ export default function AllocationsPage() {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard");
+  };
+
+  const handleEditClick = (allocation: AllocationWithKol) => {
+    setEditingAllocation(allocation);
+    setEditFormData({
+      wallet: allocation.allocation.wallet,
+      preGVTAllocated: allocation.allocation.preGVTAllocated.toString(),
+      sGVTAllocated: allocation.allocation.sGVTAllocated.toString(),
+      agentLevel: allocation.allocation.agentLevel.toString() as "1" | "2",
+      masterWallet: allocation.allocation.masterWallet || "",
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateAllocation = async () => {
+    if (!editingAllocation) return;
+
+    if (!editFormData.wallet || !editFormData.wallet.startsWith('0x') || editFormData.wallet.length !== 42) {
+      toast.error("Valid wallet address is required (0x...)");
+      return;
+    }
+
+    if (!editFormData.preGVTAllocated || !editFormData.sGVTAllocated) {
+      toast.error("preGVT and sGVT allocations are required");
+      return;
+    }
+
+    if (editFormData.agentLevel === "2" && !editFormData.masterWallet) {
+      toast.error("Master wallet is required for Sub-Agents");
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+      const idToken = await auth.currentUser?.getIdToken(true);
+      if (!idToken) {
+        toast.error("Not authenticated");
+        return;
+      }
+
+      const updates: any = {
+        preGVTAllocated: parseFloat(editFormData.preGVTAllocated),
+        sGVTAllocated: parseFloat(editFormData.sGVTAllocated),
+      };
+
+      // Only include wallet if it changed
+      if (editFormData.wallet.toLowerCase() !== editingAllocation.allocation.wallet.toLowerCase()) {
+        updates.wallet = editFormData.wallet;
+      }
+
+      // Only include agentLevel if it changed
+      if (parseInt(editFormData.agentLevel) !== editingAllocation.allocation.agentLevel) {
+        updates.agentLevel = parseInt(editFormData.agentLevel);
+      }
+
+      // Only include masterWallet if it changed or if level is 2
+      if (editFormData.agentLevel === "2") {
+        if (editFormData.masterWallet !== editingAllocation.allocation.masterWallet) {
+          updates.masterWallet = editFormData.masterWallet;
+        }
+      }
+
+      const res = await fetch("/api/admin/agents/allocations/update", {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          allocationId: editingAllocation.allocation.id,
+          updates,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        toast.success("Allocation updated successfully");
+        setIsEditDialogOpen(false);
+        setEditingAllocation(null);
+        // Refresh allocations list
+        fetchAllocations();
+      } else {
+        throw new Error(result.error || "Failed to update allocation");
+      }
+    } catch (error: any) {
+      console.error("Error updating allocation:", error);
+      toast.error("Failed to update allocation", { description: error.message });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const totals = allocations.reduce(
@@ -263,7 +373,7 @@ export default function AllocationsPage() {
                       <TableHead>Agent</TableHead>
                       <TableHead>Level</TableHead>
                       <TableHead>Wallet</TableHead>
-                      <TableHead>KOL ID / RefCode</TableHead>
+                      <TableHead>KOL ID</TableHead>
                       <TableHead>preGVT</TableHead>
                       <TableHead>sGVT</TableHead>
                       <TableHead>Master</TableHead>
@@ -345,10 +455,19 @@ export default function AllocationsPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
+                                onClick={() => handleEditClick(item)}
+                                title="Edit allocation"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => {
                                   const url = `https://bscscan.com/address/${item.allocation.wallet}`;
                                   window.open(url, "_blank");
                                 }}
+                                title="View on BSCScan"
                               >
                                 <ExternalLink className="h-4 w-4" />
                               </Button>
@@ -363,6 +482,95 @@ export default function AllocationsPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* Edit Allocation Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Allocation</DialogTitle>
+              <DialogDescription>
+                Update allocation amounts and agent level. Changes will be reflected in the allocation record.
+              </DialogDescription>
+            </DialogHeader>
+            {editingAllocation && (
+              <div className="space-y-4 py-4">
+                <div>
+                  <Label htmlFor="edit-wallet">Wallet Address *</Label>
+                  <Input
+                    id="edit-wallet"
+                    value={editFormData.wallet}
+                    onChange={(e) => setEditFormData({ ...editFormData, wallet: e.target.value })}
+                    placeholder="0x..."
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Must be a valid Ethereum address (0x followed by 40 hex characters)
+                  </p>
+                </div>
+                <div>
+                  <Label htmlFor="edit-preGVT">preGVT Allocated *</Label>
+                  <Input
+                    id="edit-preGVT"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={editFormData.preGVTAllocated}
+                    onChange={(e) => setEditFormData({ ...editFormData, preGVTAllocated: e.target.value })}
+                    placeholder="100000"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-sGVT">sGVT Allocated *</Label>
+                  <Input
+                    id="edit-sGVT"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={editFormData.sGVTAllocated}
+                    onChange={(e) => setEditFormData({ ...editFormData, sGVTAllocated: e.target.value })}
+                    placeholder="1000"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-agentLevel">Agent Level *</Label>
+                  <Select
+                    value={editFormData.agentLevel}
+                    onValueChange={(value: "1" | "2") => setEditFormData({ ...editFormData, agentLevel: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Level-1 (Master Agent)</SelectItem>
+                      <SelectItem value="2">Level-2 (Sub-Agent)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {editFormData.agentLevel === "2" && (
+                  <div>
+                    <Label htmlFor="edit-masterWallet">Master Agent Wallet *</Label>
+                    <Input
+                      id="edit-masterWallet"
+                      value={editFormData.masterWallet}
+                      onChange={(e) => setEditFormData({ ...editFormData, masterWallet: e.target.value })}
+                      placeholder="0x... (Master Agent wallet)"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Wallet address of the Master Agent (Level-1)
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleUpdateAllocation} disabled={isUpdating}>
+                {isUpdating ? "Updating..." : "Update Allocation"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );

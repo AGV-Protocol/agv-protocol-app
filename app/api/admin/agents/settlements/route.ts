@@ -188,10 +188,17 @@ export async function GET(request: NextRequest) {
 
     // Sort in memory: by period (desc), then by createdAt (desc)
     const settlements = (settlementsSnapshot.docs
-      .map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as WeeklySettlement[])
+      .map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt || null,
+          updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt || null,
+          verifiedAt: data.verifiedAt?.toDate?.()?.toISOString() || data.verifiedAt || null,
+          paidAt: data.paidAt?.toDate?.()?.toISOString() || data.paidAt || null,
+        };
+      }) as WeeklySettlement[])
       .sort((a, b) => {
         // First sort by period (descending)
         if (a.period !== b.period) {

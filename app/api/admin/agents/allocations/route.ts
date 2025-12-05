@@ -41,9 +41,13 @@ export async function GET(request: NextRequest) {
       }
 
       const allocationDoc = allocationQuery.docs[0];
+      const allocationData = allocationDoc.data();
       const allocation = {
         id: allocationDoc.id,
-        ...allocationDoc.data(),
+        ...allocationData,
+        allocatedAt: allocationData.allocatedAt?.toDate?.()?.toISOString() || allocationData.allocatedAt || null,
+        createdAt: allocationData.createdAt?.toDate?.()?.toISOString() || allocationData.createdAt || null,
+        updatedAt: allocationData.updatedAt?.toDate?.()?.toISOString() || allocationData.updatedAt || null,
       } as AgentAllocation;
 
       // Get KOL profile info
@@ -51,9 +55,12 @@ export async function GET(request: NextRequest) {
       if (allocation.kolId) {
         const kolDoc = await adminDb.collection('kol_profiles').doc(allocation.kolId).get();
         if (kolDoc.exists) {
+          const kolData = kolDoc.data();
           kolProfile = {
             id: kolDoc.id,
-            ...kolDoc.data(),
+            displayName: kolData?.displayName,
+            refCode: kolData?.refCode,
+            email: kolData?.email,
           };
         }
       }
@@ -72,13 +79,18 @@ export async function GET(request: NextRequest) {
       query = query.where('agentLevel', '==', parseInt(agentLevel));
     }
 
-    const allocationsSnapshot = await query.orderBy('allocatedAt', 'desc').get();
+    // Fetch without orderBy to avoid composite index requirement
+    const allocationsSnapshot = await query.get();
 
     const allocations = await Promise.all(
       allocationsSnapshot.docs.map(async (doc) => {
+        const allocationData = doc.data();
         const allocation = {
           id: doc.id,
-          ...doc.data(),
+          ...allocationData,
+          allocatedAt: allocationData.allocatedAt?.toDate?.()?.toISOString() || allocationData.allocatedAt || null,
+          createdAt: allocationData.createdAt?.toDate?.()?.toISOString() || allocationData.createdAt || null,
+          updatedAt: allocationData.updatedAt?.toDate?.()?.toISOString() || allocationData.updatedAt || null,
         } as AgentAllocation;
 
         // Get KOL profile info
@@ -86,11 +98,12 @@ export async function GET(request: NextRequest) {
         if (allocation.kolId) {
           const kolDoc = await adminDb.collection('kol_profiles').doc(allocation.kolId).get();
           if (kolDoc.exists) {
+            const kolData = kolDoc.data();
             kolProfile = {
               id: kolDoc.id,
-              displayName: kolDoc.data()?.displayName,
-              refCode: kolDoc.data()?.refCode,
-              email: kolDoc.data()?.email,
+              displayName: kolData?.displayName,
+              refCode: kolData?.refCode,
+              email: kolData?.email,
             };
           }
         }
@@ -101,6 +114,13 @@ export async function GET(request: NextRequest) {
         };
       })
     );
+
+    // Sort in memory by allocatedAt (descending)
+    allocations.sort((a, b) => {
+      const aDate = a.allocation.allocatedAt ? new Date(a.allocation.allocatedAt).getTime() : 0;
+      const bDate = b.allocation.allocatedAt ? new Date(b.allocation.allocatedAt).getTime() : 0;
+      return bDate - aDate;
+    });
 
     // Calculate totals
     const totals = allocations.reduce(

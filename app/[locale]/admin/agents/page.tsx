@@ -26,7 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Copy, Plus } from "lucide-react";
+import { Copy, Plus, Pencil } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -99,6 +99,15 @@ export default function AgentsPage() {
     agentLevel: "1" as "1" | "2",
     masterWallet: "",
   });
+  const [editingAgent, setEditingAgent] = useState<AgentInfo | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    email: "",
+    agentLevel: "1" as "1" | "2",
+    masterWallet: "",
+  });
 
   const fetchStats = async () => {
     if (!auth.currentUser) return;
@@ -111,18 +120,36 @@ export default function AgentsPage() {
       const allocationsRes = await fetch("/api/admin/agents/allocations", {
         headers: { Authorization: `Bearer ${idToken}` },
       });
+      
+      if (!allocationsRes.ok) {
+        const errorText = await allocationsRes.text();
+        throw new Error(`Allocations API error: ${allocationsRes.status} - ${errorText}`);
+      }
+      
       const allocationsData = await allocationsRes.json();
 
       // Fetch sales targets
       const targetsRes = await fetch("/api/admin/agents/sales-targets", {
         headers: { Authorization: `Bearer ${idToken}` },
       });
+      
+      if (!targetsRes.ok) {
+        const errorText = await targetsRes.text();
+        throw new Error(`Sales targets API error: ${targetsRes.status} - ${errorText}`);
+      }
+      
       const targetsData = await targetsRes.json();
 
       // Fetch settlements
       const settlementsRes = await fetch("/api/admin/agents/settlements?status=pending", {
         headers: { Authorization: `Bearer ${idToken}` },
       });
+      
+      if (!settlementsRes.ok) {
+        const errorText = await settlementsRes.text();
+        throw new Error(`Settlements API error: ${settlementsRes.status} - ${errorText}`);
+      }
+      
       const settlementsData = await settlementsRes.json();
 
       if (allocationsData.success) {
@@ -171,7 +198,17 @@ export default function AgentsPage() {
 
   const getReferralLink = (kolId: string) => {
     if (!kolId) return null;
-    return `https://presale.agvprotocol.org/buy?ref=${kolId}`;
+    // Extract 6-digit refCode from KOL ID (e.g., "AGV-KOL149154" -> "149154")
+    const match = kolId.match(/AGV-KOL(\d{6})/);
+    if (match && match[1]) {
+      return `https://presale.agvprotocol.org/buy/${match[1]}`;
+    }
+    // Fallback: try to extract any 6-digit number
+    const fallbackMatch = kolId.match(/(\d{6})/);
+    if (fallbackMatch && fallbackMatch[1]) {
+      return `https://presale.agvprotocol.org/buy/${fallbackMatch[1]}`;
+    }
+    return null;
   };
 
   const copyToClipboard = (text: string, type: string) => {
@@ -255,6 +292,86 @@ export default function AgentsPage() {
       toast.error("Failed to add agent", { description: error.message });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleEditClick = (agent: AgentInfo) => {
+    setEditingAgent(agent);
+    setEditFormData({
+      name: agent.kolProfile?.displayName || "",
+      email: agent.kolProfile?.email || "",
+      agentLevel: agent.allocation.agentLevel.toString() as "1" | "2",
+      masterWallet: agent.allocation.masterWallet || "",
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateAgent = async () => {
+    if (!editingAgent) return;
+
+    if (!editFormData.name) {
+      toast.error("Name is required");
+      return;
+    }
+
+    if (editFormData.agentLevel === "2" && !editFormData.masterWallet) {
+      toast.error("Master wallet is required for Sub-Agents");
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+      const idToken = await auth.currentUser?.getIdToken(true);
+      if (!idToken) {
+        toast.error("Not authenticated");
+        return;
+      }
+
+      const updates: any = {
+        displayName: editFormData.name,
+        email: editFormData.email || "",
+      };
+
+      // Only include agentLevel if it changed
+      if (parseInt(editFormData.agentLevel) !== editingAgent.allocation.agentLevel) {
+        updates.agentLevel = parseInt(editFormData.agentLevel);
+      }
+
+      // Only include masterWallet if it changed or if level is 2
+      if (editFormData.agentLevel === "2") {
+        if (editFormData.masterWallet !== editingAgent.allocation.masterWallet) {
+          updates.masterWallet = editFormData.masterWallet;
+        }
+      }
+
+      const res = await fetch("/api/admin/agents/update", {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          wallet: editingAgent.allocation.wallet,
+          updates,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        toast.success("Agent updated successfully");
+        setIsEditDialogOpen(false);
+        setEditingAgent(null);
+        // Refresh stats and agents list
+        fetchStats();
+      } else {
+        throw new Error(result.error || "Failed to update agent");
+      }
+    } catch (error: any) {
+      console.error("Error updating agent:", error);
+      toast.error("Failed to update agent", { description: error.message });
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -357,6 +474,90 @@ export default function AgentsPage() {
                 </Button>
                 <Button onClick={handleAddAgent} disabled={isSubmitting}>
                   {isSubmitting ? "Adding..." : "Add Agent"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Edit Agent Dialog */}
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Agent</DialogTitle>
+                <DialogDescription>
+                  Update agent information. Changes will be reflected in the KOL profile and allocation.
+                </DialogDescription>
+              </DialogHeader>
+              {editingAgent && (
+                <div className="space-y-4 py-4">
+                  <div>
+                    <Label htmlFor="edit-wallet">Wallet Address</Label>
+                    <Input
+                      id="edit-wallet"
+                      value={editingAgent.allocation.wallet}
+                      disabled
+                      className="bg-muted"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Wallet address cannot be changed
+                    </p>
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-name">Name *</Label>
+                    <Input
+                      id="edit-name"
+                      value={editFormData.name}
+                      onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                      placeholder="Agent Name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-email">Email</Label>
+                    <Input
+                      id="edit-email"
+                      type="email"
+                      value={editFormData.email}
+                      onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                      placeholder="agent@example.com"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-agentLevel">Agent Level *</Label>
+                    <Select
+                      value={editFormData.agentLevel}
+                      onValueChange={(value: "1" | "2") => setEditFormData({ ...editFormData, agentLevel: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">Level-1 (Master Agent)</SelectItem>
+                        <SelectItem value="2">Level-2 (Sub-Agent)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {editFormData.agentLevel === "2" && (
+                    <div>
+                      <Label htmlFor="edit-masterWallet">Master Agent Wallet *</Label>
+                      <Input
+                        id="edit-masterWallet"
+                        value={editFormData.masterWallet}
+                        onChange={(e) => setEditFormData({ ...editFormData, masterWallet: e.target.value })}
+                        placeholder="0x... (Master Agent wallet)"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Wallet address of the Master Agent (Level-1)
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleUpdateAgent} disabled={isUpdating}>
+                  {isUpdating ? "Updating..." : "Update Agent"}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -504,12 +705,13 @@ export default function AgentsPage() {
                         <TableHead>preGVT</TableHead>
                         <TableHead>sGVT</TableHead>
                         <TableHead>Master</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {agents.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                          <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                             No agents found
                           </TableCell>
                         </TableRow>
@@ -608,6 +810,16 @@ export default function AgentsPage() {
                               ) : (
                                 <span className="text-muted-foreground">—</span>
                               )}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEditClick(item)}
+                                title="Edit agent"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))

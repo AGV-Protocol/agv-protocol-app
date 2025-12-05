@@ -78,9 +78,12 @@ export async function GET(request: NextRequest) {
       }
 
       const targetDoc = targetQuery.docs[0];
+      const targetData = targetDoc.data();
       const target = {
         id: targetDoc.id,
-        ...targetDoc.data(),
+        ...targetData,
+        setAt: targetData.setAt?.toDate?.()?.toISOString() || targetData.setAt || null,
+        updatedAt: targetData.updatedAt?.toDate?.()?.toISOString() || targetData.updatedAt || null,
       } as AgentSalesTarget;
 
       // Recalculate actual sales
@@ -113,13 +116,17 @@ export async function GET(request: NextRequest) {
       query = query.where('wallet', '==', wallet.toLowerCase());
     }
 
-    const targetsSnapshot = await query.orderBy('setAt', 'desc').get();
+    // Fetch without orderBy to avoid composite index requirement
+    const targetsSnapshot = await query.get();
 
     const targets = await Promise.all(
       targetsSnapshot.docs.map(async (doc) => {
+        const targetData = doc.data();
         const target = {
           id: doc.id,
-          ...doc.data(),
+          ...targetData,
+          setAt: targetData.setAt?.toDate?.()?.toISOString() || targetData.setAt || null,
+          updatedAt: targetData.updatedAt?.toDate?.()?.toISOString() || targetData.updatedAt || null,
         } as AgentSalesTarget;
 
         // Recalculate actual sales
@@ -144,6 +151,13 @@ export async function GET(request: NextRequest) {
         };
       })
     );
+
+    // Sort in memory by setAt (descending)
+    targets.sort((a, b) => {
+      const aDate = a.setAt ? new Date(a.setAt).getTime() : 0;
+      const bDate = b.setAt ? new Date(b.setAt).getTime() : 0;
+      return bDate - aDate;
+    });
 
     return NextResponse.json({
       success: true,
