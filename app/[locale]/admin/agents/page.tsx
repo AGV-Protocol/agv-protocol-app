@@ -169,6 +169,16 @@ export default function AgentsPage() {
     return new Intl.NumberFormat("en-US").format(num);
   };
 
+  const getReferralLink = (kolId: string) => {
+    if (!kolId) return null;
+    return `https://presale.agvprotocol.org/buy?ref=${kolId}`;
+  };
+
+  const copyToClipboard = (text: string, type: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${type} copied to clipboard`);
+  };
+
   const achievementRate = stats.totalSalesTarget > 0 
     ? (stats.totalActualSales / stats.totalSalesTarget) * 100 
     : 0;
@@ -490,6 +500,7 @@ export default function AgentsPage() {
                         <TableHead>Level</TableHead>
                         <TableHead>Wallet</TableHead>
                         <TableHead>KOL ID</TableHead>
+                        <TableHead>Referral Links</TableHead>
                         <TableHead>preGVT</TableHead>
                         <TableHead>sGVT</TableHead>
                         <TableHead>Master</TableHead>
@@ -498,7 +509,7 @@ export default function AgentsPage() {
                     <TableBody>
                       {agents.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                          <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                             No agents found
                           </TableCell>
                         </TableRow>
@@ -556,6 +567,32 @@ export default function AgentsPage() {
                               ) : (
                                 <span className="text-muted-foreground">—</span>
                               )}
+                            </TableCell>
+                            <TableCell>
+                              {(() => {
+                                const kolId = item.kolProfile?.id || item.allocation.kolId;
+                                if (!kolId) return <span className="text-muted-foreground">—</span>;
+                                
+                                const referralLink = getReferralLink(kolId);
+                                if (!referralLink) return <span className="text-muted-foreground">—</span>;
+                                
+                                return (
+                                  <div className="flex items-center gap-1 min-w-[200px]">
+                                    <code className="text-xs bg-muted px-1.5 py-0.5 rounded flex-1 truncate">
+                                      {referralLink}
+                                    </code>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0"
+                                      onClick={() => copyToClipboard(referralLink, "Referral link")}
+                                      title="Copy referral link"
+                                    >
+                                      <Copy className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                );
+                              })()}
                             </TableCell>
                             <TableCell>
                               <div className="font-medium">{formatNumber(item.allocation.preGVTAllocated)}</div>
