@@ -1,5 +1,7 @@
 // Load environment variables FIRST using require (synchronous, before ES module imports)
 // This ensures env vars are loaded before any modules that use them are evaluated
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const path = require('path');
 const { config } = require('dotenv');
 
@@ -99,14 +101,14 @@ async function migrateWalletsToFirebase() {
             syncWalletFromWhitelists(address).catch(err => {
               if (isIndexError(err)) {
                 // Index missing - log but continue
-                console.warn(`  ⚠️  Index missing for whitelist sync (wallet: ${address.substring(0, 10)}...)`);
+                console.warn(`  ??  Index missing for whitelist sync (wallet: ${address.substring(0, 10)}...)`);
               } else {
                 throw err;
               }
             }),
             syncWalletFromUsers(address).catch(err => {
               if (isIndexError(err)) {
-                console.warn(`  ⚠️  Index missing for user sync (wallet: ${address.substring(0, 10)}...)`);
+                console.warn(`  ??  Index missing for user sync (wallet: ${address.substring(0, 10)}...)`);
               } else {
                 throw err;
               }
@@ -154,12 +156,12 @@ async function migrateWalletsToFirebase() {
       }
     }
     
-    console.log(`\n✅ Migration completed!`);
+    console.log(`\n? Migration completed!`);
     console.log(`   Processed: ${processed} wallets`);
     console.log(`   Errors: ${errors} wallets`);
     
     if (errors > 0) {
-      console.log(`\n⚠️  Note: Some wallets encountered errors.`);
+      console.log(`\n??  Note: Some wallets encountered errors.`);
       console.log(`   If you saw "requires an index" errors, you need to create Firestore composite indexes:`);
       console.log(`   1. wallet_connections: walletAddress (Ascending) + timestamp (Ascending)`);
       console.log(`   2. purchase_events: wallet (Ascending) + timestamp (Ascending)`);
@@ -169,7 +171,7 @@ async function migrateWalletsToFirebase() {
     
     // Verify migration
     const snapshot = await adminDb.collection('wallets').limit(10).get();
-    console.log(`\n✅ Verification: Sample of ${snapshot.size} wallets in Firebase collection`);
+    console.log(`\n? Verification: Sample of ${snapshot.size} wallets in Firebase collection`);
     
     // Show stats
     const [whitelistedActivated, whitelistedNotActivated, activatedNotWhitelisted] = await Promise.all([
@@ -178,13 +180,13 @@ async function migrateWalletsToFirebase() {
       adminDb.collection('activation_not_whitelisted').count().get(),
     ]);
     
-    console.log(`\n📊 Helper Collections:`);
+    console.log(`\n?? Helper Collections:`);
     console.log(`   Whitelisted + Activated: ${whitelistedActivated.data().count}`);
     console.log(`   Whitelisted + Not Activated: ${whitelistedNotActivated.data().count}`);
     console.log(`   Activated + Not Whitelisted: ${activatedNotWhitelisted.data().count}`);
     
   } catch (error) {
-    console.error('❌ Migration failed:', error);
+    console.error('? Migration failed:', error);
     process.exit(1);
   }
 }
@@ -203,4 +205,4 @@ if (require.main === module) {
 }
 
 export { migrateWalletsToFirebase };
-
+;

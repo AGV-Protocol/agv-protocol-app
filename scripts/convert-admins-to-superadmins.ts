@@ -1,5 +1,7 @@
 // Load environment variables FIRST using require (synchronous, before ES module imports)
 // This ensures env vars are loaded before any modules that use them are evaluated
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const path = require('path');
 const { config } = require('dotenv');
 
@@ -63,7 +65,7 @@ async function convertAdminsToSuperAdmins() {
               claims: user.customClaims || {},
             });
           } else {
-            console.warn(`  ⚠️  User ${user.uid} has admin claims but no email address`);
+            console.warn(`  ??  User ${user.uid} has admin claims but no email address`);
           }
         }
       }
@@ -72,7 +74,7 @@ async function convertAdminsToSuperAdmins() {
       console.log(`  Processed ${listUsersResult.users.length} users, found ${allAdmins.length} admins so far...`);
     } while (nextPageToken);
 
-    console.log(`\n✅ Found ${allAdmins.length} admin users\n`);
+    console.log(`\n? Found ${allAdmins.length} admin users\n`);
 
     if (allAdmins.length === 0) {
       console.log('No admin users found. Nothing to convert.');
@@ -100,7 +102,7 @@ async function convertAdminsToSuperAdmins() {
             addedBy: 'system-script',
             note: 'Converted from admin to super admin',
           });
-          console.log(`  ✅ Added to authorized_admin_emails`);
+          console.log(`  ? Added to authorized_admin_emails`);
         } else {
           const existing = authorizedEmailDoc.data();
           if (existing?.authorized !== true) {
@@ -109,9 +111,9 @@ async function convertAdminsToSuperAdmins() {
               updatedAt: now,
               updatedBy: 'system-script',
             });
-            console.log(`  ✅ Updated authorized_admin_emails (was not authorized)`);
+            console.log(`  ? Updated authorized_admin_emails (was not authorized)`);
           } else {
-            console.log(`  ℹ️  Already in authorized_admin_emails`);
+            console.log(`  ??  Already in authorized_admin_emails`);
           }
         }
 
@@ -126,24 +128,24 @@ async function convertAdminsToSuperAdmins() {
             note: 'Converted from admin to super admin',
             addedAt: now,
           });
-          console.log(`  ✅ Added to superadmins`);
+          console.log(`  ? Added to superadmins`);
         } else {
-          console.log(`  ℹ️  Already in superadmins`);
+          console.log(`  ??  Already in superadmins`);
         }
 
         processed++;
       } catch (error) {
-        console.error(`  ❌ Error processing ${admin.email}:`, error);
+        console.error(`  ? Error processing ${admin.email}:`, error);
         errors++;
       }
     }
 
-    console.log(`\n✅ Conversion completed!`);
+    console.log(`\n? Conversion completed!`);
     console.log(`   Processed: ${processed} admins`);
     console.log(`   Errors: ${errors} admins`);
 
     // Verify conversion
-    console.log(`\n📊 Verification:`);
+    console.log(`\n?? Verification:`);
     const [authorizedCount, superAdminCount] = await Promise.all([
       adminDb.collection('authorized_admin_emails').where('authorized', '==', true).count().get(),
       adminDb.collection('superadmins').count().get(),
@@ -153,11 +155,11 @@ async function convertAdminsToSuperAdmins() {
     console.log(`   Super admins: ${superAdminCount.data().count}`);
 
     if (errors > 0) {
-      console.log(`\n⚠️  Some admins encountered errors during conversion.`);
+      console.log(`\n??  Some admins encountered errors during conversion.`);
     }
 
   } catch (error) {
-    console.error('❌ Conversion failed:', error);
+    console.error('? Conversion failed:', error);
     process.exit(1);
   }
 }
@@ -166,11 +168,11 @@ async function convertAdminsToSuperAdmins() {
 if (require.main === module) {
   convertAdminsToSuperAdmins()
     .then(() => {
-      console.log('\n✅ Script completed successfully');
+      console.log('\n? Script completed successfully');
       process.exit(0);
     })
     .catch((error) => {
-      console.error('❌ Script failed:', error);
+      console.error('? Script failed:', error);
       process.exit(1);
     });
 }
