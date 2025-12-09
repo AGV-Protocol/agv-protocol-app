@@ -57,6 +57,22 @@ export async function POST(request: NextRequest) {
     // Get updated wallet and categorize
     const updatedWallet = await fullSyncWallet(normalizedAddress);
     
+    // Ensure activation logic is applied: if connected but not whitelisted, activate
+    // This handles: "Activated wallets are any wallet that connects to the dApp, that we do not have in our wallet list"
+    if (updatedWallet.timestamps.firstConnected && !updatedWallet.status.isWhitelisted && !updatedWallet.status.isActivated) {
+      const { Timestamp } = require('firebase-admin/firestore');
+      const walletRef = require('@/lib/firebase-admin').adminDb.collection('wallets').doc(normalizedAddress);
+      await walletRef.update({
+        'status.isActivated': true,
+        'timestamps.activatedAt': updatedWallet.timestamps.activatedAt || Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      });
+      updatedWallet.status.isActivated = true;
+      if (!updatedWallet.timestamps.activatedAt) {
+        updatedWallet.timestamps.activatedAt = Timestamp.now();
+      }
+    }
+    
     try {
       await categorizeWallet(normalizedAddress, updatedWallet);
     } catch (categorizeError) {
@@ -86,6 +102,7 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
 
 
 

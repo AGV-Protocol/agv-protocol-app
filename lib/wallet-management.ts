@@ -295,27 +295,53 @@ export async function syncWalletFromConnections(address: string): Promise<void> 
   if (!walletSnap.exists) return;
 
   const wallet = walletSnap.data() as WalletDocument;
+  const updates: Partial<WalletDocument> = {
+    updatedAt: Timestamp.now(),
+    lastSyncedAt: Timestamp.now(),
+  };
 
-  if (wallet.timestamps.firstConnected) return;
+  // Sync firstConnected timestamp if not set
+  let hasConnection = !!wallet.timestamps.firstConnected;
+  if (!wallet.timestamps.firstConnected) {
+    const connections = await adminDb.collection('wallet_connections')
+      .where('walletAddress', '==', normalizedAddress)
+      .orderBy('timestamp', 'asc')
+      .limit(1)
+      .get();
 
-  const connections = await adminDb.collection('wallet_connections')
-    .where('walletAddress', '==', normalizedAddress)
-    .orderBy('timestamp', 'asc')
-    .limit(1)
-    .get();
-
-  if (!connections.empty) {
-    const firstConnection = connections.docs[0].data();
-    const timestamp = firstConnection.timestamp || firstConnection.createdAt;
-    
-    await walletRef.update({
-      timestamps: {
+    if (!connections.empty) {
+      const firstConnection = connections.docs[0].data();
+      const timestamp = firstConnection.timestamp || firstConnection.createdAt;
+      
+      updates.timestamps = {
         ...wallet.timestamps,
         firstConnected: toTimestamp(timestamp) || Timestamp.now(),
-      },
-      updatedAt: Timestamp.now(),
-      lastSyncedAt: Timestamp.now(),
-    });
+      };
+      hasConnection = true;
+    }
+  }
+
+  // Apply activation logic: if wallet has connected but is NOT whitelisted, it should be activated
+  // This handles the case: "Activated wallets are any wallet that connects to the dApp, that we do not have in our wallet list"
+  const isNotWhitelisted = !wallet.status.isWhitelisted;
+  
+  if (hasConnection && isNotWhitelisted && !wallet.status.isActivated) {
+    updates.status = {
+      ...wallet.status,
+      isActivated: true,
+    };
+    
+    if (!wallet.timestamps.activatedAt) {
+      const firstConnectedTime = updates.timestamps?.firstConnected || wallet.timestamps.firstConnected;
+      updates.timestamps = {
+        ...(updates.timestamps || wallet.timestamps),
+        activatedAt: firstConnectedTime || Timestamp.now(),
+      };
+    }
+  }
+
+  if (Object.keys(updates).length > 2 || updates.timestamps || updates.status) {
+    await walletRef.update(updates);
   }
 }
 
