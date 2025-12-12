@@ -1,5 +1,7 @@
 // Load environment variables FIRST using require (synchronous, before ES module imports)
 // This ensures env vars are loaded before any modules that use them are evaluated
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const path = require('path');
 const { config } = require('dotenv');
 
@@ -58,7 +60,7 @@ async function ensureAdminClaims() {
       data: doc.data(),
     }));
 
-    console.log(`✅ Found ${authorizedEmails.length} authorized admin emails\n`);
+    console.log(`? Found ${authorizedEmails.length} authorized admin emails\n`);
 
     if (authorizedEmails.length === 0) {
       console.log('No authorized admin emails found. Nothing to process.');
@@ -83,11 +85,11 @@ async function ensureAdminClaims() {
         try {
           user = await adminAuth.getUserByEmail(email);
           userExists = true;
-          console.log(`  ✓ User exists in Firebase Auth`);
+          console.log(`  ? User exists in Firebase Auth`);
         } catch (err: any) {
           if (err?.code === 'auth/user-not-found') {
             // User doesn't exist, we'll create them
-            console.log(`  ⚠️  User not found in Firebase Auth`);
+            console.log(`  ??  User not found in Firebase Auth`);
           } else {
             throw err;
           }
@@ -98,7 +100,7 @@ async function ensureAdminClaims() {
         const hasAdmin = hasAdminClaims(existingClaims);
 
         if (userExists && hasAdmin) {
-          console.log(`  ℹ️  User already has admin claims - skipping`);
+          console.log(`  ??  User already has admin claims - skipping`);
           skipped++;
           processed++;
           continue;
@@ -119,7 +121,7 @@ async function ensureAdminClaims() {
         if (userExists) {
           // Update existing user with admin claims
           await adminAuth.setCustomUserClaims(user.uid, newClaims);
-          console.log(`  ✅ Added admin claims to existing user`);
+          console.log(`  ? Added admin claims to existing user`);
           updated++;
         } else {
           // Create new user with admin claims
@@ -129,18 +131,18 @@ async function ensureAdminClaims() {
             disabled: false,
           });
           await adminAuth.setCustomUserClaims(user.uid, newClaims);
-          console.log(`  ✅ Created new user with admin claims`);
+          console.log(`  ? Created new user with admin claims`);
           created++;
         }
 
         processed++;
       } catch (error) {
-        console.error(`  ❌ Error processing ${email}:`, error);
+        console.error(`  ? Error processing ${email}:`, error);
         errors++;
       }
     }
 
-    console.log(`\n✅ Process completed!`);
+    console.log(`\n? Process completed!`);
     console.log(`   Total authorized emails: ${authorizedEmails.length}`);
     console.log(`   Processed: ${processed}`);
     console.log(`   Created: ${created}`);
@@ -149,7 +151,7 @@ async function ensureAdminClaims() {
     console.log(`   Errors: ${errors}`);
 
     // Verification: Check how many users now have admin claims
-    console.log(`\n📊 Verification:`);
+    console.log(`\n?? Verification:`);
     let adminUsersCount = 0;
     let nextPageToken: string | undefined;
 
@@ -169,11 +171,11 @@ async function ensureAdminClaims() {
     console.log(`   Authorized emails in Firestore: ${authorizedEmails.length}`);
 
     if (errors > 0) {
-      console.log(`\n⚠️  Some emails encountered errors during processing.`);
+      console.log(`\n??  Some emails encountered errors during processing.`);
     }
 
     if (adminUsersCount < authorizedEmails.length) {
-      console.log(`\n⚠️  Warning: Some authorized emails may not have corresponding Firebase Auth users.`);
+      console.log(`\n??  Warning: Some authorized emails may not have corresponding Firebase Auth users.`);
       console.log(`   This could be due to:`);
       console.log(`   - Invalid email addresses`);
       console.log(`   - Users that were deleted from Firebase Auth`);
@@ -181,7 +183,7 @@ async function ensureAdminClaims() {
     }
 
   } catch (error) {
-    console.error('❌ Process failed:', error);
+    console.error('? Process failed:', error);
     process.exit(1);
   }
 }
@@ -190,11 +192,11 @@ async function ensureAdminClaims() {
 if (require.main === module) {
   ensureAdminClaims()
     .then(() => {
-      console.log('\n✅ Script completed successfully');
+      console.log('\n? Script completed successfully');
       process.exit(0);
     })
     .catch((error) => {
-      console.error('❌ Script failed:', error);
+      console.error('? Script failed:', error);
       process.exit(1);
     });
 }

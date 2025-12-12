@@ -7,6 +7,8 @@
  * This will create/update KOL profiles and allocations for all agents
  */
 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 import { adminDb } from '../lib/firebase-admin';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { AgentInitData, AgentAllocation } from '../lib/agent-types';
@@ -180,7 +182,7 @@ async function upsertKolProfile(
 }
 
 async function initializeAgents() {
-  console.log('🚀 Initializing agents...\n');
+  console.log('?? Initializing agents...\n');
 
   const results: Array<{
     agent: AgentInitData;
@@ -195,7 +197,7 @@ async function initializeAgents() {
     // First pass: Create/update Master Agents
     const masterWalletMap = new Map<string, string>(); // wallet -> kolId
     
-    console.log('📋 Processing Master Agents (Level-1)...\n');
+    console.log('?? Processing Master Agents (Level-1)...\n');
     
     for (const agent of AGENTS) {
       if (agent.agentLevel === 1) {
@@ -225,7 +227,7 @@ async function initializeAgents() {
               kolId,
               updatedAt: FieldValue.serverTimestamp(),
             });
-            console.log(`    ✅ Updated existing allocation`);
+            console.log(`    ? Updated existing allocation`);
           } else {
             // Create new allocation
             const allocationRef = adminDb.collection('agent_allocations').doc();
@@ -243,7 +245,7 @@ async function initializeAgents() {
             };
             
             await allocationRef.set(allocation);
-            console.log(`    ✅ Created new allocation`);
+            console.log(`    ? Created new allocation`);
           }
           
           results.push({
@@ -258,7 +260,7 @@ async function initializeAgents() {
           console.log(`    Ref Code: ${refCode}`);
           console.log(`    Status: ${created ? 'Created' : 'Updated'}\n`);
         } catch (error: any) {
-          console.error(`    ❌ Error: ${error.message}\n`);
+          console.error(`    ? Error: ${error.message}\n`);
           results.push({
             agent,
             kolId: '',
@@ -272,7 +274,7 @@ async function initializeAgents() {
     }
 
     // Second pass: Create/update Sub-Agents (they need master KOL ID)
-    console.log('📋 Processing Sub-Agents (Level-2)...\n');
+    console.log('?? Processing Sub-Agents (Level-2)...\n');
     
     for (const agent of AGENTS) {
       if (agent.agentLevel === 2) {
@@ -281,7 +283,7 @@ async function initializeAgents() {
           
           const masterWallet = agent.masterWallet?.toLowerCase();
           if (!masterWallet) {
-            console.error(`    ❌ Error: Master wallet not found\n`);
+            console.error(`    ? Error: Master wallet not found\n`);
             results.push({
               agent,
               kolId: '',
@@ -295,7 +297,7 @@ async function initializeAgents() {
 
           const masterKolId = masterWalletMap.get(masterWallet);
           if (!masterKolId) {
-            console.error(`    ❌ Error: Master agent not found. Create Master agents first.\n`);
+            console.error(`    ? Error: Master agent not found. Create Master agents first.\n`);
             results.push({
               agent,
               kolId: '',
@@ -331,7 +333,7 @@ async function initializeAgents() {
               masterWallet: masterWallet,
               updatedAt: FieldValue.serverTimestamp(),
             });
-            console.log(`    ✅ Updated existing allocation`);
+            console.log(`    ? Updated existing allocation`);
           } else {
             // Create new allocation
             const allocationRef = adminDb.collection('agent_allocations').doc();
@@ -351,7 +353,7 @@ async function initializeAgents() {
             };
 
             await allocationRef.set(allocation);
-            console.log(`    ✅ Created new allocation`);
+            console.log(`    ? Created new allocation`);
           }
 
           results.push({
@@ -367,7 +369,7 @@ async function initializeAgents() {
           console.log(`    Master: ${agent.masterName} (${masterKolId})`);
           console.log(`    Status: ${created ? 'Created' : 'Updated'}\n`);
         } catch (error: any) {
-          console.error(`    ❌ Error: ${error.message}\n`);
+          console.error(`    ? Error: ${error.message}\n`);
           results.push({
             agent,
             kolId: '',
@@ -382,7 +384,7 @@ async function initializeAgents() {
 
     // Summary
     console.log('\n' + '='.repeat(60));
-    console.log('📊 SUMMARY');
+    console.log('?? SUMMARY');
     console.log('='.repeat(60));
     console.log(`Total Agents: ${results.length}`);
     console.log(`Successful: ${results.filter(r => !r.error).length}`);
@@ -390,22 +392,22 @@ async function initializeAgents() {
     console.log(`Created: ${results.filter(r => r.created).length}`);
     console.log(`Updated: ${results.filter(r => !r.created && !r.error).length}`);
     
-    console.log('\n📋 Results:');
+    console.log('\n?? Results:');
     results.forEach((r, idx) => {
       if (r.error) {
-        console.log(`  ${idx + 1}. ❌ ${r.agent.name}: ${r.error}`);
+        console.log(`  ${idx + 1}. ? ${r.agent.name}: ${r.error}`);
       } else {
-        console.log(`  ${idx + 1}. ✅ ${r.agent.name} (Level-${r.agent.agentLevel})`);
+        console.log(`  ${idx + 1}. ? ${r.agent.name} (Level-${r.agent.agentLevel})`);
         console.log(`     KOL ID: ${r.kolId}`);
         console.log(`     Ref Code: ${r.refCode}`);
         console.log(`     Allocation ID: ${r.allocationId}`);
       }
     });
     
-    console.log('\n✨ Done!');
+    console.log('\n? Done!');
     
   } catch (error: any) {
-    console.error('\n❌ Fatal error:', error.message);
+    console.error('\n? Fatal error:', error.message);
     console.error(error.stack);
     process.exit(1);
   }
